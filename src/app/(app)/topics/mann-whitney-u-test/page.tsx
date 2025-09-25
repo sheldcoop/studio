@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-import { theme } from '@/lib/theme';
 
 ChartJS.register(
   CategoryScale,
@@ -91,16 +90,16 @@ const MannWhitneyChart = () => {
         {
           label: 'Algo A (Old)',
           data: countsA,
-          backgroundColor: `hsla(${theme.colors.light.chart1.h}, ${theme.colors.light.chart1.s}, ${theme.colors.light.chart1.l}, 0.7)`,
-          borderColor: `hsl(${theme.colors.light.chart1.h}, ${theme.colors.light.chart1.s}, ${theme.colors.light.chart1.l})`,
+          backgroundColor: `${chartColors.chart1}B3`, // Use chart color with 70% opacity (B3 hex)
+          borderColor: chartColors.chart1,
           barPercentage: 1.0,
           categoryPercentage: 1.0,
         },
         {
           label: 'Algo B (New)',
           data: countsB,
-          backgroundColor: `hsla(${theme.colors.light.chart2.h}, ${theme.colors.light.chart2.s}, ${theme.colors.light.chart2.l}, 0.7)`,
-          borderColor: `hsl(${theme.colors.light.chart2.h}, ${theme.colors.light.chart2.s}, ${theme.colors.light.chart2.l})`,
+          backgroundColor: `${chartColors.chart2}B3`, // Use chart color with 70% opacity (B3 hex)
+          borderColor: chartColors.chart2,
           barPercentage: 1.0,
           categoryPercentage: 1.0,
         },

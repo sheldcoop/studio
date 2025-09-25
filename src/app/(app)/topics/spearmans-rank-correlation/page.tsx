@@ -42,11 +42,11 @@ const SpearmanCorrelationChart = () => {
         {
           label: 'Asset Pair',
           data: data,
-          backgroundColor: `${chartColors.chart1}80`, // primary with 50% opacity
+          backgroundColor: `${chartColors.chart1}B3`, // Use chart color with 70% opacity
         },
       ],
     });
-  }, [strength]);
+  }, [strength, chartConfig]);
 
   const options = {
     ...chartConfig,
