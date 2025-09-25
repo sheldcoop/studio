@@ -355,7 +355,6 @@ const treeData: DecisionNodeData = {
 
 type CustomNodeData = DecisionNodeData & {
   onClick: (id: string, parent?: string) => void;
-  onDownload: () => void;
   isPath: boolean;
 };
 
@@ -381,11 +380,6 @@ const CustomNode = ({
     if(data.slug) router.push(`/topics/${data.slug}`);
   }
 
-  const handleDownloadClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    data.onDownload();
-  }
-
   return (
     <div
       onClick={handleNodeClick}
@@ -402,15 +396,10 @@ const CustomNode = ({
       {data.note && (
         <div className="mt-1 text-xs text-muted-foreground">{data.note}</div>
       )}
-       {data.isResult && (
+       {data.isResult && data.slug && (
           <div className="absolute -top-2 -right-2 flex gap-1">
-             {data.slug && (
-              <button onClick={handleLinkClick} className="icon-button h-5 w-5 rounded-full bg-green-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 outline-none">
+             <button onClick={handleLinkClick} className="icon-button h-5 w-5 rounded-full bg-green-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 outline-none">
                 <LinkIcon className="h-full w-full" />
-              </button>
-             )}
-             <button onClick={handleDownloadClick} className="icon-button h-5 w-5 rounded-full bg-primary p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 outline-none">
-                <Download className="h-full w-full" />
              </button>
           </div>
        )}
@@ -487,19 +476,18 @@ export default function StatisticalTestChooserPage() {
     Object.keys(levels).sort((a, b) => parseInt(a) - parseInt(b)).forEach(levelKey => {
       const level = parseInt(levelKey);
       const levelNodes = levels[level];
-      const levelWidth = levelNodes.length * (nodeWidth + horizontalGap) - horizontalGap;
   
-      levelNodes.forEach((nodeId, index) => {
+      levelNodes.forEach((nodeId) => {
         const parentId = nodeMap.get(nodeId)?.data.parent;
-        let x;
-        const parentNode = parentId ? findNode(parentId) : null;
-        const siblings = parentNode?.children?.map(c => c.id) || [];
-        const siblingIndex = siblings.indexOf(nodeId);
         const parentX = parentId ? positions[parentId]?.x || 0 : 0;
   
+        const parentNode = parentId ? findNode(parentId) : null;
+        const siblings = parentNode?.children?.map(c => c.id) || [nodeId];
+        const siblingIndex = siblings.indexOf(nodeId);
+        
         const siblingsWidth = siblings.length * (nodeWidth + horizontalGap) - horizontalGap;
         const startX = parentX - (siblingsWidth - nodeWidth) / 2;
-        x = startX + siblingIndex * (nodeWidth + horizontalGap);
+        const x = startX + siblingIndex * (nodeWidth + horizontalGap);
   
         const y = level * (nodeHeight + verticalGap);
         positions[nodeId] = { x, y };
@@ -555,7 +543,7 @@ export default function StatisticalTestChooserPage() {
             newNodes.push({
               id: childData.id,
               type: 'custom',
-              data: { ...childData, onClick: handleNodeClick, onDownload: handleDownload, isPath: false },
+              data: { ...childData, onClick: handleNodeClick, isPath: false },
               position: { x: 0, y: 0 },
             });
           }
@@ -588,7 +576,7 @@ export default function StatisticalTestChooserPage() {
             }
         }));
       });
-    }, [setNodes, setEdges, router, handleDownload]);
+    }, [setNodes, setEdges, router]);
   
   const setInitialState = useCallback(() => {
       const root = findNode('root');
@@ -597,13 +585,13 @@ export default function StatisticalTestChooserPage() {
           {
             id: root.id,
             type: 'custom',
-            data: { ...root, onClick: handleNodeClick, onDownload: handleDownload, isPath: true },
+            data: { ...root, onClick: handleNodeClick, isPath: true },
             position: { x: 0, y: 0 },
           },
           ...(root.children?.map(child => ({
             id: child.id,
             type: 'custom',
-            data: { ...child, onClick: handleNodeClick, onDownload: handleDownload, isPath: true },
+            data: { ...child, onClick: handleNodeClick, isPath: true },
             position: { x: 0, y: 0 },
           })) || [])
         ];
@@ -612,6 +600,8 @@ export default function StatisticalTestChooserPage() {
             id: `e-${root.id}-${child.id}`,
             source: root.id,
             target: child.id,
+            animated: true,
+            style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 }
         })) || [];
   
         const layoutedNodes = getLayoutedNodes(initialNodes);
@@ -624,7 +614,7 @@ export default function StatisticalTestChooserPage() {
           }, 100);
         }
       }
-    }, [setNodes, setEdges, reactFlowInstance, handleNodeClick, handleDownload]);
+    }, [setNodes, setEdges, reactFlowInstance, handleNodeClick]);
   
 
   useEffect(() => {
@@ -642,6 +632,10 @@ export default function StatisticalTestChooserPage() {
         <Button onClick={setInitialState} variant="outline">
           <RefreshCw className="mr-2 h-4 w-4" />
           Reset
+        </Button>
+        <Button onClick={handleDownload}>
+          <Download className="mr-2 h-4 w-4" />
+          Download as PNG
         </Button>
       </PageHeader>
       <Card className="w-full h-[70vh]" ref={reactFlowWrapper}>
