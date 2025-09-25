@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -105,7 +106,7 @@ const IndependentTestChart = () => {
             />
             <Bar dataKey="value" radius={8}>
                 {chartData.map((entry, index) => (
-                    <Rectangle key={`cell-${index}`} fill={independentTestChartConfig[entry.name as keyof typeof independentTestChartConfig].color} />
+                    <Rectangle key={`cell-${index}`} fill={independentTestChartConfig[entry.name as keyof typeof independentTestChartConfig]?.color} />
                 ))}
             </Bar>
           </BarChart>
@@ -234,7 +235,7 @@ export default function TTestPage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <h3 className="mb-1 font-semibold text-primary">
-                  Purpose & Analogy
+                  Purpose &amp; Analogy
                 </h3>
                 <p className="text-muted-foreground">
                   A t-test checks if the difference between two average returns
@@ -343,3 +344,5 @@ export default function TTestPage() {
     </>
   );
 }
+
+    
