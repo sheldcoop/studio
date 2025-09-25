@@ -14,6 +14,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Rectangle,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
@@ -21,7 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
@@ -81,8 +82,8 @@ const IndependentTestChart = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
     setChartData([
-      { name: 'Momentum', value: getMean(dataA), fill: independentTestChartConfig.Momentum.color },
-      { name: 'Mean-Reversion', value: getMean(dataB), fill: independentTestChartConfig['Mean-Reversion'].color },
+      { name: 'Momentum', value: getMean(dataA) },
+      { name: 'Mean-Reversion', value: getMean(dataB) },
     ]);
   };
 
@@ -102,11 +103,15 @@ const IndependentTestChart = () => {
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Bar dataKey="value" radius={8} />
+            <Bar dataKey="value" radius={8}>
+                {chartData.map((entry, index) => (
+                    <Rectangle key={`cell-${index}`} fill={independentTestChartConfig[entry.name as keyof typeof independentTestChartConfig]?.color} />
+                ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center">
+      <div className="text-center mt-4">
         <Button onClick={generateData}>Simulate New 60-Day Period</Button>
       </div>
     </div>
@@ -151,7 +156,7 @@ const PairedTestChart = () => {
           </LineChart>
         </ChartContainer>
       </div>
-      <div className="text-center">
+      <div className="text-center mt-4">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>
@@ -162,7 +167,7 @@ const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
   const target = 1.5;
 
-  const chartData = [{ name: 'Avg. Return', value: meanValue, fill: oneSampleTestChartConfig.value.color }];
+  const chartData = [{ name: 'Avg. Return', value: meanValue }];
 
   return (
     <div className="space-y-4">
@@ -173,7 +178,7 @@ const OneSampleTestChart = () => {
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} />
             <XAxis type="number" unit="%" domain={[0, 3]} />
             <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey="value" radius={8} />
+            <Bar dataKey="value" radius={8} fill={oneSampleTestChartConfig.value.color} />
             <ReferenceLine
               x={target}
               stroke="var(--color-destructive)"
@@ -184,7 +189,7 @@ const OneSampleTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center">
+      <div className="mx-auto max-w-sm text-center mt-4">
         <Label htmlFor="mean-slider">
           Adjust Sample's Average Monthly Return (%)
         </Label>

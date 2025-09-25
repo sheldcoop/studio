@@ -9,11 +9,12 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Rectangle,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
@@ -64,9 +65,9 @@ const KruskalWallisChart = () => {
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
 
     setChartData([
-        { name: 'ML Bot', value: getMedian(dataBotA), fill: kruskalWallisChartConfig['ML Bot'].color },
-        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: kruskalWallisChartConfig['Rule-Based Bot'].color },
-        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: kruskalWallisChartConfig['Hybrid Bot'].color },
+        { name: 'ML Bot', value: getMedian(dataBotA) },
+        { name: 'Rule-Based Bot', value: getMedian(dataBotB) },
+        { name: 'Hybrid Bot', value: getMedian(dataBotC) },
     ]);
   };
 
@@ -83,11 +84,15 @@ const KruskalWallisChart = () => {
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis unit="$" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Bar dataKey="value" name="Median Profit" radius={4} />
+            <Bar dataKey="value" name="Median Profit" radius={4}>
+                {chartData.map((entry, index) => (
+                    <Rectangle key={`cell-${index}`} fill={kruskalWallisChartConfig[entry.name as keyof typeof kruskalWallisChartConfig]?.color} />
+                ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center">
+      <div className="text-center mt-4">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>

@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
@@ -83,9 +83,9 @@ const OneWayAnovaChart = () => {
     const dataBeta = generateNormalData(1.5, 0.8, 50);
     const dataGamma = generateNormalData(0.9, 0.8, 50);
     setChartData([
-        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: oneWayAnovaChartConfig['Algorithm Alpha'].color },
-        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: oneWayAnovaChartConfig['Algorithm Beta'].color },
-        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: oneWayAnovaChartConfig['Algorithm Gamma'].color },
+        { name: 'Algorithm Alpha', value: getMean(dataAlpha) },
+        { name: 'Algorithm Beta', value: getMean(dataBeta) },
+        { name: 'Algorithm Gamma', value: getMean(dataGamma) },
     ]);
   };
 
@@ -95,18 +95,22 @@ const OneWayAnovaChart = () => {
 
   return (
     <div className="space-y-4">
-        <div className="h-[350px]">
-          <ChartContainer config={oneWayAnovaChartConfig} className="min-h-[200px] w-full">
-            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                <YAxis unit="%" />
-                <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
-                <Bar dataKey="value" radius={8} />
-            </BarChart>
+      <div className="h-[350px]">
+        <ChartContainer config={oneWayAnovaChartConfig} className="min-h-[200px] w-full">
+          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+              <YAxis unit="%" />
+              <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
+              <Bar dataKey="value" radius={8}>
+                  {chartData.map((entry, index) => (
+                    <Rectangle key={`cell-${index}`} fill={oneWayAnovaChartConfig[entry.name as keyof typeof oneWayAnovaChartConfig]?.color} />
+                  ))}
+              </Bar>
+          </BarChart>
         </ChartContainer>
-        </div>
-      <div className="text-center">
+      </div>
+      <div className="text-center mt-4">
         <Button onClick={generateData}>Simulate New 50-Month Period</Button>
       </div>
     </div>
@@ -151,7 +155,7 @@ const TwoWayAnovaChart = () => {
                 </ChartContainer>
             </div>
             <p className="text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
-            <div className="text-center">
+            <div className="text-center mt-4">
                 <Button onClick={generateData}>Simulate New Trading Data</Button>
             </div>
         </div>
@@ -197,7 +201,7 @@ const RepeatedMeasuresAnovaChart = () => {
                     </AreaChart>
                 </ChartContainer>
             </div>
-            <div className="text-center">
+            <div className="text-center mt-4">
                 <Button onClick={generateData}>Simulate New Portfolio Journey</Button>
             </div>
         </div>

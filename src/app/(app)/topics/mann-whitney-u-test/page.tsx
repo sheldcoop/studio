@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
@@ -93,7 +93,7 @@ const MannWhitneyChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center">
+      <div className="text-center mt-4">
         <Button onClick={generateData}>Simulate New Trading Data</Button>
       </div>
     </div>

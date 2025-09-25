@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate rank-like data for demonstration
@@ -80,7 +80,7 @@ const FriedmanTestChart = () => {
             </LineChart>
         </ChartContainer>
       </div>
-      <div className="text-center">
+      <div className="text-center mt-4">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>

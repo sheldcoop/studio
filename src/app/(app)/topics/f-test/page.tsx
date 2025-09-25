@@ -9,6 +9,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Rectangle,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
@@ -66,8 +67,8 @@ const FTestChart = () => {
     const varianceGrowth = getVariance(dataGrowth);
 
     setChartData([
-        { name: 'StableStock (Utility)', value: varianceStable, fill: fTestChartConfig['StableStock (Utility)'].color },
-        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: fTestChartConfig['GrowthStock (Tech)'].color },
+        { name: 'StableStock (Utility)', value: varianceStable },
+        { name: 'GrowthStock (Tech)', value: varianceGrowth },
     ]);
     setFStat(varianceGrowth / varianceStable);
   };
@@ -122,11 +123,15 @@ const FTestChart = () => {
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<CustomTooltip />}
             />
-            <Bar dataKey="value" radius={8} />
+            <Bar dataKey="value" radius={8}>
+              {chartData.map((entry, index) => (
+                <Rectangle key={`cell-${index}`} fill={fTestChartConfig[entry.name as keyof typeof fTestChartConfig]?.color} />
+              ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center">
+      <div className="text-center mt-4">
         <Button onClick={generateData}>Simulate New 100-Day Period</Button>
       </div>
     </div>

@@ -10,12 +10,13 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Rectangle,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 const goodnessOfFitChartConfig = {
@@ -99,14 +100,14 @@ const GoodnessOfFitChart = () => {
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
+      <div className="text-center mt-4"><Button onClick={generateData}>Simulate New Data</Button></div>
     </div>
   );
 };
 
 
 const TestForIndependenceChart = () => {
-  const [chartData, setChartData] = useState<any>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
     const observed = {
@@ -157,7 +158,7 @@ const TestForIndependenceChart = () => {
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
+      <div className="text-center mt-4"><Button onClick={generateData}>Simulate New Data</Button></div>
       <p className="text-center text-sm text-muted-foreground">The test checks if the differences between observed and expected counts are significant.</p>
     </div>
   );
@@ -204,7 +205,7 @@ const TestForHomogeneityChart = () => {
                 </BarChart>
             </ChartContainer>
           </div>
-          <div className="text-center"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
+          <div className="text-center mt-4"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
         </div>
     );
 };

@@ -15,7 +15,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Crosshair } from 'lucide-react';
 
@@ -79,7 +79,7 @@ const PearsonCorrelationChart = () => {
           </ScatterChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center">
+      <div className="mx-auto max-w-sm text-center mt-4">
         <Label htmlFor="correlation-slider">Adjust Correlation Coefficient</Label>
         <Slider
           id="correlation-slider"

@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis,
   Legend,
+  Rectangle,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
@@ -18,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
@@ -87,7 +88,7 @@ const OneSampleZTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center">
+      <div className="mx-auto max-w-sm text-center mt-4">
         <Label htmlFor="mean-slider">
           Adjust Stock A&apos;s Recent Avg. Daily Return (%)
         </Label>
@@ -119,8 +120,8 @@ const TwoSampleZTestChart = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
     setChartData([
-        { name: 'Stock A', value: getMean(dataA), fill: twoSampleZTestChartConfig['Stock A'].color },
-        { name: 'Stock B', value: getMean(dataB), fill: twoSampleZTestChartConfig['Stock B'].color },
+        { name: 'Stock A', value: getMean(dataA) },
+        { name: 'Stock B', value: getMean(dataB) },
     ]);
   };
 
@@ -137,11 +138,15 @@ const TwoSampleZTestChart = () => {
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                <Bar dataKey="value" name="Avg Daily Volatility" radius={4} />
+                <Bar dataKey="value" name="Avg Daily Volatility" radius={4}>
+                    {chartData.map((entry, index) => (
+                        <Rectangle key={`cell-${index}`} fill={twoSampleZTestChartConfig[entry.name as keyof typeof twoSampleZTestChartConfig]?.color} />
+                    ))}
+                </Bar>
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center">
+      <div className="text-center mt-4">
         <Button onClick={generateData}>Simulate New 5-Year Period</Button>
       </div>
     </div>

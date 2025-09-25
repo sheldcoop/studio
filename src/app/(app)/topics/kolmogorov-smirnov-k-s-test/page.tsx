@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // --- Math Helpers ---
@@ -103,7 +103,7 @@ const KSTestChart = () => {
             </LineChart>
         </ChartContainer>
       </div>
-      <div className="flex justify-center gap-4">
+      <div className="flex justify-center gap-4 mt-4">
         <Button onClick={() => setDataType('normal')} variant={dataType === 'normal' ? 'default' : 'outline'}>Generate Normal Sample</Button>
         <Button onClick={() => setDataType('uniform')} variant={dataType === 'uniform' ? 'default' : 'outline'}>Generate Uniform Sample</Button>
       </div>
