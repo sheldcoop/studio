@@ -341,11 +341,11 @@ const CustomNode = ({
 }: NodeProps<CustomNodeData>) => {
   return (
     <div
-      onClick={() => data.isQuestion && data.children && data.onClick(data.id)}
+      onClick={() => data.onClick(data.id, data.parent)}
       className={`
         w-48 rounded-md border-2 bg-card p-3 shadow-md transition-all text-center text-sm
         ${data.isResult ? 'border-green-500 bg-green-500/10' : ''}
-        ${data.isQuestion ? 'cursor-pointer hover:border-primary' : ''}
+        ${data.isQuestion || data.children ? 'cursor-pointer hover:border-primary' : ''}
         ${data.isPath ? 'border-primary' : ''}
       `}
     >
@@ -392,38 +392,143 @@ const findNode = (
 // --- Page Component ---
 
 export default function StatisticalTestChooserPage() {
-  const [nodes, setNodes] = useNodesState([]);
-  const [edges, setEdges] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
 
-  const setInitialState = useCallback(() => {
-    const rootNode = findNode('root');
-    if (rootNode) {
-      const initialNodes: Node[] = [
-        {
-          id: rootNode.id,
-          type: 'custom',
-          data: { ...rootNode, onClick: handleNodeClick, isPath: true },
-          position: { x: 0, y: 0 },
-        },
-      ];
-      rootNode.children?.forEach((child, index) => {
-        initialNodes.push({
-          id: child.id,
-          type: 'custom',
-          data: { ...child, onClick: handleNodeClick, isPath: false },
-          position: { x: -150 + index * 150, y: 150 },
-        });
-        setEdges((eds) => [
-          ...eds,
-          { id: `e-root-${child.id}`, source: 'root', target: child.id, animated: false },
-        ]);
-      });
-      setNodes(initialNodes);
-      setEdges([]);
-    }
-  }, [setNodes, setEdges]);
+  const getLayoutedNodes = (nodesToLayout: Node[]): Node[] => {
+    const nodeWidth = 192; // w-48
+    const nodeHeight = 80;
+    const horizontalGap = 50;
+    const verticalGap = 100;
   
+    const levels: { [key: number]: string[] } = {};
+    const nodeMap = new Map(nodesToLayout.map(n => [n.id, n]));
+  
+    nodesToLayout.forEach(node => {
+      let level = 0;
+      let parent = node.data.parent ? nodeMap.get(node.data.parent) : null;
+      while (parent) {
+        level++;
+        parent = parent.data.parent ? nodeMap.get(parent.data.parent) : null;
+      }
+      if (!levels[level]) {
+        levels[level] = [];
+      }
+      levels[level].push(node.id);
+    });
+  
+    const positions: { [key: string]: { x: number; y: number } } = {};
+  
+    Object.keys(levels).forEach(levelKey => {
+      const level = parseInt(levelKey);
+      const levelNodes = levels[level];
+      const levelWidth = levelNodes.length * (nodeWidth + horizontalGap) - horizontalGap;
+  
+      levelNodes.forEach((nodeId, index) => {
+        const y = level * (nodeHeight + verticalGap);
+        const x = index * (nodeWidth + horizontalGap) - levelWidth / 2 + nodeWidth / 2;
+        positions[nodeId] = { x, y };
+      });
+    });
+    
+    return nodesToLayout.map(node => ({
+      ...node,
+      position: positions[node.id] || node.position,
+    }));
+  };
+
+  const handleNodeClick = useCallback((nodeId: string, parentId?: string) => {
+      const clickedNodeData = findNode(nodeId);
+      if (!clickedNodeData || !clickedNodeData.children) return;
+  
+      setNodes((currentNodes) => {
+        const pathIds = new Set<string>();
+        let current = clickedNodeData;
+        while(current) {
+          pathIds.add(current.id);
+          current = current.parent ? findNode(current.parent) : null;
+        }
+
+        const nodesToKeep = currentNodes.filter(node => pathIds.has(node.id));
+        const existingNodeIds = new Set(nodesToKeep.map(n => n.id));
+        
+        const newNodes: Node[] = [...nodesToKeep];
+        const newEdges: Edge[] = [];
+
+        clickedNodeData.children!.forEach((childData) => {
+          if (!existingNodeIds.has(childData.id)) {
+            newNodes.push({
+              id: childData.id,
+              type: 'custom',
+              data: { ...childData, onClick: handleNodeClick, isPath: false },
+              position: { x: 0, y: 0 },
+            });
+          }
+        });
+        
+        const finalNodes = getLayoutedNodes(newNodes);
+
+        setEdges((currentEdges) => {
+            const edgesToKeep = currentEdges.filter(edge => pathIds.has(edge.source) && pathIds.has(edge.target));
+            const newEdges: Edge[] = [...edgesToKeep];
+            finalNodes.forEach(node => {
+                if (node.data.parent) {
+                    const edgeId = `e-${node.data.parent}-${node.id}`;
+                    if (!newEdges.some(e => e.id === edgeId)) {
+                        newEdges.push({
+                            id: edgeId,
+                            source: node.data.parent,
+                            target: node.id,
+                            animated: true,
+                        });
+                    }
+                }
+            });
+            return newEdges;
+        });
+
+        return finalNodes.map(n => ({
+            ...n,
+            data: {
+                ...n.data,
+                isPath: pathIds.has(n.id) || n.id === clickedNodeData.id,
+            }
+        }));
+      });
+    }, [setNodes, setEdges]);
+  
+  const setInitialState = useCallback(() => {
+      const root = findNode('root');
+      if (root) {
+        const initialNodes: Node[] = [
+          {
+            id: root.id,
+            type: 'custom',
+            data: { ...root, onClick: handleNodeClick, isPath: true },
+            position: { x: 0, y: 0 },
+          },
+          ...(root.children?.map(child => ({
+            id: child.id,
+            type: 'custom',
+            data: { ...child, onClick: handleNodeClick, isPath: false },
+            position: { x: 0, y: 0 },
+          })) || [])
+        ];
+  
+        const initialEdges: Edge[] = root.children?.map(child => ({
+            id: `e-${root.id}-${child.id}`,
+            source: root.id,
+            target: child.id,
+            animated: false,
+        })) || [];
+  
+        setNodes(getLayoutedNodes(initialNodes));
+        setEdges(initialEdges);
+      }
+    }, [setNodes, setEdges]);
+  
+
   useEffect(() => {
     setInitialState();
   }, [setInitialState]);
@@ -435,95 +540,13 @@ export default function StatisticalTestChooserPage() {
     }
   }, [nodes, reactFlowInstance]);
 
-  const handleNodeClick = useCallback(
-    (parentId: string) => {
-      const parentNodeData = findNode(parentId);
-      if (!parentNodeData || !parentNodeData.children) return;
-
-      setNodes((currentNodes) => {
-        // Mark all nodes in the clicked-on parent's children as not being on the path
-        const childrenIds = parentNodeData.children?.map(c => c.id) || [];
-        const nodesWithPathReset = currentNodes.map(n => 
-          childrenIds.includes(n.id) ? { ...n, data: {...n.data, isPath: false}} : n
-        );
-
-        // Find the full path to the clicked parent and mark those as `isPath`
-        const pathIds = new Set<string>();
-        let current: DecisionNodeData | null = parentNodeData;
-        while (current) {
-          pathIds.add(current.id);
-          current = current.parent ? findNode(current.parent) : null;
-        }
-
-        let newNodes = nodesWithPathReset.map(n => 
-          pathIds.has(n.id) ? { ...n, data: {...n.data, isPath: true}} : n
-        );
-
-        const parentNode = newNodes.find(n => n.id === parentId);
-        if (!parentNode) return newNodes;
-
-        parentNodeData.children.forEach((childNodeData, index) => {
-          // If child already exists, just update its data
-          if (newNodes.some(n => n.id === childNodeData.id)) {
-            newNodes = newNodes.map(n => n.id === childNodeData.id ? { ...n, data: {...n.data, isPath: true}} : n);
-          } else {
-            // Add new child node
-            newNodes.push({
-              id: childNodeData.id,
-              type: 'custom',
-              data: { ...childNodeData, onClick: handleNodeClick, isPath: true },
-              position: { 
-                x: parentNode.position.x + (-150 + index * 150), 
-                y: parentNode.position.y + 150 
-              },
-            });
-          }
-
-          // Add new edge
-          setEdges((eds) => [
-            ...eds,
-            { id: `e-${parentId}-${childNodeData.id}`, source: parentId, target: childNodeData.id, animated: true },
-          ]);
-          
-          // If the child is a question, reveal its options
-          if (childNodeData.isQuestion && childNodeData.children) {
-             childNodeData.children.forEach((grandchild, gcIndex) => {
-               if(!newNodes.some(n => n.id === grandchild.id)) {
-                  newNodes.push({
-                    id: grandchild.id,
-                    type: 'custom',
-                    data: { ...grandchild, onClick: handleNodeClick, isPath: false },
-                    position: {
-                      x: parentNode.position.x + (-150 + index * 150) + (-100 + gcIndex * 100),
-                      y: parentNode.position.y + 300,
-                    }
-                  });
-                  setEdges((eds) => [
-                    ...eds,
-                    {id: `e-${childNodeData.id}-${grandchild.id}`, source: childNodeData.id, target: grandchild.id, animated: false}
-                  ]);
-               }
-             });
-          }
-        });
-        
-        return newNodes;
-      });
-    },
-    [setNodes, setEdges]
-  );
-  
-  const handleReset = () => {
-    setInitialState();
-  };
-
   return (
     <>
       <PageHeader
         title="Statistical Test Decision Map"
         description="Click through the flowchart to find the right statistical test for your needs."
       >
-        <Button onClick={handleReset} variant="outline">
+        <Button onClick={setInitialState} variant="outline">
           <RefreshCw className="mr-2 h-4 w-4" />
           Reset
         </Button>
@@ -532,8 +555,8 @@ export default function StatisticalTestChooserPage() {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={useNodesState([])[1]}
-          onEdgesChange={useEdgesState([])[1]}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
           onInit={setReactFlowInstance}
           fitView
