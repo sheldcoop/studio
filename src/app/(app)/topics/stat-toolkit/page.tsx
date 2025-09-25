@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { statsToolkitTiers } from '@/lib/data';
-import { cn } from '@/lib/utils';
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
