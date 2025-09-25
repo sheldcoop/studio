@@ -6,30 +6,52 @@ import { cn } from '@/lib/utils';
 
 export function AnimatedTagline() {
   const [taglineIndex, setTaglineIndex] = useState(0);
-  const [fade, setFade] = useState(true);
+  const [text, setText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setTaglineIndex((prevIndex) => (prevIndex + 1) % taglines.length);
-        setFade(true);
-      }, 500); // fade out duration
-    }, 3000); // display duration for each tagline
+    const currentTagline = taglines[taglineIndex][0] + taglines[taglineIndex][1];
+    
+    const typeSpeed = 100;
+    const deleteSpeed = 50;
+    const delayAfterTyping = 1500;
 
-    return () => clearInterval(interval);
-  }, []);
+    const handleTyping = () => {
+      if (isDeleting) {
+        if (text.length > 0) {
+          setText((prev) => prev.substring(0, prev.length - 1));
+        } else {
+          setIsDeleting(false);
+          setTaglineIndex((prev) => (prev + 1) % taglines.length);
+        }
+      } else {
+        if (text !== currentTagline) {
+          setText(currentTagline.substring(0, text.length + 1));
+        } else {
+          setTimeout(() => setIsDeleting(true), delayAfterTyping);
+        }
+      }
+    };
+
+    const typingTimeout = setTimeout(handleTyping, isDeleting ? deleteSpeed : typeSpeed);
+
+    return () => clearTimeout(typingTimeout);
+  }, [text, isDeleting, taglineIndex]);
+
+  const firstPart = taglines[taglineIndex][0];
+  
+  const displayText = (
+    <>
+      <span>{text.substring(0, firstPart.length)}</span>
+      <span className="text-primary">{text.substring(firstPart.length)}</span>
+    </>
+  );
 
   return (
     <h1 className="font-headline text-4xl font-bold tracking-tight md:text-5xl">
-      <span
-        className={cn(
-          'transition-opacity duration-500',
-          fade ? 'opacity-100' : 'opacity-0'
-        )}
-      >
-        <span>{taglines[taglineIndex][0]}</span>
-        <span className="text-primary">{taglines[taglineIndex][1]}</span>
+      <span className="inline-block h-12">
+        {displayText}
+        <span className="animate-blink border-r-2 border-foreground align-bottom" aria-hidden="true"></span>
       </span>
     </h1>
   );

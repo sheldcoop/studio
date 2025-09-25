@@ -83,3 +83,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes blink {
+    50% { border-color: transparent; }
+  }
+}
