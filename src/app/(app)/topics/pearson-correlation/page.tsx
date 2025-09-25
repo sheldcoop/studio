@@ -15,8 +15,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
-import { type ChartConfig } from '@/components/ui/chart';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { Crosshair } from 'lucide-react';
 
 // Helper function to generate correlated data
@@ -47,7 +46,6 @@ const generateCorrelatedData = (
 const PearsonCorrelationChart = () => {
   const [correlation, setCorrelation] = useState(0.8);
   const [chartData, setChartData] = useState<any[]>([]);
-  const chartConfig = getChartConfig(false) as ChartConfig;
 
   useEffect(() => {
     const data = generateCorrelatedData(100, correlation);
@@ -68,7 +66,7 @@ const PearsonCorrelationChart = () => {
               cursor={{ strokeDasharray: '3 3' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Scatter data={chartData} fill="var(--color-value)" />
+            <Scatter data={chartData} fill="var(--color-chart-1)" />
           </ScatterChart>
         </ResponsiveContainer>
       </div>

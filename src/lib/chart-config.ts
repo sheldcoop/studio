@@ -57,7 +57,7 @@ export const ChartTooltipContent = ({ active, payload, label, indicator }: any) 
                 {item.name}
               </span>
               <span className="font-bold" style={{ color: item.color || item.fill }}>
-                {item.value.toLocaleString()}
+                {parseFloat(item.value).toFixed(2)}
               </span>
             </div>
           ))}
@@ -68,77 +68,3 @@ export const ChartTooltipContent = ({ active, payload, label, indicator }: any) 
 
   return null;
 };
-
-export const chartColors = {
-  primary: 'hsl(var(--primary))',
-  secondary: 'hsl(var(--secondary))',
-  destructive: 'hsl(var(--destructive))',
-  mutedForeground: 'hsl(var(--muted-foreground))',
-  destructiveForeground: 'hsl(var(--destructive-foreground))',
-  chart1: 'hsl(var(--chart-1))',
-  chart2: 'hsl(var(--chart-2))',
-  chart3: 'hsl(var(--chart-3))',
-  chart4: 'hsl(var(--chart-4))',
-  chart5: 'hsl(var(--chart-5))',
-};
-
-export function getChartJsConfig() {
-    return {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          border: {
-            color: 'hsl(var(--border))',
-          },
-          grid: {
-            color: 'hsl(var(--border))',
-          },
-          ticks: {
-            color: 'hsl(var(--muted-foreground))',
-          },
-           title: {
-            display: true,
-            color: 'hsl(var(--muted-foreground))',
-          },
-        },
-        x: {
-           border: {
-            color: 'hsl(var(--border))',
-          },
-          grid: {
-            color: 'hsl(var(--border))',
-          },
-          ticks: {
-            color: 'hsl(var(--muted-foreground))',
-          },
-          title: {
-            display: true,
-            color: 'hsl(var(--muted-foreground))',
-          },
-        },
-      },
-      plugins: {
-        legend: {
-          labels: {
-            color: 'hsl(var(--muted-foreground))',
-          },
-        },
-        title: {
-          display: true,
-          color: 'hsl(var(--foreground))',
-          font: {
-            size: 16,
-            weight: 'bold',
-          }
-        },
-        tooltip: {
-            backgroundColor: 'hsl(var(--background))',
-            titleColor: 'hsl(var(--foreground))',
-            bodyColor: 'hsl(var(--foreground))',
-            borderColor: 'hsl(var(--border))',
-            borderWidth: 1,
-        }
-      },
-    };
-}

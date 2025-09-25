@@ -2,30 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
+  LineChart,
+  Line,
+  CartesianGrid,
   Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // --- Math Helpers ---
 
@@ -55,9 +44,8 @@ const getEcdf = (data: number[]) => {
 };
 
 const KSTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any[]>([]);
   const [dataType, setDataType] = useState<'normal' | 'uniform'>('normal');
-  const chartConfig = getChartJsConfig();
 
   const generateAndSetData = (type: 'normal' | 'uniform') => {
     const n = 100;
@@ -70,63 +58,39 @@ const KSTestChart = () => {
     } else {
       sampleData = generateUniformData(-3, 3, n);
     }
-
-    const ecdf = getEcdf(sampleData);
-    const sortedUniqueData = [...new Set(sampleData)].sort((a,b) => a-b);
     
-    const theoreticalCdf = sortedUniqueData.map(x => ({
-      x: x,
-      y: standardNormalCdf((x - mean) / stdDev)
+    const sortedSample = [...sampleData].sort((a,b) => a - b);
+    const ecdfPoints = sortedSample.map((val, i) => ({ x: val, empirical: (i+1)/n }));
+    const cdfPoints = sortedSample.map(val => ({ x: val, theoretical: standardNormalCdf((val - mean) / stdDev) }));
+
+    // Merge the points for plotting
+    const mergedData = ecdfPoints.map((point, i) => ({
+        ...point,
+        theoretical: cdfPoints[i].theoretical
     }));
 
-    setChartData({
-      datasets: [
-        {
-          label: 'Empirical CDF (Sample)',
-          data: ecdf,
-          borderColor: chartColors.chart1,
-          backgroundColor: `${chartColors.chart1}33`, // with opacity
-          tension: 0.1,
-          showLine: true,
-          pointRadius: 2,
-        },
-        {
-          label: 'Theoretical CDF (Normal)',
-          data: theoreticalCdf,
-          borderColor: chartColors.chart2,
-          backgroundColor: `${chartColors.chart2}33`,
-          tension: 0.4,
-          showLine: true,
-          pointRadius: 0,
-        },
-      ],
-    });
+    setChartData(mergedData);
   };
 
   useEffect(() => {
     generateAndSetData(dataType);
   }, [dataType]);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, min: 0, max: 1, title: { ...chartConfig.scales.y.title, text: 'Cumulative Probability' } },
-      x: { ...chartConfig.scales.x, type: 'linear' as const, title: { ...chartConfig.scales.x.title, text: 'Value' } }
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { ...chartConfig.plugins.legend, position: 'top' as const },
-      title: { ...chartConfig.plugins.title, text: `ECDF of ${dataType} data vs Normal CDF` },
-    },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Line data={chartData} options={options} />
-        </div>
-      )}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis type="number" dataKey="x" name="Value" domain={['dataMin', 'dataMax']} tickLine={false} tickMargin={10} axisLine={false} />
+                <YAxis domain={[0,1]} />
+                <Tooltip content={<ChartTooltipContent />} />
+                <Legend />
+                <Line type="step" dataKey="empirical" name="Empirical CDF (Sample)" stroke="var(--color-chart-1)" dot={false} strokeWidth={2}/>
+                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke="var(--color-chart-2)" dot={false} strokeWidth={2} />
+            </LineChart>
+        </ResponsiveContainer>
+      </div>
       <div className="flex justify-center gap-4">
         <Button onClick={() => setDataType('normal')} variant={dataType === 'normal' ? 'default' : 'outline'}>Generate Normal Sample</Button>
         <Button onClick={() => setDataType('uniform')} variant={dataType === 'uniform' ? 'default' : 'outline'}>Generate Uniform Sample</Button>

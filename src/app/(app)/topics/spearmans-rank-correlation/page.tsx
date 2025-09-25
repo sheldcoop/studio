@@ -14,15 +14,13 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
-import { type ChartConfig } from '@/components/ui/chart';
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
 const generateMonotonicData = (n: number, strength: number) => {
   const data = [];
   for (let i = 0; i < n; i++) {
     const x = Math.random() * 100;
-    // Create a non-linear relationship (e.g., quadratic) and add noise
     const noise = (Math.random() - 0.5) * (50 / strength);
     const y = Math.pow(x / 10, 2) + noise;
     data.push({ x, y });
@@ -33,7 +31,6 @@ const generateMonotonicData = (n: number, strength: number) => {
 const SpearmanCorrelationChart = () => {
   const [strength, setStrength] = useState(3);
   const [chartData, setChartData] = useState<any[]>([]);
-  const chartConfig = getChartConfig(false) as ChartConfig;
 
   useEffect(() => {
     const data = generateMonotonicData(100, strength);
@@ -55,7 +52,7 @@ const SpearmanCorrelationChart = () => {
               cursor={{ strokeDasharray: '3 3' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Scatter data={chartData} fill="var(--color-value)" />
+            <Scatter data={chartData} fill="var(--color-chart-1)" />
           </ScatterChart>
         </ResponsiveContainer>
       </div>

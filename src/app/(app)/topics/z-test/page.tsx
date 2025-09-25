@@ -2,31 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
   Tooltip,
+  XAxis,
+  YAxis,
   Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -48,71 +40,29 @@ const getMean = (data: number[]) =>
 
 const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
-  const chartConfig = getChartJsConfig();
   const target = 0.05;
 
-  const chartData = {
-    labels: ["Stock A's Recent Avg."],
-    datasets: [
-      {
-        label: 'Sample Mean',
-        data: [meanValue],
-        backgroundColor: `${chartColors.primary}CC`, // 80% opacity
-        borderColor: chartColors.primary,
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const options = {
-    ...chartConfig,
-    indexAxis: 'y' as const,
-    scales: {
-      x: {...chartConfig.scales.x, beginAtZero: false, suggestedMin: -0.2, suggestedMax: 0.3, title: {...chartConfig.scales.x.title, text: 'Average Daily Return (%)'}},
-      y: { ...chartConfig.scales.y, grid: { display: false } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { display: false },
-      title: { ...chartConfig.plugins.title, text: "Comparing Stock A's Recent Return to Historical Average"},
-    },
-  };
-
-  const annotationPlugin = {
-    id: 'customAnnotationLine',
-    afterDraw(chart: ChartJS) {
-      const ctx = chart.ctx;
-      const xScale = chart.scales.x;
-      const topY = chart.chartArea.top;
-      const bottomY = chart.chartArea.bottom;
-      const x = xScale.getPixelForValue(target);
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(x, topY);
-      ctx.lineTo(x, bottomY);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = chartColors.destructive;
-      ctx.stroke();
-
-      const labelText = `Historical Avg: ${target}%`;
-      ctx.font = 'bold 12px sans-serif';
-      const textWidth = ctx.measureText(labelText).width;
-      
-      ctx.fillStyle = chartColors.destructive;
-      ctx.fillRect(x - textWidth / 2 - 5, topY, textWidth + 10, 20);
-      
-      ctx.fillStyle = chartColors.destructiveForeground;
-      ctx.textAlign = 'center';
-      ctx.fillText(labelText, x, topY + 14);
-      ctx.restore();
-    },
-  };
+  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: 'var(--color-chart-1)' }];
 
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <Bar data={chartData} options={options} plugins={[annotationPlugin]} />
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
+            <CartesianGrid horizontal={false} />
+            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} />
+            <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
+            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Bar dataKey="value" radius={8} />
+            <ReferenceLine
+              x={target}
+              stroke="var(--color-destructive)"
+              strokeWidth={2}
+              strokeDasharray="3 3"
+              label={{ value: `Historical Avg: ${target}%`, position: 'insideTopRight', fill: 'var(--color-destructive)' }}
+            />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
       <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="mean-slider">
@@ -140,48 +90,34 @@ const OneSampleZTestChart = () => {
 };
 
 const TwoSampleZTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
-    setChartData({
-      labels: ['Stock A', 'Stock B'],
-      datasets: [
-        {
-          label: 'Average Daily Volatility',
-          data: [getMean(dataA), getMean(dataB)],
-          backgroundColor: [chartColors.chart1, chartColors.chart2],
-        },
-      ],
-    });
+    setChartData([
+        { name: 'Stock A', value: getMean(dataA), fill: 'var(--color-chart-1)' },
+        { name: 'Stock B', value: getMean(dataB), fill: 'var(--color-chart-2)' },
+    ]);
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, beginAtZero: true, suggestedMin: 0, suggestedMax: 3, title: {...chartConfig.scales.y.title, text: 'Average Daily Volatility (%)'} },
-      x: { ...chartConfig.scales.x, grid: { display: false } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { display: false },
-      title: { ...chartConfig.plugins.title, text: 'Comparing Average Daily Volatility of Two Stocks' },
-    },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Bar data={chartData} options={options}/>
-        </div>
-      )}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <YAxis unit="%" />
+                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Bar dataKey="value" name="Avg Daily Volatility" radius={4} />
+            </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New 5-Year Period</Button>
       </div>

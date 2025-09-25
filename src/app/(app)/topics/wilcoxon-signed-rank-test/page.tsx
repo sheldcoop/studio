@@ -2,30 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
+  LineChart,
+  Line,
+  CartesianGrid,
+  ResponsiveContainer,
   Tooltip,
+  XAxis,
+  YAxis,
   Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -40,68 +29,42 @@ const generateLogNormalData = (mu: number, sigma: number, n: number) => {
 };
 
 const WilcoxonSignedRankChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
     const numPortfolios = 10;
     const beforeData = generateLogNormalData(0.5, 0.4, numPortfolios);
-    // The "after" data shows a general improvement, but it's not uniform
     const afterData = beforeData.map(
       (d) => d + (Math.random() * 0.8 - 0.1) 
     );
-    setChartData({
-      labels: Array.from(
-        { length: numPortfolios },
-        (_, i) => `Portfolio ${i + 1}`
-      ),
-      datasets: [
-        {
-          label: 'Before Risk Model',
-          data: beforeData,
-          borderColor: chartColors.mutedForeground,
-          backgroundColor: chartColors.mutedForeground,
-          tension: 0.2,
-        },
-        {
-          label: 'After Risk Model',
-          data: afterData,
-          borderColor: chartColors.primary,
-          backgroundColor: chartColors.primary,
-          tension: 0.2,
-        },
-      ],
-    });
+    setChartData(
+        Array.from({length: numPortfolios}, (_, i) => ({
+            name: `Portfolio ${i+1}`,
+            'Before Risk Model': beforeData[i],
+            'After Risk Model': afterData[i],
+        }))
+    );
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      ...chartConfig.scales,
-      y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Drawdown (%) - Skewed Data' } },
-      x: { ...chartConfig.scales.x, grid: { display: false } }
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { ...chartConfig.plugins.legend, position: 'top' as const },
-      title: {
-        ...chartConfig.plugins.title,
-        text: 'Portfolio Drawdown Before and After New Risk Model',
-      },
-    },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Line data={chartData} options={options} />
-        </div>
-      )}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <YAxis unit="%" />
+                <Tooltip content={<ChartTooltipContent />} />
+                <Legend />
+                <Line type="monotone" dataKey="Before Risk Model" stroke="var(--color-chart-2)" />
+                <Line type="monotone" dataKey="After Risk Model" stroke="var(--color-chart-1)" />
+            </LineChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>

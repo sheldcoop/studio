@@ -2,40 +2,28 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
+  Bar,
+  BarChart,
+  CartesianGrid,
   Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // --- Chart Components ---
 
 const GoodnessOfFitChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any>([]);
   const totalTrades = 250;
-  const expectedPerDay = totalTrades / 5;
 
   const generateData = () => {
-    // Simulate slight variations from the expected 50 trades per day
     const observed = [
       45 + Math.floor(Math.random() * 10) - 5, // Monday
       50 + Math.floor(Math.random() * 10) - 5, // Tuesday
@@ -43,47 +31,39 @@ const GoodnessOfFitChart = () => {
       48 + Math.floor(Math.random() * 10) - 5, // Thursday
       52 + Math.floor(Math.random() * 10) - 5, // Friday
     ];
-    // Normalize to ensure sum is totalTrades
     const currentSum = observed.reduce((a, b) => a + b, 0);
     const normalized = observed.map(o => Math.round(o * (totalTrades / currentSum)));
     
-    setChartData({
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      datasets: [
-        {
-          label: 'Observed Trades',
-          data: normalized,
-          backgroundColor: chartColors.chart1,
-        },
-        {
-          label: 'Expected Trades (if uniform)',
-          data: [expectedPerDay, expectedPerDay, expectedPerDay, expectedPerDay, expectedPerDay],
-          backgroundColor: chartColors.chart2,
-        },
-      ],
-    });
+    const expectedPerDay = totalTrades / 5;
+
+    setChartData([
+        { name: 'Mon', observed: normalized[0], expected: expectedPerDay },
+        { name: 'Tue', observed: normalized[1], expected: expectedPerDay },
+        { name: 'Wed', observed: normalized[2], expected: expectedPerDay },
+        { name: 'Thu', observed: normalized[3], expected: expectedPerDay },
+        { name: 'Fri', observed: normalized[4], expected: expectedPerDay },
+    ]);
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Number of Profitable Trades' } },
-      x: { ...chartConfig.scales.x, grid: { display: false } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { ...chartConfig.plugins.legend, position: 'top' as const },
-      title: { ...chartConfig.plugins.title, text: 'Are Profitable Trades Evenly Distributed Across the Week?' },
-    },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && <div className="h-[350px]"><Bar data={chartData} options={options} /></div>}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <YAxis />
+                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Legend />
+                <Bar dataKey="observed" name="Observed Trades" fill="var(--color-chart-1)" radius={4} />
+                <Bar dataKey="expected" name="Expected Trades" fill="var(--color-chart-2)" radius={4} />
+            </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
     </div>
   );
@@ -91,8 +71,7 @@ const GoodnessOfFitChart = () => {
 
 
 const TestForIndependenceChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any>([]);
 
   const generateData = () => {
     const observed = {
@@ -117,43 +96,32 @@ const TestForIndependenceChart = () => {
         arbitrage: (rowTotals.arbitrage * colTotals.bullish) / grandTotal,
     };
 
-    setChartData({
-      labels: ['Momentum Strategy', 'Mean-Reversion Strategy', 'Arbitrage Strategy'],
-      datasets: [
-        {
-          label: 'Observed Profitable Trades (Bullish Market)',
-          data: [observed.momentum.bullish, observed.meanReversion.bullish, observed.arbitrage.bullish],
-          backgroundColor: chartColors.chart1,
-        },
-        {
-          label: 'Expected Profitable Trades (if independent)',
-          data: [expected.momentum, expected.meanReversion, expected.arbitrage],
-          backgroundColor: chartColors.chart2,
-        },
-      ],
-    });
+    setChartData([
+      { name: 'Momentum', observed: observed.momentum.bullish, expected: expected.momentum },
+      { name: 'Mean-Reversion', observed: observed.meanReversion.bullish, expected: expected.meanReversion },
+      { name: 'Arbitrage', observed: observed.arbitrage.bullish, expected: expected.arbitrage },
+    ]);
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Number of Profitable Trades' } },
-      x: { ...chartConfig.scales.x, grid: { display: false } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { ...chartConfig.plugins.legend, position: 'top' as const },
-      title: { ...chartConfig.plugins.title, text: 'Observed vs. Expected Trades in a Bullish Market' },
-    },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && <div className="h-[350px]"><Bar data={chartData} options={options} /></div>}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.split(' ')[0]}/>
+                <YAxis />
+                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Legend />
+                <Bar dataKey="observed" name="Observed (Bullish Market)" fill="var(--color-chart-1)" radius={4} />
+                <Bar dataKey="expected" name="Expected (If Independent)" fill="var(--color-chart-2)" radius={4} />
+            </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
       <p className="text-center text-sm text-muted-foreground">The test checks if the differences between observed and expected counts are significant.</p>
     </div>
@@ -161,8 +129,7 @@ const TestForIndependenceChart = () => {
 };
 
 const TestForHomogeneityChart = () => {
-    const [chartData, setChartData] = useState<any>(null);
-    const chartConfig = getChartJsConfig();
+    const [chartData, setChartData] = useState<any>([]);
 
     const generateData = () => {
         const ny_traders = {
@@ -176,43 +143,32 @@ const TestForHomogeneityChart = () => {
             crypto: 15 + Math.floor(Math.random() * 10) - 5,
         };
         
-        setChartData({
-            labels: ['Stocks', 'Forex', 'Crypto'],
-            datasets: [
-                {
-                    label: 'New York Office',
-                    data: Object.values(ny_traders),
-                    backgroundColor: chartColors.chart1,
-                },
-                {
-                    label: 'London Office',
-                    data: Object.values(london_traders),
-                    backgroundColor: chartColors.chart2,
-                },
-            ]
-        });
+        setChartData([
+            { name: 'Stocks', ny: ny_traders.stocks, london: london_traders.stocks },
+            { name: 'Forex', ny: ny_traders.forex, london: london_traders.forex },
+            { name: 'Crypto', ny: ny_traders.crypto, london: london_traders.crypto },
+        ]);
     };
 
     useEffect(() => {
         generateData();
     }, []);
 
-    const options = {
-        ...chartConfig,
-        scales: {
-          y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Number of Traders' } },
-          x: { ...chartConfig.scales.x, grid: { display: false } },
-        },
-        plugins: {
-          ...chartConfig.plugins,
-          legend: { ...chartConfig.plugins.legend, position: 'top' as const },
-          title: { ...chartConfig.plugins.title, text: 'Asset Class Preference by Office Location' },
-        },
-    };
-
     return (
         <div className="space-y-4">
-          {chartData && <div className="h-[350px]"><Bar data={chartData} options={options} /></div>}
+          <div className="h-[350px]">
+            <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                    <Legend />
+                    <Bar dataKey="ny" name="New York Office" fill="var(--color-chart-1)" radius={4} />
+                    <Bar dataKey="london" name="London Office" fill="var(--color-chart-2)" radius={4} />
+                </BarChart>
+            </ResponsiveContainer>
+          </div>
           <div className="text-center"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
         </div>
     );

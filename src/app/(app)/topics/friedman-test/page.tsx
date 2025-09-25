@@ -2,125 +2,75 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
+  LineChart,
+  Line,
+  CartesianGrid,
   Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // Helper to generate rank-like data for demonstration
 const generateRankData = (numSubjects: number) => {
   const data = [];
   for (let i = 0; i < numSubjects; i++) {
-    // Simulate some baseline performance rank
     const baseRank = Math.random() * numSubjects + 1;
-    // Low vol: tends to perform around its baseline
     const lowVol = baseRank + (Math.random() - 0.5) * 2;
-    // Med vol: performance might deviate more
     const medVol = baseRank + (Math.random() - 0.5) * 4;
-    // High vol: performance is most unpredictable
     const highVol = baseRank + (Math.random() - 0.5) * 6;
     data.push([lowVol, medVol, highVol]);
   }
-  // Ensure ranks are positive
   return data.map(d => d.map(r => Math.max(1, Math.round(r))));
 };
 
 const FriedmanTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any>([]);
 
   const generateData = () => {
     const numAlgos = 5;
     const algoRanks = generateRankData(numAlgos);
     
-    setChartData({
-      labels: ['Low Volatility', 'Medium Volatility', 'High Volatility'],
-      datasets: [
-        {
-          label: 'Algorithm A',
-          data: algoRanks[0],
-          borderColor: chartColors.chart1,
-          backgroundColor: chartColors.chart1,
-          tension: 0.1,
-        },
-        {
-          label: 'Algorithm B',
-          data: algoRanks[1],
-          borderColor: chartColors.chart2,
-          backgroundColor: chartColors.chart2,
-          tension: 0.1,
-        },
-        {
-          label: 'Algorithm C',
-          data: algoRanks[2],
-          borderColor: chartColors.chart3,
-          backgroundColor: chartColors.chart3,
-          tension: 0.1,
-        },
-        {
-            label: 'Algorithm D',
-            data: algoRanks[3],
-            borderColor: chartColors.chart4,
-            backgroundColor: chartColors.chart4,
-            tension: 0.1,
-        },
-        {
-            label: 'Algorithm E',
-            data: algoRanks[4],
-            borderColor: chartColors.chart5,
-            backgroundColor: chartColors.chart5,
-            tension: 0.1,
-        }
-      ],
-    });
+    const regimes = ['Low Volatility', 'Medium Volatility', 'High Volatility'];
+    const processedData = regimes.map((regime, i) => ({
+        name: regime,
+        'Algo A': algoRanks[0][i],
+        'Algo B': algoRanks[1][i],
+        'Algo C': algoRanks[2][i],
+        'Algo D': algoRanks[3][i],
+        'Algo E': algoRanks[4][i],
+    }));
+    
+    setChartData(processedData);
   };
 
   useEffect(() => {
     generateData();
   }, []);
-  
-  const options = {
-    ...chartConfig,
-    scales: {
-        ...chartConfig.scales,
-        y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Performance Rank (Lower is Better)' } },
-        x: { ...chartConfig.scales.x, title: { ...chartConfig.scales.x.title, text: 'Market Regime' } }
-    },
-    plugins: {
-        ...chartConfig.plugins,
-        legend: { ...chartConfig.plugins.legend, position: 'top' as const },
-        title: { ...chartConfig.plugins.title, text: 'Algorithm Performance Rank Across Market Regimes' },
-    },
-  };
-
 
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Line data={chartData} options={options} />
-        </div>
-      )}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <YAxis reversed domain={[1, 5]} tickCount={5} />
+                <Tooltip content={<ChartTooltipContent />} />
+                <Legend />
+                <Line type="monotone" dataKey="Algo A" stroke="var(--color-chart-1)" />
+                <Line type="monotone" dataKey="Algo B" stroke="var(--color-chart-2)" />
+                <Line type="monotone" dataKey="Algo C" stroke="var(--color-chart-3)" />
+                <Line type="monotone" dataKey="Algo D" stroke="var(--color-chart-4)" />
+                <Line type="monotone" dataKey="Algo E" stroke="var(--color-chart-5)" />
+            </LineChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>

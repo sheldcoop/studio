@@ -2,28 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  ResponsiveContainer,
   Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+  XAxis,
+  YAxis,
+  Legend
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -38,12 +29,9 @@ const generateLogNormalData = (mu: number, sigma: number, n: number) => {
 };
 
 // Helper to create a histogram from data
-const createHistogram = (data: number[], binSize: number) => {
-    if (data.length === 0) return { labels: [], counts: [] };
-    const min = Math.min(...data);
-    const max = Math.max(...data);
+const createHistogram = (data: number[], binSize: number, min: number, max: number) => {
     const bins = Math.ceil((max - min) / binSize);
-    const labels = Array.from({ length: bins }, (_, i) => (min + i * binSize).toFixed(2));
+    const labels = Array.from({ length: bins }, (_, i) => (min + i * binSize));
     const counts = new Array(bins).fill(0);
 
     for (const value of data) {
@@ -55,90 +43,49 @@ const createHistogram = (data: number[], binSize: number) => {
     return { labels, counts };
 };
 
-const chartConfig = getChartJsConfig();
-
 const MannWhitneyChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
-    // Generate two skewed distributions
-    const algoAData = generateLogNormalData(0, 0.5, 500); // More concentrated
-    const algoBData = generateLogNormalData(0.2, 0.7, 500); // More spread out and shifted right
+    const algoAData = generateLogNormalData(0, 0.5, 500); 
+    const algoBData = generateLogNormalData(0.2, 0.7, 500);
 
-    // Create histograms. Use a shared binning strategy for comparison.
     const combinedData = [...algoAData, ...algoBData];
-    const binSize = (Math.max(...combinedData) - Math.min(...combinedData)) / 20;
+    const min = Math.min(...combinedData);
+    const max = Math.max(...combinedData);
+    const binSize = (max - min) / 20;
     
-    const histA = createHistogram(algoAData, binSize);
-    const histB = createHistogram(algoBData, binSize);
+    const histA = createHistogram(algoAData, binSize, min, max);
+    const histB = createHistogram(algoBData, binSize, min, max);
+    
+    const finalData = histA.labels.map((label, index) => ({
+      name: label.toFixed(2),
+      'Algo A': histA.counts[index],
+      'Algo B': histB.counts[index],
+    }));
 
-    // Ensure both histograms have the same labels for proper alignment
-    const allLabels = [...new Set([...histA.labels, ...histB.labels])].sort((a, b) => parseFloat(a) - parseFloat(b));
-    const countsA = allLabels.map(label => {
-        const index = histA.labels.indexOf(label);
-        return index !== -1 ? histA.counts[index] : 0;
-    });
-    const countsB = allLabels.map(label => {
-        const index = histB.labels.indexOf(label);
-        return index !== -1 ? histB.counts[index] : 0;
-    });
-
-
-    setChartData({
-      labels: allLabels,
-      datasets: [
-        {
-          label: 'Algo A (Old)',
-          data: countsA,
-          backgroundColor: chartColors.chart1,
-          borderColor: chartColors.chart1,
-          barPercentage: 1.0,
-          categoryPercentage: 1.0,
-        },
-        {
-          label: 'Algo B (New)',
-          data: countsB,
-          backgroundColor: chartColors.chart2,
-          borderColor: chartColors.chart2,
-          barPercentage: 1.0,
-          categoryPercentage: 1.0,
-        },
-      ],
-    });
+    setChartData(finalData);
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Frequency (Number of Trades)' } },
-      x: { ...chartConfig.scales.x, stacked: false, title: { ...chartConfig.scales.x.title, text: 'Trade Profit ($)' } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { ...chartConfig.plugins.legend, position: 'top' as const },
-      title: { ...chartConfig.plugins.title, text: 'Distribution of Profits for Two Algorithms' },
-      tooltip: {
-        mode: 'index' as const,
-        intersect: false,
-      },
-    },
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="relative mx-auto h-[350px] w-full">
-          <Bar data={chartData} options={options} />
-        </div>
-      )}
+      <div className="relative mx-auto h-[350px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} barCategoryGap="0%" margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <YAxis />
+            <Tooltip content={<ChartTooltipContent />} wrapperStyle={{ zIndex: 1000 }} />
+            <Legend />
+            <Bar dataKey="Algo A" fill="var(--color-chart-1)" />
+            <Bar dataKey="Algo B" fill="var(--color-chart-2)" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Trading Data</Button>
       </div>

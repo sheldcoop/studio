@@ -40,16 +40,15 @@ const getMean = (data: number[]) =>
 // --- Chart Components ---
 const OneWayAnovaChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
-  const chartConfig = getChartConfig(false);
 
   const generateData = () => {
     const dataAlpha = generateNormalData(1.2, 0.8, 50);
     const dataBeta = generateNormalData(1.5, 0.8, 50);
     const dataGamma = generateNormalData(0.9, 0.8, 50);
     setChartData([
-        { name: 'Algorithm Alpha', value: getMean(dataAlpha) },
-        { name: 'Algorithm Beta', value: getMean(dataBeta) },
-        { name: 'Algorithm Gamma', value: getMean(dataGamma) },
+        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: 'var(--color-chart-1)' },
+        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: 'var(--color-chart-2)' },
+        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: 'var(--color-chart-3)' },
     ]);
   };
 
@@ -79,7 +78,6 @@ const OneWayAnovaChart = () => {
 
 const TwoWayAnovaChart = () => {
     const [chartData, setChartData] = useState<any[]>([]);
-    const chartConfig = getChartConfig(true) as ChartConfig;
 
     const generateData = () => {
         const interactionEffect = Math.random() * 2;
@@ -110,8 +108,8 @@ const TwoWayAnovaChart = () => {
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis unit="$" />
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                        <Line type="monotone" dataKey="stocks" strokeWidth={2} />
-                        <Line type="monotone" dataKey="crypto" strokeWidth={2} />
+                        <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-chart-1)" />
+                        <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-chart-2)" />
                     </LineChart>
                 </ResponsiveContainer>
             </div>
@@ -125,7 +123,6 @@ const TwoWayAnovaChart = () => {
 
 const RepeatedMeasuresAnovaChart = () => {
     const [chartData, setChartData] = useState<any[]>([]);
-    const chartConfig = getChartConfig(false);
 
     const generateData = () => {
         const startRatio = 0.8 + (Math.random() - 0.5) * 0.4;
@@ -155,11 +152,11 @@ const RepeatedMeasuresAnovaChart = () => {
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                         <defs>
                             <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0.1} />
+                                <stop offset="5%" stopColor="var(--color-chart-1)" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="var(--color-chart-1)" stopOpacity={0.1} />
                             </linearGradient>
                         </defs>
-                        <Area type="monotone" dataKey="value" strokeWidth={2} fill="url(#fillValue)" />
+                        <Area type="monotone" dataKey="value" strokeWidth={2} stroke="var(--color-chart-1)" fill="url(#fillValue)" />
                     </AreaChart>
                 </ResponsiveContainer>
             </div>

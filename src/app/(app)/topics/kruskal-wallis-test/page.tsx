@@ -2,28 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  ResponsiveContainer,
   Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -47,50 +37,37 @@ const getMedian = (data: number[]) => {
 
 
 const KruskalWallisChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
     const dataBotA = generateLogNormalData(0.1, 0.5, 100);
     const dataBotB = generateLogNormalData(0.2, 0.6, 100);
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
 
-    setChartData({
-      labels: ['ML Bot', 'Rule-Based Bot', 'Hybrid Bot'],
-      datasets: [
-        {
-          label: 'Median Profit per Trade',
-          data: [getMedian(dataBotA), getMedian(dataBotB), getMedian(dataBotC)],
-          backgroundColor: [
-            chartColors.chart1,
-            chartColors.chart2,
-            chartColors.chart3,
-          ],
-        },
-      ],
-    });
+    setChartData([
+        { name: 'ML Bot', value: getMedian(dataBotA), fill: 'var(--color-chart-1)' },
+        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: 'var(--color-chart-2)' },
+        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: 'var(--color-chart-3)' },
+    ]);
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, beginAtZero: true, title: { ...chartConfig.scales.y.title, text: 'Median Profit ($)' } },
-      x: { ...chartConfig.scales.x, grid: { display: false } }
-    },
-    plugins: { ...chartConfig.plugins, legend: { display: false }, title: { ...chartConfig.plugins.title, text: 'Comparing Bot Performance (Median Profit)' } },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Bar data={chartData} options={options} />
-        </div>
-      )}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <YAxis unit="$" />
+            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Bar dataKey="value" name="Median Profit" radius={4} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>

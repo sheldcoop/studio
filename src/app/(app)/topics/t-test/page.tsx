@@ -21,8 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
-import { type ChartConfig } from '@/components/ui/chart';
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -44,14 +43,13 @@ const getMean = (data: number[]) =>
 
 const IndependentTestChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
-  const chartConfig = getChartConfig(true) as ChartConfig;
 
   const generateData = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
     setChartData([
-      { name: 'Momentum', value: getMean(dataA) },
-      { name: 'Mean-Reversion', value: getMean(dataB) },
+      { name: 'Momentum', value: getMean(dataA), fill: 'var(--color-chart-1)' },
+      { name: 'Mean-Reversion', value: getMean(dataB), fill: 'var(--color-chart-2)' },
     ]);
   };
 
@@ -84,7 +82,6 @@ const IndependentTestChart = () => {
 
 const PairedTestChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
-  const chartConfig = getChartConfig(true) as ChartConfig;
 
   const generateData = () => {
     const numSubjects = 12;
@@ -116,8 +113,8 @@ const PairedTestChart = () => {
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis unit="%" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Line type="monotone" dataKey="before" strokeWidth={2} stroke="var(--color-before)" />
-            <Line type="monotone" dataKey="after" strokeWidth={2} stroke="var(--color-after)" />
+            <Line type="monotone" dataKey="before" strokeWidth={2} stroke="var(--color-chart-2)" />
+            <Line type="monotone" dataKey="after" strokeWidth={2} stroke="var(--color-chart-1)" />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -130,10 +127,9 @@ const PairedTestChart = () => {
 
 const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
-  const chartConfig = getChartConfig(false);
   const target = 1.5;
 
-  const chartData = [{ name: 'Avg. Return', value: meanValue }];
+  const chartData = [{ name: 'Avg. Return', value: meanValue, fill: 'var(--color-chart-1)' }];
 
   return (
     <div className="space-y-4">
@@ -150,6 +146,7 @@ const OneSampleTestChart = () => {
               stroke="var(--color-destructive)"
               strokeWidth={2}
               strokeDasharray="3 3"
+              label={{ value: `Claimed: ${target}%`, position: 'insideTopRight', fill: 'var(--color-destructive)' }}
             />
           </BarChart>
         </ResponsiveContainer>

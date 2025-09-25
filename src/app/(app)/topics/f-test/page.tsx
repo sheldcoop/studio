@@ -13,8 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
-import { type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate normally distributed data using Box-Muller transform
 const generateNormalData = (mean: number, stdDev: number, n: number) => {
@@ -41,7 +39,6 @@ const getVariance = (data: number[]) => {
 
 const FTestChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
-  const chartConfig = getChartConfig(false) as ChartConfig;
   const [fStat, setFStat] = useState(0);
 
   const generateData = () => {
@@ -54,8 +51,8 @@ const FTestChart = () => {
     const varianceGrowth = getVariance(dataGrowth);
 
     setChartData([
-        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-stable)' },
-        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-growth)' },
+        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-chart-1)' },
+        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-chart-2)' },
     ]);
     setFStat(varianceGrowth / varianceStable);
   };
