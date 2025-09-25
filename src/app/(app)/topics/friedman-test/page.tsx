@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate rank-like data for demonstration
@@ -72,11 +72,11 @@ const FriedmanTestChart = () => {
                 <YAxis reversed domain={[1, 5]} tickCount={5} />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
-                <Line type="monotone" dataKey="Algo A" stroke="var(--color-Algo A)" />
-                <Line type="monotone" dataKey="Algo B" stroke="var(--color-Algo B)" />
-                <Line type="monotone" dataKey="Algo C" stroke="var(--color-Algo C)" />
-                <Line type="monotone" dataKey="Algo D" stroke="var(--color-Algo D)" />
-                <Line type="monotone" dataKey="Algo E" stroke="var(--color-Algo E)" />
+                <Line type="monotone" dataKey="Algo A" stroke={friedmanTestChartConfig['Algo A'].color} />
+                <Line type="monotone" dataKey="Algo B" stroke={friedmanTestChartConfig['Algo B'].color} />
+                <Line type="monotone" dataKey="Algo C" stroke={friedmanTestChartConfig['Algo C'].color} />
+                <Line type="monotone" dataKey="Algo D" stroke={friedmanTestChartConfig['Algo D'].color} />
+                <Line type="monotone" dataKey="Algo E" stroke={friedmanTestChartConfig['Algo E'].color} />
             </LineChart>
         </ChartContainer>
       </div>

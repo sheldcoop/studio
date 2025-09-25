@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
@@ -67,8 +67,8 @@ const WilcoxonSignedRankChart = () => {
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
-                <Line type="monotone" dataKey="Before Risk Model" stroke="var(--color-Before Risk Model)" />
-                <Line type="monotone" dataKey="After Risk Model" stroke="var(--color-After Risk Model)" />
+                <Line type="monotone" dataKey="Before Risk Model" stroke={wilcoxonChartConfig['Before Risk Model'].color} />
+                <Line type="monotone" dataKey="After Risk Model" stroke={wilcoxonChartConfig['After Risk Model'].color} />
             </LineChart>
         </ChartContainer>
       </div>

@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
@@ -83,9 +83,9 @@ const OneWayAnovaChart = () => {
     const dataBeta = generateNormalData(1.5, 0.8, 50);
     const dataGamma = generateNormalData(0.9, 0.8, 50);
     setChartData([
-        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: 'var(--color-Algorithm Alpha)' },
-        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: 'var(--color-Algorithm Beta)' },
-        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: 'var(--color-Algorithm Gamma)' },
+        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: oneWayAnovaChartConfig['Algorithm Alpha'].color },
+        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: oneWayAnovaChartConfig['Algorithm Beta'].color },
+        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: oneWayAnovaChartConfig['Algorithm Gamma'].color },
     ]);
   };
 
@@ -145,8 +145,8 @@ const TwoWayAnovaChart = () => {
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis unit="$" />
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                        <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-stocks)" />
-                        <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-crypto)" />
+                        <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke={twoWayAnovaChartConfig.stocks.color} />
+                        <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke={twoWayAnovaChartConfig.crypto.color} />
                     </LineChart>
                 </ChartContainer>
             </div>
@@ -189,11 +189,11 @@ const RepeatedMeasuresAnovaChart = () => {
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                         <defs>
                             <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0.1} />
+                                <stop offset="5%" stopColor={repeatedMeasuresAnovaChartConfig.value.color} stopOpacity={0.8} />
+                                <stop offset="95%" stopColor={repeatedMeasuresAnovaChartConfig.value.color} stopOpacity={0.1} />
                             </linearGradient>
                         </defs>
-                        <Area type="monotone" dataKey="value" strokeWidth={2} stroke="var(--color-value)" fill="url(#fillValue)" />
+                        <Area type="monotone" dataKey="value" strokeWidth={2} stroke={repeatedMeasuresAnovaChartConfig.value.color} fill="url(#fillValue)" />
                     </AreaChart>
                 </ChartContainer>
             </div>

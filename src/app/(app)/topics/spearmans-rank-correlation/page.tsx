@@ -14,7 +14,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
@@ -62,7 +62,7 @@ const SpearmanCorrelationChart = () => {
               cursor={{ strokeDasharray: '3 3' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Scatter data={chartData} fill="var(--color-data)" />
+            <Scatter data={chartData} fill={spearmanCorrelationChartConfig.data.color} />
           </ScatterChart>
         </ChartContainer>
       </div>

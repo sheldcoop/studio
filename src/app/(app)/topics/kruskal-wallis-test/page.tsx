@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
@@ -64,9 +64,9 @@ const KruskalWallisChart = () => {
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
 
     setChartData([
-        { name: 'ML Bot', value: getMedian(dataBotA), fill: 'var(--color-ML Bot)' },
-        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: 'var(--color-Rule-Based Bot)' },
-        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: 'var(--color-Hybrid Bot)' },
+        { name: 'ML Bot', value: getMedian(dataBotA), fill: kruskalWallisChartConfig['ML Bot'].color },
+        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: kruskalWallisChartConfig['Rule-Based Bot'].color },
+        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: kruskalWallisChartConfig['Hybrid Bot'].color },
     ]);
   };
 

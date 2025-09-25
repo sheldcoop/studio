@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
@@ -88,8 +88,8 @@ const MannWhitneyChart = () => {
             <YAxis />
             <Tooltip content={<ChartTooltipContent />} wrapperStyle={{ zIndex: 1000 }} />
             <Legend />
-            <Bar dataKey="Algo A" fill="var(--color-Algo A)" />
-            <Bar dataKey="Algo B" fill="var(--color-Algo B)" />
+            <Bar dataKey="Algo A" fill={mannWhitneyChartConfig['Algo A'].color} />
+            <Bar dataKey="Algo B" fill={mannWhitneyChartConfig['Algo B'].color} />
           </BarChart>
         </ChartContainer>
       </div>

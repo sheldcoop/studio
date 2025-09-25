@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
@@ -65,7 +65,7 @@ const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
   const target = 0.05;
 
-  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: "var(--color-value)" }];
+  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: oneSampleZTestChartConfig.value.color }];
 
   return (
     <div className="space-y-4">
@@ -119,8 +119,8 @@ const TwoSampleZTestChart = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
     setChartData([
-        { name: 'Stock A', value: getMean(dataA), fill: 'var(--color-Stock A)' },
-        { name: 'Stock B', value: getMean(dataB), fill: 'var(--color-Stock B)' },
+        { name: 'Stock A', value: getMean(dataA), fill: twoSampleZTestChartConfig['Stock A'].color },
+        { name: 'Stock B', value: getMean(dataB), fill: twoSampleZTestChartConfig['Stock B'].color },
     ]);
   };
 

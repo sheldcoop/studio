@@ -21,7 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
@@ -81,8 +81,8 @@ const IndependentTestChart = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
     setChartData([
-      { name: 'Momentum', value: getMean(dataA), fill: 'var(--color-Momentum)' },
-      { name: 'Mean-Reversion', value: getMean(dataB), fill: 'var(--color-Mean-Reversion)' },
+      { name: 'Momentum', value: getMean(dataA), fill: independentTestChartConfig.Momentum.color },
+      { name: 'Mean-Reversion', value: getMean(dataB), fill: independentTestChartConfig['Mean-Reversion'].color },
     ]);
   };
 
@@ -146,8 +146,8 @@ const PairedTestChart = () => {
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis unit="%" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Line type="monotone" dataKey="before" strokeWidth={2} stroke="var(--color-before)" />
-            <Line type="monotone" dataKey="after" strokeWidth={2} stroke="var(--color-after)" />
+            <Line type="monotone" dataKey="before" strokeWidth={2} stroke={pairedTestChartConfig.before.color} />
+            <Line type="monotone" dataKey="after" strokeWidth={2} stroke={pairedTestChartConfig.after.color} />
           </LineChart>
         </ChartContainer>
       </div>
@@ -162,7 +162,7 @@ const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
   const target = 1.5;
 
-  const chartData = [{ name: 'Avg. Return', value: meanValue, fill: 'var(--color-value)' }];
+  const chartData = [{ name: 'Avg. Return', value: meanValue, fill: oneSampleTestChartConfig.value.color }];
 
   return (
     <div className="space-y-4">

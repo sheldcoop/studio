@@ -66,8 +66,8 @@ const FTestChart = () => {
     const varianceGrowth = getVariance(dataGrowth);
 
     setChartData([
-        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-StableStock (Utility))' },
-        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-GrowthStock (Tech))' },
+        { name: 'StableStock (Utility)', value: varianceStable, fill: fTestChartConfig['StableStock (Utility)'].color },
+        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: fTestChartConfig['GrowthStock (Tech)'].color },
     ]);
     setFStat(varianceGrowth / varianceStable);
   };

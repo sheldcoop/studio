@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // --- Math Helpers ---
@@ -98,8 +98,8 @@ const KSTestChart = () => {
                 <YAxis domain={[0,1]} />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
-                <Line type="step" dataKey="empirical" name="Empirical CDF (Sample)" stroke="var(--color-empirical)" dot={false} strokeWidth={2}/>
-                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
+                <Line type="step" dataKey="empirical" name="Empirical CDF (Sample)" stroke={ksTestChartConfig.empirical.color} dot={false} strokeWidth={2}/>
+                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke={ksTestChartConfig.theoretical.color} dot={false} strokeWidth={2} />
             </LineChart>
         </ChartContainer>
       </div>

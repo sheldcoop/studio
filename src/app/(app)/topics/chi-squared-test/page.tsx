@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 const goodnessOfFitChartConfig = {
@@ -94,8 +94,8 @@ const GoodnessOfFitChart = () => {
                 <YAxis />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Legend />
-                <Bar dataKey="observed" name="Observed Trades" fill="var(--color-observed)" radius={4} />
-                <Bar dataKey="expected" name="Expected Trades" fill="var(--color-expected)" radius={4} />
+                <Bar dataKey="observed" name="Observed Trades" fill={goodnessOfFitChartConfig.observed.color} radius={4} />
+                <Bar dataKey="expected" name="Expected Trades" fill={goodnessOfFitChartConfig.expected.color} radius={4} />
             </BarChart>
         </ChartContainer>
       </div>
@@ -152,8 +152,8 @@ const TestForIndependenceChart = () => {
                 <YAxis />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Legend />
-                <Bar dataKey="observed" name="Observed (Bullish Market)" fill="var(--color-observed)" radius={4} />
-                <Bar dataKey="expected" name="Expected (If Independent)" fill="var(--color-expected)" radius={4} />
+                <Bar dataKey="observed" name="Observed (Bullish Market)" fill={testForIndependenceChartConfig.observed.color} radius={4} />
+                <Bar dataKey="expected" name="Expected (If Independent)" fill={testForIndependenceChartConfig.expected.color} radius={4} />
             </BarChart>
         </ChartContainer>
       </div>
@@ -199,8 +199,8 @@ const TestForHomogeneityChart = () => {
                     <YAxis />
                     <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                     <Legend />
-                    <Bar dataKey="ny" name="New York Office" fill="var(--color-ny)" radius={4} />
-                    <Bar dataKey="london" name="London Office" fill="var(--color-london)" radius={4} />
+                    <Bar dataKey="ny" name="New York Office" fill={testForHomogeneityChartConfig.ny.color} radius={4} />
+                    <Bar dataKey="london" name="London Office" fill={testForHomogeneityChartConfig.london.color} radius={4} />
                 </BarChart>
             </ChartContainer>
           </div>
