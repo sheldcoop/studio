@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -35,6 +36,24 @@ const getMedian = (data: number[]) => {
   return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
+const kruskalWallisChartConfig = {
+  value: {
+    label: 'Median Profit',
+  },
+  'ML Bot': {
+    label: 'ML Bot',
+    color: 'hsl(var(--chart-1))',
+  },
+  'Rule-Based Bot': {
+    label: 'Rule-Based Bot',
+    color: 'hsl(var(--chart-2))',
+  },
+  'Hybrid Bot': {
+    label: 'Hybrid Bot',
+    color: 'hsl(var(--chart-3))',
+  },
+} satisfies ChartConfig;
+
 
 const KruskalWallisChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -45,9 +64,9 @@ const KruskalWallisChart = () => {
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
 
     setChartData([
-        { name: 'ML Bot', value: getMedian(dataBotA), fill: 'var(--color-chart-1)' },
-        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: 'var(--color-chart-2)' },
-        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: 'var(--color-chart-3)' },
+        { name: 'ML Bot', value: getMedian(dataBotA), fill: 'var(--color-ML Bot)' },
+        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: 'var(--color-Rule-Based Bot)' },
+        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: 'var(--color-Hybrid Bot)' },
     ]);
   };
 
@@ -58,15 +77,15 @@ const KruskalWallisChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={kruskalWallisChartConfig} className="min-h-[200px] w-full">
+          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis unit="$" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
             <Bar dataKey="value" name="Median Profit" radius={4} />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Data</Button>

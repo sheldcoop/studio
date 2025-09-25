@@ -18,8 +18,8 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config.tsx';
-import {type ChartConfig} from '@/components/ui/chart';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -37,6 +37,43 @@ const generateNormalData = (mean: number, stdDev: number, n: number) =>
 const getMean = (data: number[]) =>
   data.reduce((a, b) => a + b, 0) / data.length;
 
+const oneWayAnovaChartConfig = {
+  value: {
+    label: 'Value',
+  },
+  'Algorithm Alpha': {
+    label: 'Alpha',
+    color: 'hsl(var(--chart-1))',
+  },
+  'Algorithm Beta': {
+    label: 'Beta',
+    color: 'hsl(var(--chart-2))',
+  },
+  'Algorithm Gamma': {
+    label: 'Gamma',
+    color: 'hsl(var(--chart-3))',
+  },
+} satisfies ChartConfig;
+
+const twoWayAnovaChartConfig = {
+  stocks: {
+    label: 'Stocks',
+    color: 'hsl(var(--chart-1))',
+  },
+  crypto: {
+    label: 'Crypto',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
+const repeatedMeasuresAnovaChartConfig = {
+    value: {
+        label: 'Value',
+        color: 'hsl(var(--chart-1))',
+    }
+} satisfies ChartConfig;
+
+
 // --- Chart Components ---
 const OneWayAnovaChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -46,9 +83,9 @@ const OneWayAnovaChart = () => {
     const dataBeta = generateNormalData(1.5, 0.8, 50);
     const dataGamma = generateNormalData(0.9, 0.8, 50);
     setChartData([
-        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: 'var(--color-chart-1)' },
-        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: 'var(--color-chart-2)' },
-        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: 'var(--color-chart-3)' },
+        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: 'var(--color-Algorithm Alpha)' },
+        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: 'var(--color-Algorithm Beta)' },
+        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: 'var(--color-Algorithm Gamma)' },
     ]);
   };
 
@@ -59,15 +96,15 @@ const OneWayAnovaChart = () => {
   return (
     <div className="space-y-4">
         <div className="h-[350px]">
-         <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <ChartContainer config={oneWayAnovaChartConfig} className="min-h-[200px] w-full">
+            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
                 <Bar dataKey="value" radius={8} />
             </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
         </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New 50-Month Period</Button>
@@ -102,16 +139,16 @@ const TwoWayAnovaChart = () => {
     return (
         <div className="space-y-4">
             <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <ChartContainer config={twoWayAnovaChartConfig} className="min-h-[200px] w-full">
+                    <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis unit="$" />
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                        <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-chart-1)" />
-                        <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-chart-2)" />
+                        <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-stocks)" />
+                        <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-crypto)" />
                     </LineChart>
-                </ResponsiveContainer>
+                </ChartContainer>
             </div>
             <p className="text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
             <div className="text-center">
@@ -144,21 +181,21 @@ const RepeatedMeasuresAnovaChart = () => {
     return (
          <div className="space-y-4">
             <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                     <AreaChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <ChartContainer config={repeatedMeasuresAnovaChartConfig} className="min-h-[200px] w-full">
+                     <AreaChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis />
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                         <defs>
                             <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="var(--color-chart-1)" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="var(--color-chart-1)" stopOpacity={0.1} />
+                                <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0.1} />
                             </linearGradient>
                         </defs>
-                        <Area type="monotone" dataKey="value" strokeWidth={2} stroke="var(--color-chart-1)" fill="url(#fillValue)" />
+                        <Area type="monotone" dataKey="value" strokeWidth={2} stroke="var(--color-value)" fill="url(#fillValue)" />
                     </AreaChart>
-                </ResponsiveContainer>
+                </ChartContainer>
             </div>
             <div className="text-center">
                 <Button onClick={generateData}>Simulate New Portfolio Journey</Button>

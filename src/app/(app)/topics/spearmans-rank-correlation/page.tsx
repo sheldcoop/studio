@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
 const generateMonotonicData = (n: number, strength: number) => {
@@ -27,6 +28,14 @@ const generateMonotonicData = (n: number, strength: number) => {
   }
   return data;
 };
+
+const spearmanCorrelationChartConfig = {
+  data: {
+    label: 'Data',
+    color: 'hsl(var(--chart-1))',
+  },
+} satisfies ChartConfig;
+
 
 const SpearmanCorrelationChart = () => {
   const [strength, setStrength] = useState(3);
@@ -41,8 +50,9 @@ const SpearmanCorrelationChart = () => {
   return (
     <div className="space-y-4">
       <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-        <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer config={spearmanCorrelationChartConfig} className="min-h-[200px] w-full">
           <ScatterChart
+            accessibilityLayer
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
             <CartesianGrid />
@@ -52,9 +62,9 @@ const SpearmanCorrelationChart = () => {
               cursor={{ strokeDasharray: '3 3' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Scatter data={chartData} fill="var(--color-chart-1)" />
+            <Scatter data={chartData} fill="var(--color-data)" />
           </ScatterChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="strength-slider">Adjust Relationship Strength</Label>

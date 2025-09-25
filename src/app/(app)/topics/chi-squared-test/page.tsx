@@ -16,6 +16,41 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const goodnessOfFitChartConfig = {
+  observed: {
+    label: 'Observed',
+    color: 'hsl(var(--chart-1))',
+  },
+  expected: {
+    label: 'Expected',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
+const testForIndependenceChartConfig = {
+  observed: {
+    label: 'Observed (Bullish)',
+    color: 'hsl(var(--chart-1))',
+  },
+  expected: {
+    label: 'Expected (Independent)',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
+const testForHomogeneityChartConfig = {
+  ny: {
+    label: 'New York',
+    color: 'hsl(var(--chart-1))',
+  },
+  london: {
+    label: 'London',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
 
 // --- Chart Components ---
 
@@ -52,17 +87,17 @@ const GoodnessOfFitChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={goodnessOfFitChartConfig} className="min-h-[200px] w-full">
+            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Legend />
-                <Bar dataKey="observed" name="Observed Trades" fill="var(--color-chart-1)" radius={4} />
-                <Bar dataKey="expected" name="Expected Trades" fill="var(--color-chart-2)" radius={4} />
+                <Bar dataKey="observed" name="Observed Trades" fill="var(--color-observed)" radius={4} />
+                <Bar dataKey="expected" name="Expected Trades" fill="var(--color-expected)" radius={4} />
             </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
     </div>
@@ -110,17 +145,17 @@ const TestForIndependenceChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={testForIndependenceChartConfig} className="min-h-[200px] w-full">
+            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.split(' ')[0]}/>
                 <YAxis />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Legend />
-                <Bar dataKey="observed" name="Observed (Bullish Market)" fill="var(--color-chart-1)" radius={4} />
-                <Bar dataKey="expected" name="Expected (If Independent)" fill="var(--color-chart-2)" radius={4} />
+                <Bar dataKey="observed" name="Observed (Bullish Market)" fill="var(--color-observed)" radius={4} />
+                <Bar dataKey="expected" name="Expected (If Independent)" fill="var(--color-expected)" radius={4} />
             </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
       <p className="text-center text-sm text-muted-foreground">The test checks if the differences between observed and expected counts are significant.</p>
@@ -157,17 +192,17 @@ const TestForHomogeneityChart = () => {
     return (
         <div className="space-y-4">
           <div className="h-[350px]">
-            <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <ChartContainer config={testForHomogeneityChartConfig} className="min-h-[200px] w-full">
+                <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                     <CartesianGrid vertical={false} />
                     <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                     <YAxis />
                     <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                     <Legend />
-                    <Bar dataKey="ny" name="New York Office" fill="var(--color-chart-1)" radius={4} />
-                    <Bar dataKey="london" name="London Office" fill="var(--color-chart-2)" radius={4} />
+                    <Bar dataKey="ny" name="New York Office" fill="var(--color-ny)" radius={4} />
+                    <Bar dataKey="london" name="London Office" fill="var(--color-london)" radius={4} />
                 </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </div>
           <div className="text-center"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
         </div>

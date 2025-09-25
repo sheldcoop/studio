@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate rank-like data for demonstration
 const generateRankData = (numSubjects: number) => {
@@ -28,6 +29,14 @@ const generateRankData = (numSubjects: number) => {
   }
   return data.map(d => d.map(r => Math.max(1, Math.round(r))));
 };
+
+const friedmanTestChartConfig = {
+    'Algo A': { label: 'Algo A', color: 'hsl(var(--chart-1))' },
+    'Algo B': { label: 'Algo B', color: 'hsl(var(--chart-2))' },
+    'Algo C': { label: 'Algo C', color: 'hsl(var(--chart-3))' },
+    'Algo D': { label: 'Algo D', color: 'hsl(var(--chart-4))' },
+    'Algo E': { label: 'Algo E', color: 'hsl(var(--chart-5))' },
+} satisfies ChartConfig
 
 const FriedmanTestChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -56,20 +65,20 @@ const FriedmanTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={friedmanTestChartConfig} className="min-h-[200px] w-full">
+            <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis reversed domain={[1, 5]} tickCount={5} />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
-                <Line type="monotone" dataKey="Algo A" stroke="var(--color-chart-1)" />
-                <Line type="monotone" dataKey="Algo B" stroke="var(--color-chart-2)" />
-                <Line type="monotone" dataKey="Algo C" stroke="var(--color-chart-3)" />
-                <Line type="monotone" dataKey="Algo D" stroke="var(--color-chart-4)" />
-                <Line type="monotone" dataKey="Algo E" stroke="var(--color-chart-5)" />
+                <Line type="monotone" dataKey="Algo A" stroke="var(--color-Algo A)" />
+                <Line type="monotone" dataKey="Algo B" stroke="var(--color-Algo B)" />
+                <Line type="monotone" dataKey="Algo C" stroke="var(--color-Algo C)" />
+                <Line type="monotone" dataKey="Algo D" stroke="var(--color-Algo D)" />
+                <Line type="monotone" dataKey="Algo E" stroke="var(--color-Algo E)" />
             </LineChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Data</Button>

@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate normally distributed data using Box-Muller transform
 const generateNormalData = (mean: number, stdDev: number, n: number) => {
@@ -37,6 +38,20 @@ const getVariance = (data: number[]) => {
   );
 };
 
+const fTestChartConfig = {
+  value: {
+    label: 'Variance',
+  },
+  'StableStock (Utility)': {
+    label: 'StableStock',
+    color: 'hsl(var(--chart-1))',
+  },
+  'GrowthStock (Tech)': {
+    label: 'GrowthStock',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
 const FTestChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [fStat, setFStat] = useState(0);
@@ -51,8 +66,8 @@ const FTestChart = () => {
     const varianceGrowth = getVariance(dataGrowth);
 
     setChartData([
-        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-chart-1)' },
-        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-chart-2)' },
+        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-StableStock (Utility))' },
+        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-GrowthStock (Tech))' },
     ]);
     setFStat(varianceGrowth / varianceStable);
   };
@@ -98,8 +113,8 @@ const FTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={fTestChartConfig} className="min-h-[200px] w-full">
+          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
@@ -109,7 +124,7 @@ const FTestChart = () => {
             />
             <Bar dataKey="value" radius={8} />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New 100-Day Period</Button>

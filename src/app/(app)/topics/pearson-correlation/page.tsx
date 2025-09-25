@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Crosshair } from 'lucide-react';
 
 // Helper function to generate correlated data
@@ -42,6 +43,13 @@ const generateCorrelatedData = (
   return data;
 };
 
+const pearsonCorrelationChartConfig = {
+  data: {
+    label: 'Data',
+    color: 'hsl(var(--chart-1))',
+  },
+} satisfies ChartConfig;
+
 
 const PearsonCorrelationChart = () => {
   const [correlation, setCorrelation] = useState(0.8);
@@ -55,8 +63,9 @@ const PearsonCorrelationChart = () => {
   return (
     <div className="space-y-4">
       <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-        <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer config={pearsonCorrelationChartConfig} className="min-h-[200px] w-full">
           <ScatterChart
+            accessibilityLayer
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
             <CartesianGrid />
@@ -66,9 +75,9 @@ const PearsonCorrelationChart = () => {
               cursor={{ strokeDasharray: '3 3' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Scatter data={chartData} fill="var(--color-chart-1)" />
+            <Scatter data={chartData} fill="var(--color-data)" />
           </ScatterChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="correlation-slider">Adjust Correlation Coefficient</Label>

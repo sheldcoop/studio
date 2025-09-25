@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -42,6 +43,12 @@ const createHistogram = (data: number[], binSize: number, min: number, max: numb
     }
     return { labels, counts };
 };
+
+const mannWhitneyChartConfig = {
+    'Algo A': { label: 'Algo A', color: 'hsl(var(--chart-1))' },
+    'Algo B': { label: 'Algo B', color: 'hsl(var(--chart-2))' },
+} satisfies ChartConfig;
+
 
 const MannWhitneyChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -74,17 +81,17 @@ const MannWhitneyChart = () => {
   return (
     <div className="space-y-4">
       <div className="relative mx-auto h-[350px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} barCategoryGap="0%" margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={mannWhitneyChartConfig} className="min-h-[200px] w-full">
+          <BarChart accessibilityLayer data={chartData} barCategoryGap="0%" margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
             <Tooltip content={<ChartTooltipContent />} wrapperStyle={{ zIndex: 1000 }} />
             <Legend />
-            <Bar dataKey="Algo A" fill="var(--color-chart-1)" />
-            <Bar dataKey="Algo B" fill="var(--color-chart-2)" />
+            <Bar dataKey="Algo A" fill="var(--color-Algo A)" />
+            <Bar dataKey="Algo B" fill="var(--color-Algo B)" />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Trading Data</Button>

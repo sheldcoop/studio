@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // --- Math Helpers ---
 
@@ -42,6 +43,17 @@ const getEcdf = (data: number[]) => {
   const n = sortedData.length;
   return sortedData.map((value, index) => ({ x: value, y: (index + 1) / n }));
 };
+
+const ksTestChartConfig = {
+    empirical: {
+        label: 'Empirical CDF',
+        color: 'hsl(var(--chart-1))',
+    },
+    theoretical: {
+        label: 'Theoretical CDF',
+        color: 'hsl(var(--chart-2))',
+    },
+} satisfies ChartConfig;
 
 const KSTestChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -79,17 +91,17 @@ const KSTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={ksTestChartConfig} className="min-h-[200px] w-full">
+            <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis type="number" dataKey="x" name="Value" domain={['dataMin', 'dataMax']} tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis domain={[0,1]} />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
-                <Line type="step" dataKey="empirical" name="Empirical CDF (Sample)" stroke="var(--color-chart-1)" dot={false} strokeWidth={2}/>
-                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke="var(--color-chart-2)" dot={false} strokeWidth={2} />
+                <Line type="step" dataKey="empirical" name="Empirical CDF (Sample)" stroke="var(--color-empirical)" dot={false} strokeWidth={2}/>
+                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
             </LineChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="flex justify-center gap-4">
         <Button onClick={() => setDataType('normal')} variant={dataType === 'normal' ? 'default' : 'outline'}>Generate Normal Sample</Button>

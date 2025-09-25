@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -27,6 +28,12 @@ const generateLogNormalData = (mu: number, sigma: number, n: number) => {
   }
   return data;
 };
+
+const wilcoxonChartConfig = {
+    'Before Risk Model': { label: 'Before', color: 'hsl(var(--chart-2))' },
+    'After Risk Model': { label: 'After', color: 'hsl(var(--chart-1))' },
+} satisfies ChartConfig;
+
 
 const WilcoxonSignedRankChart = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -53,17 +60,17 @@ const WilcoxonSignedRankChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={wilcoxonChartConfig} className="min-h-[200px] w-full">
+            <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
-                <Line type="monotone" dataKey="Before Risk Model" stroke="var(--color-chart-2)" />
-                <Line type="monotone" dataKey="After Risk Model" stroke="var(--color-chart-1)" />
+                <Line type="monotone" dataKey="Before Risk Model" stroke="var(--color-Before Risk Model)" />
+                <Line type="monotone" dataKey="After Risk Model" stroke="var(--color-After Risk Model)" />
             </LineChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Data</Button>

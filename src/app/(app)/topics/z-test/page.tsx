@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -36,19 +37,41 @@ const generateNormalData = (mean: number, stdDev: number, n: number) =>
 const getMean = (data: number[]) =>
   data.reduce((a, b) => a + b, 0) / data.length;
 
+const oneSampleZTestChartConfig = {
+  value: {
+    label: "Stock A's Recent Avg.",
+    color: 'hsl(var(--chart-1))',
+  },
+} satisfies ChartConfig;
+
+const twoSampleZTestChartConfig = {
+  value: {
+    label: 'Avg Daily Volatility',
+  },
+  'Stock A': {
+    label: 'Stock A',
+    color: 'hsl(var(--chart-1))',
+  },
+  'Stock B': {
+    label: 'Stock B',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
+
 // --- Chart Components ---
 
 const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
   const target = 0.05;
 
-  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: 'var(--color-chart-1)' }];
+  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: "var(--color-value)" }];
 
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
+        <ChartContainer config={oneSampleZTestChartConfig} className="min-h-[200px] w-full">
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <CartesianGrid horizontal={false} />
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} />
             <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
@@ -62,7 +85,7 @@ const OneSampleZTestChart = () => {
               label={{ value: `Historical Avg: ${target}%`, position: 'insideTopRight', fill: 'var(--color-destructive)' }}
             />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="mean-slider">
@@ -96,8 +119,8 @@ const TwoSampleZTestChart = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
     setChartData([
-        { name: 'Stock A', value: getMean(dataA), fill: 'var(--color-chart-1)' },
-        { name: 'Stock B', value: getMean(dataB), fill: 'var(--color-chart-2)' },
+        { name: 'Stock A', value: getMean(dataA), fill: 'var(--color-Stock A)' },
+        { name: 'Stock B', value: getMean(dataB), fill: 'var(--color-Stock B)' },
     ]);
   };
 
@@ -108,15 +131,15 @@ const TwoSampleZTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer config={twoSampleZTestChartConfig} className="min-h-[200px] w-full">
+            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Bar dataKey="value" name="Avg Daily Volatility" radius={4} />
             </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New 5-Year Period</Button>
