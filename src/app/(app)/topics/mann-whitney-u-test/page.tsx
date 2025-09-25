@@ -73,7 +73,7 @@ const MannWhitneyChart = () => {
     const histB = createHistogram(algoBData, binSize);
 
     // Ensure both histograms have the same labels for proper alignment
-    const allLabels = [...new Set([...histA.labels, ...histB.labels])].sort();
+    const allLabels = [...new Set([...histA.labels, ...histB.labels])].sort((a, b) => parseFloat(a) - parseFloat(b));
     const countsA = allLabels.map(label => {
         const index = histA.labels.indexOf(label);
         return index !== -1 ? histA.counts[index] : 0;
@@ -90,7 +90,7 @@ const MannWhitneyChart = () => {
         {
           label: 'Algo A (Old)',
           data: countsA,
-          backgroundColor: `${chartColors.chart1}80`,
+          backgroundColor: `${chartColors.chart1}B3`, // 70% opacity
           borderColor: chartColors.chart1,
           barPercentage: 1.0,
           categoryPercentage: 1.0,
@@ -98,7 +98,7 @@ const MannWhitneyChart = () => {
         {
           label: 'Algo B (New)',
           data: countsB,
-          backgroundColor: `${chartColors.chart2}80`,
+          backgroundColor: `${chartColors.chart2}B3`, // 70% opacity
           borderColor: chartColors.chart2,
           barPercentage: 1.0,
           categoryPercentage: 1.0,
