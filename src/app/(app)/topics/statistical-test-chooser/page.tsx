@@ -538,7 +538,7 @@ export default function StatisticalTestChooserPage() {
             }
         }));
       });
-    }, [setNodes, setEdges, router]);
+    }, [setNodes, setEdges, router, handleNodeClick]);
   
   const setInitialState = useCallback(() => {
       const root = findNode('root');
@@ -567,21 +567,19 @@ export default function StatisticalTestChooserPage() {
   
         setNodes(getLayoutedNodes(initialNodes));
         setEdges(initialEdges);
+
+        if (reactFlowInstance) {
+          setTimeout(() => reactFlowInstance.fitView({ padding: 0.2, duration: 300 }), 100);
+        }
       }
-    }, [setNodes, setEdges, handleNodeClick]);
+    }, [setNodes, setEdges, handleNodeClick, reactFlowInstance]);
   
 
   useEffect(() => {
     setInitialState();
      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [reactFlowInstance]); // Run only when instance is ready
 
-
-  useEffect(() => {
-    if (reactFlowInstance) {
-      setTimeout(() => reactFlowInstance.fitView({ padding: 0.2, duration: 300 }), 100);
-    }
-  }, [nodes, reactFlowInstance]);
 
   return (
     <>
@@ -612,5 +610,7 @@ export default function StatisticalTestChooserPage() {
     </>
   );
 }
+
+    
 
     
