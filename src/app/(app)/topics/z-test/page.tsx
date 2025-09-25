@@ -71,7 +71,7 @@ const OneSampleZTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ChartContainer config={oneSampleZTestChartConfig} className="min-h-[200px] w-full">
+        <ChartContainer config={oneSampleZTestChartConfig} className="w-full">
           <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <CartesianGrid horizontal={false} />
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} />
@@ -88,7 +88,7 @@ const OneSampleZTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center mt-4">
+      <div className="mx-auto max-w-sm text-center mt-6">
         <Label htmlFor="mean-slider">
           Adjust Stock A&apos;s Recent Avg. Daily Return (%)
         </Label>
@@ -132,7 +132,7 @@ const TwoSampleZTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ChartContainer config={twoSampleZTestChartConfig} className="min-h-[200px] w-full">
+        <ChartContainer config={twoSampleZTestChartConfig} className="w-full">
             <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -146,7 +146,7 @@ const TwoSampleZTestChart = () => {
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-4">
+      <div className="text-center mt-6">
         <Button onClick={generateData}>Simulate New 5-Year Period</Button>
       </div>
     </div>

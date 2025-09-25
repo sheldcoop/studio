@@ -94,7 +94,7 @@ const IndependentTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ChartContainer config={independentTestChartConfig} className="min-h-[200px] w-full">
+        <ChartContainer config={independentTestChartConfig} className="w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -111,7 +111,7 @@ const IndependentTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-4">
+      <div className="text-center mt-6">
         <Button onClick={generateData}>Simulate New 60-Day Period</Button>
       </div>
     </div>
@@ -145,7 +145,7 @@ const PairedTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ChartContainer config={pairedTestChartConfig} className="min-h-[200px] w-full">
+        <ChartContainer config={pairedTestChartConfig} className="w-full">
           <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -156,7 +156,7 @@ const PairedTestChart = () => {
           </LineChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-4">
+      <div className="text-center mt-6">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>
@@ -172,7 +172,7 @@ const OneSampleTestChart = () => {
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <ChartContainer config={oneSampleTestChartConfig} className="min-h-[200px] w-full">
+        <ChartContainer config={oneSampleTestChartConfig} className="w-full">
           <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <CartesianGrid horizontal={false} />
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} />
@@ -189,7 +189,7 @@ const OneSampleTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center mt-4">
+      <div className="mx-auto max-w-sm text-center mt-6">
         <Label htmlFor="mean-slider">
           Adjust Sample's Average Monthly Return (%)
         </Label>
