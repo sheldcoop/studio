@@ -3,17 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from '@/components/ui/sidebar';
-import {
   LayoutDashboard,
   BookOpenCheck,
   BotMessageSquare,
   Users,
 } from 'lucide-react';
-import { useSidebar } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
 const links = [
   {
@@ -38,29 +33,34 @@ const links = [
   },
 ];
 
-export function MainNav() {
+type MainNavProps = {
+  onLinkClick?: () => void;
+};
+
+export function MainNav({ onLinkClick }: MainNavProps) {
   const pathname = usePathname();
-  const { isMobile } = useSidebar();
 
   return (
-    <SidebarMenu>
+    <>
       {links.map((link) => {
         const isActive = pathname === link.href;
         return (
-          <SidebarMenuItem key={link.label}>
-            <SidebarMenuButton
-              asChild
-              isActive={isActive}
-              tooltip={isMobile ? undefined : link.label}
-            >
-              <Link href={link.href}>
-                <link.icon />
-                <span>{link.label}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <Link
+            key={link.label}
+            href={link.href}
+            onClick={onLinkClick}
+            className={cn(
+              'transition-colors hover:text-foreground/80 text-foreground/60',
+               isActive && 'text-foreground',
+               'md:text-sm md:font-medium md:hover:text-primary md:text-foreground',
+               'flex items-center p-2 rounded-md hover:bg-secondary md:p-0 md:hover:bg-transparent'
+            )}
+          >
+             <link.icon className="mr-2 h-5 w-5 md:hidden" />
+            {link.label}
+          </Link>
         );
       })}
-    </SidebarMenu>
+    </>
   );
 }

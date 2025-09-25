@@ -15,10 +15,10 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         fontFamily="'Poppins', sans-serif"
         fontSize="32"
         fontWeight="bold"
-        fill="hsl(var(--sidebar-foreground))"
+        fill="hsl(var(--foreground))"
       >
         Quant
-        <tspan fill="hsl(var(--sidebar-primary))">Prep</tspan>
+        <tspan fill="hsl(var(--primary))">Prep</tspan>
       </text>
     </svg>
   );

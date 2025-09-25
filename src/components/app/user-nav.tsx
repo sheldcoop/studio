@@ -20,26 +20,20 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-10 w-full justify-start gap-2 px-2"
+          className="relative h-10 w-10 rounded-full"
         >
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-10 w-10">
             {userAvatar && (
               <AvatarImage
                 src={userAvatar.imageUrl}
                 alt="User Avatar"
-                width={32}
-                height={32}
+                width={40}
+                height={40}
                 data-ai-hint={userAvatar.imageHint}
               />
             )}
             <AvatarFallback>QP</AvatarFallback>
           </Avatar>
-          <div className="truncate text-left">
-            <p className="truncate text-sm font-medium">Quant Aspirant</p>
-            <p className="truncate text-xs text-muted-foreground">
-              aspirant@quantprep.com
-            </p>
-          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
