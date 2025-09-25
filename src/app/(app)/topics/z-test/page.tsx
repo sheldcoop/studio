@@ -6,12 +6,12 @@ import {
   Bar,
   CartesianGrid,
   ReferenceLine,
+  Rectangle,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
   Legend,
-  Rectangle,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
@@ -72,35 +72,37 @@ const OneSampleZTestChart = () => {
     <div className="space-y-4">
       <div className="h-[350px]">
         <ChartContainer config={oneSampleZTestChartConfig} className="w-full">
-          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
             <CartesianGrid horizontal={false} />
-            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} />
+            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120}/>
             <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
             <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Bar dataKey="value" radius={8} />
             <ReferenceLine
               x={target}
-              stroke="var(--color-destructive)"
+              stroke="hsl(var(--destructive))"
               strokeWidth={2}
               strokeDasharray="3 3"
-              label={{ value: `Historical Avg: ${target}%`, position: 'insideTopRight', fill: 'var(--color-destructive)' }}
-            />
+            >
+              <Label value={`Historical Avg: ${target}%`} position="insideTopRight" fill="hsl(var(--destructive))" fontSize={12} />
+            </ReferenceLine>
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center py-4">
+      <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="mean-slider">
           Adjust Stock A&apos;s Recent Avg. Daily Return (%)
         </Label>
-        <Slider
-          id="mean-slider"
-          min={-0.1}
-          max={0.2}
-          value={[meanValue]}
-          step={0.005}
-          onValueChange={(value) => setMeanValue(value[0])}
-          className="my-4"
-        />
+        <div className="py-4">
+            <Slider
+              id="mean-slider"
+              min={-0.1}
+              max={0.2}
+              value={[meanValue]}
+              step={0.005}
+              onValueChange={(value) => setMeanValue(value[0])}
+            />
+        </div>
         <div className="text-sm text-muted-foreground">
           Current Mean:{' '}
           <span className="font-bold text-foreground">

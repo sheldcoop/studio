@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  Rectangle,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -154,7 +155,7 @@ const TwoWayAnovaChart = () => {
                     </LineChart>
                 </ChartContainer>
             </div>
-            <p className="text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
+            <p className="text-center text-sm text-muted-foreground mt-2">Non-parallel lines suggest an interaction effect.</p>
             <div className="text-center mt-4">
                 <Button onClick={generateData}>Simulate New Trading Data</Button>
             </div>
