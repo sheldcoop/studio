@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Link as LinkIcon, Download } from 'lucide-react';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactFlow, {
   useNodesState,
@@ -17,6 +17,8 @@ import ReactFlow, {
   type NodeProps,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { toPng } from 'html-to-image';
+
 
 // --- Data Structure for the Decision Tree ---
 
@@ -354,7 +356,7 @@ const treeData: DecisionNodeData = {
 
 type CustomNodeData = DecisionNodeData & {
   onClick: (id: string, parent?: string) => void;
-  onDownload: (id: string) => void;
+  onDownload: () => void;
   isPath: boolean;
 };
 
@@ -382,7 +384,7 @@ const CustomNode = ({
 
   const handleDownloadClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    data.onDownload(data.id);
+    data.onDownload();
   }
 
   return (
@@ -455,6 +457,9 @@ export default function StatisticalTestChooserPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const router = useRouter();
+  const reactFlowWrapper = useRef(null);
+
 
   const getLayoutedNodes = (nodesToLayout: Node[]): Node[] => {
     const nodeWidth = 192; // w-48
@@ -508,40 +513,22 @@ export default function StatisticalTestChooserPage() {
     }));
   };
 
-  const handleDownload = useCallback((nodeId: string) => {
-    const finalNode = findNode(nodeId);
-    if (!finalNode) return;
-  
-    const path: DecisionNodeData[] = [];
-    let current: DecisionNodeData | null = finalNode;
-    while(current) {
-      path.unshift(current);
-      current = current.parent ? findNode(current.parent) : null;
+  const handleDownload = useCallback(() => {
+    if (reactFlowWrapper.current === null) {
+      return;
     }
-  
-    let summary = 'Statistical Test Decision Path Summary\n';
-    summary += '=======================================\n\n';
-  
-    for (let i = 0; i < path.length - 1; i++) {
-      const questionNode = path[i];
-      const answerNode = path[i + 1];
-      summary += `Q: ${questionNode.label}\n`;
-      summary += `A: ${answerNode.label}\n\n`;
-    }
-  
-    summary += '---------------------------------------\n';
-    summary += `Recommended Test: ${finalNode.label}\n`;
-  
-    const blob = new Blob([summary], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'test_decision_summary.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, []);
+
+    toPng(reactFlowWrapper.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = 'statistical-test-map.png';
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.error('oops, something went wrong!', err);
+      });
+  }, [reactFlowWrapper]);
 
   const handleNodeClick = useCallback((nodeId: string, parentId?: string) => {
       const clickedNodeData = findNode(nodeId);
@@ -600,8 +587,7 @@ export default function StatisticalTestChooserPage() {
             }
         }));
       });
-      setTimeout(() => reactFlowInstance?.fitView({ padding: 0.4, duration: 300 }), 100);
-    }, [setNodes, setEdges, reactFlowInstance, handleDownload]);
+    }, [setNodes, setEdges, router, handleDownload]);
   
   const setInitialState = useCallback(() => {
       const root = findNode('root');
@@ -632,7 +618,7 @@ export default function StatisticalTestChooserPage() {
         setEdges(initialEdges);
 
         if (reactFlowInstance) {
-          setTimeout(() => reactFlowInstance.fitView({ padding: 0.2, duration: 300 }), 100);
+          setTimeout(() => reactFlowInstance.fitView({ padding: 0.2 }), 100);
         }
       }
     }, [setNodes, setEdges, reactFlowInstance, handleNodeClick, handleDownload]);
@@ -655,7 +641,7 @@ export default function StatisticalTestChooserPage() {
           Reset
         </Button>
       </PageHeader>
-      <Card className="w-full h-[70vh]">
+      <Card className="w-full h-[70vh]" ref={reactFlowWrapper}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -673,5 +659,3 @@ export default function StatisticalTestChooserPage() {
     </>
   );
 }
-
-    
