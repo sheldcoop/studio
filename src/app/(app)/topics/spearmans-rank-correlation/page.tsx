@@ -14,7 +14,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
 const generateMonotonicData = (n: number, strength: number) => {

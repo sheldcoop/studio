@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
+import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config.tsx';
 import {type ChartConfig} from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data

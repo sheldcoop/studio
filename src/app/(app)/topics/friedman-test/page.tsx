@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 
 // Helper to generate rank-like data for demonstration
 const generateRankData = (numSubjects: number) => {
@@ -30,7 +30,7 @@ const generateRankData = (numSubjects: number) => {
 };
 
 const FriedmanTestChart = () => {
-  const [chartData, setChartData] = useState<any>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
     const numAlgos = 5;
