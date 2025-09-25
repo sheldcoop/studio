@@ -1,3 +1,4 @@
+
 import {
   Calculator,
   BarChart3,
@@ -230,6 +231,8 @@ export const statsToolkitTiers = [
       'Hypothesis Testing & P-Values',
       'Correlation vs. Causation',
       'Linear Regression',
+      'Standard Deviation & Variance',
+      'R-squared & Goodness of Fit',
     ],
   },
   {
@@ -242,6 +245,8 @@ export const statsToolkitTiers = [
       'Chi-Squared Test',
       'Analysis of Variance (ANOVA)',
       'Logistic Regression',
+      'Moment Generating Functions',
+      'Maximum Likelihood Estimation (MLE)',
     ],
   },
   {
@@ -253,6 +258,8 @@ export const statsToolkitTiers = [
       'Volatility & Standard Deviation (GARCH)',
       'Efficient Frontier & Sharpe Ratio',
       'Principal Component Analysis (PCA)',
+      'Kalman Filters',
+      'Stochastic Calculus & Ito\'s Lemma',
     ],
   },
 ];
