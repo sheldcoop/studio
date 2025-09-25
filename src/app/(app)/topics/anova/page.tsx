@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getChartJsConfig } from '@/lib/chart-config';
+import { getChartJsConfig, chartColors } from '@/lib/chart-config';
 
 ChartJS.register(
   CategoryScale,
@@ -62,9 +62,9 @@ const OneWayAnovaChart = () => {
           label: 'Average Monthly Return',
           data: [getMean(dataAlpha), getMean(dataBeta), getMean(dataGamma)],
           backgroundColor: [
-            'hsl(var(--chart-1))',
-            'hsl(var(--chart-2))',
-            'hsl(var(--chart-3))',
+            chartColors.chart1,
+            chartColors.chart2,
+            chartColors.chart3,
           ],
         },
       ],
@@ -117,15 +117,15 @@ const TwoWayAnovaChart = () => {
                 {
                     label: 'Stocks',
                     data: [means.stocksMorning, means.stocksAfternoon],
-                    borderColor: 'hsl(var(--chart-1))',
-                    backgroundColor: 'hsl(var(--chart-1))',
+                    borderColor: chartColors.chart1,
+                    backgroundColor: chartColors.chart1,
                     tension: 0.1,
                 },
                 {
                     label: 'Crypto',
                     data: [means.cryptoMorning, means.cryptoAfternoon],
-                    borderColor: 'hsl(var(--chart-2))',
-                    backgroundColor: 'hsl(var(--chart-2))',
+                    borderColor: chartColors.chart2,
+                    backgroundColor: chartColors.chart2,
                     tension: 0.1,
                 },
             ],
@@ -174,9 +174,9 @@ const RepeatedMeasuresAnovaChart = () => {
             datasets: [{
                 label: 'Portfolio Sharpe Ratio',
                 data: [startRatio, midRatio, endRatio],
-                borderColor: 'hsl(var(--primary))',
-                backgroundColor: 'hsl(var(--primary))',
-                pointBackgroundColor: 'hsl(var(--primary-foreground))',
+                borderColor: chartColors.primary,
+                backgroundColor: chartColors.primary,
+                pointBackgroundColor: chartColors.primaryForeground,
                 pointRadius: 5,
                 tension: 0.1,
             }]

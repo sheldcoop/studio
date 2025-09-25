@@ -14,7 +14,7 @@ import { Bar } from 'react-chartjs-2';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getChartJsConfig } from '@/lib/chart-config';
+import { getChartJsConfig, chartColors } from '@/lib/chart-config';
 
 ChartJS.register(
   CategoryScale,
@@ -67,7 +67,7 @@ const FTestChart = () => {
         {
           label: 'Variance of Daily Returns',
           data: [varianceStable, varianceGrowth],
-          backgroundColor: ['hsl(var(--chart-2))', 'hsl(var(--chart-3))'],
+          backgroundColor: [chartColors.chart2, chartColors.chart3],
           borderWidth: 1,
         },
       ],

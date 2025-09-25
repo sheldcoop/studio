@@ -32,19 +32,19 @@
   }
 
   .dark {
-    --background: 231 39% 11%; /* #121829 */
+    --background: 231 39% 11%;
     --foreground: 220 13% 91%;
     --card: 231 39% 11%;
     --card-foreground: 220 13% 91%;
     --popover: 231 39% 11%;
     --popover-foreground: 220 13% 91%;
-    --primary: 259 44% 80%; /* Lighter Lavender for better contrast #D0BCFF */
+    --primary: 259 44% 80%;
     --primary-foreground: 259 55% 26%;
     --secondary: 226 24% 16%;
     --secondary-foreground: 220 13% 91%;
     --muted: 226 24% 16%;
     --muted-foreground: 226 12% 46%;
-    --accent: 259 44% 51%; /* Deep Purple #6750A4 */
+    --accent: 259 44% 51%;
     --accent-foreground: 220 13% 91%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 220 13% 91%;

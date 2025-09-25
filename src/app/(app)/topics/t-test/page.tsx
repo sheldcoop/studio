@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -20,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartJsConfig } from '@/lib/chart-config';
+import { getChartJsConfig, chartColors } from '@/lib/chart-config';
 
 ChartJS.register(
   CategoryScale,
@@ -64,7 +63,7 @@ const IndependentTestChart = () => {
         {
           label: 'Average Daily Return',
           data: [getMean(dataA), getMean(dataB)],
-          backgroundColor: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))'],
+          backgroundColor: [chartColors.chart1, chartColors.chart2],
           borderWidth: 1,
         },
       ],
@@ -119,15 +118,15 @@ const PairedTestChart = () => {
         {
           label: 'Before Algorithm',
           data: beforeData,
-          borderColor: 'hsl(var(--muted-foreground))',
-          backgroundColor: 'hsl(var(--muted-foreground))',
+          borderColor: chartColors.mutedForeground,
+          backgroundColor: chartColors.mutedForeground,
           tension: 0.1,
         },
         {
           label: 'After Algorithm',
           data: afterData,
-          borderColor: 'hsl(var(--primary))',
-          backgroundColor: 'hsl(var(--primary))',
+          borderColor: chartColors.primary,
+          backgroundColor: chartColors.primary,
           tension: 0.1,
         },
       ],
@@ -176,8 +175,8 @@ const OneSampleTestChart = () => {
       {
         label: 'Sample Mean',
         data: [meanValue],
-        backgroundColor: 'hsl(var(--primary) / 0.8)',
-        borderColor: 'hsl(var(--primary))',
+        backgroundColor: `${chartColors.primary}CC`, // 80% opacity
+        borderColor: chartColors.primary,
         borderWidth: 1,
       },
     ],
@@ -212,7 +211,7 @@ const OneSampleTestChart = () => {
       ctx.moveTo(x, topY);
       ctx.lineTo(x, bottomY);
       ctx.lineWidth = 2;
-      ctx.strokeStyle = 'hsl(var(--destructive))';
+      ctx.strokeStyle = chartColors.destructive;
       ctx.stroke();
 
       // Label
@@ -220,10 +219,10 @@ const OneSampleTestChart = () => {
       ctx.font = 'bold 12px sans-serif';
       const textWidth = ctx.measureText(labelText).width;
 
-      ctx.fillStyle = 'hsl(var(--destructive))';
+      ctx.fillStyle = chartColors.destructive;
       ctx.fillRect(x - textWidth / 2 - 5, topY, textWidth + 10, 20);
 
-      ctx.fillStyle = 'hsl(var(--destructive-foreground))';
+      ctx.fillStyle = chartColors.destructiveForeground;
       ctx.textAlign = 'center';
       ctx.fillText(labelText, x, topY + 14);
       ctx.restore();

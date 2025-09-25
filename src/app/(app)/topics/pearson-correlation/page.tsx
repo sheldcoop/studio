@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,7 +14,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartJsConfig } from '@/lib/chart-config';
+import { getChartJsConfig, chartColors } from '@/lib/chart-config';
 
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
@@ -56,7 +55,7 @@ const PearsonCorrelationChart = () => {
         {
           label: 'Asset Pair Returns',
           data: data,
-          backgroundColor: 'hsl(var(--primary) / 0.5)',
+          backgroundColor: `${chartColors.primary}80`, // primary with 50% opacity
         },
       ],
     });
