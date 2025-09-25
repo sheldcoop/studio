@@ -134,6 +134,12 @@ export default function MentalMathPage() {
     }
   };
 
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
   return (
     <>
       <PageHeader
@@ -141,7 +147,7 @@ export default function MentalMathPage() {
         description="Sharpen your calculation speed for quant interviews."
       />
       <div className="flex justify-center">
-        <Card className="w-full">
+        <Card className="w-full max-w-2xl">
           {quizState === 'not-started' && (
              <CardContent className="p-6">
                <CardTitle className="font-headline mb-4 text-center">Choose Your Challenge</CardTitle>
@@ -162,7 +168,10 @@ export default function MentalMathPage() {
           {quizState === 'active' && (
             <>
               <CardHeader className="p-4">
-                 <Progress value={(timeLeft / timeSelection) * 100} />
+                 <div className="flex items-center gap-4">
+                    <Progress value={(timeLeft / timeSelection) * 100} className="h-2" />
+                    <span className="text-sm font-mono text-muted-foreground w-16 text-right">{formatTime(timeLeft)}</span>
+                 </div>
               </CardHeader>
               <CardContent className="p-6 text-center">
                  <div className="flex h-40 items-center justify-center">
