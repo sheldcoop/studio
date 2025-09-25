@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { statsToolkitTiers } from '@/lib/data';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Route } from 'lucide-react';
 import Link from 'next/link';
 
 // Helper to convert title to a URL-friendly slug
@@ -26,6 +26,27 @@ export default function StatToolkitPage() {
         title="Statistician's Toolkit"
         description="Explore and understand the core concepts of statistics for quantitative analysis."
       />
+
+      <Card className="mb-8 bg-primary/10 border-primary/20">
+        <CardContent className="p-6">
+          <Link href="/topics/statistical-test-chooser" className="group">
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary/20 rounded-lg">
+                    <Route className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                    <h3 className="text-xl font-headline font-bold text-foreground group-hover:text-primary transition-colors">
+                        Statistical Test Chooser
+                    </h3>
+                    <p className="text-muted-foreground">
+                        Don't know which test to use? Answer a few simple questions to find the right one.
+                    </p>
+                </div>
+            </div>
+          </Link>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {statsToolkitTiers.map((tier) => (
           <Card key={tier.title} className="flex flex-col bg-card/70">
