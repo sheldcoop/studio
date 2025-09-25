@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -30,10 +31,11 @@ const generateMonotonicData = (n: number, strength: number) => {
   return data;
 };
 
+const chartConfig = getChartJsConfig();
+
 const SpearmanCorrelationChart = () => {
   const [strength, setStrength] = useState(3);
   const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
 
   useEffect(() => {
     const data = generateMonotonicData(100, strength);
@@ -46,7 +48,7 @@ const SpearmanCorrelationChart = () => {
         },
       ],
     });
-  }, [strength, chartConfig]);
+  }, [strength]);
 
   const options = {
     ...chartConfig,

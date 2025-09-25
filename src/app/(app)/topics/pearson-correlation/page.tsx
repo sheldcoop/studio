@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -43,10 +44,11 @@ const generateCorrelatedData = (
   return data;
 };
 
+const chartConfig = getChartJsConfig();
+
 const PearsonCorrelationChart = () => {
   const [correlation, setCorrelation] = useState(0.8);
   const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
 
   useEffect(() => {
     const data = generateCorrelatedData(100, correlation);
