@@ -8,6 +8,7 @@ import {
   BotMessageSquare,
   Users,
   FolderKanban,
+  Route,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +29,11 @@ const links = [
     icon: BotMessageSquare,
   },
   {
+    href: '/topics/statistical-test-chooser',
+    label: 'Test Chooser',
+    icon: Route,
+  },
+  {
     href: '/community',
     label: 'Community',
     icon: Users,
@@ -36,7 +42,7 @@ const links = [
     href: '/topics',
     label: 'Topics',
     icon: FolderKanban,
-  }
+  },
 ];
 
 type MainNavProps = {
@@ -49,7 +55,8 @@ export function MainNav({ onLinkClick }: MainNavProps) {
   return (
     <>
       {links.map((link) => {
-        const isActive = pathname.startsWith(link.href) && (link.href !== '/dashboard' || pathname === '/dashboard');
+        const isActive =
+          pathname === link.href || (pathname.startsWith(link.href) && link.href !== '/');
         return (
           <Link
             key={link.label}
