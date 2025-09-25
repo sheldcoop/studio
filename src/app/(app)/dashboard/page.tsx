@@ -23,7 +23,11 @@ export default function DashboardPage() {
       </div>
       <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {quantJourney.map((item) => (
-          <Link href={item.href} key={item.id}>
+          <Link
+            href={item.href}
+            key={item.id}
+            className="rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
             <Card className="flex h-full transform-gpu flex-col bg-card/50 text-left transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
               <CardHeader>
                 <div className="mb-4">
