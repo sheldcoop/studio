@@ -14,9 +14,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Check, X, RefreshCw, Timer } from 'lucide-react';
+import { Check, X, RefreshCw } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 
 type Problem = {
   question: string;
@@ -132,12 +133,6 @@ export default function MentalMathPage() {
       setTimeout(() => newProblem(), 1200);
     }
   };
-  
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
 
   return (
     <>
@@ -166,22 +161,19 @@ export default function MentalMathPage() {
 
           {quizState === 'active' && (
             <>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                   <CardTitle className="font-headline text-center text-3xl tracking-tight">
-                     {problem?.question}
-                   </CardTitle>
-                   <div className="flex items-center gap-2 font-medium text-lg">
-                     <Timer className="text-primary"/>
-                     <span>{formatTime(timeLeft)}</span>
-                   </div>
-                </div>
-                <CardDescription className="text-center pt-2">
-                  Round fractions and decimals to 3 decimal places if necessary.
-                </CardDescription>
+              <CardHeader className="p-4">
+                 <Progress value={(timeLeft / timeSelection) * 100} />
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit}>
+              <CardContent className="p-6 text-center">
+                 <div className="flex h-40 items-center justify-center">
+                    <p className="font-headline text-5xl tracking-tight">
+                        {problem?.question}
+                    </p>
+                 </div>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Round fractions and decimals to 3 decimal places if necessary.
+                </p>
+                <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
                   <div className="relative">
                     <Input
                       type="text"
@@ -204,13 +196,13 @@ export default function MentalMathPage() {
                     </p>
                   )}
                   <div className="flex justify-center mt-4">
-                      <Button type="submit" className="w-full max-w-xs" disabled={isCorrect !== null}>
+                      <Button type="submit" className="w-full" disabled={isCorrect !== null}>
                         Submit
                       </Button>
                   </div>
                 </form>
               </CardContent>
-              <CardFooter className="flex justify-end text-sm text-muted-foreground">
+              <CardFooter className="flex justify-end text-sm text-muted-foreground p-4">
                 <p>Answered: <span className="font-bold text-foreground">{problemsAnswered}</span></p>
               </CardFooter>
             </>
@@ -233,3 +225,5 @@ export default function MentalMathPage() {
     </>
   );
 }
+
+    
