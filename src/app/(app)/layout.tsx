@@ -4,12 +4,11 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
-  SidebarInset,
-  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/app/logo';
 import { MainNav } from '@/components/app/main-nav';
 import { UserNav } from '@/components/app/user-nav';
+import { Header } from '@/components/app/header';
 
 export default function AppLayout({
   children,
@@ -18,21 +17,23 @@ export default function AppLayout({
 }) {
   return (
     <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader className='flex items-center justify-between p-3'>
-          <Logo />
-          <SidebarTrigger />
-        </SidebarHeader>
-        <SidebarContent>
-          <MainNav />
-        </SidebarContent>
-        <SidebarFooter>
-          <UserNav />
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        <div className="min-h-screen p-4 md:p-8">{children}</div>
-      </SidebarInset>
+      <div className="flex min-h-screen">
+        <Sidebar>
+          <SidebarHeader>
+            <Logo />
+          </SidebarHeader>
+          <SidebarContent>
+            <MainNav />
+          </SidebarContent>
+          <SidebarFooter>
+            <UserNav />
+          </SidebarFooter>
+        </Sidebar>
+        <div className="flex flex-1 flex-col">
+          <Header />
+          <main className="flex-1 p-4 md:p-8">{children}</main>
+        </div>
+      </div>
     </SidebarProvider>
   );
 }

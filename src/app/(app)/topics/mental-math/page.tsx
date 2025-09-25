@@ -146,11 +146,11 @@ export default function MentalMathPage() {
         description="Sharpen your calculation speed for quant interviews."
       />
       <div className="flex justify-center">
-        <Card className="w-full max-w-lg">
+        <Card className="w-full">
           {quizState === 'not-started' && (
              <CardContent className="p-6">
                <CardTitle className="font-headline mb-4 text-center">Choose Your Challenge</CardTitle>
-               <RadioGroup value={String(timeSelection)} onValueChange={(val) => setTimeSelection(Number(val))} className="grid grid-cols-2 gap-4 mb-6">
+               <RadioGroup value={String(timeSelection)} onValueChange={(val) => setTimeSelection(Number(val))} className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                  {timeOptions.map(option => (
                    <div key={option.value}>
                      <RadioGroupItem value={String(option.value)} id={String(option.value)} className="peer sr-only"/>
@@ -204,7 +204,7 @@ export default function MentalMathPage() {
                     </p>
                   )}
                   <div className="flex justify-center mt-4">
-                      <Button type="submit" className="w-full" disabled={isCorrect !== null}>
+                      <Button type="submit" className="w-full max-w-xs" disabled={isCorrect !== null}>
                         Submit
                       </Button>
                   </div>
@@ -222,7 +222,7 @@ export default function MentalMathPage() {
               <div className="text-4xl font-bold mb-4">
                 {score} <span className="text-2xl text-muted-foreground">/ {problemsAnswered}</span>
               </div>
-              <Button onClick={handleReset} className="w-full">
+              <Button onClick={handleReset} className="w-full max-w-xs">
                 Play Again
                 <RefreshCw className="ml-2 h-4 w-4" />
               </Button>
