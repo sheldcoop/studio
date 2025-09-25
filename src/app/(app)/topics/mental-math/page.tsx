@@ -141,12 +141,12 @@ export default function MentalMathPage() {
   }
 
   return (
-    <>
+    <div className="flex flex-col flex-1">
       <PageHeader
         title="Mental Math Practice"
         description="Sharpen your calculation speed for quant interviews."
       />
-      <div className="flex justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <Card className="w-full max-w-2xl">
           {quizState === 'not-started' && (
              <CardContent className="p-6">
@@ -231,6 +231,6 @@ export default function MentalMathPage() {
           )}
         </Card>
       </div>
-    </>
+    </div>
   );
 }
