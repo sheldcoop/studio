@@ -99,7 +99,7 @@ const KSTestChart = () => {
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
                 <Line type="step" dataKey="empirical" name="Empirical CDF (Sample)" stroke={ksTestChartConfig.empirical.color} dot={false} strokeWidth={2}/>
-                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke={ksTestChart-config.theoretical.color} dot={false} strokeWidth={2} />
+                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke={ksTestChartConfig.theoretical.color} dot={false} strokeWidth={2} />
             </LineChart>
         </ChartContainer>
       </div>
