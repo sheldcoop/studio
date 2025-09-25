@@ -218,3 +218,41 @@ export const quantJourney = [
     href: '/topics/stat-toolkit',
   },
 ];
+
+export const statsToolkitTiers = [
+  {
+    title: 'Tier 1: The Absolute Foundations',
+    concepts: [
+      'Descriptive Statistics Explorer',
+      'The Normal Distribution',
+      'The Central Limit Theorem (CLT)',
+      'Confidence Intervals',
+      'Hypothesis Testing & P-Values',
+      'Correlation vs. Causation',
+      'Linear Regression',
+    ],
+  },
+  {
+    title: 'Tier 2: Intermediate & Specialized Tools',
+    concepts: [
+      "Bayes' Theorem",
+      'The Law of Large Numbers',
+      'Binomial Distribution',
+      'Poisson Distribution',
+      'Chi-Squared Test',
+      'Analysis of Variance (ANOVA)',
+      'Logistic Regression',
+    ],
+  },
+  {
+    title: 'Tier 3: Advanced & Quant-Specific Concepts',
+    concepts: [
+      'Monte Carlo Simulation',
+      'Time Series Decomposition',
+      'Autocorrelation (ACF & PACF)',
+      'Volatility & Standard Deviation (GARCH)',
+      'Efficient Frontier & Sharpe Ratio',
+      'Principal Component Analysis (PCA)',
+    ],
+  },
+];
