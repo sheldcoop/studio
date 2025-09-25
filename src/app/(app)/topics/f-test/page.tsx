@@ -14,6 +14,7 @@ import { Bar } from 'react-chartjs-2';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getChartJsConfig } from '@/lib/chart-config';
 
 ChartJS.register(
   CategoryScale,
@@ -49,6 +50,7 @@ const getVariance = (data: number[]) => {
 
 const FTestChart = () => {
   const [chartData, setChartData] = useState<any>(null);
+  const chartConfig = getChartJsConfig();
 
   const generateData = () => {
     // StableStock: Lower standard deviation -> lower variance
@@ -66,7 +68,6 @@ const FTestChart = () => {
           label: 'Variance of Daily Returns',
           data: [varianceStable, varianceGrowth],
           backgroundColor: ['hsl(var(--chart-2))', 'hsl(var(--chart-3))'],
-          borderColor: ['hsl(var(--chart-2))', 'hsl(var(--chart-3))'],
           borderWidth: 1,
         },
       ],
@@ -77,42 +78,24 @@ const FTestChart = () => {
     generateData();
   }, []);
 
+  const options = {
+    ...chartConfig,
+    scales: {
+      y: { ...chartConfig.scales.y, beginAtZero: true, title: {...chartConfig.scales.y.title, text: 'Variance (Volatility)'} },
+      x: { ...chartConfig.scales.x, grid: { display: false } },
+    },
+    plugins: {
+      ...chartConfig.plugins,
+      legend: { display: false },
+      title: { ...chartConfig.plugins.title, text: 'Comparing the Volatility of Two Stocks'},
+    },
+  };
+
   return (
     <div className="space-y-4">
       {chartData && (
         <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  title: {
-                    display: true,
-                    text: 'Variance (Volatility)',
-                    color: 'hsl(var(--muted-foreground))',
-                  },
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                x: {
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { display: false },
-                },
-              },
-              plugins: {
-                legend: { display: false },
-                title: {
-                  display: true,
-                  text: 'Comparing the Volatility of Two Stocks',
-                  color: 'hsl(var(--foreground))',
-                  font: { size: 16 },
-                },
-              },
-            }}
-          />
+          <Bar data={chartData} options={options} />
         </div>
       )}
       <div className="text-center">

@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { getChartJsConfig } from '@/lib/chart-config';
 
 ChartJS.register(
   CategoryScale,
@@ -48,6 +49,7 @@ const getMean = (data: number[]) =>
 
 const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
+  const chartConfig = getChartJsConfig();
   const target = 0.05;
 
   const chartData = {
@@ -64,35 +66,16 @@ const OneSampleZTestChart = () => {
   };
 
   const options = {
+    ...chartConfig,
     indexAxis: 'y' as const,
-    responsive: true,
-    maintainAspectRatio: false,
     scales: {
-      x: {
-        beginAtZero: false,
-        suggestedMin: -0.2,
-        suggestedMax: 0.3,
-        title: {
-          display: true,
-          text: 'Average Daily Return (%)',
-          color: 'hsl(var(--muted-foreground))',
-        },
-        ticks: { color: 'hsl(var(--muted-foreground))' },
-        grid: { color: 'hsl(var(--border) / 0.5)' },
-      },
-      y: {
-        ticks: { color: 'hsl(var(--muted-foreground))' },
-        grid: { display: false },
-      },
+      x: {...chartConfig.scales.x, beginAtZero: false, suggestedMin: -0.2, suggestedMax: 0.3, title: {...chartConfig.scales.x.title, text: 'Average Daily Return (%)'}},
+      y: { ...chartConfig.scales.y, grid: { display: false } },
     },
     plugins: {
+      ...chartConfig.plugins,
       legend: { display: false },
-      title: {
-        display: true,
-        text: "Comparing Stock A's Recent Return to Historical Average",
-        color: 'hsl(var(--foreground))',
-        font: { size: 16 },
-      },
+      title: { ...chartConfig.plugins.title, text: "Comparing Stock A's Recent Return to Historical Average"},
     },
   };
 
@@ -159,6 +142,7 @@ const OneSampleZTestChart = () => {
 
 const TwoSampleZTestChart = () => {
   const [chartData, setChartData] = useState<any>(null);
+  const chartConfig = getChartJsConfig();
 
   const generateData = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
@@ -179,44 +163,24 @@ const TwoSampleZTestChart = () => {
     generateData();
   }, []);
 
+  const options = {
+    ...chartConfig,
+    scales: {
+      y: { ...chartConfig.scales.y, beginAtZero: true, suggestedMin: 0, suggestedMax: 3, title: {...chartConfig.scales.y.title, text: 'Average Daily Volatility (%)'} },
+      x: { ...chartConfig.scales.x, grid: { display: false } },
+    },
+    plugins: {
+      ...chartConfig.plugins,
+      legend: { display: false },
+      title: { ...chartConfig.plugins.title, text: 'Comparing Average Daily Volatility of Two Stocks' },
+    },
+  };
+
   return (
     <div className="space-y-4">
       {chartData && (
         <div className="h-[350px]">
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  suggestedMin: 0,
-                  suggestedMax: 3,
-                  title: {
-                    display: true,
-                    text: 'Average Daily Volatility (%)',
-                    color: 'hsl(var(--muted-foreground))',
-                  },
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                x: {
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { display: false },
-                },
-              },
-              plugins: {
-                legend: { display: false },
-                title: {
-                  display: true,
-                  text: 'Comparing Average Daily Volatility of Two Stocks',
-                  color: 'hsl(var(--foreground))',
-                  font: { size: 16 },
-                },
-              },
-            }}
-          />
+          <Bar data={chartData} options={options}/>
         </div>
       )}
       <div className="text-center">
@@ -313,5 +277,3 @@ export default function ZTestPage() {
     </>
   );
 }
-
-    

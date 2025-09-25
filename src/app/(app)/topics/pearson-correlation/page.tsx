@@ -15,6 +15,8 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { getChartJsConfig } from '@/lib/chart-config';
+
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 
@@ -45,6 +47,7 @@ const generateCorrelatedData = (
 const PearsonCorrelationChart = () => {
   const [correlation, setCorrelation] = useState(0.8);
   const [chartData, setChartData] = useState<any>(null);
+  const chartConfig = getChartJsConfig();
 
   useEffect(() => {
     const data = generateCorrelatedData(100, correlation);
@@ -59,37 +62,27 @@ const PearsonCorrelationChart = () => {
     });
   }, [correlation]);
 
+  const options = {
+    ...chartConfig,
+    scales: {
+      ...chartConfig.scales,
+      x: { ...chartConfig.scales.x, title: { ...chartConfig.scales.x.title, text: 'Asset A Daily Return (%)' } },
+      y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Asset B Daily Return (%)' } },
+    },
+    plugins: {
+      ...chartConfig.plugins,
+      legend: { display: false },
+      title: { ...chartConfig.plugins.title, text: `Asset Returns (Correlation: ${correlation.toFixed(1)})` },
+    },
+  };
+
   return (
     <div className="space-y-4">
       {chartData && (
         <div className="relative mx-auto h-[350px] w-full max-w-2xl">
           <Scatter
             data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                x: {
-                  title: { display: true, text: 'Asset A Daily Return (%)', color: 'hsl(var(--muted-foreground))' },
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                y: {
-                  title: { display: true, text: 'Asset B Daily Return (%)', color: 'hsl(var(--muted-foreground))' },
-                   ticks: { color: 'hsl(var(--muted-foreground))' },
-                   grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-              },
-              plugins: {
-                legend: { display: false },
-                title: {
-                  display: true,
-                  text: `Asset Returns (Correlation: ${correlation.toFixed(1)})`,
-                  color: 'hsl(var(--foreground))',
-                  font: { size: 16 },
-                },
-              },
-            }}
+            options={options}
           />
         </div>
       )}

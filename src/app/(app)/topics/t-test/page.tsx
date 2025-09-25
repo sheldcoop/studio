@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { getChartJsConfig } from '@/lib/chart-config';
 
 ChartJS.register(
   CategoryScale,
@@ -52,6 +53,7 @@ const getMean = (data: number[]) =>
 
 const IndependentTestChart = () => {
   const [chartData, setChartData] = useState<any>(null);
+  const chartConfig = getChartJsConfig();
 
   const generateData = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
@@ -63,7 +65,6 @@ const IndependentTestChart = () => {
           label: 'Average Daily Return',
           data: [getMean(dataA), getMean(dataB)],
           backgroundColor: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))'],
-          borderColor: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))'],
           borderWidth: 1,
         },
       ],
@@ -74,43 +75,24 @@ const IndependentTestChart = () => {
     generateData();
   }, []);
 
+  const options = {
+    ...chartConfig,
+    scales: {
+      y: { ...chartConfig.scales.y, beginAtZero: true, suggestedMin: -0.5, suggestedMax: 0.5, title: {...chartConfig.scales.y.title, text: 'Average Daily Return (%)'} },
+      x: { ...chartConfig.scales.x, grid: { display: false } },
+    },
+    plugins: {
+      ...chartConfig.plugins,
+      legend: { display: false },
+      title: { ...chartConfig.plugins.title, text: 'Comparing Average Daily Returns of Two Strategies' },
+    },
+  };
+
   return (
     <div className="space-y-4">
       {chartData && (
         <div className="h-[350px]">
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  suggestedMin: -0.5,
-                  suggestedMax: 0.5,
-                  title: {
-                    display: true,
-                    text: 'Average Daily Return (%)',
-                    color: 'hsl(var(--muted-foreground))',
-                  },
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                x: {
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { display: false },
-                },
-              },
-              plugins: {
-                legend: { display: false },
-                title: {
-                  display: true,
-                  text: 'Comparing Average Daily Returns of Two Strategies',
-                  color: 'hsl(var(--foreground))',
-                },
-              },
-            }}
-          />
+          <Bar data={chartData} options={options} />
         </div>
       )}
       <div className="text-center">
@@ -122,6 +104,7 @@ const IndependentTestChart = () => {
 
 const PairedTestChart = () => {
   const [chartData, setChartData] = useState<any>(null);
+  const chartConfig = getChartJsConfig();
 
   const generateData = () => {
     const numSubjects = 12;
@@ -155,43 +138,24 @@ const PairedTestChart = () => {
     generateData();
   }, []);
 
+  const options = {
+    ...chartConfig,
+    scales: {
+      ...chartConfig.scales,
+      y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Weekly Return (%)' } },
+    },
+    plugins: {
+      ...chartConfig.plugins,
+      legend: { ...chartConfig.plugins.legend, position: 'top' as const },
+      title: { ...chartConfig.plugins.title, text: 'Portfolio Returns Before and After Algorithm Change' },
+    },
+  };
+
   return (
     <div className="space-y-4">
       {chartData && (
         <div className="h-[350px]">
-          <Line
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Weekly Return (%)',
-                    color: 'hsl(var(--muted-foreground))',
-                  },
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                x: {
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-              },
-              plugins: {
-                legend: {
-                  position: 'top',
-                  labels: { color: 'hsl(var(--foreground))' },
-                },
-                title: {
-                  display: true,
-                  text: 'Portfolio Returns Before and After Algorithm Change',
-                  color: 'hsl(var(--foreground))',
-                },
-              },
-            }}
-          />
+          <Line data={chartData} options={options}/>
         </div>
       )}
       <div className="text-center">
@@ -203,6 +167,7 @@ const PairedTestChart = () => {
 
 const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
+  const chartConfig = getChartJsConfig();
   const target = 1.5;
 
   const chartData = {
@@ -219,34 +184,16 @@ const OneSampleTestChart = () => {
   };
 
   const options = {
+    ...chartConfig,
     indexAxis: 'y' as const,
-    responsive: true,
-    maintainAspectRatio: false,
     scales: {
-      x: {
-        beginAtZero: false,
-        suggestedMin: 0,
-        suggestedMax: 3,
-        title: {
-          display: true,
-          text: 'Monthly Return (%)',
-          color: 'hsl(var(--muted-foreground))',
-        },
-        ticks: { color: 'hsl(var(--muted-foreground))' },
-        grid: { color: 'hsl(var(--border) / 0.5)' },
-      },
-      y: {
-        ticks: { color: 'hsl(var(--muted-foreground))' },
-        grid: { display: false },
-      },
+      x: { ...chartConfig.scales.x, beginAtZero: false, suggestedMin: 0, suggestedMax: 3, title: {...chartConfig.scales.x.title, text: 'Monthly Return (%)'}},
+      y: { ...chartConfig.scales.y, grid: { display: false } },
     },
     plugins: {
+      ...chartConfig.plugins,
       legend: { display: false },
-      title: {
-        display: true,
-        text: "Comparing Fund Returns to its Claim",
-        color: 'hsl(var(--foreground))',
-      },
+      title: { ...chartConfig.plugins.title, text: "Comparing Fund Returns to its Claim" },
     },
   };
 

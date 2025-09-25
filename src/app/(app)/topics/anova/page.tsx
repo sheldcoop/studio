@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getChartJsConfig } from '@/lib/chart-config';
 
 ChartJS.register(
   CategoryScale,
@@ -48,6 +49,7 @@ const getMean = (data: number[]) =>
 // --- Chart Components ---
 const OneWayAnovaChart = () => {
   const [chartData, setChartData] = useState<any>(null);
+  const chartConfig = getChartJsConfig();
 
   const generateData = () => {
     const dataAlpha = generateNormalData(1.2, 0.8, 50);
@@ -72,31 +74,21 @@ const OneWayAnovaChart = () => {
   useEffect(() => {
     generateData();
   }, []);
+  
+  const options = {
+    ...chartConfig,
+    scales: {
+      y: { ...chartConfig.scales.y, beginAtZero: true, title: { ...chartConfig.scales.y.title, text: 'Average Monthly Return (%)' } },
+      x: { ...chartConfig.scales.x, grid: { display: false } }
+    },
+    plugins: { ...chartConfig.plugins, legend: { display: false }, title: { ...chartConfig.plugins.title, text: 'Comparing Algorithm Performance' } },
+  };
 
   return (
     <div className="space-y-4">
       {chartData && (
         <div className="h-[350px]">
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  title: { display: true, text: 'Average Monthly Return (%)', color: 'hsl(var(--muted-foreground))' },
-                   ticks: { color: 'hsl(var(--muted-foreground))' },
-                   grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                 x: { ticks: { color: 'hsl(var(--muted-foreground))' }, grid: { display: false } },
-              },
-              plugins: {
-                legend: { display: false },
-                title: { display: true, text: 'Comparing Algorithm Performance', color: 'hsl(var(--foreground))' },
-              },
-            }}
-          />
+          <Bar data={chartData} options={options} />
         </div>
       )}
       <div className="text-center">
@@ -108,6 +100,7 @@ const OneWayAnovaChart = () => {
 
 const TwoWayAnovaChart = () => {
     const [chartData, setChartData] = useState<any>(null);
+    const chartConfig = getChartJsConfig();
 
     const generateData = () => {
         const interactionEffect = Math.random() * 2;
@@ -142,33 +135,21 @@ const TwoWayAnovaChart = () => {
     useEffect(() => {
         generateData();
     }, []);
+    
+    const options = {
+        ...chartConfig,
+        scales: {
+            ...chartConfig.scales,
+            y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Average Trade Profitability ($)' } },
+        },
+        plugins: { ...chartConfig.plugins, legend: { ...chartConfig.plugins.legend, position: 'top' as const }, title: { ...chartConfig.plugins.title, text: 'Interaction of Asset Class and Time of Day' } },
+    };
 
     return (
         <div className="space-y-4">
             {chartData && (
                  <div className="h-[350px]">
-                    <Line
-                        data={chartData}
-                        options={{
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: { 
-                                    title: { display: true, text: 'Average Trade Profitability ($)', color: 'hsl(var(--muted-foreground))' },
-                                    ticks: { color: 'hsl(var(--muted-foreground))' },
-                                    grid: { color: 'hsl(var(--border) / 0.5)' },
-                                },
-                                x: { 
-                                    ticks: { color: 'hsl(var(--muted-foreground))' },
-                                    grid: { color: 'hsl(var(--border) / 0.5)' },
-                                },
-                            },
-                            plugins: {
-                                legend: { position: 'top', labels: { color: 'hsl(var(--foreground))' } },
-                                title: { display: true, text: 'Interaction of Asset Class and Time of Day', color: 'hsl(var(--foreground))' },
-                            },
-                        }}
-                    />
+                    <Line data={chartData} options={options} />
                 </div>
             )}
             <p className="text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
@@ -181,6 +162,7 @@ const TwoWayAnovaChart = () => {
 
 const RepeatedMeasuresAnovaChart = () => {
     const [chartData, setChartData] = useState<any>(null);
+    const chartConfig = getChartJsConfig();
 
     const generateData = () => {
         const startRatio = 0.8 + (Math.random() - 0.5) * 0.4;
@@ -204,34 +186,21 @@ const RepeatedMeasuresAnovaChart = () => {
     useEffect(() => {
         generateData();
     }, []);
+    
+    const options = {
+      ...chartConfig,
+      scales: {
+          ...chartConfig.scales,
+          y: { ...chartConfig.scales.y, beginAtZero: false, title: { ...chartConfig.scales.y.title, text: 'Sharpe Ratio' } },
+      },
+      plugins: { ...chartConfig.plugins, legend: { display: false }, title: { ...chartConfig.plugins.title, text: 'Portfolio Performance Over Time' } },
+    };
 
     return (
          <div className="space-y-4">
             {chartData && (
                 <div className="h-[350px]">
-                    <Line
-                        data={chartData}
-                        options={{
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: false,
-                                    title: { display: true, text: 'Sharpe Ratio', color: 'hsl(var(--muted-foreground))' },
-                                    ticks: { color: 'hsl(var(--muted-foreground))' },
-                                    grid: { color: 'hsl(var(--border) / 0.5)' },
-                                },
-                                x: {
-                                    ticks: { color: 'hsl(var(--muted-foreground))' },
-                                    grid: { color: 'hsl(var(--border) / 0.5)' },
-                                },
-                            },
-                            plugins: {
-                                legend: { display: false },
-                                title: { display: true, text: 'Portfolio Performance Over Time', color: 'hsl(var(--foreground))' },
-                            },
-                        }}
-                    />
+                    <Line data={chartData} options={options} />
                 </div>
             )}
             <div className="text-center">
