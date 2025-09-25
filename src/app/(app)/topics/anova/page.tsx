@@ -111,7 +111,7 @@ const OneWayAnovaChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-4">
+      <div className="text-center mt-6">
         <Button onClick={generateData}>Simulate New 50-Month Period</Button>
       </div>
     </div>
@@ -156,7 +156,7 @@ const TwoWayAnovaChart = () => {
                 </ChartContainer>
             </div>
             <p className="text-center text-sm text-muted-foreground mt-2">Non-parallel lines suggest an interaction effect.</p>
-            <div className="text-center mt-4">
+            <div className="text-center mt-6">
                 <Button onClick={generateData}>Simulate New Trading Data</Button>
             </div>
         </div>
@@ -202,7 +202,7 @@ const RepeatedMeasuresAnovaChart = () => {
                     </AreaChart>
                 </ChartContainer>
             </div>
-            <div className="text-center mt-4">
+            <div className="text-center mt-6">
                 <Button onClick={generateData}>Simulate New Portfolio Journey</Button>
             </div>
         </div>

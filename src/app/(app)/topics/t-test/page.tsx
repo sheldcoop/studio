@@ -191,18 +191,19 @@ const OneSampleTestChart = () => {
         </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm text-center py-4">
-        <Label htmlFor="mean-slider">
-          Adjust Sample's Average Monthly Return (%)
-        </Label>
         <div className="py-4">
-            <Slider
-              id="mean-slider"
-              min={0.5}
-              max={2.5}
-              value={[meanValue]}
-              step={0.05}
-              onValueChange={(value) => setMeanValue(value[0])}
-            />
+          <Label htmlFor="mean-slider">
+            Adjust Sample's Average Monthly Return (%)
+          </Label>
+          <Slider
+            id="mean-slider"
+            min={0.5}
+            max={2.5}
+            value={[meanValue]}
+            step={0.05}
+            onValueChange={(value) => setMeanValue(value[0])}
+            className="my-4"
+          />
         </div>
         <div className="text-sm text-muted-foreground">
           Current Mean:{' '}

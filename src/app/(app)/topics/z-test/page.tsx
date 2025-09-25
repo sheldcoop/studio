@@ -72,7 +72,7 @@ const OneSampleZTestChart = () => {
     <div className="space-y-4">
       <div className="h-[350px]">
         <ChartContainer config={oneSampleZTestChartConfig} className="w-full">
-          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <CartesianGrid horizontal={false} />
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120}/>
             <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
@@ -90,18 +90,19 @@ const OneSampleZTestChart = () => {
         </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm text-center">
-        <Label htmlFor="mean-slider">
-          Adjust Stock A&apos;s Recent Avg. Daily Return (%)
-        </Label>
         <div className="py-4">
-            <Slider
-              id="mean-slider"
-              min={-0.1}
-              max={0.2}
-              value={[meanValue]}
-              step={0.005}
-              onValueChange={(value) => setMeanValue(value[0])}
-            />
+          <Label htmlFor="mean-slider">
+            Adjust Stock A&apos;s Recent Avg. Daily Return (%)
+          </Label>
+          <Slider
+            id="mean-slider"
+            min={-0.1}
+            max={0.2}
+            value={[meanValue]}
+            step={0.005}
+            onValueChange={(value) => setMeanValue(value[0])}
+            className="my-4"
+          />
         </div>
         <div className="text-sm text-muted-foreground">
           Current Mean:{' '}

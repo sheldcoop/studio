@@ -103,7 +103,7 @@ const KSTestChart = () => {
             </LineChart>
         </ChartContainer>
       </div>
-      <div className="flex justify-center gap-4 mt-4">
+      <div className="flex justify-center gap-4 mt-6">
         <Button onClick={() => setDataType('normal')} variant={dataType === 'normal' ? 'default' : 'outline'}>Generate Normal Sample</Button>
         <Button onClick={() => setDataType('uniform')} variant={dataType === 'uniform' ? 'default' : 'outline'}>Generate Uniform Sample</Button>
       </div>

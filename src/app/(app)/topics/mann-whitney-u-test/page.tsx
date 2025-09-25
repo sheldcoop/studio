@@ -93,7 +93,7 @@ const MannWhitneyChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-4">
+      <div className="text-center mt-6">
         <Button onClick={generateData}>Simulate New Trading Data</Button>
       </div>
     </div>

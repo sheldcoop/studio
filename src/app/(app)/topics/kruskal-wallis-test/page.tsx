@@ -92,7 +92,7 @@ const KruskalWallisChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-4">
+      <div className="text-center mt-6">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>

@@ -100,7 +100,7 @@ const GoodnessOfFitChart = () => {
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-4"><Button onClick={generateData}>Simulate New Data</Button></div>
+      <div className="text-center mt-6"><Button onClick={generateData}>Simulate New Data</Button></div>
     </div>
   );
 };
@@ -158,7 +158,7 @@ const TestForIndependenceChart = () => {
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-4"><Button onClick={generateData}>Simulate New Data</Button></div>
+      <div className="text-center mt-6"><Button onClick={generateData}>Simulate New Data</Button></div>
       <p className="text-center text-sm text-muted-foreground">The test checks if the differences between observed and expected counts are significant.</p>
     </div>
   );
@@ -205,7 +205,7 @@ const TestForHomogeneityChart = () => {
                 </BarChart>
             </ChartContainer>
           </div>
-          <div className="text-center mt-4"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
+          <div className="text-center mt-6"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
         </div>
     );
 };
