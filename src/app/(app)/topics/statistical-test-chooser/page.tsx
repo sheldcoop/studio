@@ -344,7 +344,7 @@ const CustomNode = ({
     <div
       onClick={() => !data.isResult && data.onClick(data.id, data.parent)}
       className={`
-        rounded-md border-2 bg-card p-4 shadow-md transition-all
+        w-48 rounded-md border-2 bg-card p-3 shadow-md transition-all text-center text-sm
         ${data.isResult ? 'border-green-500 bg-green-500/10' : ''}
         ${!data.isQuestion && !data.isResult ? 'cursor-pointer' : ''}
         ${data.active ? 'border-primary ring-2 ring-primary' : ''}
@@ -358,12 +358,12 @@ const CustomNode = ({
       <Handle
         type="target"
         position={targetPosition || Position.Top}
-        className="!bg-primary"
+        className="!bg-primary !h-2 !w-2"
       />
       <Handle
         type="source"
         position={sourcePosition || Position.Bottom}
-        className="!bg-primary"
+        className="!bg-primary !h-2 !w-2"
       />
     </div>
   );
@@ -373,7 +373,7 @@ const nodeTypes = {
   custom: CustomNode,
 };
 
-// --- Helper to convert tree to nodes and edges ---
+// --- Helper to convert tree to nodes and edges with layout ---
 const getLayoutedElements = (
   tree: DecisionNodeData,
   handleNodeClick: (id: string, parentId?: string) => void,
@@ -382,61 +382,58 @@ const getLayoutedElements = (
 ) => {
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
-  const nodeWidth = 200;
-  const nodeHeight = 80;
-  const verticalGap = 50;
-  const horizontalGap = 50;
+  const nodeWidth = 192; // w-48
+  const nodeHeight = 80; 
+  const verticalGap = 70;
+  const horizontalGap = 30;
 
-  const calculateSubtreeWidth = (node: DecisionNodeData): number => {
-    if (!node.children || node.children.length === 0) {
-      return nodeWidth + horizontalGap;
+  const nodesByLevel: { [level: number]: DecisionNodeData[] } = {};
+
+  const traverse = (node: DecisionNodeData, level: number) => {
+    if (!nodesByLevel[level]) {
+      nodesByLevel[level] = [];
     }
-    return node.children.reduce(
-      (acc, child) => acc + calculateSubtreeWidth(child),
-      0
-    );
-  };
-
-  const layout = (node: DecisionNodeData, x = 0, y = 0) => {
-    const nodeId = node.id;
-    const isActive = nodeId === activeNodeId;
-    const isPath = path.has(nodeId);
-
-    initialNodes.push({
-      id: nodeId,
-      type: 'custom',
-      data: { ...node, onClick: handleNodeClick, active: isActive, isPath },
-      position: { x, y },
-    });
-
-    if (node.parent) {
-      initialEdges.push({
-        id: `e-${node.parent}-${nodeId}`,
-        source: node.parent,
-        target: nodeId,
-        animated: isPath,
-        style: {
-          stroke: isPath ? 'hsl(var(--primary))' : '#555',
-          strokeWidth: isPath ? 2 : 1,
-        },
-      });
-    }
-
+    nodesByLevel[level].push(node);
     if (node.children) {
-      const totalChildWidth =
-        node.children.reduce((sum, child) => sum + calculateSubtreeWidth(child), 0) -
-        horizontalGap;
-      let startX = x - totalChildWidth / 2 + nodeWidth / 2;
-
-      node.children.forEach((child) => {
-        const childWidth = calculateSubtreeWidth(child);
-        layout(child, startX + childWidth / 2 - nodeWidth / 2, y + nodeHeight + verticalGap);
-        startX += childWidth;
-      });
+      node.children.forEach(child => traverse(child, level + 1));
     }
   };
 
-  layout(tree);
+  traverse(tree, 0);
+
+  Object.keys(nodesByLevel).forEach(levelKey => {
+    const level = parseInt(levelKey, 10);
+    const nodesInLevel = nodesByLevel[level];
+    const levelWidth = nodesInLevel.length * (nodeWidth + horizontalGap);
+    const y = level * (nodeHeight + verticalGap);
+
+    nodesInLevel.forEach((node, index) => {
+      const x = index * (nodeWidth + horizontalGap) - (levelWidth / 2) + (nodeWidth / 2);
+      const isActive = node.id === activeNodeId;
+      const isPath = path.has(node.id);
+
+      initialNodes.push({
+        id: node.id,
+        type: 'custom',
+        data: { ...node, onClick: handleNodeClick, active: isActive, isPath },
+        position: { x, y },
+      });
+
+      if (node.parent) {
+        initialEdges.push({
+          id: `e-${node.parent}-${node.id}`,
+          source: node.parent,
+          target: node.id,
+          animated: isPath,
+          style: {
+            stroke: isPath ? 'hsl(var(--primary))' : '#555',
+            strokeWidth: isPath ? 2 : 1,
+          },
+        });
+      }
+    });
+  });
+
   return { initialNodes, initialEdges };
 };
 
@@ -475,7 +472,7 @@ export default function StatisticalTestChooserPage() {
       let currentNode: DecisionNodeData | null = clickedNode;
       while (currentNode) {
         newPath.add(currentNode.id);
-        currentNode = findNode(currentNode.parent || '');
+        currentNode = currentNode.parent ? findNode(currentNode.parent) : null;
       }
       setPath(newPath);
     },
@@ -486,8 +483,7 @@ export default function StatisticalTestChooserPage() {
     const { initialNodes, initialEdges } = getLayoutedElements(treeData, handleNodeClick, activeNodeId, path);
     setNodes(initialNodes);
     setEdges(initialEdges);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeNodeId, path]);
+  }, [activeNodeId, path, handleNodeClick]);
   
   const handleReset = () => {
     setActiveNodeId('root');
@@ -514,10 +510,10 @@ export default function StatisticalTestChooserPage() {
           nodeTypes={nodeTypes}
           fitView
           className="bg-background"
+          nodesDraggable={false}
+          nodesConnectable={false}
         />
       </Card>
     </>
   );
 }
-
-    
