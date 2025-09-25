@@ -12,13 +12,13 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
       <text
         x="10"
         y="35"
-        fontFamily="'Space Grotesk', sans-serif"
+        fontFamily="'Poppins', sans-serif"
         fontSize="32"
         fontWeight="bold"
-        fill="hsl(var(--foreground))"
+        fill="hsl(var(--sidebar-foreground))"
       >
         Quant
-        <tspan fill="hsl(var(--primary))">Prep</tspan>
+        <tspan fill="hsl(var(--sidebar-primary))">Prep</tspan>
       </text>
     </svg>
   );
