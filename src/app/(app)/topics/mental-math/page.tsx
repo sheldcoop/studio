@@ -28,7 +28,7 @@ type QuizState = 'not-started' | 'active' | 'finished';
 const timeOptions = [
   { value: 60, label: '1 Minute' },
   { value: 120, label: '2 Minutes' },
-  { value: 300, label: '5 Minutes' },
+  { value: 300, 'label': '5 Minutes' },
   { value: 600, label: '10 Minutes' },
 ];
 
@@ -164,7 +164,7 @@ export default function MentalMathPage() {
              </CardContent>
           )}
 
-          {(quizState === 'active' || quizState === 'finished') && (
+          {quizState === 'active' && (
             <>
               <CardHeader>
                 <div className="flex justify-between items-center">
@@ -188,7 +188,7 @@ export default function MentalMathPage() {
                       placeholder="Your Answer"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      disabled={isCorrect !== null || quizState === 'finished'}
+                      disabled={isCorrect !== null}
                       className={cn(
                         'text-center text-lg h-12',
                         isCorrect === true && 'border-green-500 focus-visible:ring-green-500',
@@ -204,27 +204,29 @@ export default function MentalMathPage() {
                     </p>
                   )}
                   <div className="flex justify-center mt-4">
-                    {quizState === 'active' ? (
                       <Button type="submit" className="w-full" disabled={isCorrect !== null}>
                         Submit
                       </Button>
-                    ) : (
-                      <div className="text-center">
-                          <p className="text-xl font-bold mb-4">Time's up!</p>
-                          <Button onClick={handleReset} className="w-full">
-                            Play Again
-                            <RefreshCw className="ml-2 h-4 w-4" />
-                          </Button>
-                      </div>
-                    )}
                   </div>
                 </form>
               </CardContent>
-              <CardFooter className="flex justify-between text-sm text-muted-foreground">
-                <p>Score: <span className="font-bold text-foreground">{score}</span></p>
+              <CardFooter className="flex justify-end text-sm text-muted-foreground">
                 <p>Answered: <span className="font-bold text-foreground">{problemsAnswered}</span></p>
               </CardFooter>
             </>
+          )}
+          {quizState === 'finished' && (
+            <CardContent className="p-6 text-center">
+              <CardTitle className="font-headline mb-2">Time's Up!</CardTitle>
+              <CardDescription className="mb-4">Here's how you did.</CardDescription>
+              <div className="text-4xl font-bold mb-4">
+                {score} <span className="text-2xl text-muted-foreground">/ {problemsAnswered}</span>
+              </div>
+              <Button onClick={handleReset} className="w-full">
+                Play Again
+                <RefreshCw className="ml-2 h-4 w-4" />
+              </Button>
+            </CardContent>
           )}
         </Card>
       </div>
