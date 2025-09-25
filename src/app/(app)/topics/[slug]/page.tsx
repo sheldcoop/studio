@@ -11,6 +11,16 @@ function slugToTitle(slug: string) {
 export default function TopicPage({ params }: { params: { slug: string } }) {
   const title = slugToTitle(params.slug);
 
+  // A list of slugs that have their own dedicated page.
+  const dedicatedPages = ['hypothesis-testing-p-values', 'mental-math'];
+
+  if (dedicatedPages.includes(params.slug)) {
+    // This condition should ideally not be met if linking is correct,
+    // but it's a safeguard. Returning null will prevent this generic
+    // page from rendering over a specific one if a conflict occurs.
+    return null;
+  }
+
   return (
     <div>
       <PageHeader
