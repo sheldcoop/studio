@@ -58,9 +58,9 @@ const WilcoxonSignedRankChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={wilcoxonChartConfig} className="min-h-[200px] w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={wilcoxonChartConfig} className="h-full w-full">
             <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -72,7 +72,7 @@ const WilcoxonSignedRankChart = () => {
             </LineChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-6">
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>
