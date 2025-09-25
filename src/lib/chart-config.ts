@@ -31,9 +31,9 @@ export function getChartConfig(isMultiColor: boolean): ChartConfig {
   return {
     value: { label: "Value", color: colors[0] },
     "Observed Trades": { label: "Observed", color: colors[0] },
-    "Expected Trades (if uniform)": { label: "Expected", color: colors[1] },
-    "Observed Profitable Trades (Bullish Market)": { label: "Observed", color: colors[0] },
-    "Expected Profitable Trades (if independent)": { label: "Expected", color: colors[1] },
+    "Expected Trades": { label: "Expected", color: colors[1] },
+    "Observed (Bullish Market)": { label: "Observed", color: colors[0] },
+    "Expected (If Independent)": { label: "Expected", color: colors[1] },
     "New York Office": { label: "New York", color: colors[0] },
     "London Office": { label: "London", color: colors[1] },
     "Empirical CDF (Sample)": { label: "Sample", color: colors[0] },
