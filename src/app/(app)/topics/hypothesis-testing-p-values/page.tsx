@@ -117,10 +117,10 @@ export default function HypothesisTestingPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              Think of hypothesis testing as being a data detective. You start with a default assumption, the **Null Hypothesis (H₀)**, which states there is no effect or no difference (e.g., "a new drug has no effect"). Then, you gather evidence (your sample data) to see if you have enough proof to reject that default assumption in favor of an alternative, the **Alternative Hypothesis (H₁)** (e.g., "the new drug has an effect").
+              Think of hypothesis testing as being a data detective. You start with a default assumption, the <strong>Null Hypothesis (H₀)</strong>, which states there is no effect or no difference (e.g., "a new drug has no effect"). Then, you gather evidence (your sample data) to see if you have enough proof to reject that default assumption in favor of an alternative, the <strong>Alternative Hypothesis (H₁)</strong> (e.g., "the new drug has an effect").
             </p>
             <p>
-                The **p-value** is the crucial piece of evidence. It's the probability of observing your data (or something even more extreme) if the null hypothesis were actually true. A small p-value (typically &lt; 0.05) suggests that your observed data is very unlikely under the null hypothesis, giving you a reason to reject it.
+                The <strong>p-value</strong> is the crucial piece of evidence. It's the probability of observing your data (or something even more extreme) if the null hypothesis were actually true. A small p-value (typically &lt; 0.05) suggests that your observed data is very unlikely under the null hypothesis, giving you a reason to reject it.
             </p>
           </CardContent>
         </Card>
