@@ -1,3 +1,4 @@
+
 import { PageHeader } from '@/components/app/page-header';
 import {
   Accordion,
@@ -12,7 +13,7 @@ import Link from 'next/link';
 
 const statusIcons = {
   completed: <CheckCircle2 className="text-green-500" />,
-  'in-progress': <PlayCircle className="text-blue-500" />,
+  'in-progress': <PlayCircle className="text-primary" />,
   'not-started': <Clock className="text-muted-foreground" />,
 };
 
