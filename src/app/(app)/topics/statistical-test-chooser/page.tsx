@@ -17,7 +17,6 @@ import ReactFlow, {
   type NodeProps,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { toPng } from 'html-to-image';
 
 
 // --- Data Structure for the Decision Tree ---
@@ -518,16 +517,18 @@ export default function StatisticalTestChooserPage() {
       return;
     }
 
-    toPng(reactFlowWrapper.current, { cacheBust: true })
-      .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = 'statistical-test-map.png';
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch((err) => {
-        console.error('oops, something went wrong!', err);
-      });
+    import('html-to-image').then(({ toPng }) => {
+      toPng(reactFlowWrapper.current as HTMLElement, { cacheBust: true })
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.download = 'statistical-test-map.png';
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((err) => {
+          console.error('oops, something went wrong!', err);
+        });
+    });
   }, [reactFlowWrapper]);
 
   const handleNodeClick = useCallback((nodeId: string, parentId?: string) => {
@@ -618,7 +619,9 @@ export default function StatisticalTestChooserPage() {
         setEdges(initialEdges);
 
         if (reactFlowInstance) {
-          setTimeout(() => reactFlowInstance.fitView({ padding: 0.2 }), 100);
+          setTimeout(() => {
+             reactFlowInstance.fitView({ padding: 0.2 })
+          }, 100);
         }
       }
     }, [setNodes, setEdges, reactFlowInstance, handleNodeClick, handleDownload]);
