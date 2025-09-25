@@ -1,24 +1,23 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  LineElement,
+  CartesianGrid,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
   Tooltip,
-  Legend,
-} from 'chart.js';
-import { Scatter } from 'react-chartjs-2';
+  XAxis,
+  YAxis,
+  ZAxis,
+} from 'recharts';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-
-ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
+import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
+import { type ChartConfig } from '@/components/ui/chart';
+import { Crosshair } from 'lucide-react';
 
 // Helper function to generate correlated data
 const generateCorrelatedData = (
@@ -44,49 +43,35 @@ const generateCorrelatedData = (
   return data;
 };
 
-const chartConfig = getChartJsConfig();
 
 const PearsonCorrelationChart = () => {
   const [correlation, setCorrelation] = useState(0.8);
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const chartConfig = getChartConfig(false) as ChartConfig;
 
   useEffect(() => {
     const data = generateCorrelatedData(100, correlation);
-    setChartData({
-      datasets: [
-        {
-          label: 'Asset Pair Returns',
-          data: data,
-          backgroundColor: `${chartColors.primary}80`, // primary with 50% opacity
-        },
-      ],
-    });
+    setChartData(data);
   }, [correlation]);
-
-  const options = {
-    ...chartConfig,
-    scales: {
-      ...chartConfig.scales,
-      x: { ...chartConfig.scales.x, title: { ...chartConfig.scales.x.title, text: 'Asset A Daily Return (%)' } },
-      y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Asset B Daily Return (%)' } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { display: false },
-      title: { ...chartConfig.plugins.title, text: `Asset Returns (Correlation: ${correlation.toFixed(1)})` },
-    },
-  };
 
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-          <Scatter
-            data={chartData}
-            options={options}
-          />
-        </div>
-      )}
+      <div className="relative mx-auto h-[350px] w-full max-w-2xl">
+        <ResponsiveContainer width="100%" height="100%">
+          <ScatterChart
+            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          >
+            <CartesianGrid />
+            <XAxis type="number" dataKey="x" name="Asset A" unit="%" />
+            <YAxis type="number" dataKey="y" name="Asset B" unit="%" />
+            <Tooltip
+              cursor={{ strokeDasharray: '3 3' }}
+              content={<ChartTooltipContent indicator="dot" />}
+            />
+            <Scatter data={chartData} fill="var(--color-value)" />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
       <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="correlation-slider">Adjust Correlation Coefficient</Label>
         <Slider
@@ -98,6 +83,7 @@ const PearsonCorrelationChart = () => {
           onValueChange={(value) => setCorrelation(value[0])}
           className="my-4"
         />
+        <p>Current Correlation: {correlation.toFixed(1)}</p>
       </div>
     </div>
   );

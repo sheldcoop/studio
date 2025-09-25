@@ -2,35 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
   Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar, Line } from 'react-chartjs-2';
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
+import { type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -51,49 +43,38 @@ const getMean = (data: number[]) =>
 // --- Chart Components ---
 
 const IndependentTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any[]>([]);
+  const chartConfig = getChartConfig(true) as ChartConfig;
 
   const generateData = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
-    setChartData({
-      labels: ['Momentum Strategy', 'Mean-Reversion Strategy'],
-      datasets: [
-        {
-          label: 'Average Daily Return',
-          data: [getMean(dataA), getMean(dataB)],
-          backgroundColor: [chartColors.chart1, chartColors.chart2],
-          borderWidth: 1,
-        },
-      ],
-    });
+    setChartData([
+      { name: 'Momentum', value: getMean(dataA) },
+      { name: 'Mean-Reversion', value: getMean(dataB) },
+    ]);
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, beginAtZero: true, suggestedMin: -0.5, suggestedMax: 0.5, title: {...chartConfig.scales.y.title, text: 'Average Daily Return (%)'} },
-      x: { ...chartConfig.scales.x, grid: { display: false } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { display: false },
-      title: { ...chartConfig.plugins.title, text: 'Comparing Average Daily Returns of Two Strategies' },
-    },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Bar data={chartData} options={options} />
-        </div>
-      )}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <YAxis unit="%" />
+            <Tooltip
+              cursor={{ fill: 'hsl(var(--muted))' }}
+              content={<ChartTooltipContent indicator="dot" />}
+            />
+            <Bar dataKey="value" radius={8} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New 60-Day Period</Button>
       </div>
@@ -102,8 +83,8 @@ const IndependentTestChart = () => {
 };
 
 const PairedTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any[]>([]);
+  const chartConfig = getChartConfig(true) as ChartConfig;
 
   const generateData = () => {
     const numSubjects = 12;
@@ -112,51 +93,34 @@ const PairedTestChart = () => {
       () => 0.5 + (Math.random() - 0.5) * 2
     );
     const afterData = beforeData.map((d) => d + (0.1 + Math.random() * 0.5));
-    setChartData({
-      labels: Array.from({ length: numSubjects }, (_, i) => `Week ${i + 1}`),
-      datasets: [
-        {
-          label: 'Before Algorithm',
-          data: beforeData,
-          borderColor: chartColors.mutedForeground,
-          backgroundColor: chartColors.mutedForeground,
-          tension: 0.1,
-        },
-        {
-          label: 'After Algorithm',
-          data: afterData,
-          borderColor: chartColors.primary,
-          backgroundColor: chartColors.primary,
-          tension: 0.1,
-        },
-      ],
-    });
+    
+    setChartData(
+      Array.from({ length: numSubjects }, (_, i) => ({
+        name: `Week ${i + 1}`,
+        before: beforeData[i],
+        after: afterData[i],
+      }))
+    );
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      ...chartConfig.scales,
-      y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Weekly Return (%)' } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { ...chartConfig.plugins.legend, position: 'top' as const },
-      title: { ...chartConfig.plugins.title, text: 'Portfolio Returns Before and After Algorithm Change' },
-    },
-  };
-
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Line data={chartData} options={options}/>
-        </div>
-      )}
+      <div className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <YAxis unit="%" />
+            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Line type="monotone" dataKey="before" strokeWidth={2} stroke="var(--color-before)" />
+            <Line type="monotone" dataKey="after" strokeWidth={2} stroke="var(--color-after)" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
@@ -166,77 +130,33 @@ const PairedTestChart = () => {
 
 const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
-  const chartConfig = getChartJsConfig();
+  const chartConfig = getChartConfig(false);
   const target = 1.5;
 
-  const chartData = {
-    labels: ['Avg. Monthly Return'],
-    datasets: [
-      {
-        label: 'Sample Mean',
-        data: [meanValue],
-        backgroundColor: `${chartColors.primary}CC`, // 80% opacity
-        borderColor: chartColors.primary,
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const options = {
-    ...chartConfig,
-    indexAxis: 'y' as const,
-    scales: {
-      x: { ...chartConfig.scales.x, beginAtZero: false, suggestedMin: 0, suggestedMax: 3, title: {...chartConfig.scales.x.title, text: 'Monthly Return (%)'}},
-      y: { ...chartConfig.scales.y, grid: { display: false } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { display: false },
-      title: { ...chartConfig.plugins.title, text: "Comparing Fund Returns to its Claim" },
-    },
-  };
-
-  const annotationPlugin = {
-    id: 'customAnnotationLine',
-    afterDraw(chart: ChartJS) {
-      const ctx = chart.ctx;
-      const xScale = chart.scales.x;
-      const topY = chart.chartArea.top;
-      const bottomY = chart.chartArea.bottom;
-      const x = xScale.getPixelForValue(target);
-
-      // Line
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(x, topY);
-      ctx.lineTo(x, bottomY);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = chartColors.destructive;
-      ctx.stroke();
-
-      // Label
-      const labelText = `Claimed: ${target}%`;
-      ctx.font = 'bold 12px sans-serif';
-      const textWidth = ctx.measureText(labelText).width;
-
-      ctx.fillStyle = chartColors.destructive;
-      ctx.fillRect(x - textWidth / 2 - 5, topY, textWidth + 10, 20);
-
-      ctx.fillStyle = chartColors.destructiveForeground;
-      ctx.textAlign = 'center';
-      ctx.fillText(labelText, x, topY + 14);
-      ctx.restore();
-    },
-  };
+  const chartData = [{ name: 'Avg. Return', value: meanValue }];
 
   return (
     <div className="space-y-4">
       <div className="h-[350px]">
-        <Bar data={chartData} options={options} plugins={[annotationPlugin]} />
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
+            <CartesianGrid horizontal={false} />
+            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} />
+            <XAxis type="number" unit="%" domain={[0, 3]} />
+            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Bar dataKey="value" radius={8} />
+            <ReferenceLine
+              x={target}
+              stroke="var(--color-destructive)"
+              strokeWidth={2}
+              strokeDasharray="3 3"
+            />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
       <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="mean-slider">
-          Adjust Sample&apos;s Average Monthly Return (%)
+          Adjust Sample's Average Monthly Return (%)
         </Label>
         <Slider
           id="mean-slider"
@@ -252,7 +172,8 @@ const OneSampleTestChart = () => {
           <span className="font-bold text-foreground">
             {meanValue.toFixed(2)}
           </span>{' '}
-          %
+          % vs Claimed{' '}
+          <span className="font-bold text-destructive">{target}%</span>
         </div>
       </div>
     </div>

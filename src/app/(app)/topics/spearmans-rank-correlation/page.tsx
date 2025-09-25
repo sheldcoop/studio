@@ -1,22 +1,21 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
+  CartesianGrid,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
   Tooltip,
-  Legend,
-} from 'chart.js';
-import { Scatter } from 'react-chartjs-2';
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
+import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
+import { type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
 const generateMonotonicData = (n: number, strength: number) => {
@@ -31,54 +30,35 @@ const generateMonotonicData = (n: number, strength: number) => {
   return data;
 };
 
-const chartConfig = getChartJsConfig();
-
 const SpearmanCorrelationChart = () => {
   const [strength, setStrength] = useState(3);
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const chartConfig = getChartConfig(false) as ChartConfig;
 
   useEffect(() => {
     const data = generateMonotonicData(100, strength);
-    setChartData({
-      datasets: [
-        {
-          label: 'Asset Pair',
-          data: data,
-          backgroundColor: chartColors.chart1,
-        },
-      ],
-    });
+    setChartData(data);
   }, [strength]);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      x: {
-        ...chartConfig.scales.x,
-        title: { ...chartConfig.scales.x.title, text: 'Market Sentiment Score' },
-      },
-      y: {
-        ...chartConfig.scales.y,
-        title: { ...chartConfig.scales.y.title, text: 'Asset Return (%)' },
-      },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { display: false },
-      title: {
-        ...chartConfig.plugins.title,
-        text: `Monotonic Relationship (Strength: ${strength.toFixed(1)})`,
-      },
-    },
-  };
 
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-          <Scatter data={chartData} options={options} />
-        </div>
-      )}
+      <div className="relative mx-auto h-[350px] w-full max-w-2xl">
+        <ResponsiveContainer width="100%" height="100%">
+          <ScatterChart
+            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          >
+            <CartesianGrid />
+            <XAxis type="number" dataKey="x" name="Sentiment" />
+            <YAxis type="number" dataKey="y" name="Return" unit="%" />
+            <Tooltip
+              cursor={{ strokeDasharray: '3 3' }}
+              content={<ChartTooltipContent indicator="dot" />}
+            />
+            <Scatter data={chartData} fill="var(--color-value)" />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
       <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="strength-slider">Adjust Relationship Strength</Label>
         <Slider
@@ -90,6 +70,7 @@ const SpearmanCorrelationChart = () => {
           onValueChange={(value) => setStrength(value[0])}
           className="my-4"
         />
+        <p>Current Strength: {strength.toFixed(1)}</p>
       </div>
     </div>
   );

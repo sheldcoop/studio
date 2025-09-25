@@ -1,29 +1,20 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
   Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
+import { type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate normally distributed data using Box-Muller transform
 const generateNormalData = (mean: number, stdDev: number, n: number) => {
@@ -49,8 +40,9 @@ const getVariance = (data: number[]) => {
 };
 
 const FTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any[]>([]);
+  const chartConfig = getChartConfig(false) as ChartConfig;
+  const [fStat, setFStat] = useState(0);
 
   const generateData = () => {
     // StableStock: Lower standard deviation -> lower variance
@@ -61,43 +53,67 @@ const FTestChart = () => {
     const varianceStable = getVariance(dataStable);
     const varianceGrowth = getVariance(dataGrowth);
 
-    setChartData({
-      labels: ['StableStock (Utility)', 'GrowthStock (Tech)'],
-      datasets: [
-        {
-          label: 'Variance of Daily Returns',
-          data: [varianceStable, varianceGrowth],
-          backgroundColor: [chartColors.chart2, chartColors.chart3],
-          borderWidth: 1,
-        },
-      ],
-    });
+    setChartData([
+        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-stable)' },
+        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-growth)' },
+    ]);
+    setFStat(varianceGrowth / varianceStable);
   };
 
   useEffect(() => {
     generateData();
   }, []);
 
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, beginAtZero: true, title: {...chartConfig.scales.y.title, text: 'Variance (Volatility)'} },
-      x: { ...chartConfig.scales.x, grid: { display: false } },
-    },
-    plugins: {
-      ...chartConfig.plugins,
-      legend: { display: false },
-      title: { ...chartConfig.plugins.title, text: 'Comparing the Volatility of Two Stocks'},
-    },
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="rounded-lg border bg-background p-2 shadow-sm">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col">
+              <span className="text-[0.70rem] uppercase text-muted-foreground">
+                Stock
+              </span>
+              <span className="font-bold text-muted-foreground">{label}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[0.70rem] uppercase text-muted-foreground">
+                Variance
+              </span>
+              <span className="font-bold">
+                {payload[0].value.toFixed(4)}
+              </span>
+            </div>
+          </div>
+           <div className="mt-2 border-t pt-2 text-center">
+             <span className="text-[0.70rem] uppercase text-muted-foreground">
+                F-Statistic (Growth/Stable)
+              </span>
+              <span className="font-bold text-lg text-primary block">
+                {fStat.toFixed(2)}
+              </span>
+           </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
     <div className="space-y-4">
-      {chartData && (
-        <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-          <Bar data={chartData} options={options} />
-        </div>
-      )}
+      <div className="relative mx-auto h-[350px] w-full max-w-2xl">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <YAxis />
+            <Tooltip
+              cursor={{ fill: 'hsl(var(--muted))' }}
+              content={<CustomTooltip />}
+            />
+            <Bar dataKey="value" radius={8} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="text-center">
         <Button onClick={generateData}>Simulate New 100-Day Period</Button>
       </div>

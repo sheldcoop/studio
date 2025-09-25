@@ -2,33 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
   Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar, Line } from 'react-chartjs-2';
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getChartJsConfig, chartColors } from '@/lib/chart-config';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { getChartConfig, ChartTooltipContent } from '@/lib/chart-config';
+import {type ChartConfig} from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -48,49 +39,37 @@ const getMean = (data: number[]) =>
 
 // --- Chart Components ---
 const OneWayAnovaChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
+  const [chartData, setChartData] = useState<any[]>([]);
+  const chartConfig = getChartConfig(false);
 
   const generateData = () => {
     const dataAlpha = generateNormalData(1.2, 0.8, 50);
     const dataBeta = generateNormalData(1.5, 0.8, 50);
     const dataGamma = generateNormalData(0.9, 0.8, 50);
-    setChartData({
-      labels: ['Algorithm Alpha', 'Algorithm Beta', 'Algorithm Gamma'],
-      datasets: [
-        {
-          label: 'Average Monthly Return',
-          data: [getMean(dataAlpha), getMean(dataBeta), getMean(dataGamma)],
-          backgroundColor: [
-            chartColors.chart1,
-            chartColors.chart2,
-            chartColors.chart3,
-          ],
-        },
-      ],
-    });
+    setChartData([
+        { name: 'Algorithm Alpha', value: getMean(dataAlpha) },
+        { name: 'Algorithm Beta', value: getMean(dataBeta) },
+        { name: 'Algorithm Gamma', value: getMean(dataGamma) },
+    ]);
   };
 
   useEffect(() => {
     generateData();
   }, []);
-  
-  const options = {
-    ...chartConfig,
-    scales: {
-      y: { ...chartConfig.scales.y, beginAtZero: true, title: { ...chartConfig.scales.y.title, text: 'Average Monthly Return (%)' } },
-      x: { ...chartConfig.scales.x, grid: { display: false } }
-    },
-    plugins: { ...chartConfig.plugins, legend: { display: false }, title: { ...chartConfig.plugins.title, text: 'Comparing Algorithm Performance' } },
-  };
 
   return (
     <div className="space-y-4">
-      {chartData && (
         <div className="h-[350px]">
-          <Bar data={chartData} options={options} />
+         <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <YAxis unit="%" />
+                <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
+                <Bar dataKey="value" radius={8} />
+            </BarChart>
+        </ResponsiveContainer>
         </div>
-      )}
       <div className="text-center">
         <Button onClick={generateData}>Simulate New 50-Month Period</Button>
       </div>
@@ -99,8 +78,8 @@ const OneWayAnovaChart = () => {
 };
 
 const TwoWayAnovaChart = () => {
-    const [chartData, setChartData] = useState<any>(null);
-    const chartConfig = getChartJsConfig();
+    const [chartData, setChartData] = useState<any[]>([]);
+    const chartConfig = getChartConfig(true) as ChartConfig;
 
     const generateData = () => {
         const interactionEffect = Math.random() * 2;
@@ -111,47 +90,31 @@ const TwoWayAnovaChart = () => {
             cryptoAfternoon: 0.2 + interactionEffect + (Math.random() - 0.5) * 0.3,
         };
 
-        setChartData({
-            labels: ['Morning', 'Afternoon'],
-            datasets: [
-                {
-                    label: 'Stocks',
-                    data: [means.stocksMorning, means.stocksAfternoon],
-                    borderColor: chartColors.chart1,
-                    backgroundColor: chartColors.chart1,
-                    tension: 0.1,
-                },
-                {
-                    label: 'Crypto',
-                    data: [means.cryptoMorning, means.cryptoAfternoon],
-                    borderColor: chartColors.chart2,
-                    backgroundColor: chartColors.chart2,
-                    tension: 0.1,
-                },
-            ],
-        });
+        setChartData([
+            { name: 'Morning', stocks: means.stocksMorning, crypto: means.cryptoMorning },
+            { name: 'Afternoon', stocks: means.stocksAfternoon, crypto: means.cryptoAfternoon },
+        ]);
     };
 
     useEffect(() => {
         generateData();
     }, []);
     
-    const options = {
-        ...chartConfig,
-        scales: {
-            ...chartConfig.scales,
-            y: { ...chartConfig.scales.y, title: { ...chartConfig.scales.y.title, text: 'Average Trade Profitability ($)' } },
-        },
-        plugins: { ...chartConfig.plugins, legend: { ...chartConfig.plugins.legend, position: 'top' as const }, title: { ...chartConfig.plugins.title, text: 'Interaction of Asset Class and Time of Day' } },
-    };
 
     return (
         <div className="space-y-4">
-            {chartData && (
-                 <div className="h-[350px]">
-                    <Line data={chartData} options={options} />
-                </div>
-            )}
+            <div className="h-[350px]">
+                <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                        <YAxis unit="$" />
+                        <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                        <Line type="monotone" dataKey="stocks" strokeWidth={2} />
+                        <Line type="monotone" dataKey="crypto" strokeWidth={2} />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
             <p className="text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
             <div className="text-center">
                 <Button onClick={generateData}>Simulate New Trading Data</Button>
@@ -161,48 +124,45 @@ const TwoWayAnovaChart = () => {
 };
 
 const RepeatedMeasuresAnovaChart = () => {
-    const [chartData, setChartData] = useState<any>(null);
-    const chartConfig = getChartJsConfig();
+    const [chartData, setChartData] = useState<any[]>([]);
+    const chartConfig = getChartConfig(false);
 
     const generateData = () => {
         const startRatio = 0.8 + (Math.random() - 0.5) * 0.4;
         const midRatio = startRatio + (0.2 + Math.random() * 0.3);
         const endRatio = midRatio + (0.1 + Math.random() * 0.4);
 
-        setChartData({
-            labels: ['Year 1 (Baseline)', 'Year 2 (+Intl Stocks)', 'Year 3 (+Hedging)'],
-            datasets: [{
-                label: 'Portfolio Sharpe Ratio',
-                data: [startRatio, midRatio, endRatio],
-                borderColor: chartColors.primary,
-                backgroundColor: chartColors.primary,
-                pointBackgroundColor: chartColors.primaryForeground,
-                pointRadius: 5,
-                tension: 0.1,
-            }]
-        });
+        setChartData([
+            { name: 'Year 1 (Baseline)', value: startRatio },
+            { name: 'Year 2 (+Intl Stocks)', value: midRatio },
+            { name: 'Year 3 (+Hedging)', value: endRatio },
+        ]);
     };
     
     useEffect(() => {
         generateData();
     }, []);
     
-    const options = {
-      ...chartConfig,
-      scales: {
-          ...chartConfig.scales,
-          y: { ...chartConfig.scales.y, beginAtZero: false, title: { ...chartConfig.scales.y.title, text: 'Sharpe Ratio' } },
-      },
-      plugins: { ...chartConfig.plugins, legend: { display: false }, title: { ...chartConfig.plugins.title, text: 'Portfolio Performance Over Time' } },
-    };
 
     return (
          <div className="space-y-4">
-            {chartData && (
-                <div className="h-[350px]">
-                    <Line data={chartData} options={options} />
-                </div>
-            )}
+            <div className="h-[350px]">
+                <ResponsiveContainer width="100%" height="100%">
+                     <AreaChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                        <YAxis />
+                        <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                        <defs>
+                            <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0.1} />
+                            </linearGradient>
+                        </defs>
+                        <Area type="monotone" dataKey="value" strokeWidth={2} fill="url(#fillValue)" />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
             <div className="text-center">
                 <Button onClick={generateData}>Simulate New Portfolio Journey</Button>
             </div>

@@ -1,71 +1,73 @@
 
-// IMPORTANT: This function is not a hook, so it does not need 'use client'.
-// It's a server-side utility to generate configuration.
-import { theme } from '@/lib/theme';
+import * as React from "react"
+import { type ChartConfig } from "@/components/ui/chart"
 
-/**
- * Provides a centralized, theme-aware configuration for Chart.js instances.
- * This ensures all charts in the application have a consistent and professional look and feel.
- *
- * NOTE: This implementation assumes a 'light' theme context for chart rendering.
- * A more advanced implementation might accept a theme ('light' | 'dark') parameter
- * to dynamically switch between color palettes.
- *
- * @returns A Chart.js options object with theme-aware styling.
- */
-export const getChartJsConfig = () => {
-  const colors = theme.colors.light;
+export function getChartConfig(isMultiColor: boolean): ChartConfig {
+  const colors = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+  ];
+
+  if (isMultiColor) {
+    return {
+      value: { label: "Value", color: colors[0] },
+      stable: { label: "StableStock", color: colors[1] },
+      growth: { label: "GrowthStock", color: colors[2] },
+      before: { label: "Before", color: colors[3] },
+      after: { label: "After", color: colors[0] },
+      stocks: { label: "Stocks", color: colors[0] },
+      crypto: { label: "Crypto", color: colors[1] },
+      "Algo A": { label: "Algo A", color: colors[0] },
+      "Algo B": { label: "Algo B", color: colors[1] },
+      "Algo C": { label: "Algo C", color: colors[2] },
+      "Algo D": { label: "Algo D", color: colors[3] },
+      "Algo E": { label: "Algo E", color: colors[4] },
+    } as ChartConfig
+  }
 
   return {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        ticks: { color: `hsl(${colors.mutedForeground})` },
-        grid: { color: `hsl(${colors.border})` },
-        title: {
-          display: true,
-          color: `hsl(${colors.mutedForeground})`,
-        },
-      },
-      x: {
-        ticks: { color: `hsl(${colors.mutedForeground})` },
-        grid: { color: `hsl(${colors.border})` },
-        title: {
-          display: true,
-          color: `hsl(${colors.mutedForeground})`,
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        labels: {
-          color: `hsl(${colors.foreground})`,
-        },
-      },
-      title: {
-        display: true,
-        color: `hsl(${colors.foreground})`,
-        font: { size: 16 },
-      },
-    },
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-  };
-};
+    value: { label: "Value", color: colors[0] },
+    "Observed Trades": { label: "Observed", color: colors[0] },
+    "Expected Trades (if uniform)": { label: "Expected", color: colors[1] },
+    "Observed Profitable Trades (Bullish Market)": { label: "Observed", color: colors[0] },
+    "Expected Profitable Trades (if independent)": { label: "Expected", color: colors[1] },
+    "New York Office": { label: "New York", color: colors[0] },
+    "London Office": { label: "London", color: colors[1] },
+    "Empirical CDF (Sample)": { label: "Sample", color: colors[0] },
+    "Theoretical CDF (Normal)": { label: "Normal", color: colors[1] },
+  } as ChartConfig
+}
 
-export const chartColors = {
-  primary: `hsl(${theme.colors.light.primary})`,
-  primaryForeground: `hsl(${theme.colors.light.primaryForeground})`,
-  chart1: `hsl(${theme.colors.light.chart1})`,
-  chart2: `hsl(${theme.colors.light.chart2})`,
-  chart3: `hsl(${theme.colors.light.chart3})`,
-  chart4: `hsl(${theme.colors.light.chart4})`,
-  chart5: `hsl(${theme.colors.light.chart5})`,
-  muted: `hsl(${theme.colors.light.muted})`,
-  mutedForeground: `hsl(${theme.colors.light.mutedForeground})`,
-  destructive: `hsl(${theme.colors.light.destructive})`,
-  destructiveForeground: `hsl(${theme.colors.light.destructiveForeground})`,
+export const ChartTooltipContent = (props: any) => {
+  const { active, payload, label } = props;
+
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border bg-background p-2 shadow-sm">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col">
+            <span className="text-[0.70rem] uppercase text-muted-foreground">
+              {props.indicator || "Value"}
+            </span>
+            <span className="font-bold text-muted-foreground">{label}</span>
+          </div>
+          {payload.map((item: any, index: number) => (
+            <div className="flex flex-col" key={index}>
+              <span className="text-[0.70rem] uppercase text-muted-foreground">
+                {item.name}
+              </span>
+              <span className="font-bold" style={{ color: item.color }}>
+                {item.value.toLocaleString()}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 };
