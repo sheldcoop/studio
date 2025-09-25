@@ -7,6 +7,7 @@ import {
   BookOpenCheck,
   BotMessageSquare,
   Users,
+  FolderKanban,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -31,6 +32,11 @@ const links = [
     label: 'Community',
     icon: Users,
   },
+  {
+    href: '/topics',
+    label: 'Topics',
+    icon: FolderKanban,
+  }
 ];
 
 type MainNavProps = {
@@ -43,7 +49,7 @@ export function MainNav({ onLinkClick }: MainNavProps) {
   return (
     <>
       {links.map((link) => {
-        const isActive = pathname === link.href;
+        const isActive = pathname.startsWith(link.href) && (link.href !== '/dashboard' || pathname === '/dashboard');
         return (
           <Link
             key={link.label}

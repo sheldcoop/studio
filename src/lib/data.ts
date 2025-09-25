@@ -12,6 +12,7 @@ import {
   Boxes,
   type LucideIcon,
   FunctionSquare,
+  FolderKanban
 } from 'lucide-react';
 
 export const taglines = [
@@ -56,7 +57,7 @@ export const learningPaths: LearningPath[] = [
     lessons: [
         { title: 'Probability Theory', duration: 60, status: 'completed' },
         { title: 'Common Distributions', duration: 75, status: 'in-progress' },
-        { title: 'Hypothesis Testing', duration: 90, status: 'not-started' },
+        { title: 'Hypothesis Testing & P-Values', duration: 90, status: 'not-started' },
         { title: 'Bayesian Statistics Intro', duration: 60, status: 'not-started' },
     ],
   },
