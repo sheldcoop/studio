@@ -51,9 +51,9 @@ export default function HypothesisTestingPage() {
         </Card>
 
         <section>
-            <div className="text-center mb-8">
+            <div className="mb-8 text-center">
                 <h2 className="font-headline text-3xl font-bold">The Two Paths: Parametric vs. Non-Parametric</h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto mt-2">The type of data you have determines the statistical test you can use. The main fork in the road is between parametric and non-parametric tests.</p>
+                <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">The type of data you have determines the statistical test you can use. The main fork in the road is between parametric and non-parametric tests.</p>
             </div>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <Card className="flex flex-col">
