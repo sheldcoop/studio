@@ -3,17 +3,21 @@ import { quantJourney } from '@/lib/data';
 import { notFound } from 'next/navigation';
 
 export default function TopicPage({ params }: { params: { slug: string } }) {
-  const topic = quantJourney.find((item) => item.id === params.slug);
+  // A simple function to convert slug to title
+  const formatTitle = (slug: string) => {
+    return slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
-  if (!topic) {
-    notFound();
-  }
+  const title = formatTitle(params.slug);
 
   return (
     <div className="p-4 md:p-8">
       <PageHeader
-        title={topic.title}
-        description={`Learn all about ${topic.description.toLowerCase()}`}
+        title={title}
+        description={`Learn all about ${title.toLowerCase()}`}
       />
        <div className="flex h-96 items-center justify-center rounded-lg border border-dashed">
         <p className="text-muted-foreground">Topic content will go here.</p>

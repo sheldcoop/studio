@@ -10,6 +10,14 @@ import { statsToolkitTiers } from '@/lib/data';
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
+// Helper to convert title to a URL-friendly slug
+const toSlug = (title: string) => {
+  return title
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '');
+};
+
 export default function StatToolkitPage() {
   return (
     <>
@@ -30,7 +38,7 @@ export default function StatToolkitPage() {
                 {tier.concepts.map((concept) => (
                   <li key={concept}>
                     <Link
-                      href="#"
+                      href={`/topics/${toSlug(concept)}`}
                       className="group flex items-center gap-3 rounded-md p-2 text-sm transition-colors hover:bg-secondary"
                     >
                       <CheckCircle className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />

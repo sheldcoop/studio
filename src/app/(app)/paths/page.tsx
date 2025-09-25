@@ -22,6 +22,14 @@ const statusBadges = {
     'not-started': 'outline',
 } as const;
 
+// Helper to convert title to a URL-friendly slug
+const toSlug = (title: string) => {
+  return title
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '');
+};
+
 export default function PathsPage() {
   return (
     <>
@@ -52,7 +60,7 @@ export default function PathsPage() {
                 {path.lessons.map((lesson) => (
                   <li key={lesson.title}>
                     <Link
-                      href="#"
+                      href={`/topics/${toSlug(lesson.title)}`}
                       className="flex items-center justify-between p-4 px-6 transition-colors hover:bg-secondary/50"
                     >
                       <div className="flex items-center gap-4">
