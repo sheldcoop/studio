@@ -19,8 +19,8 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
 import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
+import { ChartTooltipContent } from '@/lib/chart-config';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -95,9 +95,9 @@ const OneWayAnovaChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={oneWayAnovaChartConfig} className="min-h-[200px] w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={oneWayAnovaChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid vertical={false} />
               <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -111,7 +111,7 @@ const OneWayAnovaChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-6">
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New 50-Month Period</Button>
       </div>
     </div>
@@ -142,9 +142,9 @@ const TwoWayAnovaChart = () => {
     
 
     return (
-        <div className="space-y-4">
-            <div className="h-[350px]">
-                <ChartContainer config={twoWayAnovaChartConfig} className="min-h-[200px] w-full">
+        <div className="flex h-[420px] w-full flex-col">
+            <div className="flex-grow">
+                <ChartContainer config={twoWayAnovaChartConfig} className="h-full w-full">
                     <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -155,8 +155,8 @@ const TwoWayAnovaChart = () => {
                     </LineChart>
                 </ChartContainer>
             </div>
-            <p className="text-center text-sm text-muted-foreground mt-2">Non-parallel lines suggest an interaction effect.</p>
-            <div className="text-center mt-6">
+            <p className="pt-4 text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
+            <div className="mt-4 flex-shrink-0 text-center">
                 <Button onClick={generateData}>Simulate New Trading Data</Button>
             </div>
         </div>
@@ -184,9 +184,9 @@ const RepeatedMeasuresAnovaChart = () => {
     
 
     return (
-         <div className="space-y-4">
-            <div className="h-[350px]">
-                <ChartContainer config={repeatedMeasuresAnovaChartConfig} className="min-h-[200px] w-full">
+         <div className="flex h-[420px] w-full flex-col">
+            <div className="flex-grow">
+                <ChartContainer config={repeatedMeasuresAnovaChartConfig} className="h-full w-full">
                      <AreaChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -202,7 +202,7 @@ const RepeatedMeasuresAnovaChart = () => {
                     </AreaChart>
                 </ChartContainer>
             </div>
-            <div className="text-center mt-6">
+            <div className="mt-4 flex-shrink-0 text-center">
                 <Button onClick={generateData}>Simulate New Portfolio Journey</Button>
             </div>
         </div>

@@ -112,9 +112,9 @@ const FTestChart = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-        <ChartContainer config={fTestChartConfig} className="min-h-[200px] w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="relative mx-auto flex-grow w-full max-w-2xl">
+        <ChartContainer config={fTestChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -131,7 +131,7 @@ const FTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-6">
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New 100-Day Period</Button>
       </div>
     </div>

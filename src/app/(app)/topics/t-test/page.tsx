@@ -22,7 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
@@ -92,9 +92,9 @@ const IndependentTestChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={independentTestChartConfig} className="w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={independentTestChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -111,7 +111,7 @@ const IndependentTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-6">
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New 60-Day Period</Button>
       </div>
     </div>
@@ -143,9 +143,9 @@ const PairedTestChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={pairedTestChartConfig} className="w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={pairedTestChartConfig} className="h-full w-full">
           <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -156,7 +156,7 @@ const PairedTestChart = () => {
           </LineChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-6">
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>
@@ -170,9 +170,9 @@ const OneSampleTestChart = () => {
   const chartData = [{ name: 'Avg. Return', value: meanValue }];
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={oneSampleTestChartConfig} className="w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={oneSampleTestChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
             <CartesianGrid horizontal={false} />
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={80} />
@@ -190,7 +190,7 @@ const OneSampleTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center py-4">
+      <div className="mx-auto max-w-sm flex-shrink-0 text-center">
         <div className="py-4">
           <Label htmlFor="mean-slider">
             Adjust Sample's Average Monthly Return (%)

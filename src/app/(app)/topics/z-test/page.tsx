@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
@@ -69,9 +69,9 @@ const OneSampleZTestChart = () => {
   const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: oneSampleZTestChartConfig.value.color }];
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={oneSampleZTestChartConfig} className="w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={oneSampleZTestChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <CartesianGrid horizontal={false} />
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120}/>
@@ -89,7 +89,7 @@ const OneSampleZTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center">
+      <div className="mx-auto max-w-sm flex-shrink-0 text-center">
         <div className="py-4">
           <Label htmlFor="mean-slider">
             Adjust Stock A&apos;s Recent Avg. Daily Return (%)
@@ -133,9 +133,9 @@ const TwoSampleZTestChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={twoSampleZTestChartConfig} className="w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={twoSampleZTestChartConfig} className="h-full w-full">
             <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -149,7 +149,7 @@ const TwoSampleZTestChart = () => {
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-6">
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New 5-Year Period</Button>
       </div>
     </div>

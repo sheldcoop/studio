@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 const goodnessOfFitChartConfig = {
@@ -86,9 +86,9 @@ const GoodnessOfFitChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={goodnessOfFitChartConfig} className="min-h-[200px] w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={goodnessOfFitChartConfig} className="h-full w-full">
             <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -100,7 +100,7 @@ const GoodnessOfFitChart = () => {
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-6"><Button onClick={generateData}>Simulate New Data</Button></div>
+      <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
     </div>
   );
 };
@@ -144,9 +144,9 @@ const TestForIndependenceChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <ChartContainer config={testForIndependenceChartConfig} className="min-h-[200px] w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={testForIndependenceChartConfig} className="h-full w-full">
             <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.split(' ')[0]}/>
@@ -158,8 +158,8 @@ const TestForIndependenceChart = () => {
             </BarChart>
         </ChartContainer>
       </div>
-      <div className="text-center mt-6"><Button onClick={generateData}>Simulate New Data</Button></div>
-      <p className="text-center text-sm text-muted-foreground">The test checks if the differences between observed and expected counts are significant.</p>
+      <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
+      <p className="pt-4 text-center text-sm text-muted-foreground">The test checks if the differences between observed and expected counts are significant.</p>
     </div>
   );
 };
@@ -191,9 +191,9 @@ const TestForHomogeneityChart = () => {
     }, []);
 
     return (
-        <div className="space-y-4">
-          <div className="h-[350px]">
-            <ChartContainer config={testForHomogeneityChartConfig} className="min-h-[200px] w-full">
+        <div className="flex h-[420px] w-full flex-col">
+          <div className="flex-grow">
+            <ChartContainer config={testForHomogeneityChartConfig} className="h-full w-full">
                 <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                     <CartesianGrid vertical={false} />
                     <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
@@ -205,7 +205,7 @@ const TestForHomogeneityChart = () => {
                 </BarChart>
             </ChartContainer>
           </div>
-          <div className="text-center mt-6"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
+          <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
         </div>
     );
 };

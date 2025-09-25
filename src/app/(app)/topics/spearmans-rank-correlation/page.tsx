@@ -14,7 +14,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
@@ -48,9 +48,9 @@ const SpearmanCorrelationChart = () => {
 
 
   return (
-    <div className="space-y-4">
-      <div className="relative mx-auto h-[350px] w-full max-w-2xl">
-        <ChartContainer config={spearmanCorrelationChartConfig} className="min-h-[200px] w-full">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="relative mx-auto flex-grow w-full max-w-2xl">
+        <ChartContainer config={spearmanCorrelationChartConfig} className="h-full w-full">
           <ScatterChart
             accessibilityLayer
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -66,17 +66,19 @@ const SpearmanCorrelationChart = () => {
           </ScatterChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center py-4">
-        <Label htmlFor="strength-slider">Adjust Relationship Strength</Label>
-        <Slider
-          id="strength-slider"
-          min={1}
-          max={10}
-          value={[strength]}
-          step={0.5}
-          onValueChange={(value) => setStrength(value[0])}
-          className="my-4"
-        />
+      <div className="mx-auto max-w-sm flex-shrink-0 text-center">
+        <div className="py-4">
+          <Label htmlFor="strength-slider">Adjust Relationship Strength</Label>
+          <Slider
+            id="strength-slider"
+            min={1}
+            max={10}
+            value={[strength]}
+            step={0.5}
+            onValueChange={(value) => setStrength(value[0])}
+            className="my-4"
+          />
+        </div>
         <p>Current Strength: {strength.toFixed(1)}</p>
       </div>
     </div>
