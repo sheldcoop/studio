@@ -40,8 +40,8 @@ export function AnimatedTagline() {
   const staticPart = taglines[taglineIndex][0];
 
   return (
-    <h1 className="font-headline text-4xl font-bold tracking-tight md:text-5xl">
-      <span className="inline-block h-12">
+    <h1 className="font-headline text-5xl font-bold tracking-tight md:text-6xl">
+      <span className="inline-block h-14">
         <span>{staticPart}</span>
         <span className="text-primary">{animatedText}</span>
         <span className="animate-blink border-r-2 border-foreground align-bottom" aria-hidden="true"></span>
