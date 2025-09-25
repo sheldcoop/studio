@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -45,7 +44,7 @@ const pageData = {
             {
               name: 'Z-Test',
               description:
-                'Compares a sample\'s average to a known population average when variance is known.',
+                "Compares a sample's average to a known population average when variance is known.",
             },
             {
               name: 'ANOVA (Analysis of Variance)',
