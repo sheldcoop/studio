@@ -99,7 +99,7 @@ const KSTestChart = () => {
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
                 <Line type="step" dataKey="empirical" name="Empirical CDF (Sample)" stroke={ksTestChartConfig.empirical.color} dot={false} strokeWidth={2}/>
-                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke={ksTestChartConfig.theoretical.color} dot={false} strokeWidth={2} />
+                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke={ksTestChart-config.theoretical.color} dot={false} strokeWidth={2} />
             </LineChart>
         </ChartContainer>
       </div>
@@ -107,7 +107,7 @@ const KSTestChart = () => {
         <Button onClick={() => setDataType('normal')} variant={dataType === 'normal' ? 'default' : 'outline'}>Generate Normal Sample</Button>
         <Button onClick={() => setDataType('uniform')} variant={dataType === 'uniform' ? 'default' : 'outline'}>Generate Uniform Sample</Button>
       </div>
-      <p className="text-center text-sm text-muted-foreground">The K-S statistic is the maximum vertical distance between the two curves.</p>
+      <p className="text-center text-sm text-muted-foreground pt-4">The K-S statistic is the maximum vertical distance between the two curves.</p>
     </div>
   );
 };
