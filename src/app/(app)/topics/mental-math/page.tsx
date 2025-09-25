@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -79,6 +79,7 @@ export default function MentalMathPage() {
   const [quizState, setQuizState] = useState<QuizState>('not-started');
   const [timeSelection, setTimeSelection] = useState(60);
   const [timeLeft, setTimeLeft] = useState(timeSelection);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (quizState === 'active' && timeLeft > 0) {
@@ -95,6 +96,7 @@ export default function MentalMathPage() {
     setIsCorrect(null);
     setUserAnswer('');
     setProblem(generateProblem());
+    inputRef.current?.focus();
   }, []);
 
   useEffect(() => {
@@ -116,7 +118,7 @@ export default function MentalMathPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (userAnswer === '') return;
+    if (userAnswer === '' || isCorrect !== null) return;
 
     const answerFloat = parseFloat(userAnswer);
     if (Math.abs(answerFloat - problem!.answer) < 0.01) {
@@ -144,7 +146,7 @@ export default function MentalMathPage() {
     <div className="flex flex-col flex-1">
       <PageHeader
         title="Mental Math Practice"
-        description="Sharpen your calculation speed for quant interviews."
+        description="Sharpen your calculation speed for quant interviews. Every second counts."
       />
       <div className="flex flex-1 items-center justify-center">
         <Card className="w-full max-w-2xl">
@@ -155,7 +157,7 @@ export default function MentalMathPage() {
                  {timeOptions.map(option => (
                    <div key={option.value}>
                      <RadioGroupItem value={String(option.value)} id={String(option.value)} className="peer sr-only"/>
-                     <Label htmlFor={String(option.value)} className="flex h-full flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                     <Label htmlFor={String(option.value)} className="flex h-full flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">
                        {option.label}
                      </Label>
                    </div>
@@ -185,6 +187,7 @@ export default function MentalMathPage() {
                 <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
                   <div className="relative">
                     <Input
+                      ref={inputRef}
                       type="text"
                       placeholder="Your Answer"
                       value={userAnswer}
@@ -195,6 +198,7 @@ export default function MentalMathPage() {
                         isCorrect === true && 'border-green-500 focus-visible:ring-green-500',
                         isCorrect === false && 'border-red-500 focus-visible:ring-red-500'
                       )}
+                      autoFocus
                     />
                     {isCorrect === true && <Check className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" />}
                     {isCorrect === false && <X className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500" />}

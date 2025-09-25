@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Calculator } from 'lucide-react';
 
 const zScores = {
@@ -56,6 +55,11 @@ export default function ConfidenceIntervalsPage() {
       setResult(null);
     }
   };
+  
+  useEffect(() => {
+    calculateInterval();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
@@ -66,33 +70,33 @@ export default function ConfidenceIntervalsPage() {
       <div className="mx-auto max-w-4xl space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>What Are They?</CardTitle>
+            <CardTitle className="font-headline">What Are They?</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
               A confidence interval is a range of values, derived from sample
               data, that is likely to contain the value of an unknown population
-              parameter.
+              parameter. It's a fundamental concept in inferential statistics.
             </p>
             <p>
               Instead of giving a single number as an estimate (a "point
-              estimate"), we provide a range. For example, instead of saying
+              estimate"), which is almost certainly not exactly correct, we provide a plausible range. For example, instead of saying
               "the average IQ is 100," we might say "we are 95% confident that
-              the average IQ is between 97 and 103." This range is the
-              confidence interval.
+              the true average IQ of the population is between 97 and 103." This range is the
+              confidence interval. The "95% confidence" means that if we were to take many samples and build a confidence interval from each one, 95% of those intervals would contain the true population mean.
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Interactive Calculator</CardTitle>
+            <CardTitle className="font-headline">Interactive Calculator</CardTitle>
             <CardDescription>
-              Calculate a confidence interval for a population mean.
+              Calculate a confidence interval for a population mean. Adjust the values to see how they affect the interval width.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-4">
+            <div className="space-y-4 rounded-lg border p-6">
               <div>
                 <Label htmlFor="mean">Sample Mean (μ)</Label>
                 <Input
@@ -117,6 +121,7 @@ export default function ConfidenceIntervalsPage() {
                   id="sample-size"
                   type="number"
                   value={sampleSize}
+                  min="1"
                   onChange={(e) => setSampleSize(Number(e.target.value))}
                 />
               </div>
@@ -148,7 +153,7 @@ export default function ConfidenceIntervalsPage() {
                   <p className="text-sm text-muted-foreground">
                     {confidenceLevel}% Confidence Interval
                   </p>
-                  <p className="text-3xl font-bold tracking-tight">
+                  <p className="font-headline text-4xl font-bold tracking-tight text-primary">
                     [{result.lower}, {result.upper}]
                   </p>
                   <p className="mt-2 max-w-xs text-sm text-muted-foreground">

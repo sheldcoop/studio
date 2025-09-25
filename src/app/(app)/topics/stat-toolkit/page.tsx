@@ -14,8 +14,9 @@ import Link from 'next/link';
 const toSlug = (title: string) => {
   return title
     .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '');
+    .replace(/ & /g, '-') // Handle " & " case
+    .replace(/[ /]/g, '-') // Handle spaces and slashes
+    .replace(/[^\w-]+/g, ''); // Remove all non-word chars except -
 };
 
 export default function StatToolkitPage() {
@@ -27,9 +28,9 @@ export default function StatToolkitPage() {
       />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {statsToolkitTiers.map((tier) => (
-          <Card key={tier.title} className="flex flex-col">
+          <Card key={tier.title} className="flex flex-col bg-card/70">
             <CardHeader>
-              <CardTitle className="font-headline text-xl">
+              <CardTitle className="font-headline text-xl text-primary">
                 {tier.title}
               </CardTitle>
             </CardHeader>

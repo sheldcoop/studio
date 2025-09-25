@@ -51,26 +51,31 @@ export default function LinearAlgebraPage() {
       <div className="mx-auto max-w-5xl space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Why is Linear Algebra Essential?</CardTitle>
+            <CardTitle className="font-headline">Why is Linear Algebra Essential?</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              In quantitative finance, we deal with massive amounts of data—stock prices, interest rates, portfolio returns, and more. Linear algebra provides the tools to organize, manipulate, and analyze this data efficiently. It allows us to represent complex systems of financial relationships in a compact and elegant way, from modeling portfolio risk to building machine learning algorithms for trading signals.
+              In quantitative finance, we deal with massive amounts of data—stock prices, interest rates, portfolio returns, and more. Linear algebra provides the tools to organize, manipulate, and analyze this data efficiently. It allows us to represent complex systems of financial relationships in a compact and elegant way.
+            </p>
+            <p>
+              From modeling portfolio risk with covariance matrices to building machine learning algorithms for trading signals using techniques like Principal Component Analysis (PCA), linear algebra is not just abstract theory; it's the practical engine driving many quantitative strategies. Mastering it is non-negotiable.
             </p>
           </CardContent>
         </Card>
 
         <div className="text-center">
             <h2 className="font-headline text-2xl font-bold">Core Concepts</h2>
-            <p className="text-muted-foreground">Explore the pillars of linear algebra for finance.</p>
+            <p className="text-muted-foreground mt-1">Explore the pillars of linear algebra for finance.</p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {subTopics.map((topic) => (
-            <Link key={topic.title} href={topic.href}>
-              <Card className="flex h-full flex-col transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10">
-                <CardHeader className="flex-row items-center gap-4">
-                  <topic.icon className="h-8 w-8 text-primary" />
+            <Link key={topic.title} href={topic.href} className="block rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+              <Card className="flex h-full transform-gpu flex-col transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
+                <CardHeader className="flex-row items-start gap-4">
+                  <div className="rounded-lg bg-primary/10 p-3">
+                    <topic.icon className="h-8 w-8 text-primary" />
+                  </div>
                   <CardTitle className="font-headline text-lg">
                     {topic.title}
                   </CardTitle>

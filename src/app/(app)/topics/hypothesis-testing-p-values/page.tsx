@@ -39,19 +39,19 @@ const quizQuestions = [
     question: "You want to compare the average returns of two different trading algorithms on the same set of stocks. The returns data is normally distributed. Which test is most appropriate?",
     options: ["T-Test", "ANOVA", "Mann-Whitney U Test", "Chi-Squared Test"],
     answer: "T-Test",
-    explanation: "A T-Test is used to compare the means of two groups. Since the data is normally distributed, the parametric T-Test is the best choice."
+    explanation: "A T-Test is used to compare the means of two groups. Since the data is normally distributed and you're comparing averages, the parametric T-Test is the best choice."
   },
   {
     question: "A researcher wants to see if there's a difference in the median risk scores (on a scale of 1-10) assigned by three different ratings agencies. The scores are not normally distributed. Which test should they use?",
     options: ["ANOVA", "Kruskal-Wallis Test", "F-Test", "T-Test"],
     answer: "Kruskal-Wallis Test",
-    explanation: "The Kruskal-Wallis Test is the non-parametric alternative to ANOVA, used for comparing the medians of three or more independent groups when the data is not normally distributed."
+    explanation: "The Kruskal-Wallis Test is the non-parametric alternative to ANOVA. It's used for comparing the medians of three or more independent groups when the data doesn't meet the assumption of normality."
   },
   {
     question: "You are analyzing the performance of a new portfolio management software. You have the portfolio values 'before' and 'after' implementation for 50 clients. You want to see if the software made a significant difference, but the change in values isn't normally distributed. Which test is suitable?",
     options: ["Paired T-Test", "Mann-Whitney U Test", "Wilcoxon Signed-Rank Test", "Sign Test"],
     answer: "Wilcoxon Signed-Rank Test",
-    explanation: "The Wilcoxon Signed-Rank Test is used for paired data (like 'before' and 'after') when the assumption of normality for the difference is not met. It's the non-parametric alternative to the paired T-Test."
+    explanation: "The Wilcoxon Signed-Rank Test is used for paired data (like 'before' and 'after') when the assumption of normality for the difference is not met. It's the non-parametric equivalent of the paired T-Test."
   },
   {
     question: "A company wants to determine if there is a linear relationship between the amount of money spent on advertising and its monthly sales revenue. Both variables are continuous and appear to be normally distributed. What should they use?",
@@ -108,22 +108,19 @@ export default function HypothesisTestingPage() {
     <>
       <PageHeader
         title="Hypothesis Testing & P-Values"
-        description="Learn all about hypothesis testing and p-values"
+        description="The detective work of data science: making decisions under uncertainty."
       />
       <div className="mx-auto max-w-7xl space-y-12">
         <Card>
           <CardHeader>
-            <CardTitle>The Core Idea: What is Hypothesis Testing?</CardTitle>
+            <CardTitle className="font-headline">The Core Idea: What is Hypothesis Testing?</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Think of hypothesis testing as being a data detective. You start
-              with a default assumption, the "Null Hypothesis" (H₀), which states
-              there is no effect or no difference. Then, you gather evidence
-              (your sample data) to see if you have enough proof to reject that
-              default assumption in favor of an alternative one, the "Alternative
-              Hypothesis" (H₁). The p-value is the strength of your evidence
-              against the null hypothesis.
+          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
+            <p>
+              Think of hypothesis testing as being a data detective. You start with a default assumption, the **Null Hypothesis (H₀)**, which states there is no effect or no difference (e.g., "a new drug has no effect"). Then, you gather evidence (your sample data) to see if you have enough proof to reject that default assumption in favor of an alternative, the **Alternative Hypothesis (H₁)** (e.g., "the new drug has an effect").
+            </p>
+            <p>
+                The **p-value** is the crucial piece of evidence. It's the probability of observing your data (or something even more extreme) if the null hypothesis were actually true. A small p-value (typically &lt; 0.05) suggests that your observed data is very unlikely under the null hypothesis, giving you a reason to reject it.
             </p>
           </CardContent>
         </Card>
@@ -131,39 +128,44 @@ export default function HypothesisTestingPage() {
         <section>
             <div className="text-center mb-8">
                 <h2 className="font-headline text-3xl font-bold">The Two Paths: Parametric vs. Non-Parametric</h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto mt-2">The type of data you have determines the statistical test you can use. The main fork in the road is between parametric and non-parametric tests.</p>
             </div>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <Card className="flex flex-col">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 font-headline text-2xl">👨‍🍳 Parametric Tests</CardTitle>
+                        <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">👨‍🍳 Parametric Tests</CardTitle>
                         <CardDescription>The Professional Chef: Assumes ingredients (data) meet certain standards (e.g., normal distribution). Precise and powerful when assumptions are met.</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1">
-                        <div className="space-y-3">
+                        <ul className="space-y-3">
                             {parametricTests.map(test => (
-                                <Link key={test.slug} href={`/topics/${test.slug}`} className="block rounded-lg border p-4 transition-colors hover:bg-secondary">
-                                    <h4 className="font-semibold">{test.name}</h4>
-                                    <p className="text-sm text-muted-foreground">{test.description}</p>
-                                </Link>
+                                <li key={test.slug}>
+                                    <Link href={`/topics/${test.slug}`} className="block rounded-lg border p-4 transition-colors hover:bg-secondary/50">
+                                        <h4 className="font-semibold">{test.name}</h4>
+                                        <p className="text-sm text-muted-foreground">{test.description}</p>
+                                    </Link>
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     </CardContent>
                 </Card>
 
                 <Card className="flex flex-col">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 font-headline text-2xl">🏕️ Non-Parametric Tests</CardTitle>
-                        <CardDescription>The Campfire Cook: Makes no strict assumptions about ingredients. More flexible and robust, especially with unusual or ranked data.</CardDescription>
+                        <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">🏕️ Non-Parametric Tests</CardTitle>
+                        <CardDescription>The Campfire Cook: Makes no strict assumptions about ingredients. More flexible and robust, especially with unusual, ranked, or non-normal data.</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1">
-                        <div className="space-y-3">
+                        <ul className="space-y-3">
                             {nonParametricTests.map(test => (
-                                 <Link key={test.slug} href={`/topics/${test.slug}`} className="block rounded-lg border p-4 transition-colors hover:bg-secondary">
-                                    <h4 className="font-semibold">{test.name}</h4>
-                                    <p className="text-sm text-muted-foreground">{test.description}</p>
-                                </Link>
+                                 <li key={test.slug}>
+                                    <Link href={`/topics/${test.slug}`} className="block rounded-lg border p-4 transition-colors hover:bg-secondary/50">
+                                        <h4 className="font-semibold">{test.name}</h4>
+                                        <p className="text-sm text-muted-foreground">{test.description}</p>
+                                    </Link>
+                                 </li>
                             ))}
-                        </div>
+                        </ul>
                     </CardContent>
                 </Card>
             </div>
@@ -172,39 +174,40 @@ export default function HypothesisTestingPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">Knowledge Check: Which Test Should You Use?</CardTitle>
+            <CardDescription>Test your understanding of when to use each type of test.</CardDescription>
           </CardHeader>
           <CardContent>
             {!quizFinished ? (
               <div className="space-y-6">
-                <p className="text-lg font-semibold">{currentQuestion.question}</p>
+                <p className="text-lg font-semibold">{`Q${currentQuestionIndex + 1}: ${currentQuestion.question}`}</p>
                 <RadioGroup value={selectedOption ?? undefined} onValueChange={handleOptionSelect} disabled={showExplanation}>
                   {currentQuestion.options.map((option, index) => (
                     <div key={index} className={cn(
-                        "flex items-center space-x-3 rounded-md border p-4 transition-colors",
-                        showExplanation && option === currentQuestion.answer && "border-green-500 bg-green-500/10",
-                        showExplanation && selectedOption === option && option !== currentQuestion.answer && "border-red-500 bg-red-500/10"
+                        "flex items-center space-x-3 rounded-md border p-4 transition-all duration-300",
+                        showExplanation && option === currentQuestion.answer && "border-green-500 bg-green-500/10 ring-2 ring-green-500",
+                        showExplanation && selectedOption === option && option !== currentQuestion.answer && "border-red-500 bg-red-500/10 ring-2 ring-red-500"
                     )}>
                       <RadioGroupItem value={option} id={`q${currentQuestionIndex}-o${index}`} />
-                      <Label htmlFor={`q${currentQuestionIndex}-o${index}`} className="flex-1 cursor-pointer">{option}</Label>
-                      {showExplanation && option === currentQuestion.answer && <Check className="h-5 w-5 text-green-500" />}
-                      {showExplanation && selectedOption === option && option !== currentQuestion.answer && <X className="h-5 w-5 text-red-500" />}
+                      <Label htmlFor={`q${currentQuestionIndex}-o${index}`} className="flex-1 cursor-pointer text-base">{option}</Label>
+                      {showExplanation && option === currentQuestion.answer && <Check className="h-6 w-6 text-green-500" />}
+                      {showExplanation && selectedOption === option && option !== currentQuestion.answer && <X className="h-6 w-6 text-red-500" />}
                     </div>
                   ))}
                 </RadioGroup>
                 {showExplanation && (
-                    <div className="rounded-md border-l-4 bg-secondary p-4"
-                        style={{ borderLeftColor: isCorrect ? 'hsl(var(--primary))' : 'hsl(var(--destructive))'}}>
-                        <p className="font-semibold">{isCorrect ? 'Correct!' : 'Not quite.'}</p>
-                        <p className="text-sm text-muted-foreground">{currentQuestion.explanation}</p>
+                    <div className={cn("rounded-md border-l-4 p-4",
+                        isCorrect ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10")}>
+                        <p className="font-semibold text-lg">{isCorrect ? 'Correct!' : 'Not quite.'}</p>
+                        <p className="text-sm text-foreground/80 mt-1">{currentQuestion.explanation}</p>
                     </div>
                 )}
               </div>
             ) : (
-                <div className="text-center">
-                    <h3 className="text-2xl font-bold">Quiz Complete!</h3>
-                    <p className="text-muted-foreground mt-2">You scored {score} out of {quizQuestions.length}.</p>
+                <div className="text-center p-8">
+                    <h3 className="font-headline text-3xl font-bold">Quiz Complete!</h3>
+                    <p className="text-muted-foreground mt-2 text-lg">You scored {score} out of {quizQuestions.length}.</p>
                     <div className="mt-6">
-                        <Button onClick={resetQuiz}>
+                        <Button onClick={resetQuiz} size="lg">
                             <RefreshCw className="mr-2"/>
                             Try Again
                         </Button>
@@ -225,5 +228,3 @@ export default function HypothesisTestingPage() {
     </>
   );
 }
-
-    
