@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartTooltipContent } from '@/lib/chart-config.tsx';
+import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
@@ -61,7 +61,7 @@ const WilcoxonSignedRankChart = () => {
     <div className="space-y-4">
       <div className="h-[350px]">
         <ChartContainer config={wilcoxonChartConfig} className="min-h-[200px] w-full">
-            <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
