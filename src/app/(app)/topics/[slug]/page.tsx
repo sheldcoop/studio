@@ -8,7 +8,7 @@ function slugToTitle(slug: string) {
     .join(' ');
 }
 
-export default function TopicPage({ params }: { params: { slug: string } }) {
+export default async function TopicPage({ params }: { params: { slug: string } }) {
   const title = slugToTitle(params.slug);
 
   // A list of slugs that have their own dedicated page.
