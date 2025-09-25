@@ -79,7 +79,7 @@ const PearsonCorrelationChart = () => {
           </ScatterChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center mt-6">
+      <div className="mx-auto max-w-sm text-center py-4">
         <Label htmlFor="correlation-slider">Adjust Correlation Coefficient</Label>
         <Slider
           id="correlation-slider"

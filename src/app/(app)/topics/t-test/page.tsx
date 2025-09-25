@@ -105,7 +105,7 @@ const IndependentTestChart = () => {
             />
             <Bar dataKey="value" radius={8}>
                 {chartData.map((entry, index) => (
-                    <Rectangle key={`cell-${index}`} fill={independentTestChartConfig[entry.name as keyof typeof independentTestChartConfig]?.color} />
+                    <Rectangle key={`cell-${index}`} fill={independentTestChartConfig[entry.name as keyof typeof independentTestChartConfig].color} />
                 ))}
             </Bar>
           </BarChart>
@@ -189,7 +189,7 @@ const OneSampleTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center mt-6">
+      <div className="mx-auto max-w-sm text-center py-4">
         <Label htmlFor="mean-slider">
           Adjust Sample's Average Monthly Return (%)
         </Label>

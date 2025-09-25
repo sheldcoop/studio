@@ -66,7 +66,7 @@ const SpearmanCorrelationChart = () => {
           </ScatterChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center mt-6">
+      <div className="mx-auto max-w-sm text-center py-4">
         <Label htmlFor="strength-slider">Adjust Relationship Strength</Label>
         <Slider
           id="strength-slider"

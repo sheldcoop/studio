@@ -88,7 +88,7 @@ const OneSampleZTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center mt-6">
+      <div className="mx-auto max-w-sm text-center py-4">
         <Label htmlFor="mean-slider">
           Adjust Stock A&apos;s Recent Avg. Daily Return (%)
         </Label>
@@ -140,7 +140,7 @@ const TwoSampleZTestChart = () => {
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Bar dataKey="value" name="Avg Daily Volatility" radius={4}>
                     {chartData.map((entry, index) => (
-                        <Rectangle key={`cell-${index}`} fill={twoSampleZTestChartConfig[entry.name as keyof typeof twoSampleZTestChartConfig]?.color} />
+                        <Rectangle key={`cell-${index}`} fill={twoSampleZTestChartConfig[entry.name as keyof typeof twoSampleZTestChartConfig].color} />
                     ))}
                 </Bar>
             </BarChart>
