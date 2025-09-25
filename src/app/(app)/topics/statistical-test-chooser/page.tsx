@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -11,8 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ChevronsRight, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ChevronsRight, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 type DecisionNode = {
@@ -144,11 +143,11 @@ export default function StatisticalTestChooserPage() {
   
   const handleBreadcrumbClick = (index: number) => {
     let node = decisionTree;
-    for(let i = 0; i <= index; i++) {
+    for(let i = 0; i < index; i++) {
         node = node.options![path[i]]
     }
     setCurrentNode(node);
-    setPath(path.slice(0, index + 1));
+    setPath(path.slice(0, index));
   }
 
   return (
@@ -159,11 +158,11 @@ export default function StatisticalTestChooserPage() {
       />
       <div className="w-full max-w-3xl mx-auto">
         <div className="mb-6 flex items-center flex-wrap gap-x-2 gap-y-1 text-sm text-muted-foreground">
-          <button onClick={handleReset} className="hover:text-primary font-medium">Start</button>
+          <button onClick={handleReset} className="hover:text-primary font-medium transition-colors">Start</button>
           {path.map((p, i) => (
             <React.Fragment key={i}>
                 <ChevronsRight className="h-4 w-4" />
-                <button onClick={() => handleBreadcrumbClick(i)} className="text-left hover:text-primary font-medium transition-colors">
+                <button onClick={() => handleBreadcrumbClick(i + 1)} className="text-left hover:text-primary font-medium transition-colors">
                     {p.split('(')[0].trim()}
                 </button>
             </React.Fragment>
