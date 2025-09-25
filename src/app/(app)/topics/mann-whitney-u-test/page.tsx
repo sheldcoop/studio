@@ -55,10 +55,10 @@ const createHistogram = (data: number[], binSize: number) => {
     return { labels, counts };
 };
 
+const chartConfig = getChartJsConfig();
 
 const MannWhitneyChart = () => {
   const [chartData, setChartData] = useState<any>(null);
-  const chartConfig = getChartJsConfig();
 
   const generateData = () => {
     // Generate two skewed distributions
@@ -90,7 +90,7 @@ const MannWhitneyChart = () => {
         {
           label: 'Algo A (Old)',
           data: countsA,
-          backgroundColor: `${chartColors.chart1}B3`, // Use chart color with 70% opacity (B3 hex)
+          backgroundColor: chartColors.chart1,
           borderColor: chartColors.chart1,
           barPercentage: 1.0,
           categoryPercentage: 1.0,
@@ -98,7 +98,7 @@ const MannWhitneyChart = () => {
         {
           label: 'Algo B (New)',
           data: countsB,
-          backgroundColor: `${chartColors.chart2}B3`, // Use chart color with 70% opacity (B3 hex)
+          backgroundColor: chartColors.chart2,
           borderColor: chartColors.chart2,
           barPercentage: 1.0,
           categoryPercentage: 1.0,
