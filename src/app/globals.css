@@ -77,24 +77,3 @@
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 }
-
-/* React Flow styles */
-.react-flow .react-flow__handle {
-  @apply bg-primary;
-}
-
-.react-flow .react-flow__edge-path {
-  @apply stroke-muted-foreground;
-  stroke-width: 2;
-}
-
-.react-flow .react-flow__edge.animated path {
-  stroke-dasharray: 5;
-  animation: dashdraw 0.5s linear infinite;
-}
-
-@keyframes dashdraw {
-  from {
-    stroke-dashoffset: 10;
-  }
-}

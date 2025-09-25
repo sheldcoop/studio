@@ -29,11 +29,6 @@ const links = [
     icon: BotMessageSquare,
   },
   {
-    href: '/topics/statistical-test-chooser',
-    label: 'Test Chooser',
-    icon: Route,
-  },
-  {
     href: '/community',
     label: 'Community',
     icon: Users,
