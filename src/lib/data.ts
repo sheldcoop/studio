@@ -4,7 +4,13 @@ import {
   AreaChart,
   BrainCircuit,
   CandlestickChart,
+  Sigma,
+  Pi,
+  Cpu,
+  LineChart,
+  Boxes,
   type LucideIcon,
+  FunctionSquare,
 } from 'lucide-react';
 
 export type LearningPath = {
@@ -150,4 +156,56 @@ export const communityPosts: CommunityPost[] = [
         views: 67,
         lastPost: { author: 'econometrics_wiz', time: '2 days ago' },
     },
+];
+
+export const quantJourney = [
+  {
+    id: 'linear-algebra',
+    title: 'Linear Algebra',
+    description: 'Vectors, matrices, and tensors. The language of data.',
+    icon: Pi,
+    href: '/paths',
+  },
+  {
+    id: 'stats-prob',
+    title: 'Statistics & Probability',
+    description: 'Quantifying uncertainty and making sense of distributions.',
+    icon: Sigma,
+    href: '/paths',
+  },
+  {
+    id: 'mental-math',
+    title: 'Mental Math',
+    description: 'Train your calculation speed and accuracy for interviews.',
+    icon: BrainCircuit,
+    href: '/interview-prep',
+  },
+  {
+    id: 'time-series',
+    title: 'Time Series Analysis',
+    description: 'ARIMA, GARCH, and forecasting market movements.',
+    icon: LineChart,
+    href: '/paths',
+  },
+  {
+    id: 'machine-learning',
+    title: 'Machine Learning',
+    description: 'Building predictive models for financial markets.',
+    icon: Cpu,
+    href: '/paths',
+  },
+  {
+    id: 'algo-trading',
+    title: 'Algorithmic Trading',
+    description: 'From strategy backtesting to live deployment.',
+    icon: CandlestickChart,
+    href: '/paths',
+  },
+  {
+    id: 'stat-toolkit',
+    title: "Statistician's Toolkit",
+    description: 'Interactive tools for hands-on statistical analysis.',
+    icon: Boxes,
+    href: '/community',
+  },
 ];
