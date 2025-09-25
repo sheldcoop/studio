@@ -1,20 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Check, X, ArrowRight, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 const parametricTests = [
@@ -35,76 +28,8 @@ const nonParametricTests = [
     { name: 'Chi-Squared Test', description: 'Tests if there is a significant association between two categorical variables.', slug: 'chi-squared-test' },
 ];
 
-const quizQuestions = [
-  {
-    question: "You want to compare the average returns of two different trading algorithms on the same set of stocks. The returns data is normally distributed. Which test is most appropriate?",
-    options: ["T-Test", "ANOVA", "Mann-Whitney U Test", "Chi-Squared Test"],
-    answer: "T-Test",
-    explanation: "A T-Test is used to compare the means of two groups. Since the data is normally distributed and you're comparing averages, the parametric T-Test is the best choice."
-  },
-  {
-    question: "A researcher wants to see if there's a difference in the median risk scores (on a scale of 1-10) assigned by three different ratings agencies. The scores are not normally distributed. Which test should they use?",
-    options: ["ANOVA", "Kruskal-Wallis Test", "F-Test", "T-Test"],
-    answer: "Kruskal-Wallis Test",
-    explanation: "The Kruskal-Wallis Test is the non-parametric alternative to ANOVA. It's used for comparing the medians of three or more independent groups when the data doesn't meet the assumption of normality."
-  },
-  {
-    question: "An analyst wants to check if there is an association between two categorical variables: 'investment risk tolerance' (low, medium, high) and 'preferred asset class' (stocks, bonds, real estate). Which test is suitable?",
-    options: ["Paired T-Test", "Mann-Whitney U Test", "ANOVA", "Chi-Squared Test"],
-    answer: "Chi-Squared Test",
-    explanation: "The Chi-Squared Test is used to determine if there is a significant association between two categorical variables. It's the perfect tool for this scenario."
-  },
-  {
-    question: "A company wants to determine if there is a linear relationship between the amount of money spent on advertising and its monthly sales revenue. Both variables are continuous and appear to be normally distributed. What should they use?",
-    options: ["Spearman's Rank Correlation", "Pearson Correlation", "T-Test", "ANOVA"],
-    answer: "Pearson Correlation",
-    explanation: "Pearson Correlation is the correct choice to measure the strength and direction of a linear relationship between two continuous, normally distributed variables.",
-  }
-];
 
 export default function HypothesisTestingPage() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [quizFinished, setQuizFinished] = useState(false);
-  const [score, setScore] = useState(0);
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < quizQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      resetQuestionState();
-    } else {
-      setQuizFinished(true);
-    }
-  };
-
-  const handleOptionSelect = (option: string) => {
-    if (showExplanation) return;
-    setSelectedOption(option);
-    const correct = option === quizQuestions[currentQuestionIndex].answer;
-    setIsCorrect(correct);
-    setShowExplanation(true);
-    if (correct) {
-      setScore(score + 1);
-    }
-  };
-  
-  const resetQuestionState = () => {
-    setSelectedOption(null);
-    setIsCorrect(null);
-    setShowExplanation(false);
-  };
-  
-  const resetQuiz = () => {
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setQuizFinished(false);
-    resetQuestionState();
-  };
-
-  const currentQuestion = quizQuestions[currentQuestionIndex];
-
   return (
     <>
       <PageHeader
@@ -171,60 +96,6 @@ export default function HypothesisTestingPage() {
                 </Card>
             </div>
         </section>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">Knowledge Check: Which Test Should You Use?</CardTitle>
-            <CardDescription>Test your understanding of when to use each type of test.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {!quizFinished ? (
-              <div className="space-y-6">
-                <p className="text-lg font-semibold">{`Q${currentQuestionIndex + 1}: ${currentQuestion.question}`}</p>
-                <RadioGroup value={selectedOption ?? undefined} onValueChange={handleOptionSelect} disabled={showExplanation}>
-                  {currentQuestion.options.map((option, index) => (
-                    <div key={index} className={cn(
-                        "flex items-center space-x-3 rounded-md border p-4 transition-all duration-300",
-                        showExplanation && option === currentQuestion.answer && "border-green-500 bg-green-500/10 ring-2 ring-green-500",
-                        showExplanation && selectedOption === option && option !== currentQuestion.answer && "border-red-500 bg-red-500/10 ring-2 ring-red-500"
-                    )}>
-                      <RadioGroupItem value={option} id={`q${currentQuestionIndex}-o${index}`} />
-                      <Label htmlFor={`q${currentQuestionIndex}-o${index}`} className="flex-1 cursor-pointer text-base">{option}</Label>
-                      {showExplanation && option === currentQuestion.answer && <Check className="h-6 w-6 text-green-500" />}
-                      {showExplanation && selectedOption === option && option !== currentQuestion.answer && <X className="h-6 w-6 text-red-500" />}
-                    </div>
-                  ))}
-                </RadioGroup>
-                {showExplanation && (
-                    <div className={cn("rounded-md border-l-4 p-4",
-                        isCorrect ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10")}>
-                        <p className="font-semibold text-lg">{isCorrect ? 'Correct!' : 'Not quite.'}</p>
-                        <p className="text-sm text-foreground/80 mt-1">{currentQuestion.explanation}</p>
-                    </div>
-                )}
-              </div>
-            ) : (
-                <div className="text-center p-8">
-                    <h3 className="font-headline text-3xl font-bold">Quiz Complete!</h3>
-                    <p className="text-muted-foreground mt-2 text-lg">You scored {score} out of {quizQuestions.length}.</p>
-                    <div className="mt-6">
-                        <Button onClick={resetQuiz} size="lg">
-                            <RefreshCw className="mr-2"/>
-                            Try Again
-                        </Button>
-                    </div>
-                </div>
-            )}
-          </CardContent>
-          {!quizFinished && (
-              <CardFooter className="flex justify-end border-t pt-4">
-                <Button onClick={handleNextQuestion} disabled={!showExplanation}>
-                  {currentQuestionIndex < quizQuestions.length - 1 ? "Next Question" : "Finish Quiz"}
-                  <ArrowRight className="ml-2"/>
-                </Button>
-              </CardFooter>
-          )}
-        </Card>
       </div>
     </>
   );
