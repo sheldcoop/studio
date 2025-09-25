@@ -58,7 +58,7 @@ const quizQuestions = [
     question: "A company wants to determine if there is a linear relationship between the amount of money spent on advertising and its monthly sales revenue. Both variables are continuous and appear to be normally distributed. What should they use?",
     options: ["Spearman's Rank Correlation", "Pearson Correlation", "T-Test", "ANOVA"],
     answer: "Pearson Correlation",
-    explanation: "Pearson Correlation is the correct choice to measure the strength and direction of a linear relationship between two continuous, normally distributed variables."
+    explanation: "Pearson Correlation is the correct choice to measure the strength and direction of a linear relationship between two continuous, normally distributed variables.",
   }
 ];
 
