@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,7 +13,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import Annotation from 'chartjs-plugin-annotation';
 import { Bar, Line } from 'react-chartjs-2';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -30,8 +30,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend,
-  Annotation
+  Legend
 );
 
 // Helper function to generate normally distributed data
@@ -90,14 +89,18 @@ const IndependentTestChart = () => {
                   beginAtZero: true,
                   suggestedMin: -0.5,
                   suggestedMax: 0.5,
-                  title: { display: true, text: 'Average Daily Return (%)' },
+                  title: {
+                    display: true,
+                    text: 'Average Daily Return (%)',
+                    color: 'hsl(var(--muted-foreground))',
+                  },
                   ticks: { color: 'hsl(var(--muted-foreground))' },
                   grid: { color: 'hsl(var(--border) / 0.5)' },
                 },
                 x: {
                   ticks: { color: 'hsl(var(--muted-foreground))' },
                   grid: { display: false },
-                }
+                },
               },
               plugins: {
                 legend: { display: false },
@@ -163,18 +166,25 @@ const PairedTestChart = () => {
               responsive: true,
               maintainAspectRatio: false,
               scales: {
-                y: { 
-                  title: { display: true, text: 'Weekly Return (%)' },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Weekly Return (%)',
+                    color: 'hsl(var(--muted-foreground))',
+                  },
                   ticks: { color: 'hsl(var(--muted-foreground))' },
                   grid: { color: 'hsl(var(--border) / 0.5)' },
                 },
                 x: {
                   ticks: { color: 'hsl(var(--muted-foreground))' },
                   grid: { color: 'hsl(var(--border) / 0.5)' },
-                }
+                },
               },
               plugins: {
-                legend: { position: 'top', labels: {color: 'hsl(var(--foreground))'} },
+                legend: {
+                  position: 'top',
+                  labels: { color: 'hsl(var(--foreground))' },
+                },
                 title: {
                   display: true,
                   text: 'Portfolio Returns Before and After Algorithm Change',
@@ -193,71 +203,92 @@ const PairedTestChart = () => {
 };
 
 const OneSampleTestChart = () => {
-    const [meanValue, setMeanValue] = useState(1.7);
-    const target = 1.5;
+  const [meanValue, setMeanValue] = useState(1.7);
+  const target = 1.5;
 
-    const chartData = {
-        labels: ['Avg. Monthly Return'],
-        datasets: [{
-            label: 'Sample Mean',
-            data: [meanValue],
-            backgroundColor: 'hsl(var(--primary) / 0.8)',
-            borderColor: 'hsl(var(--primary))',
-            borderWidth: 1
-        }]
-    };
+  const chartData = {
+    labels: ['Avg. Monthly Return'],
+    datasets: [
+      {
+        label: 'Sample Mean',
+        data: [meanValue],
+        backgroundColor: 'hsl(var(--primary) / 0.8)',
+        borderColor: 'hsl(var(--primary))',
+        borderWidth: 1,
+      },
+    ],
+  };
 
-    const options = {
-        indexAxis: 'y' as const,
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                beginAtZero: false,
-                suggestedMin: 0,
-                suggestedMax: 3,
-                title: { display: true, text: 'Monthly Return (%)' },
-                ticks: { color: 'hsl(var(--muted-foreground))' },
-                grid: { color: 'hsl(var(--border) / 0.5)' },
-            },
-            y: {
-                ticks: { color: 'hsl(var(--muted-foreground))' },
-                grid: { display: false },
-            }
+  const options = {
+    indexAxis: 'y' as const,
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        beginAtZero: false,
+        suggestedMin: 0,
+        suggestedMax: 3,
+        title: {
+          display: true,
+          text: 'Monthly Return (%)',
+          color: 'hsl(var(--muted-foreground))',
         },
-        plugins: {
-            legend: { display: false },
-            title: { display: true, text: 'Comparing Fund Returns to its Claim', color: 'hsl(var(--foreground))' },
-            annotation: {
-                annotations: {
-                    line1: {
-                        type: 'line' as const,
-                        xMin: target,
-                        xMax: target,
-                        borderColor: 'hsl(var(--destructive))',
-                        borderWidth: 2,
-                        label: {
-                            content: `Claimed: ${target}%`,
-                            display: true,
-                            position: 'end' as const,
-                            backgroundColor: 'hsl(var(--destructive))',
-                            color: 'hsl(var(--destructive-foreground))',
-                            font: {
-                                weight: 'bold'
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    };
+        ticks: { color: 'hsl(var(--muted-foreground))' },
+        grid: { color: 'hsl(var(--border) / 0.5)' },
+      },
+      y: {
+        ticks: { color: 'hsl(var(--muted-foreground))' },
+        grid: { display: false },
+      },
+    },
+    plugins: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: "Comparing Fund Returns to its Claim",
+        color: 'hsl(var(--foreground))',
+      },
+    },
+  };
 
+  const annotationPlugin = {
+    id: 'customAnnotationLine',
+    afterDraw(chart: ChartJS) {
+      const ctx = chart.ctx;
+      const xScale = chart.scales.x;
+      const topY = chart.chartArea.top;
+      const bottomY = chart.chartArea.bottom;
+      const x = xScale.getPixelForValue(target);
+
+      // Line
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, topY);
+      ctx.lineTo(x, bottomY);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'hsl(var(--destructive))';
+      ctx.stroke();
+
+      // Label
+      const labelText = `Claimed: ${target}%`;
+      ctx.font = 'bold 12px sans-serif';
+      const textWidth = ctx.measureText(labelText).width;
+
+      ctx.fillStyle = 'hsl(var(--destructive))';
+      ctx.fillRect(x - textWidth / 2 - 5, topY, textWidth + 10, 20);
+
+      ctx.fillStyle = 'hsl(var(--destructive-foreground))';
+      ctx.textAlign = 'center';
+      ctx.fillText(labelText, x, topY + 14);
+      ctx.restore();
+    },
+  };
 
   return (
     <div className="space-y-4">
-        <div className="h-[350px]">
-            <Bar data={chartData} options={options} />
-        </div>
+      <div className="h-[350px]">
+        <Bar data={chartData} options={options} plugins={[annotationPlugin]} />
+      </div>
       <div className="mx-auto max-w-sm text-center">
         <Label htmlFor="mean-slider">
           Adjust Sample&apos;s Average Monthly Return (%)
@@ -272,13 +303,16 @@ const OneSampleTestChart = () => {
           className="my-4"
         />
         <div className="text-sm text-muted-foreground">
-          Current Mean: <span className="font-bold text-foreground">{meanValue.toFixed(2)}</span> %
+          Current Mean:{' '}
+          <span className="font-bold text-foreground">
+            {meanValue.toFixed(2)}
+          </span>{' '}
+          %
         </div>
       </div>
     </div>
   );
 };
-
 
 export default function TTestPage() {
   return (
@@ -295,7 +329,7 @@ export default function TTestPage() {
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <h3 className="mb-1 font-semibold text-accent">
+                <h3 className="mb-1 font-semibold text-primary">
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
@@ -307,7 +341,7 @@ export default function TTestPage() {
                 </p>
               </div>
               <div>
-                <h3 className="mb-1 font-semibold text-accent">
+                <h3 className="mb-1 font-semibold text-primary">
                   Key Assumption
                 </h3>
                 <p className="text-muted-foreground">
@@ -363,7 +397,7 @@ export default function TTestPage() {
                   to an algorithm improved an existing portfolio&apos;s
                   performance.
                 </p>
-                 <p className="mt-4 text-sm">
+                <p className="mt-4 text-sm">
                   <span className="font-semibold text-foreground">
                     Example:
                   </span>{' '}
@@ -377,8 +411,8 @@ export default function TTestPage() {
                 </div>
               </TabsContent>
               <TabsContent value="one-sample" className="mt-6">
-                 <h3 className="text-xl font-bold">One-Sample T-Test</h3>
-                 <p className="mt-2 text-muted-foreground">
+                <h3 className="text-xl font-bold">One-Sample T-Test</h3>
+                <p className="mt-2 text-muted-foreground">
                   This test compares the mean of a{' '}
                   <strong>single group to a known, fixed number</strong>. In
                   finance, you can use this to check if a fund&apos;s actual
