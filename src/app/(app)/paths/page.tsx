@@ -8,6 +8,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { learningPaths } from '@/lib/data';
 import { CheckCircle2, Clock, PlayCircle } from 'lucide-react';
+import Link from 'next/link';
 
 const statusIcons = {
   completed: <CheckCircle2 className="text-green-500" />,
@@ -49,22 +50,27 @@ export default function PathsPage() {
             <AccordionContent className="border-t">
               <ul className="divide-y divide-border">
                 {path.lessons.map((lesson) => (
-                  <li
-                    key={lesson.title}
-                    className="flex items-center justify-between p-4 px-6 transition-colors hover:bg-secondary/50"
-                  >
-                    <div className="flex items-center gap-4">
-                      {statusIcons[lesson.status]}
-                      <span className="font-medium">{lesson.title}</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Badge variant={statusBadges[lesson.status]} className="capitalize w-24 justify-center hidden sm:flex">
-                            {lesson.status.replace('-', ' ')}
+                  <li key={lesson.title}>
+                    <Link
+                      href="#"
+                      className="flex items-center justify-between p-4 px-6 transition-colors hover:bg-secondary/50"
+                    >
+                      <div className="flex items-center gap-4">
+                        {statusIcons[lesson.status]}
+                        <span className="font-medium">{lesson.title}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Badge
+                          variant={statusBadges[lesson.status]}
+                          className="w-24 justify-center capitalize hidden sm:flex"
+                        >
+                          {lesson.status.replace('-', ' ')}
                         </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {lesson.duration} min
-                      </span>
-                    </div>
+                        <span className="text-sm text-muted-foreground">
+                          {lesson.duration} min
+                        </span>
+                      </div>
+                    </Link>
                   </li>
                 ))}
               </ul>
