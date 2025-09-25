@@ -15,6 +15,8 @@ import ReactFlow, {
   type Node,
   type Edge,
   type NodeProps,
+  useReactFlow,
+  Panel,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -385,7 +387,7 @@ const CustomNode = ({
       onClick={handleNodeClick}
       className={`
         group relative w-48 rounded-md border-2 bg-card p-3 shadow-md transition-all text-center text-sm
-        ${data.isResult && data.slug ? 'border-green-500 bg-green-500/10 cursor-pointer hover:ring-2 hover:ring-green-400' : ''}
+        ${data.isResult && data.slug ? 'border-green-500 bg-green-500/10' : ''}
         ${data.isResult && !data.slug ? 'border-yellow-500 bg-yellow-500/10' : ''}
         ${!data.isResult && (data.isQuestion || data.children) ? 'cursor-pointer hover:border-primary' : ''}
         ${data.isPath ? 'border-primary ring-2 ring-primary/50' : 'border-border opacity-60 hover:opacity-100'}
@@ -439,15 +441,72 @@ const findNode = (
 };
 
 
-// --- Page Component ---
+const imageWidth = 1920;
+const imageHeight = 1080;
 
-export default function StatisticalTestChooserPage() {
+function DownloadButton() {
+  const { getNodes } = useReactFlow();
+  const onClick = () => {
+    const nodes = getNodes();
+    if (nodes.length === 0) {
+      return;
+    }
+    
+    // We need to calculate the bounds of the rendered nodes.
+    const nodesBounds = nodes.reduce(
+      (bounds, node) => {
+        return {
+          x: Math.min(bounds.x, node.position.x),
+          y: Math.min(bounds.y, node.position.y),
+          width: Math.max(bounds.width, node.position.x + (node.width || 0)),
+          height: Math.max(bounds.height, node.position.y + (node.height || 0)),
+        };
+      },
+      { x: Infinity, y: Infinity, width: -Infinity, height: -Infinity }
+    );
+    
+    const width = nodesBounds.width - nodesBounds.x + (nodes[0].width || 0);
+    const height = nodesBounds.height - nodesBounds.y + (nodes[0].height || 0);
+
+    import('html-to-image').then(({ toPng }) => {
+      const node = document.querySelector('.react-flow__viewport') as HTMLElement;
+      if (node) {
+        toPng(node, {
+          backgroundColor: '#020817', // Corresponds to Tailwind's `bg-background`
+          width: width,
+          height: height,
+          style: {
+            width: `${width}px`,
+            height: `${height}px`,
+            transform: `translate(${ -nodesBounds.x}px, ${-nodesBounds.y}px)`,
+          }
+        })
+          .then((dataUrl) => {
+            const a = document.createElement("a");
+            a.setAttribute("download", "statistical-test-map.png");
+            a.setAttribute("href", dataUrl);
+            a.click();
+          });
+      }
+    });
+  };
+
+  return (
+    <Panel position="top-right">
+      <Button onClick={onClick}>
+        <Download className="mr-2 h-4 w-4" />
+        Download as PNG
+      </Button>
+    </Panel>
+  );
+}
+
+
+function Flow() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const reactFlowInstance = useReactFlow();
   const router = useRouter();
-  const reactFlowWrapper = useRef(null);
-
 
   const getLayoutedNodes = (nodesToLayout: Node[]): Node[] => {
     const nodeWidth = 192; // w-48
@@ -499,25 +558,6 @@ export default function StatisticalTestChooserPage() {
       position: positions[node.id] || { x: 0, y: 0 },
     }));
   };
-
-  const handleDownload = useCallback(() => {
-    if (reactFlowWrapper.current === null) {
-      return;
-    }
-
-    import('html-to-image').then(({ toPng }) => {
-      toPng(reactFlowWrapper.current as HTMLElement, { cacheBust: true })
-        .then((dataUrl) => {
-          const link = document.createElement('a');
-          link.download = 'statistical-test-map.png';
-          link.href = dataUrl;
-          link.click();
-        })
-        .catch((err) => {
-          console.error('oops, something went wrong!', err);
-        });
-    });
-  }, [reactFlowWrapper]);
 
   const handleNodeClick = useCallback((nodeId: string, parentId?: string) => {
       const clickedNodeData = findNode(nodeId);
@@ -624,8 +664,8 @@ export default function StatisticalTestChooserPage() {
 
 
   return (
-    <>
-      <PageHeader
+     <>
+       <PageHeader
         title="Statistical Test Decision Map"
         description="Click through the flowchart to find the right statistical test for your needs."
       >
@@ -633,26 +673,36 @@ export default function StatisticalTestChooserPage() {
           <RefreshCw className="mr-2 h-4 w-4" />
           Reset
         </Button>
-        <Button onClick={handleDownload}>
-          <Download className="mr-2 h-4 w-4" />
-          Download as PNG
-        </Button>
       </PageHeader>
-      <Card className="w-full h-[70vh]" ref={reactFlowWrapper}>
+      <Card className="w-full h-[70vh]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
-          onInit={setReactFlowInstance}
           fitView
           className="bg-background"
           nodesDraggable={false}
           nodesConnectable={false}
           proOptions={{hideAttribution: true}}
-        />
+        >
+          <DownloadButton />
+        </ReactFlow>
       </Card>
     </>
   );
+}
+
+
+// --- Page Component ---
+
+import { ReactFlowProvider } from 'reactflow';
+
+export default function StatisticalTestChooserPage() {
+  return (
+    <ReactFlowProvider>
+      <Flow />
+    </ReactFlowProvider>
+  )
 }
