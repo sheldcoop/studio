@@ -229,6 +229,7 @@ export const statsToolkitTiers = [
       'The Central Limit Theorem (CLT)',
       'Confidence Intervals',
       'Hypothesis Testing & P-Values',
+      'Type I & Type II Errors',
       'Correlation vs. Causation',
       'Linear Regression',
       'Standard Deviation & Variance',
