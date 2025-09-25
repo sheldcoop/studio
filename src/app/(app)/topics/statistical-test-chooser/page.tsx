@@ -370,9 +370,10 @@ const CustomNode = ({
       className={`
         group relative w-48 rounded-md border-2 bg-card p-3 shadow-md transition-all text-center text-sm
         ${data.isResult && data.slug ? 'border-green-500 bg-green-500/10 cursor-pointer hover:ring-2 hover:ring-green-400' : ''}
-        ${data.isResult && !data.slug ? 'border-green-500 bg-green-500/10' : ''}
+        ${data.isResult && !data.slug ? 'border-yellow-500 bg-yellow-500/10' : ''}
         ${!data.isResult && (data.isQuestion || data.children) ? 'cursor-pointer hover:border-primary' : ''}
-        ${data.isPath ? 'border-primary' : 'border-border'}
+        ${data.isPath ? 'border-primary ring-2 ring-primary/50' : 'border-border opacity-60 hover:opacity-100'}
+        ${data.isQuestion && data.isPath && '!opacity-100 border-dashed'}
       `}
     >
       <div className="font-bold">{data.label}</div>
@@ -428,20 +429,19 @@ export default function StatisticalTestChooserPage() {
 
   const getLayoutedNodes = (nodesToLayout: Node[]): Node[] => {
     const nodeWidth = 192; // w-48
-    const nodeHeight = 90;
-    const horizontalGap = 50;
-    const verticalGap = 80;
+    const nodeHeight = 100; // Adjusted for better vertical spacing
+    const horizontalGap = 60;
+    const verticalGap = 100;
   
     const levels: { [key: number]: string[] } = {};
     const nodeMap = new Map(nodesToLayout.map(n => [n.id, n]));
   
     nodesToLayout.forEach(node => {
       let level = 0;
-      let parentId = node.data.parent;
-      while (parentId) {
-        level++;
-        const parentNode = nodeMap.get(parentId);
-        parentId = parentNode?.data.parent;
+      let current = findNode(node.id);
+      while(current && current.parent) {
+          level++;
+          current = findNode(current.parent);
       }
       if (!levels[level]) {
         levels[level] = [];
@@ -450,18 +450,28 @@ export default function StatisticalTestChooserPage() {
     });
   
     const positions: { [key: string]: { x: number; y: number } } = {};
-    let totalY = 0;
   
     Object.keys(levels).sort((a, b) => parseInt(a) - parseInt(b)).forEach(levelKey => {
       const level = parseInt(levelKey);
       const levelNodes = levels[level];
       const levelWidth = levelNodes.length * (nodeWidth + horizontalGap) - horizontalGap;
+      const y = level * (nodeHeight + verticalGap);
   
       levelNodes.forEach((nodeId, index) => {
-        const x = index * (nodeWidth + horizontalGap) - levelWidth / 2;
-        positions[nodeId] = { x, y: totalY };
+        const parentId = nodeMap.get(nodeId)?.data.parent;
+        let x;
+        if (parentId && positions[parentId]) {
+           const parentX = positions[parentId].x;
+           const siblings = levels[level].filter(id => nodeMap.get(id)?.data.parent === parentId);
+           const siblingIndex = siblings.indexOf(nodeId);
+           const siblingsWidth = siblings.length * (nodeWidth + horizontalGap) - horizontalGap;
+           x = parentX - siblingsWidth / 2 + siblingIndex * (nodeWidth + horizontalGap) + nodeWidth/2;
+        } else {
+            // Root node positioning
+            x = index * (nodeWidth + horizontalGap) - levelWidth / 2;
+        }
+        positions[nodeId] = { x, y };
       });
-      totalY += nodeHeight + verticalGap;
     });
     
     return nodesToLayout.map(node => ({
@@ -512,17 +522,15 @@ export default function StatisticalTestChooserPage() {
             const newEdges: Edge[] = [...edgesToKeep];
 
             finalNodes.forEach(node => {
-                if (node.data.parent) {
+                if (node.data.parent && pathIds.has(node.data.parent)) {
                     const edgeId = `e-${node.data.parent}-${node.id}`;
-                    const sourceNode = findNode(node.data.parent);
-                    const isParentOnPath = sourceNode && pathIds.has(sourceNode.id);
-                    
-                    if (!newEdges.some(e => e.id === edgeId) && isParentOnPath) {
+                    if (!newEdges.some(e => e.id === edgeId)) {
                         newEdges.push({
                             id: edgeId,
                             source: node.data.parent,
                             target: node.id,
                             animated: true,
+                            style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 }
                         });
                     }
                 }
@@ -538,7 +546,7 @@ export default function StatisticalTestChooserPage() {
             }
         }));
       });
-    }, [setNodes, setEdges, router, handleNodeClick]);
+    }, [setNodes, setEdges, router]);
   
   const setInitialState = useCallback(() => {
       const root = findNode('root');
@@ -562,17 +570,17 @@ export default function StatisticalTestChooserPage() {
             id: `e-${root.id}-${child.id}`,
             source: root.id,
             target: child.id,
-            animated: false,
         })) || [];
   
-        setNodes(getLayoutedNodes(initialNodes));
+        const layoutedNodes = getLayoutedNodes(initialNodes);
+        setNodes(layoutedNodes);
         setEdges(initialEdges);
 
         if (reactFlowInstance) {
-          setTimeout(() => reactFlowInstance.fitView({ padding: 0.2, duration: 300 }), 100);
+          setTimeout(() => reactFlowInstance.fitView({ padding: 0.4, duration: 300 }), 100);
         }
       }
-    }, [setNodes, setEdges, handleNodeClick, reactFlowInstance]);
+    }, [setNodes, setEdges, reactFlowInstance, handleNodeClick]);
   
 
   useEffect(() => {
@@ -610,7 +618,3 @@ export default function StatisticalTestChooserPage() {
     </>
   );
 }
-
-    
-
-    
