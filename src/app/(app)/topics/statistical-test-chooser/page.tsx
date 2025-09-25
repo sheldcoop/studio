@@ -1,10 +1,11 @@
+
 'use client';
 
 import { PageHeader } from '@/components/app/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -486,7 +487,7 @@ export default function StatisticalTestChooserPage() {
     setNodes(initialNodes);
     setEdges(initialEdges);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeNodeId, path, setNodes, setEdges]);
+  }, [activeNodeId, path]);
   
   const handleReset = () => {
     setActiveNodeId('root');
@@ -518,3 +519,5 @@ export default function StatisticalTestChooserPage() {
     </>
   );
 }
+
+    
