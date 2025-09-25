@@ -261,7 +261,7 @@ export const statsToolkitTiers = [
       'Efficient Frontier & Sharpe Ratio',
       'Principal Component Analysis (PCA)',
       'Kalman Filters',
-      'Stochastic Calculus & Ito\\'s Lemma',
+      'Stochastic Calculus & Ito\'s Lemma',
     ],
   },
 ];
