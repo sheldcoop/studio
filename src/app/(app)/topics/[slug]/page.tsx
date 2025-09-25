@@ -1,6 +1,4 @@
 import { PageHeader } from '@/components/app/page-header';
-import { quantJourney } from '@/lib/data';
-import { notFound } from 'next/navigation';
 
 export default function TopicPage({ params }: { params: { slug: string } }) {
   // A simple function to convert slug to title
@@ -25,3 +23,5 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
     </div>
   );
 }
+
+    
