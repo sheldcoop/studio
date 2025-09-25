@@ -4,8 +4,9 @@
 import { PageHeader } from '@/components/app/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Link as LinkIcon } from 'lucide-react';
 import React, { useCallback, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -27,6 +28,15 @@ type DecisionNodeData = {
   note?: string;
   parent?: string;
   children?: DecisionNodeData[];
+  slug?: string;
+};
+
+// Helper to convert title to a URL-friendly slug
+const toSlug = (title: string) => {
+  return title
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '');
 };
 
 const treeData: DecisionNodeData = {
@@ -61,12 +71,14 @@ const treeData: DecisionNodeData = {
                       label: 'One-Sample t-test',
                       isResult: true,
                       parent: 'one-group-q-dist',
+                      slug: 't-test',
                     },
                     {
                       id: 'wilcoxon-sr',
                       label: 'Wilcoxon Signed-Rank Test',
                       isResult: true,
                       parent: 'one-group-q-dist',
+                      slug: 'wilcoxon-signed-rank-test',
                     },
                   ],
                 },
@@ -99,12 +111,14 @@ const treeData: DecisionNodeData = {
                               label: 'Independent t-test',
                               isResult: true,
                               parent: 'ind-q-dist',
+                              slug: 't-test',
                             },
                             {
                               id: 'mann-whitney',
                               label: 'Mann-Whitney U Test',
                               isResult: true,
                               parent: 'ind-q-dist',
+                              slug: 'mann-whitney-u-test',
                             },
                           ],
                         },
@@ -126,12 +140,14 @@ const treeData: DecisionNodeData = {
                               label: 'Paired t-test',
                               isResult: true,
                               parent: 'paired-q-dist',
+                              slug: 't-test',
                             },
                             {
                               id: 'wilcoxon-sr-2',
                               label: 'Wilcoxon Signed-Rank Test',
                               isResult: true,
                               parent: 'paired-q-dist',
+                              slug: 'wilcoxon-signed-rank-test',
                             },
                           ],
                         },
@@ -168,12 +184,14 @@ const treeData: DecisionNodeData = {
                               label: 'One-Way ANOVA',
                               isResult: true,
                               parent: 'three-ind-q-dist',
+                              slug: 'anova',
                             },
                             {
                               id: 'kruskal',
                               label: 'Kruskal-Wallis Test',
                               isResult: true,
                               parent: 'three-ind-q-dist',
+                              slug: 'kruskal-wallis-test',
                             },
                           ],
                         },
@@ -195,12 +213,14 @@ const treeData: DecisionNodeData = {
                               label: 'Repeated Measures ANOVA',
                               isResult: true,
                               parent: 'three-paired-q-dist',
+                              slug: 'anova',
                             },
                             {
                               id: 'friedman',
                               label: 'Friedman Test',
                               isResult: true,
                               parent: 'three-paired-q-dist',
+                              slug: 'friedman-test',
                             },
                           ],
                         },
@@ -241,12 +261,14 @@ const treeData: DecisionNodeData = {
                       label: 'Pearson Correlation',
                       isResult: true,
                       parent: 'num-q-linear',
+                      slug: 'pearson-correlation',
                     },
                     {
                       id: 'spearman',
                       label: 'Spearman Correlation',
                       isResult: true,
                       parent: 'num-q-linear',
+                      slug: 'spearmans-rank-correlation',
                     },
                   ],
                 },
@@ -262,6 +284,7 @@ const treeData: DecisionNodeData = {
                   label: 'Chi-Squared Test of Independence',
                   isResult: true,
                   parent: 'two-categorical',
+                  slug: 'chi-squared-test',
                 },
               ],
             },
@@ -304,6 +327,7 @@ const treeData: DecisionNodeData = {
                   label: 'Linear Regression',
                   isResult: true,
                   parent: 'predict-numerical',
+                  slug: 'linear-regression',
                 },
               ],
             },
@@ -317,6 +341,7 @@ const treeData: DecisionNodeData = {
                   label: 'Logistic Regression',
                   isResult: true,
                   parent: 'predict-categorical',
+                  slug: 'logistic-regression',
                 },
               ],
             },
@@ -343,15 +368,19 @@ const CustomNode = ({
     <div
       onClick={() => data.onClick(data.id, data.parent)}
       className={`
-        w-48 rounded-md border-2 bg-card p-3 shadow-md transition-all text-center text-sm
-        ${data.isResult ? 'border-green-500 bg-green-500/10' : ''}
-        ${data.isQuestion || data.children ? 'cursor-pointer hover:border-primary' : ''}
-        ${data.isPath ? 'border-primary' : ''}
+        group relative w-48 rounded-md border-2 bg-card p-3 shadow-md transition-all text-center text-sm
+        ${data.isResult && data.slug ? 'border-green-500 bg-green-500/10 cursor-pointer hover:ring-2 hover:ring-green-400' : ''}
+        ${data.isResult && !data.slug ? 'border-green-500 bg-green-500/10' : ''}
+        ${!data.isResult && (data.isQuestion || data.children) ? 'cursor-pointer hover:border-primary' : ''}
+        ${data.isPath ? 'border-primary' : 'border-border'}
       `}
     >
       <div className="font-bold">{data.label}</div>
       {data.note && (
         <div className="mt-1 text-xs text-muted-foreground">{data.note}</div>
+      )}
+       {data.isResult && data.slug && (
+         <LinkIcon className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-green-500 p-0.5 text-white opacity-0 transition-opacity group-hover:opacity-100" />
       )}
       <Handle
         type="target"
@@ -395,22 +424,24 @@ export default function StatisticalTestChooserPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const router = useRouter();
 
   const getLayoutedNodes = (nodesToLayout: Node[]): Node[] => {
     const nodeWidth = 192; // w-48
-    const nodeHeight = 80;
+    const nodeHeight = 90;
     const horizontalGap = 50;
-    const verticalGap = 100;
+    const verticalGap = 80;
   
     const levels: { [key: number]: string[] } = {};
     const nodeMap = new Map(nodesToLayout.map(n => [n.id, n]));
   
     nodesToLayout.forEach(node => {
       let level = 0;
-      let parent = node.data.parent ? nodeMap.get(node.data.parent) : null;
-      while (parent) {
+      let parentId = node.data.parent;
+      while (parentId) {
         level++;
-        parent = parent.data.parent ? nodeMap.get(parent.data.parent) : null;
+        const parentNode = nodeMap.get(parentId);
+        parentId = parentNode?.data.parent;
       }
       if (!levels[level]) {
         levels[level] = [];
@@ -419,17 +450,18 @@ export default function StatisticalTestChooserPage() {
     });
   
     const positions: { [key: string]: { x: number; y: number } } = {};
+    let totalY = 0;
   
-    Object.keys(levels).forEach(levelKey => {
+    Object.keys(levels).sort((a, b) => parseInt(a) - parseInt(b)).forEach(levelKey => {
       const level = parseInt(levelKey);
       const levelNodes = levels[level];
       const levelWidth = levelNodes.length * (nodeWidth + horizontalGap) - horizontalGap;
   
       levelNodes.forEach((nodeId, index) => {
-        const y = level * (nodeHeight + verticalGap);
-        const x = index * (nodeWidth + horizontalGap) - levelWidth / 2 + nodeWidth / 2;
-        positions[nodeId] = { x, y };
+        const x = index * (nodeWidth + horizontalGap) - levelWidth / 2;
+        positions[nodeId] = { x, y: totalY };
       });
+      totalY += nodeHeight + verticalGap;
     });
     
     return nodesToLayout.map(node => ({
@@ -440,11 +472,18 @@ export default function StatisticalTestChooserPage() {
 
   const handleNodeClick = useCallback((nodeId: string, parentId?: string) => {
       const clickedNodeData = findNode(nodeId);
-      if (!clickedNodeData || !clickedNodeData.children) return;
+      if (!clickedNodeData) return;
+
+      if (clickedNodeData.isResult && clickedNodeData.slug) {
+        router.push(`/topics/${clickedNodeData.slug}`);
+        return;
+      }
+
+      if (!clickedNodeData.children) return;
   
       setNodes((currentNodes) => {
         const pathIds = new Set<string>();
-        let current = clickedNodeData;
+        let current: DecisionNodeData | null = clickedNodeData;
         while(current) {
           pathIds.add(current.id);
           current = current.parent ? findNode(current.parent) : null;
@@ -454,7 +493,6 @@ export default function StatisticalTestChooserPage() {
         const existingNodeIds = new Set(nodesToKeep.map(n => n.id));
         
         const newNodes: Node[] = [...nodesToKeep];
-        const newEdges: Edge[] = [];
 
         clickedNodeData.children!.forEach((childData) => {
           if (!existingNodeIds.has(childData.id)) {
@@ -472,10 +510,14 @@ export default function StatisticalTestChooserPage() {
         setEdges((currentEdges) => {
             const edgesToKeep = currentEdges.filter(edge => pathIds.has(edge.source) && pathIds.has(edge.target));
             const newEdges: Edge[] = [...edgesToKeep];
+
             finalNodes.forEach(node => {
                 if (node.data.parent) {
                     const edgeId = `e-${node.data.parent}-${node.id}`;
-                    if (!newEdges.some(e => e.id === edgeId)) {
+                    const sourceNode = findNode(node.data.parent);
+                    const isParentOnPath = sourceNode && pathIds.has(sourceNode.id);
+                    
+                    if (!newEdges.some(e => e.id === edgeId) && isParentOnPath) {
                         newEdges.push({
                             id: edgeId,
                             source: node.data.parent,
@@ -496,7 +538,7 @@ export default function StatisticalTestChooserPage() {
             }
         }));
       });
-    }, [setNodes, setEdges]);
+    }, [setNodes, setEdges, router]);
   
   const setInitialState = useCallback(() => {
       const root = findNode('root');
@@ -526,12 +568,13 @@ export default function StatisticalTestChooserPage() {
         setNodes(getLayoutedNodes(initialNodes));
         setEdges(initialEdges);
       }
-    }, [setNodes, setEdges]);
+    }, [setNodes, setEdges, handleNodeClick]);
   
 
   useEffect(() => {
     setInitialState();
-  }, [setInitialState]);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   useEffect(() => {
@@ -569,3 +612,5 @@ export default function StatisticalTestChooserPage() {
     </>
   );
 }
+
+    
