@@ -11,8 +11,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  LineController,
 } from 'chart.js';
+import Annotation from 'chartjs-plugin-annotation';
 import { Bar, Line } from 'react-chartjs-2';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Annotation
 );
 
 // Helper function to generate normally distributed data
@@ -63,8 +64,8 @@ const IndependentTestChart = () => {
         {
           label: 'Average Daily Return',
           data: [getMean(dataA), getMean(dataB)],
-          backgroundColor: ['hsl(var(--primary) / 0.8)', 'hsl(var(--primary) / 0.5)'],
-          borderColor: ['hsl(var(--primary))', 'hsl(var(--primary))'],
+          backgroundColor: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))'],
+          borderColor: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))'],
           borderWidth: 1,
         },
       ],
@@ -90,13 +91,20 @@ const IndependentTestChart = () => {
                   suggestedMin: -0.5,
                   suggestedMax: 0.5,
                   title: { display: true, text: 'Average Daily Return (%)' },
+                  ticks: { color: 'hsl(var(--muted-foreground))' },
+                  grid: { color: 'hsl(var(--border) / 0.5)' },
                 },
+                x: {
+                  ticks: { color: 'hsl(var(--muted-foreground))' },
+                  grid: { display: false },
+                }
               },
               plugins: {
                 legend: { display: false },
                 title: {
                   display: true,
                   text: 'Comparing Average Daily Returns of Two Strategies',
+                  color: 'hsl(var(--foreground))',
                 },
               },
             }}
@@ -155,13 +163,22 @@ const PairedTestChart = () => {
               responsive: true,
               maintainAspectRatio: false,
               scales: {
-                y: { title: { display: true, text: 'Weekly Return (%)' } },
+                y: { 
+                  title: { display: true, text: 'Weekly Return (%)' },
+                  ticks: { color: 'hsl(var(--muted-foreground))' },
+                  grid: { color: 'hsl(var(--border) / 0.5)' },
+                },
+                x: {
+                  ticks: { color: 'hsl(var(--muted-foreground))' },
+                  grid: { color: 'hsl(var(--border) / 0.5)' },
+                }
               },
               plugins: {
-                legend: { position: 'top' },
+                legend: { position: 'top', labels: {color: 'hsl(var(--foreground))'} },
                 title: {
                   display: true,
                   text: 'Portfolio Returns Before and After Algorithm Change',
+                  color: 'hsl(var(--foreground))',
                 },
               },
             }}
@@ -199,12 +216,18 @@ const OneSampleTestChart = () => {
                 beginAtZero: false,
                 suggestedMin: 0,
                 suggestedMax: 3,
-                title: { display: true, text: 'Monthly Return (%)' }
+                title: { display: true, text: 'Monthly Return (%)' },
+                ticks: { color: 'hsl(var(--muted-foreground))' },
+                grid: { color: 'hsl(var(--border) / 0.5)' },
+            },
+            y: {
+                ticks: { color: 'hsl(var(--muted-foreground))' },
+                grid: { display: false },
             }
         },
         plugins: {
             legend: { display: false },
-            title: { display: true, text: 'Comparing Fund Returns to its Claim' },
+            title: { display: true, text: 'Comparing Fund Returns to its Claim', color: 'hsl(var(--foreground))' },
             annotation: {
                 annotations: {
                     line1: {
@@ -272,7 +295,7 @@ export default function TTestPage() {
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <h3 className="mb-1 font-semibold text-primary">
+                <h3 className="mb-1 font-semibold text-accent">
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
@@ -284,7 +307,7 @@ export default function TTestPage() {
                 </p>
               </div>
               <div>
-                <h3 className="mb-1 font-semibold text-primary">
+                <h3 className="mb-1 font-semibold text-accent">
                   Key Assumption
                 </h3>
                 <p className="text-muted-foreground">
@@ -327,7 +350,7 @@ export default function TTestPage() {
                   a Mean-Reversion Strategy over the last 60 days to see if
                   one is significantly more profitable.
                 </p>
-                <div className="mt-4 rounded-lg bg-card p-4">
+                <div className="mt-4 rounded-lg bg-background/50 p-4">
                   <IndependentTestChart />
                 </div>
               </TabsContent>
@@ -349,7 +372,7 @@ export default function TTestPage() {
                   <i>after</i>, to see if the change led to a significant
                   improvement.
                 </p>
-                <div className="mt-4 rounded-lg bg-card p-4">
+                <div className="mt-4 rounded-lg bg-background/50 p-4">
                   <PairedTestChart />
                 </div>
               </TabsContent>
@@ -371,7 +394,7 @@ export default function TTestPage() {
                   if the average is statistically different from their 1.5%
                   claim.
                 </p>
-                <div className="mt-4 rounded-lg bg-card p-4">
+                <div className="mt-4 rounded-lg bg-background/50 p-4">
                   <OneSampleTestChart />
                 </div>
               </TabsContent>
