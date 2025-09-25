@@ -143,8 +143,8 @@ const PairedTestChart = () => {
         {
           label: 'After Algorithm',
           data: afterData,
-          borderColor: 'hsl(var(--chart-3))',
-          backgroundColor: 'hsl(var(--chart-3))',
+          borderColor: 'hsl(var(--primary))',
+          backgroundColor: 'hsl(var(--primary))',
           tension: 0.1,
         },
       ],
