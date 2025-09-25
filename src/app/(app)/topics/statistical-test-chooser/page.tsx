@@ -4,7 +4,7 @@
 import { PageHeader } from '@/components/app/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Link as LinkIcon } from 'lucide-react';
+import { RefreshCw, Link as LinkIcon, Download } from 'lucide-react';
 import React, { useCallback, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactFlow, {
@@ -354,6 +354,7 @@ const treeData: DecisionNodeData = {
 
 type CustomNodeData = DecisionNodeData & {
   onClick: (id: string, parent?: string) => void;
+  onDownload: (id: string) => void;
   isPath: boolean;
 };
 
@@ -364,9 +365,29 @@ const CustomNode = ({
   sourcePosition,
   targetPosition,
 }: NodeProps<CustomNodeData>) => {
+  const router = useRouter();
+
+  const handleNodeClick = (e: React.MouseEvent) => {
+    // Prevent click from propagating to the main div if an icon is clicked
+    if ((e.target as HTMLElement).closest('.icon-button')) {
+      return;
+    }
+    data.onClick(data.id, data.parent);
+  };
+  
+  const handleLinkClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if(data.slug) router.push(`/topics/${data.slug}`);
+  }
+
+  const handleDownloadClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    data.onDownload(data.id);
+  }
+
   return (
     <div
-      onClick={() => data.onClick(data.id, data.parent)}
+      onClick={handleNodeClick}
       className={`
         group relative w-48 rounded-md border-2 bg-card p-3 shadow-md transition-all text-center text-sm
         ${data.isResult && data.slug ? 'border-green-500 bg-green-500/10 cursor-pointer hover:ring-2 hover:ring-green-400' : ''}
@@ -380,9 +401,18 @@ const CustomNode = ({
       {data.note && (
         <div className="mt-1 text-xs text-muted-foreground">{data.note}</div>
       )}
-       {data.isResult && data.slug && (
-         <LinkIcon className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-green-500 p-0.5 text-white opacity-0 transition-opacity group-hover:opacity-100" />
-      )}
+       {data.isResult && (
+          <div className="absolute -top-2 -right-2 flex gap-1">
+             {data.slug && (
+              <button onClick={handleLinkClick} className="icon-button h-5 w-5 rounded-full bg-green-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 outline-none">
+                <LinkIcon className="h-full w-full" />
+              </button>
+             )}
+             <button onClick={handleDownloadClick} className="icon-button h-5 w-5 rounded-full bg-primary p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 outline-none">
+                <Download className="h-full w-full" />
+             </button>
+          </div>
+       )}
       <Handle
         type="target"
         position={targetPosition || Position.Top}
@@ -425,7 +455,6 @@ export default function StatisticalTestChooserPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
-  const router = useRouter();
 
   const getLayoutedNodes = (nodesToLayout: Node[]): Node[] => {
     const nodeWidth = 192; // w-48
@@ -455,39 +484,68 @@ export default function StatisticalTestChooserPage() {
       const level = parseInt(levelKey);
       const levelNodes = levels[level];
       const levelWidth = levelNodes.length * (nodeWidth + horizontalGap) - horizontalGap;
-      const y = level * (nodeHeight + verticalGap);
   
       levelNodes.forEach((nodeId, index) => {
         const parentId = nodeMap.get(nodeId)?.data.parent;
         let x;
-        if (parentId && positions[parentId]) {
-           const parentX = positions[parentId].x;
-           const siblings = levels[level].filter(id => nodeMap.get(id)?.data.parent === parentId);
-           const siblingIndex = siblings.indexOf(nodeId);
-           const siblingsWidth = siblings.length * (nodeWidth + horizontalGap) - horizontalGap;
-           x = parentX - siblingsWidth / 2 + siblingIndex * (nodeWidth + horizontalGap) + nodeWidth/2;
-        } else {
-            // Root node positioning
-            x = index * (nodeWidth + horizontalGap) - levelWidth / 2;
-        }
+        const parentNode = parentId ? findNode(parentId) : null;
+        const siblings = parentNode?.children?.map(c => c.id) || [];
+        const siblingIndex = siblings.indexOf(nodeId);
+        const parentX = parentId ? positions[parentId]?.x || 0 : 0;
+  
+        const siblingsWidth = siblings.length * (nodeWidth + horizontalGap) - horizontalGap;
+        const startX = parentX - (siblingsWidth - nodeWidth) / 2;
+        x = startX + siblingIndex * (nodeWidth + horizontalGap);
+  
+        const y = level * (nodeHeight + verticalGap);
         positions[nodeId] = { x, y };
       });
     });
     
     return nodesToLayout.map(node => ({
       ...node,
-      position: positions[node.id] || node.position,
+      position: positions[node.id] || { x: 0, y: 0 },
     }));
   };
 
+  const handleDownload = useCallback((nodeId: string) => {
+    const finalNode = findNode(nodeId);
+    if (!finalNode) return;
+  
+    const path: DecisionNodeData[] = [];
+    let current: DecisionNodeData | null = finalNode;
+    while(current) {
+      path.unshift(current);
+      current = current.parent ? findNode(current.parent) : null;
+    }
+  
+    let summary = 'Statistical Test Decision Path Summary\n';
+    summary += '=======================================\n\n';
+  
+    for (let i = 0; i < path.length - 1; i++) {
+      const questionNode = path[i];
+      const answerNode = path[i + 1];
+      summary += `Q: ${questionNode.label}\n`;
+      summary += `A: ${answerNode.label}\n\n`;
+    }
+  
+    summary += '---------------------------------------\n';
+    summary += `Recommended Test: ${finalNode.label}\n`;
+  
+    const blob = new Blob([summary], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'test_decision_summary.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, []);
+
   const handleNodeClick = useCallback((nodeId: string, parentId?: string) => {
       const clickedNodeData = findNode(nodeId);
-      if (!clickedNodeData) return;
-
-      if (clickedNodeData.isResult && clickedNodeData.slug) {
-        router.push(`/topics/${clickedNodeData.slug}`);
-        return;
-      }
+      if (!clickedNodeData || clickedNodeData.isResult) return;
 
       if (!clickedNodeData.children) return;
   
@@ -509,7 +567,7 @@ export default function StatisticalTestChooserPage() {
             newNodes.push({
               id: childData.id,
               type: 'custom',
-              data: { ...childData, onClick: handleNodeClick, isPath: false },
+              data: { ...childData, onClick: handleNodeClick, onDownload: handleDownload, isPath: false },
               position: { x: 0, y: 0 },
             });
           }
@@ -518,21 +576,17 @@ export default function StatisticalTestChooserPage() {
         const finalNodes = getLayoutedNodes(newNodes);
 
         setEdges((currentEdges) => {
-            const edgesToKeep = currentEdges.filter(edge => pathIds.has(edge.source) && pathIds.has(edge.target));
-            const newEdges: Edge[] = [...edgesToKeep];
-
+            const newEdges: Edge[] = [];
             finalNodes.forEach(node => {
-                if (node.data.parent && pathIds.has(node.data.parent)) {
+                if (node.data.parent) {
                     const edgeId = `e-${node.data.parent}-${node.id}`;
-                    if (!newEdges.some(e => e.id === edgeId)) {
-                        newEdges.push({
-                            id: edgeId,
-                            source: node.data.parent,
-                            target: node.id,
-                            animated: true,
-                            style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 }
-                        });
-                    }
+                    newEdges.push({
+                        id: edgeId,
+                        source: node.data.parent,
+                        target: node.id,
+                        animated: pathIds.has(node.data.parent),
+                        style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 }
+                    });
                 }
             });
             return newEdges;
@@ -542,11 +596,12 @@ export default function StatisticalTestChooserPage() {
             ...n,
             data: {
                 ...n.data,
-                isPath: pathIds.has(n.id) || n.id === clickedNodeData.id,
+                isPath: pathIds.has(n.id) || n.data.parent === clickedNodeData.id,
             }
         }));
       });
-    }, [setNodes, setEdges, router]);
+      setTimeout(() => reactFlowInstance?.fitView({ padding: 0.4, duration: 300 }), 100);
+    }, [setNodes, setEdges, reactFlowInstance, handleDownload]);
   
   const setInitialState = useCallback(() => {
       const root = findNode('root');
@@ -555,13 +610,13 @@ export default function StatisticalTestChooserPage() {
           {
             id: root.id,
             type: 'custom',
-            data: { ...root, onClick: handleNodeClick, isPath: true },
+            data: { ...root, onClick: handleNodeClick, onDownload: handleDownload, isPath: true },
             position: { x: 0, y: 0 },
           },
           ...(root.children?.map(child => ({
             id: child.id,
             type: 'custom',
-            data: { ...child, onClick: handleNodeClick, isPath: false },
+            data: { ...child, onClick: handleNodeClick, onDownload: handleDownload, isPath: true },
             position: { x: 0, y: 0 },
           })) || [])
         ];
@@ -577,16 +632,16 @@ export default function StatisticalTestChooserPage() {
         setEdges(initialEdges);
 
         if (reactFlowInstance) {
-          setTimeout(() => reactFlowInstance.fitView({ padding: 0.4, duration: 300 }), 100);
+          setTimeout(() => reactFlowInstance.fitView({ padding: 0.2, duration: 300 }), 100);
         }
       }
-    }, [setNodes, setEdges, reactFlowInstance, handleNodeClick]);
+    }, [setNodes, setEdges, reactFlowInstance, handleNodeClick, handleDownload]);
   
 
   useEffect(() => {
     setInitialState();
      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reactFlowInstance]); // Run only when instance is ready
+  }, [reactFlowInstance]);
 
 
   return (
@@ -618,3 +673,5 @@ export default function StatisticalTestChooserPage() {
     </>
   );
 }
+
+    
