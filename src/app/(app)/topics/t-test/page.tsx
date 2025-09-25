@@ -114,17 +114,14 @@ const IndependentTestChart = () => {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Bar dataKey="value" radius={8}>
-              {chartData.map((entry) => (
-                <Rectangle
-                  key={entry.name}
-                  fill={`var(--color-${entry.name})`}
-                />
+              {chartData.map((entry, index) => (
+                <Rectangle key={`cell-${index}`} fill={independentTestChartConfig[entry.name as keyof typeof independentTestChartConfig]?.color} />
               ))}
             </Bar>
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mt-6 flex-shrink-0 text-center">
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New 60-Day Period</Button>
       </div>
     </div>
@@ -191,7 +188,7 @@ const PairedTestChart = () => {
           </LineChart>
         </ChartContainer>
       </div>
-      <div className="mt-6 flex-shrink-0 text-center">
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>
@@ -248,8 +245,8 @@ const OneSampleTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto w-full max-w-sm flex-shrink-0 text-center">
-        <div className="py-4">
+      <div className="mt-4 flex-shrink-0 text-center">
+        <div className="mx-auto max-w-sm py-4">
           <Label htmlFor="mean-slider">
             Adjust Sample's Average Monthly Return (%)
           </Label>
