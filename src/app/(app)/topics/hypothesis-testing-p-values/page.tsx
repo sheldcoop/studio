@@ -25,9 +25,8 @@ const nonParametricTests = [
     { name: 'Spearman\'s Rank Correlation', description: 'Measures the monotonic relationship between two ranked variables.', slug: 'spearmans-rank-correlation' },
     { name: 'Friedman Test', description: 'The non-parametric alternative to a repeated-measures ANOVA. Used to compare three or more related/paired groups.', slug: 'friedman-test' },
     { name: 'Kolmogorov-Smirnov (K-S) Test', description: 'Tests if a sample is drawn from a specific distribution (e.g., "Is my data normally distributed?").', slug: 'kolmogorov-smirnov-k-s-test' },
-    { name: 'Chi-Squared Test', description: 'Tests if there is a significant association between two categorical variables.', slug: 'chi-squared-test' },
+    { name: 'Chi-Squared Test', description: 'Tests if there is a significant association between two categorical variables.', slug: 'chi-squared-test' }
 ];
-
 
 export default function HypothesisTestingPage() {
   return (
