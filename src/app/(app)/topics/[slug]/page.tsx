@@ -12,7 +12,7 @@ export default async function TopicPage({ params }: { params: { slug: string } }
   const title = slugToTitle(params.slug);
 
   // A list of slugs that have their own dedicated page.
-  const dedicatedPages = ['hypothesis-testing-p-values', 'mental-math', 'confidence-intervals', 'linear-algebra', 't-test'];
+  const dedicatedPages = ['hypothesis-testing-p-values', 'mental-math', 'confidence-intervals', 'linear-algebra'];
 
   if (dedicatedPages.includes(params.slug)) {
     // This condition should ideally not be met if linking is correct,
