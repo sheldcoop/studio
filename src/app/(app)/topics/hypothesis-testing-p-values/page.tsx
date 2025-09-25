@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Check, X, ArrowRight, RefreshCw, Users, User } from 'lucide-react';
+import { Check, X, ArrowRight, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
