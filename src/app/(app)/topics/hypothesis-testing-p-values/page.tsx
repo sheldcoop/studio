@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -15,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 const pageData = {
   title: 'Hypothesis Testing & P-Values',
@@ -156,6 +158,14 @@ const pageData = {
   ],
 };
 
+// Helper to convert title to a URL-friendly slug
+const toSlug = (title: string) => {
+  return title
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '');
+};
+
 const introSection = pageData.sections.find(sec => sec.type === 'intro');
 const comparisonSection = pageData.sections.find(sec => sec.type === 'comparison');
 const quizSection = pageData.sections.find(sec => sec.type === 'quiz');
@@ -281,8 +291,10 @@ export default function HypothesisTestingPage() {
               <ul className="space-y-4">
                 {comparisonData.parametric.tests.map((test: any) => (
                   <li key={test.name}>
-                    <p className="font-semibold">{test.name}</p>
-                    <p className="text-sm text-muted-foreground">{test.description}</p>
+                    <Link href={`/topics/${toSlug(test.name)}`} className="group rounded-md p-2 -m-2 block hover:bg-secondary/50 transition-colors">
+                      <p className="font-semibold group-hover:text-primary">{test.name}</p>
+                      <p className="text-sm text-muted-foreground">{test.description}</p>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -297,8 +309,10 @@ export default function HypothesisTestingPage() {
               <ul className="space-y-4">
                 {comparisonData.non_parametric.tests.map((test: any) => (
                   <li key={test.name}>
-                    <p className="font-semibold">{test.name}</p>
-                    <p className="text-sm text-muted-foreground">{test.description}</p>
+                     <Link href={`/topics/${toSlug(test.name)}`} className="group rounded-md p-2 -m-2 block hover:bg-secondary/50 transition-colors">
+                      <p className="font-semibold group-hover:text-primary">{test.name}</p>
+                      <p className="text-sm text-muted-foreground">{test.description}</p>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -315,5 +329,3 @@ export default function HypothesisTestingPage() {
     </div>
   );
 }
-
-    
