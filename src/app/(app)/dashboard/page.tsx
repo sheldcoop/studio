@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import {
   Card,
@@ -7,14 +9,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { quantJourney } from '@/lib/data';
+import { AnimatedTagline } from '@/components/app/animated-tagline';
 
 export default function DashboardPage() {
   return (
     <div className="flex flex-col items-center justify-center p-4 md:p-8">
       <div className="mb-12 max-w-2xl text-center">
-        <h1 className="font-headline text-4xl font-bold tracking-tight md:text-5xl">
-          Begin Your Journey
-        </h1>
+        <AnimatedTagline />
         <p className="mt-4 text-lg text-muted-foreground">
           Master the core pillars of quantitative finance and data science, from
           foundational theory to practical application.

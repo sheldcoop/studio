@@ -13,13 +13,22 @@ import {
   FunctionSquare,
 } from 'lucide-react';
 
+export const taglines = [
+  ['From Data to ', 'Insight'],
+  ['From Insight to ', 'Model'],
+  ['From Model to ', 'Signal'],
+  ['From Signal to ', 'Trade'],
+  ['From Trade to ', 'Alpha'],
+  ['From Alpha to ', 'Mastery'],
+];
+
 export type LearningPath = {
   id: string;
   title: string;
   icon: LucideIcon;
   description: string;
   lessons: {
-    title: string;
+    title:string;
     duration: number; // in minutes
     status: 'completed' | 'in-progress' | 'not-started';
   }[];
