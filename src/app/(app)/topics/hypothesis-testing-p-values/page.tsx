@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -28,9 +29,11 @@ const parametricTests = [
 const nonParametricTests = [
     { name: 'Mann-Whitney U Test', description: 'Alternative to the T-Test when data is not normally distributed.', slug: 'mann-whitney-u-test' },
     { name: 'Kruskal-Wallis Test', description: 'Alternative to ANOVA for comparing three or more groups.', slug: 'kruskal-wallis-test' },
-    { name: 'Wilcoxon Signed-Rank Test', 'description': 'Alternative to the paired T-Test for repeated measurements.', slug: 'wilcoxon-signed-rank-test' },
+    { name: 'Wilcoxon Signed-Rank Test', description: 'Alternative to the paired T-Test for repeated measurements.', slug: 'wilcoxon-signed-rank-test' },
     { name: 'Spearman\'s Rank Correlation', description: 'Measures the monotonic relationship between two ranked variables.', slug: 'spearmans-rank-correlation' },
-    { name: 'Sign Test', description: 'A simple test for the direction of change between paired observations.', slug: 'sign-test' },
+    { name: 'Friedman Test', description: 'The non-parametric alternative to a repeated-measures ANOVA. Used to compare three or more related/paired groups.', slug: 'friedman-test' },
+    { name: 'Kolmogorov-Smirnov (K-S) Test', description: 'Tests if a sample is drawn from a specific distribution (e.g., "Is my data normally distributed?").', slug: 'kolmogorov-smirnov-k-s-test' },
+    { name: 'Chi-Squared Test', description: 'Tests if there is a significant association between two categorical variables.', slug: 'chi-squared-test' },
 ];
 
 const quizQuestions = [
@@ -47,10 +50,10 @@ const quizQuestions = [
     explanation: "The Kruskal-Wallis Test is the non-parametric alternative to ANOVA. It's used for comparing the medians of three or more independent groups when the data doesn't meet the assumption of normality."
   },
   {
-    question: "You are analyzing the performance of a new portfolio management software. You have the portfolio values 'before' and 'after' implementation for 50 clients. You want to see if the software made a significant difference, but the change in values isn't normally distributed. Which test is suitable?",
-    options: ["Paired T-Test", "Mann-Whitney U Test", "Wilcoxon Signed-Rank Test", "Sign Test"],
-    answer: "Wilcoxon Signed-Rank Test",
-    explanation: "The Wilcoxon Signed-Rank Test is used for paired data (like 'before' and 'after') when the assumption of normality for the difference is not met. It's the non-parametric equivalent of the paired T-Test."
+    question: "An analyst wants to check if there is an association between two categorical variables: 'investment risk tolerance' (low, medium, high) and 'preferred asset class' (stocks, bonds, real estate). Which test is suitable?",
+    options: ["Paired T-Test", "Mann-Whitney U Test", "ANOVA", "Chi-Squared Test"],
+    answer: "Chi-Squared Test",
+    explanation: "The Chi-Squared Test is used to determine if there is a significant association between two categorical variables. It's the perfect tool for this scenario."
   },
   {
     question: "A company wants to determine if there is a linear relationship between the amount of money spent on advertising and its monthly sales revenue. Both variables are continuous and appear to be normally distributed. What should they use?",
