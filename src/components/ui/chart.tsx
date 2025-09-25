@@ -21,6 +21,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
+import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
 
