@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -29,7 +28,7 @@ const parametricTests = [
 const nonParametricTests = [
     { name: 'Mann-Whitney U Test', description: 'Alternative to the T-Test when data is not normally distributed.', slug: 'mann-whitney-u-test' },
     { name: 'Kruskal-Wallis Test', description: 'Alternative to ANOVA for comparing three or more groups.', slug: 'kruskal-wallis-test' },
-    { name: 'Wilcoxon Signed-Rank Test', description: 'Alternative to the paired T-Test for repeated measurements.', slug: 'wilcoxon-signed-rank-test' },
+    { name: 'Wilcoxon Signed-Rank Test', 'description': 'Alternative to the paired T-Test for repeated measurements.', slug: 'wilcoxon-signed-rank-test' },
     { name: 'Spearman\'s Rank Correlation', description: 'Measures the monotonic relationship between two ranked variables.', slug: 'spearmans-rank-correlation' },
     { name: 'Sign Test', description: 'A simple test for the direction of change between paired observations.', slug: 'sign-test' },
 ];
@@ -140,7 +139,7 @@ export default function HypothesisTestingPage() {
                         <ul className="space-y-3">
                             {parametricTests.map(test => (
                                 <li key={test.slug}>
-                                    <Link href={`/topics/${test.slug}`} className="block rounded-lg border p-4 transition-colors hover:bg-secondary/50">
+                                    <Link href={`/topics/${test.slug}`} className="block rounded-lg border p-4 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20">
                                         <h4 className="font-semibold">{test.name}</h4>
                                         <p className="text-sm text-muted-foreground">{test.description}</p>
                                     </Link>
@@ -159,7 +158,7 @@ export default function HypothesisTestingPage() {
                         <ul className="space-y-3">
                             {nonParametricTests.map(test => (
                                  <li key={test.slug}>
-                                    <Link href={`/topics/${test.slug}`} className="block rounded-lg border p-4 transition-colors hover:bg-secondary/50">
+                                    <Link href={`/topics/${test.slug}`} className="block rounded-lg border p-4 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20">
                                         <h4 className="font-semibold">{test.name}</h4>
                                         <p className="text-sm text-muted-foreground">{test.description}</p>
                                     </Link>
