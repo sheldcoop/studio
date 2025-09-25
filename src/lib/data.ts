@@ -182,7 +182,7 @@ export const quantJourney = [
     title: 'Statistics & Probability',
     description: 'Quantifying uncertainty and making sense of distributions.',
     icon: Sigma,
-    href: '/topics/stats-prob',
+    href: '/topics/hypothesis-testing-p-values',
   },
   {
     id: 'mental-math',
@@ -261,7 +261,7 @@ export const statsToolkitTiers = [
       'Efficient Frontier & Sharpe Ratio',
       'Principal Component Analysis (PCA)',
       'Kalman Filters',
-      'Stochastic Calculus & Ito\'s Lemma',
+      "Stochastic Calculus & Ito\\'s Lemma",
     ],
   },
 ];

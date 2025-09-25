@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { PageHeader } from '@/components/app/page-header';
@@ -10,15 +12,16 @@ import {
 } from '@/components/ui/card';
 import Link from 'next/link';
 
-const parametricTests = [
+export default function HypothesisTestingPage() {
+  const parametricTests = [
     { name: 'ANOVA', description: 'Compares the averages of three or more groups.', slug: 'anova' },
     { name: 'Pearson Correlation', description: 'Measures the linear relationship between two continuous variables.', slug: 'pearson-correlation' },
     { name: 'F-Test', description: 'Compares the variances (spread) of two or more groups.', slug: 'f-test' },
     { name: 'T-Test', description: 'Compares the means of two groups, assuming normal distribution.', slug: 't-test'},
     { name: 'Z-Test', description: 'Compares means of large samples (n>30) with known population variance.', slug: 'z-test'}
-];
+  ];
 
-const nonParametricTests = [
+  const nonParametricTests = [
     { name: 'Mann-Whitney U Test', description: 'Alternative to the T-Test when data is not normally distributed.', slug: 'mann-whitney-u-test' },
     { name: 'Kruskal-Wallis Test', description: 'Alternative to ANOVA for comparing three or more groups.', slug: 'kruskal-wallis-test' },
     { name: 'Wilcoxon Signed-Rank Test', description: 'Alternative to the paired T-Test for repeated measurements.', slug: 'wilcoxon-signed-rank-test' },
@@ -26,9 +29,8 @@ const nonParametricTests = [
     { name: 'Friedman Test', description: 'The non-parametric alternative to a repeated-measures ANOVA. Used to compare three or more related/paired groups.', slug: 'friedman-test' },
     { name: 'Kolmogorov-Smirnov (K-S) Test', description: 'Tests if a sample is drawn from a specific distribution (e.g., "Is my data normally distributed?").', slug: 'kolmogorov-smirnov-k-s-test' },
     { name: 'Chi-Squared Test', description: 'Tests if there is a significant association between two categorical variables.', slug: 'chi-squared-test' }
-];
+  ];
 
-export default function HypothesisTestingPage() {
   return (
     <>
       <PageHeader
