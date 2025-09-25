@@ -329,7 +329,6 @@ const treeData: DecisionNodeData = {
 
 type CustomNodeData = DecisionNodeData & {
   onClick: (id: string, parent?: string) => void;
-  active: boolean;
   isPath: boolean;
 };
 
@@ -342,13 +341,12 @@ const CustomNode = ({
 }: NodeProps<CustomNodeData>) => {
   return (
     <div
-      onClick={() => !data.isResult && data.onClick(data.id, data.parent)}
+      onClick={() => data.isQuestion && data.children && data.onClick(data.id)}
       className={`
         w-48 rounded-md border-2 bg-card p-3 shadow-md transition-all text-center text-sm
         ${data.isResult ? 'border-green-500 bg-green-500/10' : ''}
-        ${!data.isQuestion && !data.isResult ? 'cursor-pointer' : ''}
-        ${data.active ? 'border-primary ring-2 ring-primary' : ''}
-        ${!data.isPath && !data.active ? 'opacity-40' : ''}
+        ${data.isQuestion ? 'cursor-pointer hover:border-primary' : ''}
+        ${data.isPath ? 'border-primary' : ''}
       `}
     >
       <div className="font-bold">{data.label}</div>
@@ -359,11 +357,13 @@ const CustomNode = ({
         type="target"
         position={targetPosition || Position.Top}
         className="!bg-primary !h-2 !w-2"
+        isConnectable={false}
       />
       <Handle
         type="source"
         position={sourcePosition || Position.Bottom}
         className="!bg-primary !h-2 !w-2"
+        isConnectable={false}
       />
     </div>
   );
@@ -373,121 +373,148 @@ const nodeTypes = {
   custom: CustomNode,
 };
 
-// --- Helper to convert tree to nodes and edges with layout ---
-const getLayoutedElements = (
-  tree: DecisionNodeData,
-  handleNodeClick: (id: string, parentId?: string) => void,
-  activeNodeId: string,
-  path: Set<string>
-) => {
-  const initialNodes: Node[] = [];
-  const initialEdges: Edge[] = [];
-  const nodeWidth = 192; // w-48
-  const nodeHeight = 80; 
-  const verticalGap = 70;
-  const horizontalGap = 30;
-
-  const nodesByLevel: { [level: number]: DecisionNodeData[] } = {};
-
-  const traverse = (node: DecisionNodeData, level: number) => {
-    if (!nodesByLevel[level]) {
-      nodesByLevel[level] = [];
+// --- Helper to find a node in the tree ---
+const findNode = (
+  id: string,
+  node: DecisionNodeData = treeData
+): DecisionNodeData | null => {
+  if (node.id === id) return node;
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findNode(id, child);
+      if (found) return found;
     }
-    nodesByLevel[level].push(node);
-    if (node.children) {
-      node.children.forEach(child => traverse(child, level + 1));
-    }
-  };
-
-  traverse(tree, 0);
-
-  Object.keys(nodesByLevel).forEach(levelKey => {
-    const level = parseInt(levelKey, 10);
-    const nodesInLevel = nodesByLevel[level];
-    const levelWidth = nodesInLevel.length * (nodeWidth + horizontalGap);
-    const y = level * (nodeHeight + verticalGap);
-
-    nodesInLevel.forEach((node, index) => {
-      const x = index * (nodeWidth + horizontalGap) - (levelWidth / 2) + (nodeWidth / 2);
-      const isActive = node.id === activeNodeId;
-      const isPath = path.has(node.id);
-
-      initialNodes.push({
-        id: node.id,
-        type: 'custom',
-        data: { ...node, onClick: handleNodeClick, active: isActive, isPath },
-        position: { x, y },
-      });
-
-      if (node.parent) {
-        initialEdges.push({
-          id: `e-${node.parent}-${node.id}`,
-          source: node.parent,
-          target: node.id,
-          animated: isPath,
-          style: {
-            stroke: isPath ? 'hsl(var(--primary))' : '#555',
-            strokeWidth: isPath ? 2 : 1,
-          },
-        });
-      }
-    });
-  });
-
-  return { initialNodes, initialEdges };
+  }
+  return null;
 };
 
 
 // --- Page Component ---
 
 export default function StatisticalTestChooserPage() {
-  const [activeNodeId, setActiveNodeId] = useState('root');
-  const [path, setPath] = useState<Set<string>>(new Set(['root']));
+  const [nodes, setNodes] = useNodesState([]);
+  const [edges, setEdges] = useEdgesState([]);
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+
+  const setInitialState = useCallback(() => {
+    const rootNode = findNode('root');
+    if (rootNode) {
+      const initialNodes: Node[] = [
+        {
+          id: rootNode.id,
+          type: 'custom',
+          data: { ...rootNode, onClick: handleNodeClick, isPath: true },
+          position: { x: 0, y: 0 },
+        },
+      ];
+      rootNode.children?.forEach((child, index) => {
+        initialNodes.push({
+          id: child.id,
+          type: 'custom',
+          data: { ...child, onClick: handleNodeClick, isPath: false },
+          position: { x: -150 + index * 150, y: 150 },
+        });
+        setEdges((eds) => [
+          ...eds,
+          { id: `e-root-${child.id}`, source: 'root', target: child.id, animated: false },
+        ]);
+      });
+      setNodes(initialNodes);
+      setEdges([]);
+    }
+  }, [setNodes, setEdges]);
   
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  useEffect(() => {
+    setInitialState();
+  }, [setInitialState]);
 
-  const findNode = useCallback(
-    (id: string, node: DecisionNodeData = treeData): DecisionNodeData | null => {
-      if (node.id === id) return node;
-      if (node.children) {
-        for (const child of node.children) {
-          const found = findNode(id, child);
-          if (found) return found;
-        }
-      }
-      return null;
-    },
-    []
-  );
-
-  const handleNodeClick = useCallback(
-    (id: string) => {
-      const clickedNode = findNode(id);
-      if (!clickedNode || !clickedNode.children) return;
-
-      setActiveNodeId(id);
-
-      const newPath = new Set<string>();
-      let currentNode: DecisionNodeData | null = clickedNode;
-      while (currentNode) {
-        newPath.add(currentNode.id);
-        currentNode = currentNode.parent ? findNode(currentNode.parent) : null;
-      }
-      setPath(newPath);
-    },
-    [findNode]
-  );
 
   useEffect(() => {
-    const { initialNodes, initialEdges } = getLayoutedElements(treeData, handleNodeClick, activeNodeId, path);
-    setNodes(initialNodes);
-    setEdges(initialEdges);
-  }, [activeNodeId, path, handleNodeClick]);
+    if (reactFlowInstance) {
+      setTimeout(() => reactFlowInstance.fitView({ padding: 0.2, duration: 300 }), 100);
+    }
+  }, [nodes, reactFlowInstance]);
+
+  const handleNodeClick = useCallback(
+    (parentId: string) => {
+      const parentNodeData = findNode(parentId);
+      if (!parentNodeData || !parentNodeData.children) return;
+
+      setNodes((currentNodes) => {
+        // Mark all nodes in the clicked-on parent's children as not being on the path
+        const childrenIds = parentNodeData.children?.map(c => c.id) || [];
+        const nodesWithPathReset = currentNodes.map(n => 
+          childrenIds.includes(n.id) ? { ...n, data: {...n.data, isPath: false}} : n
+        );
+
+        // Find the full path to the clicked parent and mark those as `isPath`
+        const pathIds = new Set<string>();
+        let current: DecisionNodeData | null = parentNodeData;
+        while (current) {
+          pathIds.add(current.id);
+          current = current.parent ? findNode(current.parent) : null;
+        }
+
+        let newNodes = nodesWithPathReset.map(n => 
+          pathIds.has(n.id) ? { ...n, data: {...n.data, isPath: true}} : n
+        );
+
+        const parentNode = newNodes.find(n => n.id === parentId);
+        if (!parentNode) return newNodes;
+
+        parentNodeData.children.forEach((childNodeData, index) => {
+          // If child already exists, just update its data
+          if (newNodes.some(n => n.id === childNodeData.id)) {
+            newNodes = newNodes.map(n => n.id === childNodeData.id ? { ...n, data: {...n.data, isPath: true}} : n);
+          } else {
+            // Add new child node
+            newNodes.push({
+              id: childNodeData.id,
+              type: 'custom',
+              data: { ...childNodeData, onClick: handleNodeClick, isPath: true },
+              position: { 
+                x: parentNode.position.x + (-150 + index * 150), 
+                y: parentNode.position.y + 150 
+              },
+            });
+          }
+
+          // Add new edge
+          setEdges((eds) => [
+            ...eds,
+            { id: `e-${parentId}-${childNodeData.id}`, source: parentId, target: childNodeData.id, animated: true },
+          ]);
+          
+          // If the child is a question, reveal its options
+          if (childNodeData.isQuestion && childNodeData.children) {
+             childNodeData.children.forEach((grandchild, gcIndex) => {
+               if(!newNodes.some(n => n.id === grandchild.id)) {
+                  newNodes.push({
+                    id: grandchild.id,
+                    type: 'custom',
+                    data: { ...grandchild, onClick: handleNodeClick, isPath: false },
+                    position: {
+                      x: parentNode.position.x + (-150 + index * 150) + (-100 + gcIndex * 100),
+                      y: parentNode.position.y + 300,
+                    }
+                  });
+                  setEdges((eds) => [
+                    ...eds,
+                    {id: `e-${childNodeData.id}-${grandchild.id}`, source: childNodeData.id, target: grandchild.id, animated: false}
+                  ]);
+               }
+             });
+          }
+        });
+        
+        return newNodes;
+      });
+    },
+    [setNodes, setEdges]
+  );
   
   const handleReset = () => {
-    setActiveNodeId('root');
-    setPath(new Set(['root']));
+    setInitialState();
   };
 
   return (
@@ -505,13 +532,15 @@ export default function StatisticalTestChooserPage() {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
+          onNodesChange={useNodesState([])[1]}
+          onEdgesChange={useEdgesState([])[1]}
           nodeTypes={nodeTypes}
+          onInit={setReactFlowInstance}
           fitView
           className="bg-background"
           nodesDraggable={false}
           nodesConnectable={false}
+          proOptions={{hideAttribution: true}}
         />
       </Card>
     </>
