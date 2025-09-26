@@ -1,3 +1,4 @@
+
 import { PageHeader } from '@/components/app/page-header';
 import { Button } from '@/components/ui/button';
 import { communityPosts } from '@/lib/data';
@@ -45,7 +46,11 @@ export default function CommunityPage() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <Link href="#" className="font-medium hover:underline">
+                    <Link
+                      href="#"
+                      className="font-medium hover:underline"
+                      rel="noopener noreferrer"
+                    >
                       {post.topic}
                     </Link>
                     <p className="text-sm text-muted-foreground">
