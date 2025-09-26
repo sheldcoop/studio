@@ -32,6 +32,7 @@ export function ConfidenceIntervalAnimation({
     blending: THREE.AdditiveBlending,
     transparent: true,
     opacity: 0.9,
+    linewidth: 2,
   }), []);
 
   useEffect(() => {
@@ -57,15 +58,22 @@ export function ConfidenceIntervalAnimation({
     const pointCount = 500;
     const pointsGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(pointCount * 3);
+    const originalPositions = new Float32Array(pointCount * 3);
+
     for (let i = 0; i < pointCount; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 25;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 25;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 25;
+      const i3 = i * 3;
+      // Store original random positions
+      originalPositions[i3] = (Math.random() - 0.5) * 25;
+      originalPositions[i3 + 1] = (Math.random() - 0.5) * 25;
+      originalPositions[i3 + 2] = (Math.random() - 0.5) * 25;
+      
+      positions[i3] = originalPositions[i3];
+      positions[i3+1] = originalPositions[i3+1];
+      positions[i3+2] = originalPositions[i3+2];
     }
     pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const dataCloud = new THREE.Points(pointsGeometry, pointsMaterial);
     scene.add(dataCloud);
-    const originalPositions = positions.slice();
 
     // --- Regression Line ---
     const lineGeometry = new THREE.BufferGeometry();
@@ -83,9 +91,11 @@ export function ConfidenceIntervalAnimation({
 
       // --- Interaction ---
       if (isMouseOver.current) {
-        targetCorrelation = (mouse.current.y + 1) / 2; // 0 to 1
+        // Map mouse Y to correlation strength (-1 to 1)
+        targetCorrelation += (mouse.current.y - targetCorrelation) * 0.1;
       } else {
-        targetCorrelation = 0;
+        // Return to a non-correlated state
+        targetCorrelation += (0 - targetCorrelation) * 0.05;
       }
       
       const currentPositions = dataCloud.geometry.getAttribute('position').array as Float32Array;
@@ -94,10 +104,11 @@ export function ConfidenceIntervalAnimation({
       for (let i = 0; i < pointCount; i++) {
         const i3 = i * 3;
         const originalX = originalPositions[i3];
-        const originalY = originalPositions[i3 + 1];
+        // Use a different original component for y to avoid perfect correlation
+        const originalY = originalPositions[i3 + 1]; 
         
         // Morph to correlated state
-        const targetY = originalX * targetCorrelation + originalY * (1 - targetCorrelation);
+        const targetY = originalX * targetCorrelation * 1.5 + originalY * (1 - Math.abs(targetCorrelation));
         currentPositions[i3+1] += (targetY - currentPositions[i3+1]) * 0.1;
         
         sumX += currentPositions[i3];
@@ -111,7 +122,7 @@ export function ConfidenceIntervalAnimation({
 
 
       // --- Regression Calculation ---
-      if(targetCorrelation > 0.1) {
+      if(Math.abs(targetCorrelation) > 0.1) {
         regressionLine.visible = true;
         const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
         const b = (sumY - m * sumX) / n;
@@ -178,5 +189,3 @@ export function ConfidenceIntervalAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
-
-    
