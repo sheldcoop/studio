@@ -6,7 +6,14 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
 
 /**
  * Generates normally distributed random data using the Box-Muller transform.
@@ -146,8 +153,6 @@ const FTestChart = () => {
   );
 };
 
-const DynamicFTestChart = dynamic(() => Promise.resolve(FTestChart), { ssr: false });
-
 export default function FTestPage() {
   return (
     <>
@@ -202,7 +207,7 @@ export default function FTestPage() {
               'StableStock', indicating higher volatility and risk.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicFTestChart />
+              <FTestChart />
             </div>
           </CardContent>
         </Card>
@@ -210,3 +215,5 @@ export default function FTestPage() {
     </>
   );
 }
+
+    

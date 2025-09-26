@@ -8,7 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const Legend = dynamic(() => import('recharts').then(mod => mod.Legend), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
 
 
 const goodnessOfFitChartConfig = {
@@ -203,10 +210,6 @@ const TestForHomogeneityChart = () => {
 };
 
 
-const DynamicGoodnessOfFitChart = dynamic(() => Promise.resolve(GoodnessOfFitChart), { ssr: false });
-const DynamicTestForIndependenceChart = dynamic(() => Promise.resolve(TestForIndependenceChart), { ssr: false });
-const DynamicTestForHomogeneityChart = dynamic(() => Promise.resolve(TestForHomogeneityChart), { ssr: false });
-
 export default function ChiSquaredTestPage() {
   return (
     <>
@@ -247,7 +250,7 @@ export default function ChiSquaredTestPage() {
                    A firm wants to know if profitable trades are uniformly distributed throughout the week. The null hypothesis is that each day has an equal number of profitable trades. The Chi-Squared Goodness of Fit test checks if the observed daily counts are significantly different from the expected counts.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicGoodnessOfFitChart />
+                  <GoodnessOfFitChart />
                 </div>
               </TabsContent>
 
@@ -263,7 +266,7 @@ export default function ChiSquaredTestPage() {
                   A quant analyst tracks profitable trades for three strategies across different market conditions. They want to know if "Strategy Type" and "Market Condition" are independent. The test compares the observed counts to what we'd expect if no relationship existed.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicTestForIndependenceChart />
+                  <TestForIndependenceChart />
                 </div>
               </TabsContent>
 
@@ -279,7 +282,7 @@ export default function ChiSquaredTestPage() {
                   A global firm surveys traders in their New York and London offices (two populations) about their preferred asset class (one variable: Stocks, Forex, or Crypto). The Test for Homogeneity determines if the proportion of traders who prefer each asset class is the same in both offices.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                    <DynamicTestForHomogeneityChart />
+                    <TestForHomogeneityChart />
                 </div>
               </TabsContent>
             </Tabs>
@@ -289,3 +292,5 @@ export default function ChiSquaredTestPage() {
     </>
   );
 }
+
+    

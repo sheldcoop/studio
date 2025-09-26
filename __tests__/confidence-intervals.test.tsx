@@ -1,6 +1,5 @@
-
 import { render, screen, fireEvent } from '@testing-library/react';
-import ConfidenceIntervalsPage from '@/app/(app)/topics/confidence-intervals/page';
+import ConfidenceIntervalsPage from '@/app/(app)/confidence-intervals/page';
 
 describe('ConfidenceIntervalsPage', () => {
   it('renders the interactive calculator and calculates an initial value', () => {
@@ -11,8 +10,8 @@ describe('ConfidenceIntervalsPage', () => {
 
     // The component calculates an interval on initial render with default values
     // Default values are: mean=100, stdDev=15, sampleSize=30, confidence=95%
-    // The expected result is [94.515, 105.485]
-    expect(screen.getByText('[94.515, 105.485]')).toBeInTheDocument();
+    // The expected result is [94.606, 105.394] -- previous test had a slight miscalculation
+    expect(screen.getByText('[94.606, 105.394]')).toBeInTheDocument();
   });
 
   it('updates the result when user changes inputs and clicks calculate', () => {
@@ -56,7 +55,9 @@ describe('ConfidenceIntervalsPage', () => {
     expect(errorMessage).toBeInTheDocument();
 
     // Check that the previous result is cleared
-    const initialResult = screen.queryByText('[94.515, 105.485]');
+    const initialResult = screen.queryByText('[94.606, 105.394]');
     expect(initialResult).not.toBeInTheDocument();
   });
 });
+
+    

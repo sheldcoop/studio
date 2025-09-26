@@ -10,7 +10,16 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const Legend = dynamic(() => import('recharts').then(mod => mod.Legend), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const ReferenceLine = dynamic(() => import('recharts').then(mod => mod.ReferenceLine), { ssr: false });
+
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -144,9 +153,6 @@ const TwoSampleZTestChart = () => {
   );
 };
 
-const DynamicOneSampleZTestChart = dynamic(() => Promise.resolve(OneSampleZTestChart), { ssr: false });
-const DynamicTwoSampleZTestChart = dynamic(() => Promise.resolve(TwoSampleZTestChart), { ssr: false });
-
 
 export default function ZTestPage() {
   return (
@@ -210,7 +216,7 @@ export default function ZTestPage() {
                   After a major platform update, you analyze the daily returns of 'Stock A' for the last 100 trading days. You want to know if its average daily return is now different from its known historical average of 0.05% over the past 10 years (with a population standard deviation of 1.2%).
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicOneSampleZTestChart />
+                  <OneSampleZTestChart />
                 </div>
               </TabsContent>
               <TabsContent value="two-sample" className="mt-6">
@@ -225,7 +231,7 @@ export default function ZTestPage() {
                   A firm compares the average daily volatility of 'Stock A' vs. 'Stock B' over the past five years (~1260 data points each). With known population standard deviations for both stocks' volatility, they test if there is a significant difference between them.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicTwoSampleZTestChart />
+                  <TwoSampleZTestChart />
                 </div>
               </TabsContent>
             </Tabs>
@@ -235,3 +241,5 @@ export default function ZTestPage() {
     </>
   );
 }
+
+    

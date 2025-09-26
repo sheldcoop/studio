@@ -7,7 +7,15 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
+
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -91,8 +99,6 @@ const KruskalWallisChart = () => {
   );
 };
 
-const DynamicKruskalWallisChart = dynamic(() => Promise.resolve(KruskalWallisChart), { ssr: false });
-
 export default function KruskalWallisTestPage() {
   return (
     <>
@@ -142,7 +148,7 @@ export default function KruskalWallisTestPage() {
               A trading firm wants to compare the profitability of three different trading bots: a machine learning bot, a traditional rule-based bot, and a hybrid model. The profit-per-trade data for each bot is heavily skewed. They use the Kruskal-Wallis test to determine if there is a statistically significant difference in the median profit among the three bots.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicKruskalWallisChart />
+              <KruskalWallisChart />
             </div>
           </CardContent>
         </Card>
@@ -150,3 +156,5 @@ export default function KruskalWallisTestPage() {
     </>
   );
 }
+
+    
