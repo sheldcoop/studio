@@ -1,3 +1,4 @@
+
 import { PageHeader } from '@/components/app/page-header';
 
 // Helper to convert slug back to a readable title
@@ -9,6 +10,11 @@ function slugToTitle(slug: string) {
 }
 
 export default async function TopicPage({ params }: { params: { slug: string } }) {
+  // If the slug is not present during build, return null to prevent errors.
+  if (!params.slug) {
+    return null;
+  }
+
   // A list of slugs that have their own dedicated page.
   // This prevents this dynamic route from rendering over a specific, static page.
   const dedicatedPages = [
@@ -31,9 +37,8 @@ export default async function TopicPage({ params }: { params: { slug: string } }
     'stat-toolkit',
   ];
 
-  // If the slug is for a dedicated page, or if it's undefined during build,
-  // we return null to prevent this component from rendering.
-  if (!params.slug || dedicatedPages.includes(params.slug)) {
+  // If the slug is for a dedicated page, we return null to prevent this component from rendering.
+  if (dedicatedPages.includes(params.slug)) {
     return null;
   }
 
