@@ -121,8 +121,7 @@ const TwoSampleZTestChart = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
     setChartData([
-        { name: 'Stock A', value: getMean(dataA), fill: 'var(--color-Stock A)' },
-        { name: 'Stock B', value: getMean(dataB), fill: 'var(--color-Stock B)' },
+      { month: 'Volatility', 'Stock A': getMean(dataA), 'Stock B': getMean(dataB) },
     ]);
   };
 
@@ -136,10 +135,12 @@ const TwoSampleZTestChart = () => {
         <ChartContainer config={twoSampleZTestChartConfig} className="h-full w-full">
             <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                <Bar dataKey="value" name="Avg Daily Volatility" radius={4} />
+                <Legend />
+                <Bar dataKey="Stock A" fill="var(--color-Stock A)" radius={4} />
+                <Bar dataKey="Stock B" fill="var(--color-Stock B)" radius={4} />
             </BarChart>
         </ChartContainer>
       </div>
