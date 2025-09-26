@@ -10,6 +10,11 @@ import {
 } from '@/components/ui/card';
 import { quantJourney } from '@/lib/data';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
+import {
+  CanvasAnimation,
+  type AnimationType,
+} from '@/components/app/animations/canvas-animations';
+import { LinearAlgebraAnimation } from '@/components/app/animations/linear-algebra';
 
 export default function DashboardPage() {
   return (
@@ -28,18 +33,27 @@ export default function DashboardPage() {
             key={item.id}
             className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <Card className="flex h-full transform-gpu flex-col bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
-              <CardHeader>
-                <div className="mb-4">
-                  <item.icon className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="font-headline text-xl">
-                  {item.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{item.description}</CardDescription>
-              </CardContent>
+            <Card className="relative flex h-full transform-gpu flex-col overflow-hidden bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
+              {item.animation === 'linear-algebra' ? (
+                <LinearAlgebraAnimation />
+              ) : (
+                <CanvasAnimation
+                  animationType={item.animation as AnimationType}
+                />
+              )}
+              <div className="relative z-10 flex h-full flex-col">
+                <CardHeader>
+                  <div className="mb-4">
+                    <item.icon className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="font-headline text-xl">
+                    {item.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>{item.description}</CardDescription>
+                </CardContent>
+              </div>
             </Card>
           </Link>
         ))}

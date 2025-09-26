@@ -176,6 +176,7 @@ export const quantJourney = [
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
     href: '/topics/linear-algebra',
+    animation: 'linear-algebra',
   },
   {
     id: 'stats-prob',
@@ -183,6 +184,7 @@ export const quantJourney = [
     description: 'Quantifying uncertainty and making sense of distributions.',
     icon: Sigma,
     href: '/topics/hypothesis-testing-p-values',
+    animation: 'stats',
   },
   {
     id: 'mental-math',
@@ -190,6 +192,7 @@ export const quantJourney = [
     description: 'Train your calculation speed and accuracy for interviews.',
     icon: BrainCircuit,
     href: '/topics/mental-math',
+    animation: 'mental-math',
   },
   {
     id: 'time-series',
@@ -197,6 +200,7 @@ export const quantJourney = [
     description: 'ARIMA, GARCH, and forecasting market movements.',
     icon: LineChart,
     href: '/topics/time-series',
+    animation: 'time-series',
   },
   {
     id: 'machine-learning',
@@ -204,6 +208,7 @@ export const quantJourney = [
     description: 'Building predictive models for financial markets.',
     icon: Cpu,
     href: '/topics/machine-learning',
+    animation: 'ml',
   },
   {
     id: 'algo-trading',
@@ -211,6 +216,7 @@ export const quantJourney = [
     description: 'From strategy backtesting to live deployment.',
     icon: CandlestickChart,
     href: '/topics/algo-trading',
+    animation: 'trading',
   },
   {
     id: 'stat-toolkit',
@@ -218,6 +224,7 @@ export const quantJourney = [
     description: 'Interactive tools for hands-on statistical analysis.',
     icon: Boxes,
     href: '/topics/stat-toolkit',
+    animation: 'toolkit',
   },
 ];
 
