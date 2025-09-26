@@ -2,22 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
-const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+import { Line, LineChart as RechartsLineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 
 
 // --- Math Helpers ---
@@ -95,7 +85,7 @@ const KSTestChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={ksTestChartConfig} className="h-full w-full">
-            <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis type="number" dataKey="x" name="Value" domain={['dataMin', 'dataMax']} tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis domain={[0,1]} />
@@ -103,7 +93,7 @@ const KSTestChart = () => {
                 <Legend />
                 <Line type="step" dataKey="empirical" stroke="var(--color-empirical)" dot={false} strokeWidth={2}/>
                 <Line type="monotone" dataKey="theoretical" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
-            </LineChart>
+            </RechartsLineChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex flex-shrink-0 justify-center gap-4">
@@ -114,6 +104,8 @@ const KSTestChart = () => {
     </div>
   );
 };
+
+const DynamicKSTestChart = dynamic(() => Promise.resolve(KSTestChart), { ssr: false });
 
 
 export default function KolmogorovSmirnovTestPage() {
@@ -162,7 +154,7 @@ export default function KolmogorovSmirnovTestPage() {
               <span className="font-semibold text-foreground">Example:</span> We generate a sample of data and plot its Empirical Cumulative Distribution Function (ECDF). We then overlay the theoretical Cumulative Distribution Function (CDF) of a normal distribution. Toggle between a normal sample and a uniform sample to see how the ECDF's fit changes.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <KSTestChart />
+              <DynamicKSTestChart />
             </div>
           </CardContent>
         </Card>

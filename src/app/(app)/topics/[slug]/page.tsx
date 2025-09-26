@@ -1,3 +1,4 @@
+
 import { PageHeader } from '@/components/app/page-header';
 
 // Helper to convert slug back to a readable title
@@ -9,23 +10,46 @@ function slugToTitle(slug: string) {
 }
 
 export default async function TopicPage({ params }: { params: { slug: string } }) {
-  const title = slugToTitle(params.slug);
-
-  // A list of slugs that have their own dedicated page.
-  const dedicatedPages = ['hypothesis-testing-p-values', 'mental-math', 'confidence-intervals', 'linear-algebra', 't-test', 'z-test', 'anova'];
-
-  if (dedicatedPages.includes(params.slug)) {
-    // This condition should ideally not be met if linking is correct,
-    // but it's a safeguard. Returning null will prevent this generic
-    // page from rendering over a specific one if a conflict occurs.
+  // If the slug is not present during build, return null to prevent errors.
+  if (!params.slug) {
     return null;
   }
+
+  // A list of slugs that have their own dedicated page.
+  // This prevents this dynamic route from rendering over a specific, static page.
+  const dedicatedPages = [
+    'confidence-intervals',
+    'hypothesis-testing-p-values',
+    'mental-math',
+    'linear-algebra',
+    't-test',
+    'z-test',
+    'anova',
+    'f-test',
+    'chi-squared-test',
+    'pearson-correlation',
+    'mann-whitney-u-test',
+    'kruskal-wallis-test',
+    'wilcoxon-signed-rank-test',
+    'spearmans-rank-correlation',
+    'friedman-test',
+    'kolmogorov-smirnov-k-s-test',
+    'stat-toolkit',
+  ];
+
+  // If the slug is for a dedicated page, we return null to prevent this component from rendering.
+  if (dedicatedPages.includes(params.slug)) {
+    return null;
+  }
+
+  const title = slugToTitle(params.slug);
 
   return (
     <div>
       <PageHeader
         title={title}
         description={`An overview of ${title}.`}
+        variant="aligned-left"
       />
       <div className="flex h-96 items-center justify-center rounded-lg border border-dashed">
         <p className="text-muted-foreground">Topic content will go here.</p>

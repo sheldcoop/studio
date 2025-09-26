@@ -2,22 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
-const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+import { Line, LineChart as RechartsLineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 
 // Helper to generate rank-like data for demonstration
 const generateRankData = (numSubjects: number) => {
@@ -68,7 +58,7 @@ const FriedmanTestChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={friedmanTestChartConfig} className="h-full w-full">
-            <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis reversed domain={[1, 5]} tickCount={5} />
@@ -79,7 +69,7 @@ const FriedmanTestChart = () => {
                 <Line type="monotone" dataKey="Algo_C" stroke="var(--color-Algo_C)" />
                 <Line type="monotone" dataKey="Algo_D" stroke="var(--color-Algo_D)" />
                 <Line type="monotone" dataKey="Algo_E" stroke="var(--color-Algo_E)" />
-            </LineChart>
+            </RechartsLineChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -89,6 +79,7 @@ const FriedmanTestChart = () => {
   );
 };
 
+const DynamicFriedmanTestChart = dynamic(() => Promise.resolve(FriedmanTestChart), { ssr: false });
 
 export default function FriedmanTestPage() {
   return (
@@ -136,7 +127,7 @@ export default function FriedmanTestPage() {
               <span className="font-semibold text-foreground">Example:</span> A quant team wants to compare the performance of five trading algorithms across three different market volatility regimes (Low, Medium, and High). For each regime, they rank the algorithms from 1 (best) to 5 (worst). The Friedman test is used to determine if there is a significant difference in the algorithms' median ranks across the different volatility conditions.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <FriedmanTestChart />
+              <DynamicFriedmanTestChart />
             </div>
           </CardContent>
         </Card>

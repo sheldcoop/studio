@@ -2,22 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Rectangle,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(recharts => recharts.Cell), { ssr: false });
+import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
 
 /**
  * Generates normally distributed random data using the Box-Muller transform.
@@ -134,7 +123,7 @@ const FTestChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={fTestChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => fTestChartConfig[value as keyof typeof fTestChartConfig]?.label || value} />
             <YAxis />
@@ -147,7 +136,7 @@ const FTestChart = () => {
                 <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
               ))}
             </Bar>
-          </BarChart>
+          </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -156,6 +145,8 @@ const FTestChart = () => {
     </div>
   );
 };
+
+const DynamicFTestChart = dynamic(() => Promise.resolve(FTestChart), { ssr: false });
 
 export default function FTestPage() {
   return (
@@ -211,7 +202,7 @@ export default function FTestPage() {
               'StableStock', indicating higher volatility and risk.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <FTestChart />
+              <DynamicFTestChart />
             </div>
           </CardContent>
         </Card>

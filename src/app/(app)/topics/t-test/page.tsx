@@ -4,12 +4,16 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
   ReferenceLine,
-  Rectangle,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
   Legend,
+  Cell,
+  Bar,
+  Line,
+  CartesianGrid,
+  BarChart as RechartsBarChart,
+  LineChart as RechartsLineChart,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
@@ -19,17 +23,6 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-// Dynamically import chart components
-const AreaChart = dynamic(() => import('recharts').then(recharts => recharts.AreaChart), { ssr: false });
-const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
-const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
-const Area = dynamic(() => import('recharts').then(recharts => recharts.Area), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
-const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(recharts => recharts.Cell), { ssr: false });
-
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -104,7 +97,7 @@ const IndependentTestChart = () => {
           config={independentTestChartConfig}
           className="h-full w-full"
         >
-          <BarChart
+          <RechartsBarChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -127,7 +120,7 @@ const IndependentTestChart = () => {
                     <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
                 ))}
             </Bar>
-          </BarChart>
+          </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -168,7 +161,7 @@ const PairedTestChart = () => {
           config={pairedTestChartConfig}
           className="h-full w-full"
         >
-          <LineChart
+          <RechartsLineChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
@@ -195,7 +188,7 @@ const PairedTestChart = () => {
               strokeWidth={2}
               stroke="var(--color-after)"
             />
-          </LineChart>
+          </RechartsLineChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -218,7 +211,7 @@ const OneSampleTestChart = () => {
           config={oneSampleTestChartConfig}
           className="h-full w-full"
         >
-          <BarChart
+          <RechartsBarChart
             accessibilityLayer
             data={chartData}
             layout="vertical"
@@ -252,7 +245,7 @@ const OneSampleTestChart = () => {
                 fontSize={12}
               />
             </ReferenceLine>
-          </BarChart>
+          </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -282,6 +275,11 @@ const OneSampleTestChart = () => {
     </div>
   );
 };
+
+const DynamicIndependentTestChart = dynamic(() => Promise.resolve(IndependentTestChart), { ssr: false });
+const DynamicPairedTestChart = dynamic(() => Promise.resolve(PairedTestChart), { ssr: false });
+const DynamicOneSampleTestChart = dynamic(() => Promise.resolve(OneSampleTestChart), { ssr: false });
+
 
 export default function TTestPage() {
   return (
@@ -354,7 +352,7 @@ export default function TTestPage() {
                   one is significantly more profitable.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <IndependentTestChart />
+                  <DynamicIndependentTestChart />
                 </div>
               </TabsContent>
               <TabsContent value="paired" className="mt-6">
@@ -376,7 +374,7 @@ export default function TTestPage() {
                   improvement.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <PairedTestChart />
+                  <DynamicPairedTestChart />
                 </div>
               </TabsContent>
               <TabsContent value="one-sample" className="mt-6">
@@ -398,7 +396,7 @@ export default function TTestPage() {
                   claim.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <OneSampleTestChart />
+                  <DynamicOneSampleTestChart />
                 </div>
               </TabsContent>
             </Tabs>

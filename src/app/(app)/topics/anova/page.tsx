@@ -2,28 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  Rectangle,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
 import { ChartTooltipContent } from '@/lib/chart-config';
-
-const AreaChart = dynamic(() => import('recharts').then(recharts => recharts.AreaChart), { ssr: false });
-const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
-const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
-const Area = dynamic(() => import('recharts').then(recharts => recharts.Area), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
-const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(recharts => recharts.Cell), { ssr: false });
+import { Area, Bar, Line, AreaChart as RechartsAreaChart, BarChart as RechartsBarChart, LineChart as RechartsLineChart, CartesianGrid, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -101,7 +86,7 @@ const OneWayAnovaChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={oneWayAnovaChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid vertical={false} />
               <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => oneWayAnovaChartConfig[value as keyof typeof oneWayAnovaChartConfig]?.label || value} />
               <YAxis unit="%" />
@@ -111,7 +96,7 @@ const OneWayAnovaChart = () => {
                     <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
                 ))}
               </Bar>
-          </BarChart>
+          </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -148,14 +133,14 @@ const TwoWayAnovaChart = () => {
         <div className="flex h-[420px] w-full flex-col">
             <div className="flex-grow">
                 <ChartContainer config={twoWayAnovaChartConfig} className="h-full w-full">
-                    <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis unit="$" />
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                         <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-stocks)" />
                         <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-crypto)" />
-                    </LineChart>
+                    </RechartsLineChart>
                 </ChartContainer>
             </div>
             <p className="pt-4 text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
@@ -190,7 +175,7 @@ const RepeatedMeasuresAnovaChart = () => {
          <div className="flex h-[420px] w-full flex-col">
             <div className="flex-grow">
                 <ChartContainer config={repeatedMeasuresAnovaChartConfig} className="h-full w-full">
-                     <AreaChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                     <RechartsAreaChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis />
@@ -202,7 +187,7 @@ const RepeatedMeasuresAnovaChart = () => {
                             </linearGradient>
                         </defs>
                         <Area type="monotone" dataKey="value" strokeWidth={2} stroke="var(--color-value)" fill="url(#fillValue)" />
-                    </AreaChart>
+                    </RechartsAreaChart>
                 </ChartContainer>
             </div>
             <div className="mt-4 flex-shrink-0 text-center">
@@ -211,6 +196,10 @@ const RepeatedMeasuresAnovaChart = () => {
         </div>
     );
 };
+
+const DynamicOneWayAnovaChart = dynamic(() => Promise.resolve(OneWayAnovaChart), { ssr: false });
+const DynamicTwoWayAnovaChart = dynamic(() => Promise.resolve(TwoWayAnovaChart), { ssr: false });
+const DynamicRepeatedMeasuresAnovaChart = dynamic(() => Promise.resolve(RepeatedMeasuresAnovaChart), { ssr: false });
 
 
 export default function AnovaPage() {
@@ -274,7 +263,7 @@ export default function AnovaPage() {
                   A quant firm wants to compare the average monthly returns of three different algorithms ('Alpha', 'Beta', 'Gamma') when traded on the S&P 500. They run each algorithm independently for 50 months and use a One-Way ANOVA to see if any algorithm significantly outperforms the others.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <OneWayAnovaChart />
+                  <DynamicOneWayAnovaChart />
                 </div>
               </TabsContent>
               <TabsContent value="two-way" className="mt-6">
@@ -291,7 +280,7 @@ export default function AnovaPage() {
                   A trading desk wants to know how `Asset Class` (Factor 1: Stocks vs. Crypto) and `Time of Day` (Factor 2: Morning vs. Afternoon) affect trade profitability. A Two-Way ANOVA can tell them if stocks are more profitable overall, if morning trades are better overall, AND if there's an interaction (e.g., crypto is highly profitable in the morning but not the afternoon).
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <TwoWayAnovaChart />
+                  <DynamicTwoWayAnovaChart />
                 </div>
               </TabsContent>
               <TabsContent value="repeated-measures" className="mt-6">
@@ -307,7 +296,7 @@ export default function AnovaPage() {
                   An analyst tracks the risk-adjusted return (Sharpe Ratio) of a single portfolio over time. They measure it at the end of Year 1 (baseline), Year 2 (after adding international stocks), and Year 3 (after adding a hedging strategy) to see if these changes led to a statistically significant improvement in performance.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <RepeatedMeasuresAnovaChart />
+                  <DynamicRepeatedMeasuresAnovaChart />
                 </div>
               </TabsContent>
             </Tabs>
