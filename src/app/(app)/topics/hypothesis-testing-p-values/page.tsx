@@ -18,7 +18,7 @@ export default function HypothesisTestingPage() {
     { name: 'ANOVA', description: 'Compares the averages of three or more groups.', slug: 'anova' },
     { name: 'F-Test', description: 'Compares the variances (spread) of two or more groups.', slug: 'f-test' },
     { name: 'Pearson Correlation', description: 'Measures the linear relationship between two continuous variables.', slug: 'pearson-correlation' },
-    { name: 'Confidence Intervals', description: 'Understanding the range where a true value likely lies.', slug: 'ci'},
+    { name: 'Confidence Intervals', description: 'Understanding the range where a true value likely lies.', slug: 'confidence-intervals'},
   ];
 
   const nonParametricTests = [
