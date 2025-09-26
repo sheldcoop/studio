@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -84,22 +85,24 @@ const createHistogram = (data: number[]) => {
   const q1 = sortedData[Math.floor(sortedData.length / 4)];
   const q3 = sortedData[Math.floor(sortedData.length * 3 / 4)];
   const iqr = q3 - q1;
-  const binSize = (2 * iqr) / Math.pow(data.length, 1/3);
+  let binSize = (2 * iqr) / Math.pow(data.length, 1/3);
 
   const min = sortedData[0];
   const max = sortedData[sortedData.length - 1];
 
   if (binSize <= 0) {
     if (min === max) {
-      return { bins: [{ name: min.toFixed(1), count: data.length }], maxCount: data.length, binSize: 1 };
+      return { bins: [{ name: min, count: data.length }], maxCount: data.length, binSize: 1 };
     }
-    return { bins: [], maxCount: 0, binSize: 1 };
+    // If binSize is still 0, create a default sensible one
+    binSize = (max - min) / 20 || 1;
   }
 
 
   const numBins = Math.max(1, Math.ceil((max - min) / binSize));
   const bins = Array.from({ length: numBins }, (_, i) => ({
-    name: (min + i * binSize).toFixed(1),
+    // Use the center of the bin for the 'name' property for better alignment
+    name: min + i * binSize + binSize / 2, 
     count: 0,
   }));
 
@@ -155,7 +158,7 @@ const CLTChart = () => {
     const { data, mean, stdDev } = generatePopulation(distributionType, 10000);
     setPopulation(data);
     setPopStats({ mean, stdDev });
-    setPopulationHist(createHistogram(data).bins);
+    setPopulationHist(createHistogram(data).bins.map(b => ({ ...b, name: b.name.toFixed(1)})));
     resetSimulation();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [distributionType]);
@@ -182,7 +185,7 @@ const CLTChart = () => {
             lastMean = sampleMean;
         }
 
-        setSampleMeans(prev => [...prev, ...newMeans].slice(0, MAX_SIM_SAMPLES));
+        setSampleMeans(prev => [...prev, ...newMeans].slice(-MAX_SIM_SAMPLES));
         setLastSampleMean(numSamples === 1 ? lastMean : null);
     },
     [population, sampleSize]
@@ -197,7 +200,7 @@ const CLTChart = () => {
         
         const theoreticalData = bins.map(bin => ({
             ...bin,
-            theoretical: normalPDF(parseFloat(bin.name), popStats.mean, stdError) * scaleFactor
+            theoretical: normalPDF(bin.name, popStats.mean, stdError) * scaleFactor
         }));
         setSamplingDistHist(theoreticalData);
       } else {
@@ -223,7 +226,7 @@ const CLTChart = () => {
         }
         
         const newMeans: number[] = [];
-        const samplesToTake = 50; // Take more samples per interval for faster filling
+        const samplesToTake = 100; // Take more samples per interval for faster filling
         for (let s = 0; s < samplesToTake; s++) {
             let currentSampleSum = 0;
             for (let i = 0; i < sampleSize; i++) {
@@ -234,7 +237,7 @@ const CLTChart = () => {
         }
         return [...prevMeans, ...newMeans];
       });
-    }, 50); // Run interval faster
+    }, 40); // Run interval faster
   }, [population, sampleSize, stopSimulation]);
 
   const resetSimulation = () => {
@@ -309,7 +312,7 @@ const CLTChart = () => {
             >
               <RechartsBarChart accessibilityLayer data={populationHist} barGap={0} barCategoryGap="10%">
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" unit="$" tickFormatter={(val) => Number(val).toFixed(0)} />
+                <XAxis dataKey="name" type="number" domain={['dataMin', 'dataMax']} unit="$" tickFormatter={(val) => Number(val).toFixed(0)} />
                 <YAxis allowDecimals={false} />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="count" fill="var(--color-count)" />
