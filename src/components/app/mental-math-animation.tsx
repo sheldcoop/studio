@@ -13,12 +13,21 @@ interface MentalMathAnimationProps {
   onPointerLeave: () => void;
 }
 
+type EquationPart = {
+  mesh: THREE.Mesh;
+  targetPosition: THREE.Vector3;
+  originalPosition: THREE.Vector3;
+  originalRotation: THREE.Euler;
+  targetRotation: THREE.Euler;
+};
+
 export function MentalMathAnimation({
   className,
   onPointerEnter,
   onPointerLeave,
 }: MentalMathAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
 
   const fontLoader = useMemo(() => new FontLoader(), []);
@@ -33,7 +42,7 @@ export function MentalMathAnimation({
 
   useEffect(() => {
     fontLoader.load(
-      '/fonts/helvetiker_regular.typeface.json',
+      '/fonts/helvetiker_bold.typeface.json',
       (font) => {
         fontRef.current = font;
       }
@@ -52,64 +61,109 @@ export function MentalMathAnimation({
       0.1,
       100
     );
-    camera.position.z = 0.1;
+    camera.position.z = 10;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
 
-    // --- Text Particles ---
-    const particles: { mesh: THREE.Mesh; velocity: number }[] = [];
-    const symbols = ['+', '−', '×', '÷', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+    const equationParts: EquationPart[] = [];
+    const equationGroup = new THREE.Group();
+    scene.add(equationGroup);
 
-    for(let i = 0; i < 150; i++) {
-        const char = symbols[Math.floor(Math.random() * symbols.length)];
+    const createText = (char: string, size: number = 1): THREE.Mesh => {
         const geometry = new TextGeometry(char, {
             font: fontRef.current!,
-            size: Math.random() * 0.6 + 0.4,
-            height: 0.02,
+            size: size,
+            height: 0.1,
             curveSegments: 4,
         });
         geometry.center();
-        
-        const particle = new THREE.Mesh(geometry, textMaterial);
-        particle.position.set(
-            (Math.random() - 0.5) * 18,
-            (Math.random() - 0.5) * 18,
-            -60
-        );
-        particle.rotation.x = Math.random() * Math.PI;
-        particle.rotation.y = Math.random() * Math.PI;
-
-        scene.add(particle);
-        particles.push({ mesh: particle, velocity: Math.random() * 0.6 + 0.3 });
+        return new THREE.Mesh(geometry, textMaterial);
     }
     
+    const generateAndPositionEquation = () => {
+        // Clear previous equation
+        equationGroup.children.forEach(child => scene.remove(child));
+        equationGroup.clear();
+        equationParts.length = 0;
+
+        const num1 = Math.floor(Math.random() * 15) + 1;
+        const num2 = Math.floor(Math.random() * 9) + 1;
+        const result = num1 * num2;
+        const equationString = `${num1} × ${num2} = ${result}`;
+
+        let currentX = 0;
+        const chars = equationString.split('');
+        const totalWidth = chars.length * 1.2; // Approximate width
+
+        chars.forEach((char, index) => {
+            const mesh = createText(char, char === '×' || char === '=' ? 0.8 : 1.2);
+            
+            const originalPos = new THREE.Vector3(
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20
+            );
+            mesh.position.copy(originalPos);
+            const originalRot = new THREE.Euler(
+                Math.random() * Math.PI * 2,
+                Math.random() * Math.PI * 2,
+                Math.random() * Math.PI * 2
+            );
+            mesh.rotation.copy(originalRot);
+
+            const targetPos = new THREE.Vector3(currentX - totalWidth / 2, 0, 0);
+            const targetRot = new THREE.Euler(0, 0, 0);
+            
+            equationParts.push({
+                mesh,
+                targetPosition: targetPos,
+                originalPosition: originalPos,
+                originalRotation: originalRot,
+                targetRotation: targetRot,
+            });
+
+            equationGroup.add(mesh);
+            currentX += 1.4;
+        });
+    }
+
+    generateAndPositionEquation();
+    
     // --- Animation Logic ---
-    let speed = 1;
     let frameId: number;
 
     const animate = () => {
       frameId = requestAnimationFrame(animate);
 
-      if(isMouseOver.current) {
-        speed += (12 - speed) * 0.05;
-      } else {
-        speed += (1 - speed) * 0.05;
-      }
+      const lerpFactor = 0.08;
 
-      particles.forEach(p => {
-        p.mesh.position.z += p.velocity * speed * 0.1;
-        p.mesh.rotation.x += 0.01;
-        p.mesh.rotation.y += 0.01;
-
-        if (p.mesh.position.z > camera.position.z) {
-          p.mesh.position.z = -60;
-          p.mesh.position.x = (Math.random() - 0.5) * 18;
-          p.mesh.position.y = (Math.random() - 0.5) * 18;
+      equationParts.forEach(part => {
+        if (isMouseOver.current) {
+            part.mesh.position.lerp(part.targetPosition, lerpFactor);
+            part.mesh.rotation.x += (part.targetRotation.x - part.mesh.rotation.x) * lerpFactor;
+            part.mesh.rotation.y += (part.targetRotation.y - part.mesh.rotation.y) * lerpFactor;
+            part.mesh.rotation.z += (part.targetRotation.z - part.mesh.rotation.z) * lerpFactor;
+        } else {
+            part.mesh.position.lerp(part.originalPosition, lerpFactor);
+            part.mesh.rotation.x += (part.originalRotation.x - part.mesh.rotation.x) * lerpFactor;
+            part.mesh.rotation.y += (part.originalRotation.y - part.mesh.rotation.y) * lerpFactor;
+            part.mesh.rotation.z += (part.originalRotation.z - part.mesh.rotation.z) * lerpFactor;
         }
       });
+
+      // Group rotation for subtle movement
+      equationGroup.rotation.y += 0.0005;
+      if(isMouseOver.current) {
+        // Center on mouse
+        equationGroup.position.x += (mouse.current.x * 3 - equationGroup.position.x) * 0.1;
+        equationGroup.position.y += (mouse.current.y * 3 - equationGroup.position.y) * 0.1;
+      } else {
+        equationGroup.position.x += (0 - equationGroup.position.x) * 0.1;
+        equationGroup.position.y += (0 - equationGroup.position.y) * 0.1;
+      }
       
       renderer.render(scene, camera);
     };
@@ -117,11 +171,29 @@ export function MentalMathAnimation({
     animate();
 
     // --- Event Listeners ---
-    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
-    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
+    let regenerationTimeout: NodeJS.Timeout;
+    const handleMouseEnter = () => { 
+        isMouseOver.current = true;
+        onPointerEnter();
+        clearTimeout(regenerationTimeout);
+    };
+    const handleMouseLeave = () => { 
+        isMouseOver.current = false;
+        onPointerLeave();
+        regenerationTimeout = setTimeout(generateAndPositionEquation, 1000); // Regenerate after a delay
+    };
+    const handleMouseMove = (event: MouseEvent) => {
+        if (currentMount) {
+            const rect = currentMount.getBoundingClientRect();
+            mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+        }
+    };
+
 
     currentMount.addEventListener('mouseenter', handleMouseEnter);
     currentMount.addEventListener('mouseleave', handleMouseLeave);
+    currentMount.addEventListener('mousemove', handleMouseMove);
 
     const handleResize = () => {
         if (currentMount) {
@@ -143,7 +215,7 @@ export function MentalMathAnimation({
         currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
-      particles.forEach(p => {
+      equationParts.forEach(p => {
         p.mesh.geometry.dispose();
       });
       textMaterial.dispose();
