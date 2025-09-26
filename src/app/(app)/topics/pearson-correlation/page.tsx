@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  CartesianGrid,
   ResponsiveContainer,
-  Scatter,
-  ScatterChart,
   Tooltip,
   XAxis,
   YAxis,
@@ -19,7 +17,26 @@ import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Crosshair } from 'lucide-react';
 
-// Helper function to generate correlated data
+const ScatterChart = dynamic(() => import('recharts').then(recharts => recharts.ScatterChart), { ssr: false });
+const Scatter = dynamic(() => import('recharts').then(recharts => recharts.Scatter), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+
+/**
+ * Generates two correlated datasets using a variation of the Cholesky decomposition method.
+ * This function creates two independent standard normal variables (z1, z2)
+ * from a uniform distribution via the Box-Muller transform. It then combines
+ * them to produce a second variable 'y' that has a specified correlation 'rho'
+ * with the first variable 'x'. This is a standard technique in statistical
+ * simulation to model the relationship between two financial assets.
+ *
+ * @param n The number of data points to generate.
+ * @param correlation The desired correlation coefficient (rho), between -1 and 1.
+ * @param meanX The mean of the first dataset.
+ * @param meanY The mean of the second dataset.
+ * @param stdDevX The standard deviation of the first dataset.
+ * @param stdDevY The standard deviation of the second dataset.
+ * @returns An array of {x, y} data points.
+ */
 const generateCorrelatedData = (
   n: number,
   correlation: number,
@@ -32,10 +49,15 @@ const generateCorrelatedData = (
   for (let i = 0; i < n; i++) {
     const u1 = Math.random();
     const u2 = Math.random();
+    // Box-Muller transform to get two standard normal variables (z1, z2)
+    // This is the core of generating realistic, normally-distributed random data.
     const z1 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
     const z2 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
 
     const x = meanX + stdDevX * z1;
+    // This formula introduces the desired correlation. 'y' is constructed as a linear
+    // combination of the two independent normal variables, z1 and z2, where the weights
+    // are determined by the correlation coefficient 'rho'.
     const y =
       meanY + stdDevY * (correlation * z1 + Math.sqrt(1 - correlation ** 2) * z2);
     data.push({ x, y });
@@ -75,7 +97,7 @@ const PearsonCorrelationChart = () => {
               cursor={{ strokeDasharray: '3 3' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Scatter data={chartData} fill={pearsonCorrelationChartConfig.data.color} />
+            <Scatter data={chartData} fill="var(--color-data)" />
           </ScatterChart>
         </ChartContainer>
       </div>

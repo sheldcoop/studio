@@ -1,11 +1,8 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  BarChart,
-  Bar,
-  CartesianGrid,
   ReferenceLine,
   Rectangle,
   ResponsiveContainer,
@@ -22,6 +19,10 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -242,5 +243,3 @@ export default function ZTestPage() {
     </>
   );
 }
-
-    

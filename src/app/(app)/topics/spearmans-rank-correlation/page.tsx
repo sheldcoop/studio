@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  CartesianGrid,
   ResponsiveContainer,
-  Scatter,
-  ScatterChart,
   Tooltip,
   XAxis,
   YAxis,
@@ -16,6 +14,10 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const ScatterChart = dynamic(() => import('recharts').then(recharts => recharts.ScatterChart), { ssr: false });
+const Scatter = dynamic(() => import('recharts').then(recharts => recharts.Scatter), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
 const generateMonotonicData = (n: number, strength: number) => {
@@ -62,7 +64,7 @@ const SpearmanCorrelationChart = () => {
               cursor={{ strokeDasharray: '3 3' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Scatter data={chartData} fill={spearmanCorrelationChartConfig.data.color} />
+            <Scatter data={chartData} fill="var(--color-data)" />
           </ScatterChart>
         </ChartContainer>
       </div>

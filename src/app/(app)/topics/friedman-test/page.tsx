@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  LineChart,
-  Line,
-  CartesianGrid,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -16,6 +14,10 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
+const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
 
 // Helper to generate rank-like data for demonstration
 const generateRankData = (numSubjects: number) => {
@@ -31,11 +33,11 @@ const generateRankData = (numSubjects: number) => {
 };
 
 const friedmanTestChartConfig = {
-    'Algo A': { label: 'Algo A', color: 'hsl(var(--chart-1))' },
-    'Algo B': { label: 'Algo B', color: 'hsl(var(--chart-2))' },
-    'Algo C': { label: 'Algo C', color: 'hsl(var(--chart-3))' },
-    'Algo D': { label: 'Algo D', color: 'hsl(var(--chart-4))' },
-    'Algo E': { label: 'Algo E', color: 'hsl(var(--chart-5))' },
+    'Algo_A': { label: 'Algo A', color: 'hsl(var(--chart-1))' },
+    'Algo_B': { label: 'Algo B', color: 'hsl(var(--chart-2))' },
+    'Algo_C': { label: 'Algo C', color: 'hsl(var(--chart-3))' },
+    'Algo_D': { label: 'Algo D', color: 'hsl(var(--chart-4))' },
+    'Algo_E': { label: 'Algo E', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig
 
 const FriedmanTestChart = () => {
@@ -48,11 +50,11 @@ const FriedmanTestChart = () => {
     const regimes = ['Low Volatility', 'Medium Volatility', 'High Volatility'];
     const processedData = regimes.map((regime, i) => ({
         name: regime,
-        'Algo A': algoRanks[0][i],
-        'Algo B': algoRanks[1][i],
-        'Algo C': algoRanks[2][i],
-        'Algo D': algoRanks[3][i],
-        'Algo E': algoRanks[4][i],
+        'Algo_A': algoRanks[0][i],
+        'Algo_B': algoRanks[1][i],
+        'Algo_C': algoRanks[2][i],
+        'Algo_D': algoRanks[3][i],
+        'Algo_E': algoRanks[4][i],
     }));
     
     setChartData(processedData);
@@ -71,12 +73,12 @@ const FriedmanTestChart = () => {
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis reversed domain={[1, 5]} tickCount={5} />
                 <Tooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Line type="monotone" dataKey="Algo A" stroke={friedmanTestChartConfig['Algo A'].color} />
-                <Line type="monotone" dataKey="Algo B" stroke={friedmanTestChartConfig['Algo B'].color} />
-                <Line type="monotone" dataKey="Algo C" stroke={friedmanTestChartConfig['Algo C'].color} />
-                <Line type="monotone" dataKey="Algo D" stroke={friedmanTestChartConfig['Algo D'].color} />
-                <Line type="monotone" dataKey="Algo E" stroke={friedmanTestChartConfig['Algo E'].color} />
+                <Legend formatter={(value) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
+                <Line type="monotone" dataKey="Algo_A" stroke="var(--color-Algo_A)" />
+                <Line type="monotone" dataKey="Algo_B" stroke="var(--color-Algo_B)" />
+                <Line type="monotone" dataKey="Algo_C" stroke="var(--color-Algo_C)" />
+                <Line type="monotone" dataKey="Algo_D" stroke="var(--color-Algo_D)" />
+                <Line type="monotone" dataKey="Algo_E" stroke="var(--color-Algo_E)" />
             </LineChart>
         </ChartContainer>
       </div>

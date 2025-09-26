@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  BarChart,
-  Bar,
-  CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -16,6 +14,10 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -45,8 +47,8 @@ const createHistogram = (data: number[], binSize: number, min: number, max: numb
 };
 
 const mannWhitneyChartConfig = {
-    'Algo A': { label: 'Algo A', color: 'hsl(var(--chart-1))' },
-    'Algo B': { label: 'Algo B', color: 'hsl(var(--chart-2))' },
+    'Algo_A': { label: 'Algo A', color: 'hsl(var(--chart-1))' },
+    'Algo_B': { label: 'Algo B', color: 'hsl(var(--chart-2))' },
 } satisfies ChartConfig;
 
 
@@ -67,8 +69,8 @@ const MannWhitneyChart = () => {
     
     const finalData = histA.labels.map((label, index) => ({
       name: label.toFixed(2),
-      'Algo A': histA.counts[index],
-      'Algo B': histB.counts[index],
+      'Algo_A': histA.counts[index],
+      'Algo_B': histB.counts[index],
     }));
 
     setChartData(finalData);
@@ -87,9 +89,9 @@ const MannWhitneyChart = () => {
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
             <Tooltip content={<ChartTooltipContent />} wrapperStyle={{ zIndex: 1000 }} />
-            <Legend />
-            <Bar dataKey="Algo A" fill={mannWhitneyChartConfig['Algo A'].color} />
-            <Bar dataKey="Algo B" fill={mannWhitneyChartConfig['Algo B'].color} />
+            <Legend formatter={(value) => mannWhitneyChartConfig[value as keyof typeof mannWhitneyChartConfig]?.label || value} />
+            <Bar dataKey="Algo_A" fill="var(--color-Algo_A)" />
+            <Bar dataKey="Algo_B" fill="var(--color-Algo_B)" />
           </BarChart>
         </ChartContainer>
       </div>

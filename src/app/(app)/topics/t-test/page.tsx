@@ -1,16 +1,8 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Line,
-  LineChart,
   ReferenceLine,
   Rectangle,
   ResponsiveContainer,
@@ -27,6 +19,17 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+// Dynamically import chart components
+const AreaChart = dynamic(() => import('recharts').then(recharts => recharts.AreaChart), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
+const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
+const Area = dynamic(() => import('recharts').then(recharts => recharts.Area), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
+const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(recharts => recharts.Cell), { ssr: false });
+
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -45,11 +48,14 @@ const getMean = (data: number[]) =>
   data.reduce((a, b) => a + b, 0) / data.length;
 
 const independentTestChartConfig = {
+  value: {
+    label: 'Value',
+  },
   Momentum: {
     label: 'Momentum',
     color: 'hsl(var(--chart-1))',
   },
-  Mean_Reversion: {
+  'Mean-Reversion': {
     label: 'Mean-Reversion',
     color: 'hsl(var(--chart-2))',
   },
@@ -83,7 +89,7 @@ const IndependentTestChart = () => {
     const dataB = generateNormalData(0.03, 0.5, 60);
     setChartData([
       { name: 'Momentum', value: getMean(dataA) },
-      { name: 'Mean_Reversion', value: getMean(dataB) },
+      { name: 'Mean-Reversion', value: getMean(dataB) },
     ]);
   };
 
@@ -176,6 +182,7 @@ const PairedTestChart = () => {
             />
             <YAxis unit="%" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Legend formatter={(value) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
             <Line
               type="monotone"
               dataKey="before"
@@ -202,7 +209,7 @@ const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
   const target = 1.5;
 
-  const chartData = [{ name: 'Avg. Return', value: meanValue, fill: 'var(--color-value)' }];
+  const chartData = [{ name: 'Avg. Return', value: meanValue }];
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -230,6 +237,7 @@ const OneSampleTestChart = () => {
             <Bar
               dataKey="value"
               radius={8}
+              fill="var(--color-value)"
             />
             <ReferenceLine
               x={target}
@@ -400,5 +408,3 @@ export default function TTestPage() {
     </>
   );
 }
-
-    

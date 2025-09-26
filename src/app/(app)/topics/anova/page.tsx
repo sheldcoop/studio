@@ -1,16 +1,8 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Line,
-  LineChart,
   Rectangle,
   ResponsiveContainer,
   Tooltip,
@@ -23,6 +15,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
 import { ChartTooltipContent } from '@/lib/chart-config';
+
+const AreaChart = dynamic(() => import('recharts').then(recharts => recharts.AreaChart), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
+const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
+const Area = dynamic(() => import('recharts').then(recharts => recharts.Area), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
+const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(recharts => recharts.Cell), { ssr: false });
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -316,5 +317,3 @@ export default function AnovaPage() {
     </>
   );
 }
-
-    

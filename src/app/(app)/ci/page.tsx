@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calculator } from 'lucide-react';
+import { Calculator, AlertTriangle } from 'lucide-react';
 
 const zScores = {
   '90': 1.645,
@@ -27,15 +27,19 @@ const zScores = {
   '99': 2.576,
 };
 
+type ResultState = {
+  lower: number;
+  upper: number;
+} | null;
+
 export default function ConfidenceIntervalsPage() {
   const [mean, setMean] = useState(100);
   const [stdDev, setStdDev] = useState(15);
   const [sampleSize, setSampleSize] = useState(30);
   const [confidenceLevel, setConfidenceLevel] =
     useState<keyof typeof zScores>('95');
-  const [result, setResult] = useState<{ lower: number; upper: number } | null>(
-    null
-  );
+  const [result, setResult] = useState<ResultState>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const calculateInterval = () => {
     const n = Number(sampleSize);
@@ -44,6 +48,7 @@ export default function ConfidenceIntervalsPage() {
     const z = zScores[confidenceLevel];
 
     if (n > 0 && s >= 0) {
+      setError(null);
       const marginOfError = z * (s / Math.sqrt(n));
       const lowerBound = M - marginOfError;
       const upperBound = M + marginOfError;
@@ -53,6 +58,7 @@ export default function ConfidenceIntervalsPage() {
       });
     } else {
       setResult(null);
+      setError('Sample size must be positive and standard deviation cannot be negative.');
     }
   };
   
@@ -62,10 +68,11 @@ export default function ConfidenceIntervalsPage() {
   }, []);
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Confidence Intervals"
         description="Understanding the range where a true value likely lies."
+        variant="aligned-left"
       />
       <div className="mx-auto max-w-4xl space-y-8">
         <Card>
@@ -148,7 +155,7 @@ export default function ConfidenceIntervalsPage() {
               </Button>
             </div>
             <div className="flex items-center justify-center rounded-lg bg-muted/50 p-6">
-              {result ? (
+              {result && !error ? (
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
                     {confidenceLevel}% Confidence Interval
@@ -163,14 +170,23 @@ export default function ConfidenceIntervalsPage() {
                   </p>
                 </div>
               ) : (
-                <p className="text-center text-muted-foreground">
-                  Enter your data and click calculate to see the result.
-                </p>
+                <div className="text-center text-destructive">
+                   {error ? (
+                     <>
+                      <AlertTriangle className="mx-auto h-8 w-8" />
+                      <p className="mt-2 font-semibold">{error}</p>
+                     </>
+                   ) : (
+                    <p className="text-muted-foreground">
+                      Enter your data and click calculate to see the result.
+                    </p>
+                   )}
+                </div>
               )}
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
   );
 }

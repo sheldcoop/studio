@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  LineChart,
-  Line,
-  CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -16,6 +14,10 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
+const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -30,8 +32,8 @@ const generateLogNormalData = (mu: number, sigma: number, n: number) => {
 };
 
 const wilcoxonChartConfig = {
-    'Before Risk Model': { label: 'Before', color: 'hsl(var(--chart-2))' },
-    'After Risk Model': { label: 'After', color: 'hsl(var(--chart-1))' },
+    'Before_Risk_Model': { label: 'Before', color: 'hsl(var(--chart-2))' },
+    'After_Risk_Model': { label: 'After', color: 'hsl(var(--chart-1))' },
 } satisfies ChartConfig;
 
 
@@ -47,8 +49,8 @@ const WilcoxonSignedRankChart = () => {
     setChartData(
         Array.from({length: numPortfolios}, (_, i) => ({
             name: `Portfolio ${i+1}`,
-            'Before Risk Model': beforeData[i],
-            'After Risk Model': afterData[i],
+            'Before_Risk_Model': beforeData[i],
+            'After_Risk_Model': afterData[i],
         }))
     );
   };
@@ -66,9 +68,9 @@ const WilcoxonSignedRankChart = () => {
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Line type="monotone" dataKey="Before Risk Model" stroke={wilcoxonChartConfig['Before Risk Model'].color} />
-                <Line type="monotone" dataKey="After Risk Model" stroke={wilcoxonChartConfig['After Risk Model'].color} />
+                <Legend formatter={(value) => wilcoxonChartConfig[value as keyof typeof wilcoxonChartConfig]?.label || value} />
+                <Line type="monotone" dataKey="Before_Risk_Model" stroke="var(--color-Before_Risk_Model)" />
+                <Line type="monotone" dataKey="After_Risk_Model" stroke="var(--color-After_Risk_Model)" />
             </LineChart>
         </ChartContainer>
       </div>
