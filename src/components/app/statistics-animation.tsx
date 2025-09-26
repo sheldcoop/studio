@@ -11,18 +11,6 @@ interface StatisticsAnimationProps {
   onPointerLeave: () => void;
 }
 
-// Generates a point on a normal distribution
-const normal = (mu: number, sigma: number) => {
-    let x, y, r;
-    do {
-        x = Math.random() * 2 - 1;
-        y = Math.random() * 2 - 1;
-        r = x * x + y * y;
-    } while (r >= 1 || r === 0);
-    const z = x * Math.sqrt(-2 * Math.log(r) / r);
-    return mu + z * sigma;
-};
-
 export function StatisticsAnimation({
   className,
   onPointerEnter,
@@ -43,7 +31,7 @@ export function StatisticsAnimation({
       0.1,
       1000
     );
-    camera.position.z = 10;
+    camera.position.z = 8;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
@@ -56,27 +44,32 @@ export function StatisticsAnimation({
     // --- Bell Curve ---
     const curvePoints = [];
     const curveSegments = 100;
-    const curveWidth = 10;
+    const curveWidth = 12;
+    // Probability Density Function for a normal distribution
     const pdf = (x: number, mu: number, sigma: number) => 
         1 / (sigma * Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
     
     for (let i = 0; i <= curveSegments; i++) {
         const x = -curveWidth / 2 + (i / curveSegments) * curveWidth;
-        curvePoints.push(new THREE.Vector3(x, 0, 0));
+        // Start with a standard normal distribution (mu=0, sigma=1)
+        const y = pdf(x, 0, 1) * 10; 
+        curvePoints.push(new THREE.Vector3(x, y, 0));
     }
     const curveGeometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
-    const curveMaterial = new THREE.LineBasicMaterial({ color: 0x58a6ff, transparent: true, opacity: 0.4 });
+    const curveMaterial = new THREE.LineBasicMaterial({
+      color: 0x58a6ff,
+      linewidth: 2,
+      transparent: true,
+      opacity: 0.6,
+    });
     const bellCurve = new THREE.Line(curveGeometry, curveMaterial);
     group.add(bellCurve);
-
-    // --- Sample Particles (Cubes) ---
-    const particleCount = 500;
-    const particleGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0x58a6ff, transparent: true, opacity: 0.6 });
-    const instancedMesh = new THREE.InstancedMesh(particleGeometry, particleMaterial, particleCount);
-    group.add(instancedMesh);
-
-    const dummy = new THREE.Object3D();
+    
+    // Add a vertical line for the mean
+    const meanLineMaterial = new THREE.LineBasicMaterial({ color: 0x58a6ff, transparent: true, opacity: 0.8 });
+    const meanLineGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -2.5, 0), new THREE.Vector3(0, 2.5, 0)]);
+    const meanLine = new THREE.Line(meanLineGeometry, meanLineMaterial);
+    bellCurve.add(meanLine); // Add to the curve so it moves with it
 
     // --- Animation & Interaction ---
     const clock = new THREE.Clock();
@@ -86,40 +79,40 @@ export function StatisticsAnimation({
     let currentStdDev = 1.5;
 
     const animate = () => {
+      const elapsedTime = clock.getElapsedTime();
+      
       if (isMouseOver.current) {
-        targetMean = mouse.current.x * 5; // Map mouse X to mean (-5 to 5)
-        targetStdDev = (mouse.current.y + 1) * 1.5 + 0.5; // Map mouse Y to std dev (0.5 to 3.5)
+        targetMean = mouse.current.x * 4; // Map mouse X to mean (-4 to 4)
+        targetStdDev = Math.max(0.5, (mouse.current.y + 1) * 1.25 + 0.5); // Map mouse Y to std dev (0.5 to 3)
       } else {
-        targetMean = 0;
-        targetStdDev = 1.5;
+        // Default slow drift
+        targetMean = Math.sin(elapsedTime * 0.2) * 1.5;
+        targetStdDev = Math.cos(elapsedTime * 0.3) * 0.5 + 1.5;
       }
       
-      // Easing
+      // Easing / Smoothing
       currentMean += (targetMean - currentMean) * 0.05;
       currentStdDev += (targetStdDev - currentStdDev) * 0.05;
 
-      // Update Bell Curve
+      // Update Bell Curve vertices
       const positions = bellCurve.geometry.attributes.position.array as Float32Array;
       for (let i = 0; i <= curveSegments; i++) {
           const x = -curveWidth / 2 + (i / curveSegments) * curveWidth;
           positions[i * 3 + 1] = pdf(x, 0, currentStdDev) * 10;
       }
       bellCurve.geometry.attributes.position.needsUpdate = true;
+      
+      // Move the entire curve group based on the mean
       bellCurve.position.x = currentMean;
 
-      // Update Particles
-      for(let i = 0; i < particleCount; i++) {
-          dummy.position.set(
-              normal(currentMean, currentStdDev),
-              (Math.random() - 0.5) * 5,
-              (Math.random() - 0.5) * 5
-          );
-          dummy.updateMatrix();
-          instancedMesh.setMatrixAt(i, dummy.matrix);
-      }
-      instancedMesh.instanceMatrix.needsUpdate = true;
-      
-      group.rotation.y = clock.getElapsedTime() * 0.05;
+      // Update Mean Line Height based on curve peak
+      const peakY = pdf(0, 0, currentStdDev) * 10;
+      const meanLinePositions = meanLine.geometry.attributes.position.array as Float32Array;
+      meanLinePositions[1] = peakY; // Top of the line
+      meanLine.geometry.attributes.position.needsUpdate = true;
+
+
+      group.rotation.y = elapsedTime * 0.03;
 
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
@@ -144,6 +137,7 @@ export function StatisticsAnimation({
     currentRef.addEventListener('mouseenter', handleMouseEnter);
     currentRef.addEventListener('mouseleave', handleMouseLeave);
 
+    // --- Resize handler ---
     const handleResize = () => {
       if (mountRef.current) {
         renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
@@ -166,8 +160,8 @@ export function StatisticsAnimation({
       renderer.dispose();
       curveGeometry.dispose();
       curveMaterial.dispose();
-      particleGeometry.dispose();
-      particleMaterial.dispose();
+      meanLineGeometry.dispose();
+      meanLineMaterial.dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
