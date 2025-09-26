@@ -73,7 +73,7 @@ export function StatisticsAnimation({
     // Grid
     const grid = new THREE.GridHelper(20, 20, 0x22c55e, 0x22c55e);
     grid.material.transparent = true;
-    grid.material.opacity = 0.25;
+    grid.material.opacity = 0.3;
     group.add(grid);
 
     // Surface
@@ -82,9 +82,9 @@ export function StatisticsAnimation({
       color: 0x22c55e,
       wireframe: true,
       emissive: 0x22c55e,
-      emissiveIntensity: 0.2,
+      emissiveIntensity: 0.3,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.9,
     });
     const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
     surface.rotation.x = -Math.PI / 2; // Lay it flat on the grid
@@ -100,6 +100,7 @@ export function StatisticsAnimation({
 
     const animate = () => {
       const elapsedTime = clock.getElapsedTime();
+      requestAnimationFrame(animate);
 
       if (isMouseOver.current) {
         targetPosition.x = mouse.current.x * 5;
@@ -117,7 +118,6 @@ export function StatisticsAnimation({
       group.rotation.y = elapsedTime * 0.05;
 
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
     };
 
     animate();
@@ -169,3 +169,5 @@ export function StatisticsAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
+
+    

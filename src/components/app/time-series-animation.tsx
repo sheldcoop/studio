@@ -42,9 +42,9 @@ export function TimeSeriesAnimation({
     mountRef.current.appendChild(renderer.domElement);
     
     // --- Grid ---
-    const grid = new THREE.GridHelper(20, 20, 0x58a6ff, 0x58a6ff);
+    const grid = new THREE.GridHelper(20, 20, 0x22c55e, 0x22c55e);
     grid.material.transparent = true;
-    grid.material.opacity = 0.2;
+    grid.material.opacity = 0.3;
     grid.rotation.x = Math.PI / 2;
     scene.add(grid);
 
@@ -55,10 +55,10 @@ export function TimeSeriesAnimation({
     lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
     
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x58a6ff, // A lighter, glowing blue
+      color: 0x22c55e, // A lighter, glowing blue
       linewidth: 3,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.9
     });
     
     const line = new THREE.Line(lineGeometry, lineMaterial);
@@ -70,6 +70,7 @@ export function TimeSeriesAnimation({
 
     const animate = () => {
       const elapsedTime = clock.getElapsedTime();
+      requestAnimationFrame(animate);
 
       if (isMouseOver.current) {
         targetVolatility = (mouse.current.y + 1) * 1.5; // Map mouse Y to volatility (0 to 3)
@@ -90,7 +91,6 @@ export function TimeSeriesAnimation({
       line.rotation.y = elapsedTime * 0.05; // Slow rotation
 
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
     };
 
     animate();
@@ -117,7 +117,7 @@ export function TimeSeriesAnimation({
     const handleResize = () => {
       if (mountRef.current) {
         renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-        camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
+        camera.aspect = mountRef.current.clientWidth / mountRef.clientHeight;
         camera.updateProjectionMatrix();
       }
     };
@@ -144,3 +144,5 @@ export function TimeSeriesAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
+
+    

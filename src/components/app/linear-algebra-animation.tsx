@@ -46,10 +46,11 @@ export function LinearAlgebraAnimation({
     const gridSize = 10;
     const gridDivisions = 10;
     const pointCloudMaterial = new THREE.PointsMaterial({
-        color: 0x58a6ff,
-        size: 0.2,
+        color: 0x22c55e,
+        size: 0.25,
         transparent: true,
         opacity: 0.9,
+        blending: THREE.AdditiveBlending,
     });
 
     const points = [];
@@ -142,3 +143,5 @@ export function LinearAlgebraAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
+
+    

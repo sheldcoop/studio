@@ -43,7 +43,7 @@ export function MachineLearningAnimation({
     const vectorGroup = new THREE.Group();
     scene.add(vectorGroup);
 
-    const vectorLength = 1.2;
+    const vectorLength = 1.5;
     const density = 8;
     const spacing = 2;
     const vectors: THREE.ArrowHelper[] = [];
@@ -53,7 +53,7 @@ export function MachineLearningAnimation({
         if (x === 0 && y === 0) continue;
         const origin = new THREE.Vector3(x * spacing, y * spacing, 0);
         const dir = new THREE.Vector3(1, 0, 0).normalize(); // Initial direction
-        const arrow = new THREE.ArrowHelper(dir, origin, vectorLength, 0x58a6ff, 0.5, 0.3);
+        const arrow = new THREE.ArrowHelper(dir, origin, vectorLength, 0x22c55e, 0.6, 0.4);
         // @ts-ignore
         arrow.originalPosition = origin.clone();
         vectorGroup.add(arrow);
@@ -62,7 +62,7 @@ export function MachineLearningAnimation({
     }
 
     // --- Eigenvectors ---
-    const eigenMaterial = new THREE.LineBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0, linewidth: 3 });
+    const eigenMaterial = new THREE.LineBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0, linewidth: 3 });
     const eigenVector1 = new THREE.Vector3(1, 1, 0).normalize();
     const eigenVector2 = new THREE.Vector3(-1, 1, 0).normalize();
     
@@ -172,3 +172,5 @@ export function MachineLearningAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
+
+    

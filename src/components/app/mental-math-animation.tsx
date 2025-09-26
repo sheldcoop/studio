@@ -1,7 +1,10 @@
+
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { cn } from '@/lib/utils';
 
 interface MentalMathAnimationProps {
@@ -16,152 +19,157 @@ export function MentalMathAnimation({
   onPointerLeave,
 }: MentalMathAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
 
-  useEffect(() => {
-    if (!mountRef.current) return;
+  const fontLoader = useMemo(() => new FontLoader(), []);
+  const fontRef = useRef<THREE.Font>();
 
+  const textMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+    color: 0x22c55e,
+    transparent: true,
+    opacity: 0.9,
+    blending: THREE.AdditiveBlending,
+  }), []);
+
+  useEffect(() => {
+    fontLoader.load(
+      '/fonts/helvetiker_regular.typeface.json',
+      (font) => {
+        fontRef.current = font;
+      }
+    );
+  }, [fontLoader]);
+
+  useEffect(() => {
+    if (!mountRef.current || !fontRef.current) return;
+    const currentMount = mountRef.current;
+    
+    // --- Scene Setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
+      currentMount.clientWidth / currentMount.clientHeight,
       0.1,
-      1000
+      100
     );
-    camera.position.z = 20;
+    camera.position.z = 0.1;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(
-      mountRef.current.clientWidth,
-      mountRef.current.clientHeight
-    );
+    renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mountRef.current.appendChild(renderer.domElement);
+    currentMount.appendChild(renderer.domElement);
 
-    const sprites = new THREE.Group();
-    scene.add(sprites);
+    // --- Text Particles ---
+    const particles: { mesh: THREE.Mesh; velocity: number }[] = [];
+    const symbols = ['+', '−', '×', '÷', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 
-    const canvas = document.createElement('canvas');
-    canvas.width = 64;
-    canvas.height = 64;
-    const context = canvas.getContext('2d')!;
-    const texture = new THREE.CanvasTexture(canvas);
-
-    const createTextSprite = (text: string) => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.font = 'Bold 24px Arial';
-      context.fillStyle = 'rgba(128, 128, 128, 0.7)'; // Gray color, semi-transparent
-      context.textAlign = 'center';
-      context.textBaseline = 'middle';
-      context.fillText(text, canvas.width / 2, canvas.height / 2);
-      texture.needsUpdate = true;
-
-      const material = new THREE.SpriteMaterial({
-        map: texture,
-        transparent: true,
-        opacity: 0.2,
+    const createTextParticle = () => {
+      if (!fontRef.current) return;
+      const char = symbols[Math.floor(Math.random() * symbols.length)];
+      const geometry = new TextGeometry(char, {
+        font: fontRef.current!,
+        size: Math.random() * 0.6 + 0.4,
+        height: 0.02,
+        curveSegments: 4,
       });
-      const sprite = new THREE.Sprite(material);
-      sprite.scale.set(2, 2, 1);
-      return sprite;
+      geometry.center();
+      
+      const particle = new THREE.Mesh(geometry, textMaterial);
+      particle.position.set(
+        (Math.random() - 0.5) * 18,
+        (Math.random() - 0.5) * 18,
+        -60
+      );
+      particle.rotation.x = Math.random() * Math.PI;
+      particle.rotation.y = Math.random() * Math.PI;
+
+      scene.add(particle);
+      particles.push({ mesh: particle, velocity: Math.random() * 0.6 + 0.3 });
     };
 
-    const numSprites = 100;
-    const spriteObjects = [];
-
-    for (let i = 0; i < numSprites; i++) {
-      const text = String(Math.floor(Math.random() * 90) + 10);
-      const sprite = createTextSprite(text);
-      sprite.position.set(
-        (Math.random() - 0.5) * 40,
-        (Math.random() - 0.5) * 40,
-        (Math.random() - 0.5) * 40
-      );
-      sprites.add(sprite);
-      spriteObjects.push({
-        sprite,
-        baseY: sprite.position.y,
-        speed: Math.random() * 0.02 + 0.01,
-      });
+    for(let i=0; i<150; i++) {
+        createTextParticle();
     }
-
-    const clock = new THREE.Clock();
-    let targetRotation = new THREE.Euler(0, 0, 0);
+    
+    // --- Animation Logic ---
+    let speed = 1;
 
     const animate = () => {
-      const elapsedTime = clock.getElapsedTime();
-
-      if (isMouseOver.current) {
-        targetRotation.y = mouse.current.x * 0.2;
-        targetRotation.x = mouse.current.y * 0.2;
-      } else {
-        targetRotation.y = 0;
-        targetRotation.x = 0;
-      }
-
-      sprites.rotation.y += (targetRotation.y - sprites.rotation.y) * 0.05;
-      sprites.rotation.x += (targetRotation.x - sprites.rotation.x) * 0.05;
-
-      spriteObjects.forEach((obj, i) => {
-        obj.sprite.position.y = obj.baseY + Math.sin(elapsedTime * obj.speed + i) * 2;
-        obj.sprite.material.opacity = (Math.sin(elapsedTime * obj.speed * 0.5 + i) + 1) / 4; // Fade in/out
-      });
-
-
-      renderer.render(scene, camera);
       requestAnimationFrame(animate);
-    };
 
-    animate();
-
-    const handleMouseMove = (event: MouseEvent) => {
-      if (mountRef.current) {
-        const rect = mountRef.current.getBoundingClientRect();
-        mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+      if(isMouseOver.current) {
+        speed += (12 - speed) * 0.05;
+      } else {
+        speed += (1 - speed) * 0.05;
       }
-    };
-    
-    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
-    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
 
-    const currentRef = mountRef.current;
-    currentRef.addEventListener('mousemove', handleMouseMove);
-    currentRef.addEventListener('mouseenter', handleMouseEnter);
-    currentRef.addEventListener('mouseleave', handleMouseLeave);
+      particles.forEach(p => {
+        p.mesh.position.z += p.velocity * speed * 0.1;
+        p.mesh.rotation.x += 0.01;
+        p.mesh.rotation.y += 0.01;
 
-    const handleResize = () => {
-      if (mountRef.current) {
-        const width = mountRef.current.clientWidth;
-        const height = mountRef.current.clientHeight;
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (currentRef) {
-        currentRef.removeEventListener('mousemove', handleMouseMove);
-        currentRef.removeEventListener('mouseenter', handleMouseEnter);
-        currentRef.removeEventListener('mouseleave', handleMouseLeave);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        currentRef.removeChild(renderer.domElement);
-      }
-      renderer.dispose();
-      sprites.children.forEach(child => {
-        if(child instanceof THREE.Sprite) {
-          child.material.map?.dispose();
-          child.material.dispose();
+        if (p.mesh.position.z > camera.position.z) {
+          p.mesh.position.z = -60;
+          p.mesh.position.x = (Math.random() - 0.5) * 18;
+          p.mesh.position.y = (Math.random() - 0.5) * 18;
         }
       });
+      
+      renderer.render(scene, camera);
+    };
+    
+    let frameId: number;
+    const startAnimation = () => {
+        if (!frameId) {
+            frameId = requestAnimationFrame(animate);
+        }
+    }
+    
+    // Only start animating if font is loaded
+    const checkFontAndAnimate = () => {
+      if (fontRef.current) {
+        startAnimation();
+      } else {
+        setTimeout(checkFontAndAnimate, 100);
+      }
+    };
+    checkFontAndAnimate();
+
+
+    // --- Event Listeners ---
+    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
+    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
+
+    currentMount.addEventListener('mouseenter', handleMouseEnter);
+    currentMount.addEventListener('mouseleave', handleMouseLeave);
+
+    const handleResize = () => {
+        if (currentMount) {
+            camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        }
+    };
+    window.addEventListener('resize', handleResize);
+
+    // --- Cleanup ---
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('resize', handleResize);
+      if (currentMount) {
+        currentMount.removeEventListener('mouseenter', handleMouseEnter);
+        currentMount.removeEventListener('mouseleave', handleMouseLeave);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        currentMount.removeChild(renderer.domElement);
+      }
+      renderer.dispose();
+      particles.forEach(p => {
+        p.mesh.geometry.dispose();
+      });
+      textMaterial.dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fontRef.current]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
