@@ -19,13 +19,8 @@ export function MachineLearningAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
-  const pulse = useRef<{
-    position: THREE.Vector3;
-    startTime: number;
-    fromNode: THREE.Vector3;
-    toNode: THREE.Vector3;
-    layer: number;
-  } | null>(null);
+  const pointsRef = useRef<THREE.Points | null>(null);
+  const originalPositions = useRef<Float32Array | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -39,104 +34,74 @@ export function MachineLearningAnimation({
       0.1,
       1000
     );
-    camera.position.z = 12;
+    camera.position.z = 15;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
 
-    const networkGroup = new THREE.Group();
-    scene.add(networkGroup);
+    // --- Data Cloud ---
+    const particles = 2000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particles * 3);
 
-    // --- Neural Network objects ---
-    const primaryColor = 0x58a6ff; 
-    const nodeMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, transparent: true, opacity: 0.3 });
-    const connectionMaterial = new THREE.LineBasicMaterial({ color: primaryColor, transparent: true, opacity: 0.1 });
-    const pulseMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    for (let i = 0; i < particles; i++) {
+      // Create points in an ellipsoid shape to represent correlated data
+      const u = Math.random();
+      const v = Math.random();
+      const theta = 2 * Math.PI * u;
+      const phi = Math.acos(2 * v - 1);
+      const x = 8 * Math.sin(phi) * Math.cos(theta);
+      const y = 4 * Math.sin(phi) * Math.sin(theta);
+      const z = 2 * Math.cos(phi);
 
-
-    const layers = [4, 5, 5, 3];
-    const layerSpacing = 5;
-    const nodePositions: THREE.Vector3[][] = [];
-
-    layers.forEach((nodeCount, i) => {
-        const layerPositions: THREE.Vector3[] = [];
-        const x = (i - (layers.length - 1) / 2) * layerSpacing;
-        for (let j = 0; j < nodeCount; j++) {
-            const y = (j - (nodeCount - 1) / 2) * 2;
-            const nodeGeometry = new THREE.SphereGeometry(0.3, 16, 16);
-            const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
-            node.position.set(x, y, 0);
-            networkGroup.add(node);
-            layerPositions.push(node.position);
-        }
-        nodePositions.push(layerPositions);
-    });
-
-    for (let i = 0; i < nodePositions.length - 1; i++) {
-        for (const fromNode of nodePositions[i]) {
-            for (const toNode of nodePositions[i + 1]) {
-                const geometry = new THREE.BufferGeometry().setFromPoints([fromNode, toNode]);
-                const line = new THREE.Line(geometry, connectionMaterial);
-                networkGroup.add(line);
-            }
-        }
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
     }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    originalPositions.current = positions.slice(); // Save original state
+
+    const material = new THREE.PointsMaterial({
+      color: 0x58a6ff,
+      size: 0.08,
+      transparent: true,
+      opacity: 0.7,
+    });
     
-    const pulseMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), pulseMaterial);
-    pulseMesh.visible = false;
-    scene.add(pulseMesh);
+    const points = new THREE.Points(geometry, material);
+    pointsRef.current = points;
+    scene.add(points);
 
     // --- Animation & Interaction ---
     const clock = new THREE.Clock();
 
-    const triggerPulse = () => {
-        const fromLayer = 0;
-        const inputNodeIndex = Math.floor(Math.abs(mouse.current.y * 2) % nodePositions[fromLayer].length);
-        
-        pulse.current = {
-            position: nodePositions[fromLayer][inputNodeIndex].clone(),
-            startTime: clock.getElapsedTime(),
-            fromNode: nodePositions[fromLayer][inputNodeIndex],
-            toNode: nodePositions[fromLayer+1][Math.floor(Math.random() * nodePositions[fromLayer+1].length)],
-            layer: 0,
-        };
-        pulseMesh.position.copy(pulse.current.position);
-        pulseMesh.visible = true;
-    }
-
     const animate = () => {
       requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
-
-      networkGroup.rotation.y = elapsedTime * 0.05 + mouse.current.x * 0.1;
-      networkGroup.rotation.x = elapsedTime * 0.03 + mouse.current.y * 0.1;
       
-      if (pulse.current) {
-          const pulseDuration = 0.5;
-          const progress = (elapsedTime - pulse.current.startTime) / pulseDuration;
-
-          if (progress < 1) {
-              pulseMesh.position.lerpVectors(pulse.current.fromNode, pulse.current.toNode, progress);
+      if (pointsRef.current && originalPositions.current) {
+        const positions = pointsRef.current.geometry.getAttribute('position').array as Float32Array;
+        
+        for (let i = 0; i < particles; i++) {
+          const z_original = originalPositions.current[i * 3 + 2];
+          const z_current = positions[i * 3 + 2];
+          
+          if (isMouseOver.current) {
+            // Lerp towards z=0 (flatten to 2D plane)
+            positions[i * 3 + 2] += (0 - z_current) * 0.05;
           } else {
-              const currentLayer = pulse.current.layer + 1;
-              if (currentLayer < nodePositions.length - 1) {
-                  const fromNode = pulse.current.toNode;
-                  const toNode = nodePositions[currentLayer + 1][Math.floor(Math.random() * nodePositions[currentLayer + 1].length)];
-                  pulse.current = {
-                      position: fromNode.clone(),
-                      startTime: clock.getElapsedTime(),
-                      fromNode,
-                      toNode,
-                      layer: currentLayer
-                  };
-              } else {
-                  pulse.current = null;
-                  pulseMesh.visible = false;
-              }
+            // Lerp back to original z position
+            positions[i * 3 + 2] += (z_original - z_current) * 0.05;
           }
+        }
+        pointsRef.current.geometry.getAttribute('position').needsUpdate = true;
       }
+      
+      points.rotation.y = elapsedTime * 0.1;
+      points.rotation.x = elapsedTime * 0.05;
 
       renderer.render(scene, camera);
     };
@@ -152,16 +117,7 @@ export function MachineLearningAnimation({
         }
     };
     
-    const handleMouseEnter = () => { 
-        isMouseOver.current = true;
-        onPointerEnter();
-        if (!pulse.current) {
-           triggerPulse();
-           setInterval(() => {
-             if(isMouseOver.current && !pulse.current) triggerPulse();
-           }, 1000);
-        }
-    }
+    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
     const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
 
     currentMount.addEventListener('mousemove', handleMouseMove);
@@ -185,24 +141,15 @@ export function MachineLearningAnimation({
         currentMount.removeEventListener('mousemove', handleMouseMove);
         currentMount.removeEventListener('mouseenter', handleMouseEnter);
         currentMount.removeEventListener('mouseleave', handleMouseLeave);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         currentMount.removeChild(renderer.domElement);
       }
-      scene.traverse(object => {
-        if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
-            object.geometry.dispose();
-            if(Array.isArray(object.material)) {
-              object.material.forEach(material => material.dispose());
-            } else {
-              object.material.dispose();
-            }
-        }
-      });
       renderer.dispose();
+      geometry.dispose();
+      material.dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
-
-    
