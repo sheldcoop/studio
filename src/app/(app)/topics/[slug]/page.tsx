@@ -9,22 +9,19 @@ function slugToTitle(slug: string) {
 }
 
 export default async function TopicPage({ params }: { params: { slug: string } }) {
-  // Guard against undefined slug during build time.
-  if (!params.slug) {
-    return null;
-  }
-
-  const title = slugToTitle(params.slug);
-
   // A list of slugs that have their own dedicated page.
   const dedicatedPages = ['hypothesis-testing-p-values', 'mental-math', 'confidence-intervals', 'linear-algebra', 't-test', 'z-test', 'anova'];
 
-  if (dedicatedPages.includes(params.slug)) {
+  // Guard against undefined slug during build time or if the slug is for a dedicated page.
+  // This prevents a TypeError during prerendering when Next.js tries to build this page without a specific slug.
+  if (!params.slug || dedicatedPages.includes(params.slug)) {
     // This condition should ideally not be met if linking is correct,
     // but it's a safeguard. Returning null will prevent this generic
     // page from rendering over a specific one if a conflict occurs.
     return null;
   }
+
+  const title = slugToTitle(params.slug);
 
   return (
     <div>
