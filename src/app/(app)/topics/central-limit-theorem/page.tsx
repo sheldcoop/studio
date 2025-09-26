@@ -76,31 +76,37 @@ const generatePopulation = (type: DistributionType, n: number) => {
   return { data, mean, stdDev };
 };
 
-const createHistogram = (data: number[], numBins = 20) => {
-    if (data.length === 0) return { bins: [], maxCount: 0 };
-    const min = Math.min(...data);
-    const max = Math.max(...data);
-    const binSize = (max - min) / numBins;
+// A more robust histogram function using the Freedman-Diaconis rule for binning
+const createHistogram = (data: number[]) => {
+  if (data.length < 2) return { bins: [], maxCount: 0 };
+  
+  const sortedData = [...data].sort((a,b) => a - b);
+  const q1 = sortedData[Math.floor(sortedData.length / 4)];
+  const q3 = sortedData[Math.floor(sortedData.length * 3 / 4)];
+  const iqr = q3 - q1;
+  const binSize = (2 * iqr) / Math.pow(data.length, 1/3);
 
-    if (binSize <= 0) return { bins: [{ name: min.toFixed(0), count: data.length }], maxCount: data.length};
+  const min = sortedData[0];
+  const max = sortedData[sortedData.length - 1];
 
-    const bins = Array.from({ length: numBins }, (_, i) => ({
-      name: (min + i * binSize).toFixed(0),
-      count: 0,
-    }));
+  if (binSize <= 0) return { bins: [{ name: min.toFixed(0), count: data.length }], maxCount: data.length, binSize: 1 };
 
-    for (const val of data) {
-      let binIndex = Math.floor((val - min) / binSize);
-      // Handle the edge case where the max value falls into a non-existent bin
-      if (binIndex === numBins) {
-        binIndex--;
-      }
-      if (bins[binIndex]) {
-        bins[binIndex].count++;
-      }
+  const numBins = Math.ceil((max - min) / binSize);
+  const bins = Array.from({ length: numBins }, (_, i) => ({
+    name: (min + i * binSize).toFixed(1),
+    count: 0,
+  }));
+
+  for (const val of data) {
+    let binIndex = Math.floor((val - min) / binSize);
+    if (binIndex === numBins) binIndex--; // Handle edge case for max value
+    if (bins[binIndex]) {
+      bins[binIndex].count++;
     }
-    const maxCount = Math.max(...bins.map((b) => b.count));
-    return { bins, maxCount };
+  }
+
+  const maxCount = Math.max(...bins.map(b => b.count), 0);
+  return { bins, maxCount, binSize };
 };
 
 
@@ -143,7 +149,7 @@ const CLTChart = () => {
     const { data, mean, stdDev } = generatePopulation(distributionType, 10000);
     setPopulation(data);
     setPopStats({ mean, stdDev });
-    setPopulationHist(createHistogram(data, 40).bins);
+    setPopulationHist(createHistogram(data).bins);
     resetSimulation();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [distributionType]);
@@ -177,11 +183,11 @@ const CLTChart = () => {
   );
   
   useEffect(() => {
-      const { bins, maxCount } = createHistogram(sampleMeans, 30);
+      const { bins, maxCount, binSize } = createHistogram(sampleMeans);
       if (bins.length > 0 && popStats.stdDev > 0) {
         const stdError = popStats.stdDev / Math.sqrt(sampleSize);
-        const maxPdf = normalPDF(popStats.mean, popStats.mean, stdError);
-        const scaleFactor = maxCount > 0 ? maxCount / maxPdf : 1;
+        // Scale factor for PDF: N * bin_width
+        const scaleFactor = sampleMeans.length * binSize;
         
         const theoreticalData = bins.map(bin => ({
             ...bin,
@@ -204,8 +210,6 @@ const CLTChart = () => {
   const startSimulation = useCallback(() => {
     setIsSimulating(true);
     simulationRef.current = setInterval(() => {
-      // We use a functional update for `setSampleMeans` to get the latest state
-      // and check the length inside to decide whether to stop.
       setSampleMeans(prevMeans => {
         if (prevMeans.length >= MAX_SIM_SAMPLES) {
           stopSimulation();
@@ -213,7 +217,7 @@ const CLTChart = () => {
         }
         
         const newMeans: number[] = [];
-        const samplesToTake = 20;
+        const samplesToTake = 50; // Take more samples per interval for faster filling
         for (let s = 0; s < samplesToTake; s++) {
             let currentSampleSum = 0;
             for (let i = 0; i < sampleSize; i++) {
@@ -224,7 +228,7 @@ const CLTChart = () => {
         }
         return [...prevMeans, ...newMeans];
       });
-    }, 50);
+    }, 50); // Run interval faster
   }, [population, sampleSize, stopSimulation]);
 
   const resetSimulation = () => {
@@ -242,6 +246,15 @@ const CLTChart = () => {
       }
     };
   }, []);
+
+  // Adaptive domain for the sampling distribution chart
+  const samplingDomain = useMemo(() => {
+    if (sampleMeans.length < 2) return ['auto', 'auto'];
+    const min = Math.min(...sampleMeans);
+    const max = Math.max(...sampleMeans);
+    const padding = (max - min) * 0.1; // 10% padding
+    return [min - padding, max + padding];
+  }, [sampleMeans]);
 
   return (
     <>
@@ -285,7 +298,7 @@ const CLTChart = () => {
               config={populationChartConfig}
               className="h-64 w-full"
             >
-              <RechartsBarChart accessibilityLayer data={populationHist}>
+              <RechartsBarChart accessibilityLayer data={populationHist} barGap={0} barCategoryGap="10%">
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" unit="$" />
                 <YAxis allowDecimals={false} />
@@ -311,13 +324,13 @@ const CLTChart = () => {
               config={samplingDistChartConfig}
               className="h-64 w-full"
             >
-              <ComposedChart accessibilityLayer data={samplingDistHist}>
+              <ComposedChart accessibilityLayer data={samplingDistHist} barGap={0} barCategoryGap="10%">
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="name"
                   type="number"
-                  domain={['dataMin - 5', 'dataMax + 5']}
-                  unit="$"
+                  domain={samplingDomain}
+                  tickFormatter={(val) => `$${Number(val).toFixed(0)}`}
                 />
                 <YAxis allowDecimals={false} domain={[0, 'dataMax + 5']} />
                 <Tooltip content={<ChartTooltipContent />} />
@@ -336,7 +349,7 @@ const CLTChart = () => {
                   </ReferenceLine>
                 )}
                 <Bar dataKey="count" fill="var(--color-count)" />
-                <Line dataKey="theoretical" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
+                <Line dataKey="theoretical" type="monotone" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
               </ComposedChart>
             </ChartContainer>
             <div className="mt-2 text-center text-sm text-muted-foreground">
@@ -453,5 +466,3 @@ export default function CentralLimitTheoremPage() {
     </>
   );
 }
-
-    
