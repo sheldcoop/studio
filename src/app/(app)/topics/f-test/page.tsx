@@ -3,11 +3,10 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  Rectangle,
+  Cell,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
@@ -17,7 +16,6 @@ import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
 const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
 const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(recharts => recharts.Cell), { ssr: false });
 
 /**
  * Generates normally distributed random data using the Box-Muller transform.

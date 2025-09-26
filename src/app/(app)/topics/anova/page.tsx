@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
   Rectangle,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
+  Cell,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
@@ -23,7 +23,6 @@ const Area = dynamic(() => import('recharts').then(recharts => recharts.Area), {
 const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
 const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
 const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(recharts => recharts.Cell), { ssr: false });
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>

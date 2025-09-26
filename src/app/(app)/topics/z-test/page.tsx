@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
   ReferenceLine,
-  Rectangle,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,

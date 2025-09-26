@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,

@@ -4,11 +4,9 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
   Legend,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  Rectangle,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
