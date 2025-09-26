@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -33,6 +32,22 @@ const normalPDF = (x: number, mean: number, stdDev: number) => {
   );
 };
 
+// Approximation of the inverse error function
+function erfinv(x: number) {
+  const a = 0.147;
+  const sgn = x < 0 ? -1 : 1;
+  const lnx = Math.log(1 - x*x);
+  const lnx2 = lnx / 2;
+  const a2 = (2 / (Math.PI * a)) + lnx2;
+  return sgn * Math.sqrt(Math.sqrt(a2*a2 - (lnx / a)) - a2);
+}
+
+// Inverse of the standard normal CDF
+function standardNormalInvCdf(p: number) {
+  if (p <= 0 || p >= 1) return p <= 0 ? -Infinity : Infinity;
+  return Math.sqrt(2) * erfinv(2*p - 1);
+}
+
 const chartConfig = {
   null: { label: 'Null Hypothesis (H₀)', color: 'hsl(var(--chart-2))' },
   alt: { label: 'Alternative Hypothesis (H₁)', color: 'hsl(var(--chart-1))' },
@@ -50,16 +65,8 @@ const ErrorChart = () => {
 
   useEffect(() => {
     const data = [];
-    // Find the critical value for the decision threshold
-    // This is the point on the H0 distribution where the area to the right is `alpha`
-    // We approximate this using a standard Z-score lookup
-    const zScore = 1.645; // for alpha ~0.05 on one-tailed test
+    const zScore = standardNormalInvCdf(1 - alpha);
     const criticalValue = meanH0 + zScore * stdDev;
-
-    // Based on the slider, we set a new critical value
-    // This isn't a perfect z-score mapping, but it's effective for visualization
-    const sliderCriticalValue = meanH0 + (3 - (alpha / 0.1) * 3) * stdDev;
-
 
     let typeIProb = 0;
     let typeIIProb = 0;
@@ -71,22 +78,22 @@ const ErrorChart = () => {
       let areaTypeI = 0;
       let areaTypeII = 0;
 
-      if (x >= sliderCriticalValue) {
+      if (x >= criticalValue) {
         areaTypeI = h0; // Shade area under H0, right of the line
         typeIProb += h0 * step;
       }
-      if (x < sliderCriticalValue) {
+      if (x < criticalValue) {
         areaTypeII = h1; // Shade area under H1, left of the line
         typeIIProb += h1 * step;
       }
 
-      data.push({ x, h0, h1, areaTypeI, areaTypeII });
+      data.push({ x, h0, h1, areaTypeI, areaTypeII, criticalValue });
     }
 
     setChartData(data);
   }, [alpha, meanH0, stdDev, meanH1]);
   
-  const criticalValue = meanH0 + (3 - (alpha / 0.1) * 3) * stdDev;
+  const criticalValue = chartData[0]?.criticalValue || 0;
   const typeIError = chartData.reduce((acc, d) => acc + d.areaTypeI * 0.2, 0) * 100;
   const typeIIError = chartData.reduce((acc, d) => acc + d.areaTypeII * 0.2, 0) * 100;
 
@@ -119,12 +126,12 @@ const ErrorChart = () => {
       </ChartContainer>
       <div className="mx-auto max-w-sm py-4">
         <Label htmlFor="alpha-slider" className="text-center block">
-          Adjust Decision Threshold (Lower is Stricter)
+          Adjust Significance Level (α)
         </Label>
         <Slider
           id="alpha-slider"
           min={0.01}
-          max={0.2}
+          max={0.25}
           step={0.01}
           value={[alpha]}
           onValueChange={(val) => setAlpha(val[0])}
@@ -193,5 +200,3 @@ export default function TypeErrorsPage() {
     </>
   );
 }
-
-    
