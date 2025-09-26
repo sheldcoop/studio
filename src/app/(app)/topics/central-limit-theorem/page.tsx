@@ -79,15 +79,16 @@ const generatePopulation = (type: DistributionType, n: number) => {
 
 const createHistogram = (data: number[]) => {
   if (data.length < 2) return { bins: [], maxCount: 0, binSize: 1 };
-  
+
   const sortedData = [...data].sort((a,b) => a - b);
+  const min = sortedData[0];
+  const max = sortedData[sortedData.length - 1];
+
+  // Freedman-Diaconis rule for bin size, a robust method
   const q1 = sortedData[Math.floor(sortedData.length / 4)];
   const q3 = sortedData[Math.floor(sortedData.length * 3 / 4)];
   const iqr = q3 - q1;
   let binSize = (2 * iqr) / Math.pow(data.length, 1/3);
-
-  const min = sortedData[0];
-  const max = sortedData[sortedData.length - 1];
 
   if (binSize <= 0) {
     if (min === max) {
@@ -95,10 +96,17 @@ const createHistogram = (data: number[]) => {
     }
     binSize = (max - min) / 20 || 1;
   }
+  
+  // Cap the number of bins to prevent excessive label overlap
+  const maxBins = 25;
+  let numBins = Math.min(maxBins, Math.ceil((max - min) / binSize));
+  binSize = (max - min) / numBins;
 
-  const numBins = Math.max(1, Math.ceil((max - min) / binSize));
+  if (numBins <= 0) numBins = 1;
+
+
   const bins = Array.from({ length: numBins }, (_, i) => ({
-    name: min + i * binSize + binSize / 2, 
+    name: min + i * binSize,
     count: 0,
   }));
 
@@ -119,6 +127,7 @@ const gaussianKernel = (x: number) => (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0
 
 const kernelDensityEstimator = (data: number[], bandwidth: number) => {
     return (x: number) => {
+        if (data.length === 0 || bandwidth <= 0) return 0;
         let sum = 0;
         for (let i = 0; i < data.length; i++) {
             sum += gaussianKernel((x - data[i]) / bandwidth);
@@ -194,10 +203,10 @@ const CLTChart = () => {
   
   useEffect(() => {
       const { bins, binSize } = createHistogram(sampleMeans);
-      if (bins.length > 0 && sampleMeans.length > 1) {
+      if (bins.length > 1 && sampleMeans.length > 1) {
         const mean = getMean(sampleMeans);
         const stdDev = getStdDev(sampleMeans, mean);
-        const bandwidth = 1.06 * stdDev * Math.pow(sampleMeans.length, -1/5); // Silverman's rule
+        const bandwidth = 1.06 * stdDev * Math.pow(sampleMeans.length, -1/5) || 0.1; // Silverman's rule
         const kde = kernelDensityEstimator(sampleMeans, bandwidth);
 
         const scaleFactor = sampleMeans.length * binSize;
@@ -259,13 +268,28 @@ const CLTChart = () => {
     };
   }, []);
 
-  const samplingDomain = useMemo(() => {
-    if (sampleMeans.length < 2) return ['auto', 'auto'];
-    const min = Math.min(...sampleMeans);
-    const max = Math.max(...sampleMeans);
-    const padding = (max - min) * 0.1;
-    return [min - padding, max + padding];
-  }, [sampleMeans]);
+  const { populationDomain, samplingDomain } = useMemo(() => {
+    if (population.length > 0) {
+      const sortedPop = [...population].sort((a,b) => a-b);
+      const popMax = sortedPop[Math.floor(sortedPop.length * 0.99)]; // 99th percentile
+      const popMin = sortedPop[0];
+      
+      let sampleMin = 'auto', sampleMax = 'auto';
+      if (sampleMeans.length > 1) {
+        const min = Math.min(...sampleMeans);
+        const max = Math.max(...sampleMeans);
+        const padding = (max - min) * 0.1;
+        sampleMin = (min - padding).toString();
+        sampleMax = (max + padding).toString();
+      }
+
+      return {
+        populationDomain: [popMin, popMax],
+        samplingDomain: [sampleMin, sampleMax],
+      };
+    }
+    return { populationDomain: ['auto', 'auto'], samplingDomain: ['auto', 'auto'] };
+  }, [population, sampleMeans]);
 
   return (
     <>
@@ -314,7 +338,7 @@ const CLTChart = () => {
             >
               <RechartsBarChart accessibilityLayer data={populationHist} barGap={0} barCategoryGap="10%">
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" type="number" domain={['dataMin', 'dataMax']} unit="$" tickFormatter={(val) => Number(val).toFixed(0)} />
+                <XAxis dataKey="name" type="number" domain={populationDomain} unit="$" tickFormatter={(val) => Number(val).toFixed(0)} />
                 <YAxis allowDecimals={false} />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="count" fill="var(--color-count)" />
