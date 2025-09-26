@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -20,7 +21,6 @@ const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr
 const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
 const Line = dynamic(() => import('recharts').then(mod => mod.Line), { ssr: false });
 const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
 
 
 // Helper function to generate normally distributed data
@@ -43,15 +43,15 @@ const oneWayAnovaChartConfig = {
   value: {
     label: 'Value',
   },
-  'Algorithm_Alpha': {
+  'Algorithm Alpha': {
     label: 'Alpha',
     color: 'hsl(var(--chart-1))',
   },
-  'Algorithm_Beta': {
+  'Algorithm Beta': {
     label: 'Beta',
     color: 'hsl(var(--chart-2))',
   },
-  'Algorithm_Gamma': {
+  'Algorithm Gamma': {
     label: 'Gamma',
     color: 'hsl(var(--chart-3))',
   },
@@ -85,9 +85,9 @@ const OneWayAnovaChart = () => {
     const dataBeta = generateNormalData(1.5, 0.8, 50);
     const dataGamma = generateNormalData(0.9, 0.8, 50);
     setChartData([
-        { name: 'Algorithm_Alpha', value: getMean(dataAlpha)},
-        { name: 'Algorithm_Beta', value: getMean(dataBeta) },
-        { name: 'Algorithm_Gamma', value: getMean(dataGamma) },
+        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: 'var(--color-Algorithm Alpha)' },
+        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: 'var(--color-Algorithm Beta)' },
+        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: 'var(--color-Algorithm Gamma)' },
     ]);
   };
 
@@ -101,14 +101,10 @@ const OneWayAnovaChart = () => {
         <ChartContainer config={oneWayAnovaChartConfig} className="h-full w-full">
           <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid vertical={false} />
-              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => oneWayAnovaChartConfig[value as keyof typeof oneWayAnovaChartConfig]?.label || value} />
+              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
               <YAxis unit="%" />
               <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
-              <Bar dataKey="value" radius={8}>
-                {chartData.map((entry) => (
-                    <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
-                ))}
-              </Bar>
+              <Bar dataKey="value" radius={8} />
           </RechartsBarChart>
         </ChartContainer>
       </div>

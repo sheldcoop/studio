@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,7 +14,6 @@ const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: fa
 const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
 const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
 const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
 
 /**
  * Generates normally distributed random data using the Box-Muller transform.
@@ -56,12 +56,12 @@ const fTestChartConfig = {
   value: {
     label: 'Variance',
   },
-  'StableStock_Utility': {
-    label: 'StableStock (Utility)',
+  'StableStock (Utility)': {
+    label: 'StableStock',
     color: 'hsl(var(--chart-1))',
   },
-  'GrowthStock_Tech': {
-    label: 'GrowthStock (Tech)',
+  'GrowthStock (Tech)': {
+    label: 'GrowthStock',
     color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
@@ -80,8 +80,8 @@ const FTestChart = () => {
     const varianceGrowth = getVariance(dataGrowth);
 
     setChartData([
-        { name: 'StableStock_Utility', value: varianceStable },
-        { name: 'GrowthStock_Tech', value: varianceGrowth },
+        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-StableStock (Utility))' },
+        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-GrowthStock (Tech))' },
     ]);
     setFStat(varianceGrowth / varianceStable);
   };
@@ -92,8 +92,6 @@ const FTestChart = () => {
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
-      const configKey = label as keyof typeof fTestChartConfig;
-      const displayName = fTestChartConfig[configKey]?.label || label;
       return (
         <div className="rounded-lg border bg-background p-2 shadow-sm">
           <div className="grid grid-cols-2 gap-2">
@@ -101,7 +99,7 @@ const FTestChart = () => {
               <span className="text-[0.70rem] uppercase text-muted-foreground">
                 Stock
               </span>
-              <span className="font-bold text-muted-foreground">{displayName}</span>
+              <span className="font-bold text-muted-foreground">{label}</span>
             </div>
             <div className="flex flex-col">
               <span className="text-[0.70rem] uppercase text-muted-foreground">
@@ -132,17 +130,13 @@ const FTestChart = () => {
         <ChartContainer config={fTestChartConfig} className="h-full w-full">
           <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => fTestChartConfig[value as keyof typeof fTestChartConfig]?.label || value} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
             <Tooltip
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<CustomTooltip />}
             />
-            <Bar dataKey="value" radius={8}>
-              {chartData.map((entry) => (
-                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
-              ))}
-            </Bar>
+            <Bar dataKey="value" radius={8} />
           </RechartsBarChart>
         </ChartContainer>
       </div>

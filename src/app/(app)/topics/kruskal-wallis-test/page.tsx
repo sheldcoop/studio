@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,7 +15,6 @@ const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: fa
 const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
 const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
 const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
 
 
 // Helper to generate skewed data (log-normal distribution)
@@ -41,15 +41,15 @@ const kruskalWallisChartConfig = {
   value: {
     label: 'Median Profit',
   },
-  'ML_Bot': {
+  'ML Bot': {
     label: 'ML Bot',
     color: 'hsl(var(--chart-1))',
   },
-  'Rule_Based_Bot': {
+  'Rule-Based Bot': {
     label: 'Rule-Based Bot',
     color: 'hsl(var(--chart-2))',
   },
-  'Hybrid_Bot': {
+  'Hybrid Bot': {
     label: 'Hybrid Bot',
     color: 'hsl(var(--chart-3))',
   },
@@ -65,9 +65,9 @@ const KruskalWallisChart = () => {
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
 
     setChartData([
-        { name: 'ML_Bot', value: getMedian(dataBotA) },
-        { name: 'Rule_Based_Bot', value: getMedian(dataBotB) },
-        { name: 'Hybrid_Bot', value: getMedian(dataBotC) },
+        { name: 'ML Bot', value: getMedian(dataBotA), fill: 'var(--color-ML Bot)' },
+        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: 'var(--color-Rule-Based Bot)' },
+        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: 'var(--color-Hybrid Bot)' },
     ]);
   };
 
@@ -81,14 +81,10 @@ const KruskalWallisChart = () => {
         <ChartContainer config={kruskalWallisChartConfig} className="h-full w-full">
           <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis unit="$" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Bar dataKey="value" name="Median Profit" radius={4}>
-              {chartData.map((entry) => (
-                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
-              ))}
-            </Bar>
+            <Bar dataKey="value" name="Median Profit" radius={4} />
           </RechartsBarChart>
         </ChartContainer>
       </div>
