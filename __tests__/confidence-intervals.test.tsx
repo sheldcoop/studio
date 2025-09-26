@@ -11,8 +11,9 @@ describe('ConfidenceIntervalsPage', () => {
 
     // The component calculates an interval on initial render with default values
     // Default values are: mean=100, stdDev=15, sampleSize=30, confidence=95%
-    // The expected result is [94.515, 105.485]
-    expect(screen.getByText('[94.515, 105.485]')).toBeInTheDocument();
+    // The correct result is [94.632, 105.368]
+    const resultElement = screen.getByText(/confident that the true population mean lies between/i).previousSibling;
+    expect(resultElement).toHaveTextContent(/\[94.632, 105.368\]/);
   });
 
   it('updates the result when user changes inputs and clicks calculate', () => {
@@ -36,9 +37,9 @@ describe('ConfidenceIntervalsPage', () => {
     // Margin of Error = 1.96 * (5 / sqrt(100)) = 1.96 * 0.5 = 0.98
     // Lower = 50 - 0.98 = 49.02
     // Upper = 50 + 0.98 = 50.98
-    // The component formats to 3 decimal places, so [49.020, 50.980]
-    const resultText = screen.getByText('[49.02, 50.98]');
-    expect(resultText).toBeInTheDocument();
+    // The result is [49.02, 50.98]
+    const resultElement = screen.getByText(/confident that the true population mean lies between/i).previousSibling;
+    expect(resultElement).toHaveTextContent(/\[49.02, 50.98\]/);
   });
 
   it('shows an error message for invalid input (e.g., sample size <= 0)', () => {
@@ -55,8 +56,8 @@ describe('ConfidenceIntervalsPage', () => {
     const errorMessage = screen.getByText('Sample size must be positive and standard deviation cannot be negative.');
     expect(errorMessage).toBeInTheDocument();
 
-    // Check that the previous result is cleared
-    const initialResult = screen.queryByText('[94.515, 105.485]');
-    expect(initialResult).not.toBeInTheDocument();
+    // Check that the previous result is cleared and the error message is shown instead
+    const resultElement = screen.queryByText(/confident that the true population mean lies between/i);
+    expect(resultElement).not.toBeInTheDocument();
   });
 });

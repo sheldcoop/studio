@@ -14,6 +14,6 @@ describe('Logo', () => {
     expect(prepText).toBeInTheDocument();
 
     // Check that "Prep" is a tspan for color styling
-    expect(prepText.tagName).toBe('TSPAN');
+    expect(prepText.tagName).toBe('tspan');
   });
 });
