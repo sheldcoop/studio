@@ -1,5 +1,11 @@
-import { redirect } from 'next/navigation';
+
+import AppLayout from './(app)/layout';
+import DashboardPage from './(app)/dashboard/page';
 
 export default function RootPage() {
-  redirect('/dashboard');
+  return (
+    <AppLayout>
+      <DashboardPage />
+    </AppLayout>
+  );
 }
