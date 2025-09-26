@@ -11,145 +11,186 @@ interface ConfidenceIntervalAnimationProps {
   onPointerLeave: () => void;
 }
 
+// Helper to create a Gaussian curve shape
+const createGaussianCurve = (width: number, height: number, segments: number) => {
+    const shape = new THREE.Shape();
+    const gaussian = (x: number, mu: number, sigma: number) => height * Math.exp(-(((x - mu) / sigma) ** 2) / 2);
+  
+    shape.moveTo(-width / 2, 0);
+    for (let i = 0; i <= segments; i++) {
+      const x = (i / segments) * width - width / 2;
+      const y = gaussian(x, 0, width / 6);
+      shape.lineTo(x, y);
+    }
+    shape.lineTo(width / 2, 0);
+    shape.lineTo(-width / 2, 0);
+    return new THREE.ShapeGeometry(shape);
+};
+
 export function ConfidenceIntervalAnimation({
   className,
   onPointerEnter,
   onPointerLeave,
 }: ConfidenceIntervalAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const mouse = useRef({ x: 0, y: 0 });
+  const mouse = useRef({ x: 0.5, y: 0.5 });
   const isMouseOver = useRef(false);
-
-  const pointsMaterial = useMemo(() => new THREE.PointsMaterial({
-    color: 0x22c55e,
-    size: 0.25,
-    blending: THREE.AdditiveBlending,
-    transparent: true,
-    opacity: 0.8,
-  }), []);
-  const lineMaterial = useMemo(() => new THREE.LineBasicMaterial({
-    color: 0x22c55e,
-    blending: THREE.AdditiveBlending,
-    transparent: true,
-    opacity: 0.9,
-    linewidth: 2,
-  }), []);
+  
+  const nullMaterial = useMemo(() => new THREE.MeshBasicMaterial({ color: 0x2563eb, wireframe: true, transparent: true }), []);
+  const altMaterial = useMemo(() => new THREE.MeshBasicMaterial({ color: 0x22c55e, wireframe: true, transparent: true }), []);
+  const pValueMaterial = useMemo(() => new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.7 }), []);
+  const statisticMaterial = useMemo(() => new THREE.MeshBasicMaterial({ color: 0xfacc15 }), []);
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
+    let frameId: number;
 
-    // --- Scene Setup ---
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      currentMount.clientWidth / currentMount.clientHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 20;
+    const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+    camera.position.set(0, 5, 15);
+    camera.lookAt(0, 3, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
 
-    // --- Data Points ---
-    const pointCount = 500;
-    const pointsGeometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(pointCount * 3);
-    const originalPositions = new Float32Array(pointCount * 3);
+    // --- Distributions ---
+    const nullDistro = new THREE.Mesh(createGaussianCurve(15, 6, 100), nullMaterial);
+    nullDistro.position.x = -4;
+    scene.add(nullDistro);
 
-    for (let i = 0; i < pointCount; i++) {
-      const i3 = i * 3;
-      // Store original random positions
-      originalPositions[i3] = (Math.random() - 0.5) * 25;
-      originalPositions[i3 + 1] = (Math.random() - 0.5) * 25;
-      originalPositions[i3 + 2] = (Math.random() - 0.5) * 25;
-      
-      positions[i3] = originalPositions[i3];
-      positions[i3+1] = originalPositions[i3+1];
-      positions[i3+2] = originalPositions[i3+2];
+    const altDistro = new THREE.Mesh(createGaussianCurve(15, 5, 100), altMaterial);
+    altDistro.position.x = 4;
+    scene.add(altDistro);
+    
+    // --- P-value area ---
+    const pValueShape = new THREE.Shape();
+    const pValueGeometry = new THREE.ShapeGeometry(pValueShape);
+    const pValueMesh = new THREE.Mesh(pValueGeometry, pValueMaterial);
+    pValueMesh.position.x = -4;
+    pValueMesh.visible = false;
+    scene.add(pValueMesh);
+    
+    // --- Test Statistic ---
+    const statistic = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), statisticMaterial);
+    statistic.visible = false;
+    scene.add(statistic);
+
+    let statisticState = { visible: false, x: 0, y: 10, targetX: 0, speed: 0 };
+    let shatterState = { active: false, particles: [] as any[], timer: 0 };
+
+    const resetNullDistro = () => {
+        nullDistro.visible = true;
+        shatterState.active = false;
+        shatterState.particles.forEach(p => scene.remove(p.mesh));
+        shatterState.particles = [];
     }
-    pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const dataCloud = new THREE.Points(pointsGeometry, pointsMaterial);
-    scene.add(dataCloud);
 
-    // --- Regression Line ---
-    const lineGeometry = new THREE.BufferGeometry();
-    lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(2 * 3), 3));
-    const regressionLine = new THREE.Line(lineGeometry, lineMaterial);
-    scene.add(regressionLine);
-
-    // --- Animation Logic ---
     const clock = new THREE.Clock();
-    let targetCorrelation = 0;
 
     const animate = () => {
-      requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+      frameId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
 
-      // --- Interaction ---
       if (isMouseOver.current) {
-        // Map mouse Y to correlation strength (-1 to 1)
-        targetCorrelation += (mouse.current.y - targetCorrelation) * 0.1;
-      } else {
-        // Return to a non-correlated state
-        targetCorrelation += (0 - targetCorrelation) * 0.05;
+        if (!statisticState.visible) {
+            statisticState.visible = true;
+            statistic.visible = true;
+            statisticState.y = 10;
+            statisticState.x = 0;
+            statisticState.speed = 0;
+            pValueMesh.visible = true;
+            if (shatterState.active) {
+                resetNullDistro();
+            }
+        }
+        statisticState.targetX = (mouse.current.x - 0.5) * 20;
+
+      } else if (statisticState.visible) {
+          statisticState.visible = false;
+          pValueMesh.visible = false;
+          setTimeout(() => {
+            statistic.visible = false;
+            if (shatterState.active) resetNullDistro();
+          }, 500)
       }
       
-      const currentPositions = dataCloud.geometry.getAttribute('position').array as Float32Array;
-      let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, n = 0;
+      if(statisticState.visible) {
+        // Animate statistic dropping
+        statisticState.speed += 0.98 * delta; // gravity
+        statisticState.y -= statisticState.speed;
+        statisticState.x += (statisticState.targetX - statisticState.x) * 0.1;
+        
+        if (statisticState.y < 0) {
+            statisticState.y = 0;
+        }
+        statistic.position.set(statisticState.x, statisticState.y, 0);
 
-      for (let i = 0; i < pointCount; i++) {
-        const i3 = i * 3;
-        const originalX = originalPositions[i3];
-        // Use a different original component for y to avoid perfect correlation
-        const originalY = originalPositions[i3 + 1]; 
-        
-        // Morph to correlated state
-        const targetY = originalX * targetCorrelation * 1.5 + originalY * (1 - Math.abs(targetCorrelation));
-        currentPositions[i3+1] += (targetY - currentPositions[i3+1]) * 0.1;
-        
-        sumX += currentPositions[i3];
-        sumY += currentPositions[i3+1];
-        sumXY += currentPositions[i3] * currentPositions[i3+1];
-        sumX2 += currentPositions[i3] * currentPositions[i3];
-        n++;
+        // Update P-value area
+        const pValueStart = statisticState.x + 4; // adjust for distro position
+        const curveWidth = 15;
+        const curveSegments = 100;
+        const newPValueShape = new THREE.Shape();
+        newPValueShape.moveTo(pValueStart, 0);
+        for(let i = Math.floor((pValueStart + curveWidth/2) / (curveWidth/curveSegments)); i<= curveSegments; i++){
+            const x_ = (i / curveSegments) * curveWidth - curveWidth / 2;
+            const y_ = 6 * Math.exp(-(((x_ / (curveWidth / 6)) ** 2) / 2));
+            newPValueShape.lineTo(x_, y_);
+        }
+        newPValueShape.lineTo(curveWidth/2, 0);
+        newPValueShape.lineTo(pValueStart, 0);
+        pValueMesh.geometry.dispose();
+        pValueMesh.geometry = new THREE.ShapeGeometry(newPValueShape);
+
+        // Shatter logic
+        const pValue = 1 - (statisticState.x + 4 + curveWidth/2) / curveWidth;
+        if(statisticState.y === 0 && pValue < 0.05 && !shatterState.active) {
+            shatterState.active = true;
+            nullDistro.visible = false;
+            const positions = nullDistro.geometry.getAttribute('position');
+            for(let i = 0; i < positions.count; i++) {
+                const particle = {
+                    mesh: new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), nullMaterial),
+                    vx: (Math.random() - 0.5) * 0.2,
+                    vy: Math.random() * 0.3,
+                    vz: (Math.random() - 0.5) * 0.2,
+                    life: 1.0,
+                }
+                particle.mesh.position.set(positions.getX(i) - 4, positions.getY(i), positions.getZ(i));
+                shatterState.particles.push(particle);
+                scene.add(particle.mesh);
+            }
+        }
       }
-      dataCloud.geometry.getAttribute('position').needsUpdate = true;
-      dataCloud.rotation.y = elapsedTime * 0.05;
 
-
-      // --- Regression Calculation ---
-      if(Math.abs(targetCorrelation) > 0.1) {
-        regressionLine.visible = true;
-        const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-        const b = (sumY - m * sumX) / n;
-        
-        const linePos = regressionLine.geometry.getAttribute('position').array as Float32Array;
-        const minX = -12.5, maxX = 12.5;
-        linePos[0] = minX;
-        linePos[1] = m * minX + b;
-        linePos[2] = 0;
-        linePos[3] = maxX;
-        linePos[4] = m * maxX + b;
-        linePos[5] = 0;
-        regressionLine.geometry.getAttribute('position').needsUpdate = true;
-      } else {
-        regressionLine.visible = false;
+      if(shatterState.active) {
+        shatterState.particles.forEach(p => {
+            p.mesh.position.x += p.vx;
+            p.mesh.position.y += p.vy;
+            p.mesh.position.z += p.vz;
+            p.vy -= 0.01;
+            p.life -= delta;
+            (p.mesh.material as THREE.MeshBasicMaterial).opacity = p.life;
+            if(p.life <= 0) scene.remove(p.mesh);
+        });
+        shatterState.particles = shatterState.particles.filter(p => p.life > 0);
       }
 
+
+      scene.rotation.y += (-mouse.current.x * 0.1 + scene.rotation.y) * 0.05;
       renderer.render(scene, camera);
     };
+
     animate();
 
     // --- Event Listeners ---
     const handleMouseMove = (event: MouseEvent) => {
       if (currentMount) {
         const rect = currentMount.getBoundingClientRect();
-        mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+        mouse.current.x = (event.clientX - rect.left) / rect.width;
+        mouse.current.y = (event.clientY - rect.top) / rect.height;
       }
     };
     const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
@@ -170,21 +211,25 @@ export function ConfidenceIntervalAnimation({
 
     // --- Cleanup ---
     return () => {
+      cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
       if (currentMount) {
         currentMount.removeEventListener('mousemove', handleMouseMove);
         currentMount.removeEventListener('mouseenter', handleMouseEnter);
         currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
-      pointsGeometry.dispose();
-      pointsMaterial.dispose();
-      lineGeometry.dispose();
-      lineMaterial.dispose();
+      nullMaterial.dispose();
+      altMaterial.dispose();
+      pValueMaterial.dispose();
+      statisticMaterial.dispose();
+      nullDistro.geometry.dispose();
+      altDistro.geometry.dispose();
+      pValueMesh.geometry.dispose();
+      statistic.geometry.dispose();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
