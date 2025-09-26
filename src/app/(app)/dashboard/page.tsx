@@ -10,8 +10,13 @@ import {
 } from '@/components/ui/card';
 import { quantJourney } from '@/lib/data';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
+import { LinearAlgebraAnimation } from '@/components/app/linear-algebra-animation';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 export default function DashboardPage() {
+  const [isLaCardActive, setIsLaCardActive] = useState(false);
+
   return (
     <div className="flex flex-col items-center justify-center p-4 md:p-8">
       <div className="mb-12 max-w-3xl text-center">
@@ -22,27 +27,76 @@ export default function DashboardPage() {
         </p>
       </div>
       <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {quantJourney.map((item) => (
-          <Link
-            href={item.href}
-            key={item.id}
-            className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <Card className="flex h-full transform-gpu flex-col bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
-              <CardHeader>
-                <div className="mb-4">
-                  <item.icon className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="font-headline text-xl">
-                  {item.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{item.description}</CardDescription>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+        {quantJourney.map((item) => {
+          if (item.id === 'linear-algebra') {
+            return (
+              <div
+                key={item.id}
+                className="group relative rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <Link href={item.href} className="h-full w-full">
+                  <Card className="flex h-full transform-gpu flex-col overflow-hidden bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
+                    <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                      <LinearAlgebraAnimation
+                        onPointerEnter={() => setIsLaCardActive(true)}
+                        onPointerLeave={() => setIsLaCardActive(false)}
+                      />
+                    </div>
+                    <div className="relative z-10 flex h-full flex-col justify-between p-6">
+                      <div>
+                        <div className="mb-4">
+                          <item.icon
+                            className={cn(
+                              'h-8 w-8 text-primary transition-colors',
+                              isLaCardActive && 'text-primary-foreground/80'
+                            )}
+                          />
+                        </div>
+                        <CardTitle
+                          className={cn(
+                            'font-headline text-xl transition-colors',
+                            isLaCardActive && 'text-card'
+                          )}
+                        >
+                          {item.title}
+                        </CardTitle>
+                      </div>
+                      <CardDescription
+                        className={cn(
+                          'transition-colors',
+                          isLaCardActive && 'text-primary-foreground/70'
+                        )}
+                      >
+                        {item.description}
+                      </CardDescription>
+                    </div>
+                  </Card>
+                </Link>
+              </div>
+            );
+          }
+          return (
+            <Link
+              href={item.href}
+              key={item.id}
+              className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <Card className="flex h-full transform-gpu flex-col bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
+                <CardHeader>
+                  <div className="mb-4">
+                    <item.icon className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="font-headline text-xl">
+                    {item.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>{item.description}</CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
