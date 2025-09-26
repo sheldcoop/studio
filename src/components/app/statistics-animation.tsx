@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -11,13 +10,39 @@ interface StatisticsAnimationProps {
   onPointerLeave: () => void;
 }
 
+// Function to create the geometry for a 2D Gaussian surface plot
+const createGaussianSurface = (width: number, height: number, segments: number) => {
+  const geometry = new THREE.PlaneGeometry(width, height, segments, segments);
+  const positionAttribute = geometry.getAttribute('position');
+  
+  const gaussian = (x: number, y: number, sigmaX: number, sigmaY: number) => {
+    return Math.exp(
+      -(
+        (x ** 2) / (2 * sigmaX ** 2) +
+        (y ** 2) / (2 * sigmaY ** 2)
+      )
+    );
+  };
+  
+  for (let i = 0; i < positionAttribute.count; i++) {
+    const x = positionAttribute.getX(i);
+    const y = positionAttribute.getY(i);
+    const z = 4 * gaussian(x, y, 3, 3); // Scale Z for visibility
+    positionAttribute.setZ(i, z);
+  }
+
+  geometry.computeVertexNormals();
+  return geometry;
+};
+
+
 export function StatisticsAnimation({
   className,
   onPointerEnter,
   onPointerLeave,
 }: StatisticsAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const mouse = useRef(new THREE.Vector2(10000, 10000)); // Start off-screen
+  const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
 
   useEffect(() => {
@@ -26,137 +51,72 @@ export function StatisticsAnimation({
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(
-      -10, 10, 10, -10, 1, 1000
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      currentMount.clientWidth / currentMount.clientHeight,
+      0.1,
+      1000
     );
-    camera.position.z = 10;
+    camera.position.set(0, 5, 8);
+    camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
     
-    // --- Galton Board setup ---
-    const pegs: THREE.Vector2[] = [];
-    const pegRows = 12;
-    const verticalSpacing = 1.2;
-    for (let i = 0; i < pegRows; i++) {
-        const numPegsInRow = i + 1;
-        const y = 8 - i * verticalSpacing;
-        for (let j = 0; j < numPegsInRow; j++) {
-            const x = j * 1.5 - (numPegsInRow - 1) * 0.75;
-            pegs.push(new THREE.Vector2(x, y));
-        }
-    }
+    // --- Objects ---
+    const group = new THREE.Group();
+    scene.add(group);
 
-    const numBins = 15;
-    const binWidth = 1.33;
-    const bins = Array(numBins).fill(0);
-    const binBottom = -10;
+    // Grid
+    const grid = new THREE.GridHelper(20, 20, 0x22c55e, 0x22c55e);
+    grid.material.transparent = true;
+    grid.material.opacity = 0.15;
+    group.add(grid);
 
-    // --- Particle System ---
-    const maxParticles = 500;
-    const particleGeometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(maxParticles * 3);
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    
-    const particleMaterial = new THREE.PointsMaterial({
-        color: 0x22c55e, // Brighter theme color
-        size: 0.4,       // Increased size
-        transparent: true,
-        opacity: 0.8,    // Increased opacity
-        blending: THREE.AdditiveBlending,
+    // Surface
+    const surfaceGeometry = createGaussianSurface(10, 10, 50);
+    const surfaceMaterial = new THREE.MeshStandardMaterial({
+      color: 0x22c55e,
+      wireframe: true,
+      emissive: 0x22c55e,
+      emissiveIntensity: 0.1,
+      transparent: true,
+      opacity: 0.5,
     });
-    
-    const particles = new THREE.Points(particleGeometry, particleMaterial);
-    scene.add(particles);
+    const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
+    surface.rotation.x = -Math.PI / 2; // Lay it flat on the grid
+    group.add(surface);
 
-    const particlePool: {
-        position: THREE.Vector3;
-        velocity: THREE.Vector3;
-        life: number;
-    }[] = [];
-    for (let i = 0; i < maxParticles; i++) {
-        particlePool.push({
-            position: new THREE.Vector3(0, 10, 0),
-            velocity: new THREE.Vector3(0, 0, 0),
-            life: 0,
-        });
-    }
-    let frame = 0;
-
-    function spawnParticle() {
-        const p = particlePool.find(p => p.life <= 0);
-        if (p) {
-            p.position.set((Math.random() - 0.5) * 0.2, 10, 0);
-            p.velocity.set(0, -0.1 - Math.random() * 0.1, 0);
-            p.life = 1;
-        }
-    }
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
     
     // --- Animation & Interaction ---
+    const clock = new THREE.Clock();
+    let targetPosition = new THREE.Vector3(0, 0, 0);
+
     const animate = () => {
-        requestAnimationFrame(animate);
-        frame++;
-        if (frame % 3 === 0) spawnParticle();
+      const elapsedTime = clock.getElapsedTime();
 
-        const currentPositions = particles.geometry.attributes.position.array as Float32Array;
-        let activeParticles = 0;
-        
-        for (const p of particlePool) {
-            if (p.life > 0) {
-                // Apply gravity
-                p.velocity.y -= 0.01;
-                p.position.add(p.velocity);
+      if (isMouseOver.current) {
+        targetPosition.x = mouse.current.x * 5;
+        targetPosition.z = mouse.current.y * 5; // Map mouse Y to Z-axis movement
+      } else {
+        targetPosition.x = 0;
+        targetPosition.z = 0;
+      }
+      
+      // Easing / Smoothing for the surface position (mean)
+      surface.position.x += (targetPosition.x - surface.position.x) * 0.05;
+      surface.position.z += (targetPosition.z - surface.position.z) * 0.05;
 
-                // Mouse interaction
-                if (isMouseOver.current) {
-                    const magnetForce = new THREE.Vector2(p.position.x, p.position.y).sub(mouse.current);
-                    const distance = magnetForce.length();
-                    if (distance < 3) {
-                         p.velocity.add(new THREE.Vector3(-magnetForce.x * 0.01, -magnetForce.y * 0.01, 0));
-                    }
-                }
-                
-                // Peg collision
-                for (const peg of pegs) {
-                    if (p.position.distanceTo(new THREE.Vector3(peg.x, peg.y, 0)) < 0.8) {
-                        p.velocity.x += (Math.random() - 0.5) * 0.15; // Bounce randomly left or right
-                        p.velocity.y *= 0.6; // Dampen vertical velocity
-                    }
-                }
+      // Slow rotation of the entire group
+      group.rotation.y = elapsedTime * 0.05;
 
-                // Check for bin collision
-                if (p.position.y < binBottom + 0.5) {
-                    const binIndex = Math.floor((p.position.x + (numBins / 2) * binWidth) / binWidth);
-                    if (binIndex >= 0 && binIndex < numBins) {
-                        const stackHeight = bins[binIndex] * 0.2;
-                        p.position.y = binBottom + stackHeight;
-                        p.position.x = (binIndex - numBins / 2) * binWidth + binWidth / 2;
-                        bins[binIndex]++;
-                        p.life = 0; // Particle is now settled
-                    } else {
-                        p.life = 0; // Deactivate if out of bounds
-                    }
-                }
-
-                currentPositions[activeParticles * 3] = p.position.x;
-                currentPositions[activeParticles * 3 + 1] = p.position.y;
-                currentPositions[activeParticles * 3 + 2] = p.position.z;
-                activeParticles++;
-            }
-        }
-        
-        particles.geometry.attributes.position.needsUpdate = true;
-        
-        // Decay bins over time
-        if (frame % 2 === 0) {
-            for (let i=0; i<numBins; i++) {
-                if (bins[i] > 0) bins[i] -= 0.1;
-            }
-        }
-
-        renderer.render(scene, camera);
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
     };
 
     animate();
@@ -165,20 +125,13 @@ export function StatisticsAnimation({
     const handleMouseMove = (event: MouseEvent) => {
         if (currentMount) {
             const rect = currentMount.getBoundingClientRect();
-            const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            const y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
-            // Convert to orthographic camera coordinates
-            mouse.current.x = x * 10;
-            mouse.current.y = y * 10;
+            mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.current.y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
         }
     };
     
     const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
-    const handleMouseLeave = () => { 
-        isMouseOver.current = false; 
-        mouse.current.set(10000, 10000); // Move mouse off-screen
-        onPointerLeave(); 
-    }
+    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
 
     currentMount.addEventListener('mousemove', handleMouseMove);
     currentMount.addEventListener('mouseenter', handleMouseEnter);
@@ -188,16 +141,11 @@ export function StatisticsAnimation({
     const handleResize = () => {
         if (currentMount) {
             renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-            const aspect = currentMount.clientWidth / currentMount.clientHeight;
-            camera.left = -10 * aspect;
-            camera.right = 10 * aspect;
-            camera.top = 10;
-            camera.bottom = -10;
+            camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
             camera.updateProjectionMatrix();
         }
     };
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial call
 
     // --- Cleanup ---
     return () => {
@@ -210,8 +158,10 @@ export function StatisticsAnimation({
         currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
-      particleGeometry.dispose();
-      particleMaterial.dispose();
+      surfaceGeometry.dispose();
+      surfaceMaterial.dispose();
+      grid.geometry.dispose();
+      grid.material.dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
