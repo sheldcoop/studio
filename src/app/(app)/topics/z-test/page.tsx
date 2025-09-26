@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -46,9 +47,6 @@ const oneSampleZTestChartConfig = {
 } satisfies ChartConfig;
 
 const twoSampleZTestChartConfig = {
-  value: {
-    label: 'Avg Daily Volatility',
-  },
   'Stock A': {
     label: 'Stock A',
     color: 'hsl(var(--chart-1))',
@@ -123,8 +121,8 @@ const TwoSampleZTestChart = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
     setChartData([
-        { name: 'Stock A', value: getMean(dataA) },
-        { name: 'Stock B', value: getMean(dataB) },
+        { name: 'Stock A', value: getMean(dataA), fill: 'hsl(var(--chart-1))' },
+        { name: 'Stock B', value: getMean(dataB), fill: 'hsl(var(--chart-2))' },
     ]);
   };
 
@@ -141,11 +139,7 @@ const TwoSampleZTestChart = () => {
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                <Bar dataKey="value" name="Avg Daily Volatility" radius={4}>
-                    {chartData.map((entry, index) => (
-                        <Rectangle key={`cell-${index}`} fill={twoSampleZTestChartConfig[entry.name as keyof typeof twoSampleZTestChartConfig].color} />
-                    ))}
-                </Bar>
+                <Bar dataKey="value" name="Avg Daily Volatility" radius={4} />
             </BarChart>
         </ChartContainer>
       </div>
@@ -201,7 +195,7 @@ export default function ZTestPage() {
 
         <Card>
           <CardContent className="p-6">
-            <Tabs defaultValue="one-sample">
+            <Tabs defaultValue="two-sample">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="one-sample">One-Sample</TabsTrigger>
                 <TabsTrigger value="two-sample">Two-Sample</TabsTrigger>
@@ -243,3 +237,5 @@ export default function ZTestPage() {
     </>
   );
 }
+
+    
