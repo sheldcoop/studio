@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -27,7 +28,7 @@ const createGaussianSurface = (width: number, height: number, segments: number) 
   for (let i = 0; i < positionAttribute.count; i++) {
     const x = positionAttribute.getX(i);
     const y = positionAttribute.getY(i);
-    const z = 4 * gaussian(x, y, 3, 3); // Scale Z for visibility
+    const z = 5 * gaussian(x, y, 3, 3); // Scale Z for visibility
     positionAttribute.setZ(i, z);
   }
 
@@ -57,7 +58,7 @@ export function StatisticsAnimation({
       0.1,
       1000
     );
-    camera.position.set(0, 5, 8);
+    camera.position.set(0, 6, 9);
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -72,7 +73,7 @@ export function StatisticsAnimation({
     // Grid
     const grid = new THREE.GridHelper(20, 20, 0x22c55e, 0x22c55e);
     grid.material.transparent = true;
-    grid.material.opacity = 0.15;
+    grid.material.opacity = 0.25;
     group.add(grid);
 
     // Surface
@@ -81,9 +82,9 @@ export function StatisticsAnimation({
       color: 0x22c55e,
       wireframe: true,
       emissive: 0x22c55e,
-      emissiveIntensity: 0.1,
+      emissiveIntensity: 0.2,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.7,
     });
     const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
     surface.rotation.x = -Math.PI / 2; // Lay it flat on the grid

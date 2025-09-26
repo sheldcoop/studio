@@ -18,7 +18,7 @@ import { StatisticsAnimation } from '@/components/app/statistics-animation';
 import { MachineLearningAnimation } from '@/components/app/machine-learning-animation';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { InteractiveHistogramAnimation } from '@/components/app/interactive-histogram-animation';
+import { ConfidenceIntervalAnimation } from '@/components/app/confidence-interval-animation';
 
 export default function DashboardPage() {
   const [isLaCardActive, setIsLaCardActive] = useState(false);
@@ -283,7 +283,7 @@ export default function DashboardPage() {
                 <Link href={item.href} className="h-full w-full">
                   <Card className="flex h-full transform-gpu flex-col overflow-hidden bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
                     <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                      <InteractiveHistogramAnimation
+                      <ConfidenceIntervalAnimation
                         onPointerEnter={() => setIsStCardActive(true)}
                         onPointerLeave={() => setIsStCardActive(false)}
                       />

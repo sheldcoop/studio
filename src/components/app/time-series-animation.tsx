@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -43,7 +44,7 @@ export function TimeSeriesAnimation({
     // --- Grid ---
     const grid = new THREE.GridHelper(20, 20, 0x58a6ff, 0x58a6ff);
     grid.material.transparent = true;
-    grid.material.opacity = 0.1;
+    grid.material.opacity = 0.2;
     grid.rotation.x = Math.PI / 2;
     scene.add(grid);
 
@@ -55,9 +56,9 @@ export function TimeSeriesAnimation({
     
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x58a6ff, // A lighter, glowing blue
-      linewidth: 2,
+      linewidth: 3,
       transparent: true,
-      opacity: 0.6
+      opacity: 0.8
     });
     
     const line = new THREE.Line(lineGeometry, lineMaterial);

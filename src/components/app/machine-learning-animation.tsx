@@ -43,8 +43,7 @@ export function MachineLearningAnimation({
     const vectorGroup = new THREE.Group();
     scene.add(vectorGroup);
 
-    const vectorMaterial = new THREE.MeshBasicMaterial({ color: 0x58a6ff, transparent: true, opacity: 0.5 });
-    const vectorLength = 1;
+    const vectorLength = 1.2;
     const density = 8;
     const spacing = 2;
     const vectors: THREE.ArrowHelper[] = [];
@@ -54,7 +53,7 @@ export function MachineLearningAnimation({
         if (x === 0 && y === 0) continue;
         const origin = new THREE.Vector3(x * spacing, y * spacing, 0);
         const dir = new THREE.Vector3(1, 0, 0).normalize(); // Initial direction
-        const arrow = new THREE.ArrowHelper(dir, origin, vectorLength, 0x58a6ff, 0.4, 0.2);
+        const arrow = new THREE.ArrowHelper(dir, origin, vectorLength, 0x58a6ff, 0.5, 0.3);
         // @ts-ignore
         arrow.originalPosition = origin.clone();
         vectorGroup.add(arrow);
@@ -63,16 +62,16 @@ export function MachineLearningAnimation({
     }
 
     // --- Eigenvectors ---
-    const eigenMaterial = new THREE.LineBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0, linewidth: 2 });
+    const eigenMaterial = new THREE.LineBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0, linewidth: 3 });
     const eigenVector1 = new THREE.Vector3(1, 1, 0).normalize();
     const eigenVector2 = new THREE.Vector3(-1, 1, 0).normalize();
     
     const eigenLine1 = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints([eigenVector1.clone().multiplyScalar(-20), eigenVector1.clone().multiplyScalar(20)]),
+        new THREE.BufferGeometry().setFromPoints([eigenVector1.clone().multiplyScalar(-25), eigenVector1.clone().multiplyScalar(25)]),
         eigenMaterial.clone()
     );
     const eigenLine2 = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints([eigenVector2.clone().multiplyScalar(-20), eigenVector2.clone().multiplyScalar(20)]),
+        new THREE.BufferGeometry().setFromPoints([eigenVector2.clone().multiplyScalar(-25), eigenVector2.clone().multiplyScalar(25)]),
         eigenMaterial.clone()
     );
     scene.add(eigenLine1);
@@ -87,7 +86,7 @@ export function MachineLearningAnimation({
 
       // Transformation Matrix (Shear + Rotation)
       const angle = elapsedTime * 0.3;
-      const shearValue = isMouseOver.current ? Math.sin(elapsedTime * 2) * 0.5 : 0;
+      const shearValue = isMouseOver.current ? Math.sin(elapsedTime * 2) * 0.7 : 0;
       
       const transformMatrix = new THREE.Matrix4().set(
         Math.cos(angle), -Math.sin(angle), 0, 0,
@@ -104,8 +103,8 @@ export function MachineLearningAnimation({
 
       // Fade in/out eigenvectors
       if (isMouseOver.current) {
-        eigenLine1.material.opacity += (0.8 - eigenLine1.material.opacity) * 0.1;
-        eigenLine2.material.opacity += (0.8 - eigenLine2.material.opacity) * 0.1;
+        eigenLine1.material.opacity += (0.9 - eigenLine1.material.opacity) * 0.1;
+        eigenLine2.material.opacity += (0.9 - eigenLine2.material.opacity) * 0.1;
       } else {
         eigenLine1.material.opacity += (0 - eigenLine1.material.opacity) * 0.1;
         eigenLine2.material.opacity += (0 - eigenLine2.material.opacity) * 0.1;
