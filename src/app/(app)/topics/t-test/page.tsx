@@ -19,7 +19,7 @@ import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
-// Dynamically import chart components
+// Dynamically import chart components to code-split the recharts library
 const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
 const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
 const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
