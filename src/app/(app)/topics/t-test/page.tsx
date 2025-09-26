@@ -81,8 +81,8 @@ const IndependentTestChart = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
     setChartData([
-      { name: 'Momentum', value: getMean(dataA) },
-      { name: 'Mean-Reversion', value: getMean(dataB) },
+      { name: 'Momentum', value: getMean(dataA), fill: "hsl(var(--chart-1))" },
+      { name: 'Mean-Reversion', value: getMean(dataB), fill: "hsl(var(--chart-2))" },
     ]);
   };
 
@@ -114,11 +114,7 @@ const IndependentTestChart = () => {
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Bar dataKey="value" radius={8}>
-              {chartData.map((entry, index) => (
-                <Rectangle key={`cell-${index}`} fill={independentTestChartConfig[entry.name as keyof typeof independentTestChartConfig]?.color} />
-              ))}
-            </Bar>
+            <Bar dataKey="value" radius={8} />
           </BarChart>
         </ChartContainer>
       </div>
