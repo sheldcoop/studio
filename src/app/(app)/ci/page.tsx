@@ -68,10 +68,11 @@ export default function ConfidenceIntervalsPage() {
   }, []);
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Confidence Intervals"
         description="Understanding the range where a true value likely lies."
+        variant="aligned-left"
       />
       <div className="mx-auto max-w-4xl space-y-8">
         <Card>
@@ -186,6 +187,6 @@ export default function ConfidenceIntervalsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
   );
 }
