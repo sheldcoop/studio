@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -37,6 +36,7 @@ type DistributionType = 'log-normal' | 'uniform' | 'exponential' | 'bimodal';
 const getMean = (data: number[]): number => data.reduce((a, b) => a + b, 0) / data.length;
 
 const getStdDev = (data: number[], mean: number): number => {
+  if (data.length < 2) return 0;
   const variance = data.reduce((acc, val) => acc + (val - mean) ** 2, 0) / data.length;
   return Math.sqrt(variance);
 };
@@ -77,7 +77,6 @@ const generatePopulation = (type: DistributionType, n: number) => {
   return { data, mean, stdDev };
 };
 
-// A more robust histogram function using the Freedman-Diaconis rule for binning
 const createHistogram = (data: number[]) => {
   if (data.length < 2) return { bins: [], maxCount: 0, binSize: 1 };
   
@@ -94,21 +93,18 @@ const createHistogram = (data: number[]) => {
     if (min === max) {
       return { bins: [{ name: min, count: data.length }], maxCount: data.length, binSize: 1 };
     }
-    // If binSize is still 0, create a default sensible one
     binSize = (max - min) / 20 || 1;
   }
 
-
   const numBins = Math.max(1, Math.ceil((max - min) / binSize));
   const bins = Array.from({ length: numBins }, (_, i) => ({
-    // Use the center of the bin for the 'name' property for better alignment
     name: min + i * binSize + binSize / 2, 
     count: 0,
   }));
 
   for (const val of data) {
     let binIndex = Math.floor((val - min) / binSize);
-    if (binIndex >= numBins) binIndex = numBins - 1; // Handle edge case for max value
+    if (binIndex >= numBins) binIndex = numBins - 1;
     if (bins[binIndex]) {
       bins[binIndex].count++;
     }
@@ -118,14 +114,19 @@ const createHistogram = (data: number[]) => {
   return { bins, maxCount, binSize };
 };
 
+// --- KDE LOGIC ---
+const gaussianKernel = (x: number) => (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x);
 
-const normalPDF = (x: number, mu: number, sigma: number) => {
-  if (sigma <= 0) return 0;
-  return (
-    (1 / (sigma * Math.sqrt(2 * Math.PI))) *
-    Math.exp(-0.5 * ((x - mu) / sigma) ** 2)
-  );
+const kernelDensityEstimator = (data: number[], bandwidth: number) => {
+    return (x: number) => {
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) {
+            sum += gaussianKernel((x - data[i]) / bandwidth);
+        }
+        return sum / (data.length * bandwidth);
+    };
 };
+// --- END KDE LOGIC ---
 
 
 const populationChartConfig = {
@@ -134,7 +135,7 @@ const populationChartConfig = {
 
 const samplingDistChartConfig = {
   count: { label: 'Frequency', color: 'hsl(var(--chart-2))' },
-  theoretical: { label: 'Theoretical Normal', color: 'hsl(var(--destructive))' },
+  kde: { label: 'KDE', color: 'hsl(var(--destructive))' },
 } satisfies ChartConfig;
 
 // --- Main Chart Component ---
@@ -193,16 +194,19 @@ const CLTChart = () => {
   
   useEffect(() => {
       const { bins, binSize } = createHistogram(sampleMeans);
-      if (bins.length > 0 && popStats.stdDev > 0) {
-        const stdError = popStats.stdDev / Math.sqrt(sampleSize);
-        // Scale factor for PDF: N * bin_width
+      if (bins.length > 0 && sampleMeans.length > 1) {
+        const mean = getMean(sampleMeans);
+        const stdDev = getStdDev(sampleMeans, mean);
+        const bandwidth = 1.06 * stdDev * Math.pow(sampleMeans.length, -1/5); // Silverman's rule
+        const kde = kernelDensityEstimator(sampleMeans, bandwidth);
+
         const scaleFactor = sampleMeans.length * binSize;
         
-        const theoreticalData = bins.map(bin => ({
+        const kdeData = bins.map(bin => ({
             ...bin,
-            theoretical: normalPDF(bin.name, popStats.mean, stdError) * scaleFactor
+            kde: kde(bin.name) * scaleFactor
         }));
-        setSamplingDistHist(theoreticalData);
+        setSamplingDistHist(kdeData);
       } else {
         setSamplingDistHist(bins);
       }
@@ -226,7 +230,7 @@ const CLTChart = () => {
         }
         
         const newMeans: number[] = [];
-        const samplesToTake = 100; // Take more samples per interval for faster filling
+        const samplesToTake = 100;
         for (let s = 0; s < samplesToTake; s++) {
             let currentSampleSum = 0;
             for (let i = 0; i < sampleSize; i++) {
@@ -237,7 +241,7 @@ const CLTChart = () => {
         }
         return [...prevMeans, ...newMeans];
       });
-    }, 40); // Run interval faster
+    }, 40);
   }, [population, sampleSize, stopSimulation]);
 
   const resetSimulation = () => {
@@ -248,7 +252,6 @@ const CLTChart = () => {
   };
   
   useEffect(() => {
-    // Cleanup interval on component unmount
     return () => {
       if (simulationRef.current) {
         clearInterval(simulationRef.current);
@@ -256,12 +259,11 @@ const CLTChart = () => {
     };
   }, []);
 
-  // Adaptive domain for the sampling distribution chart
   const samplingDomain = useMemo(() => {
     if (sampleMeans.length < 2) return ['auto', 'auto'];
     const min = Math.min(...sampleMeans);
     const max = Math.max(...sampleMeans);
-    const padding = (max - min) * 0.1; // 10% padding
+    const padding = (max - min) * 0.1;
     return [min - padding, max + padding];
   }, [sampleMeans]);
 
@@ -364,7 +366,7 @@ const CLTChart = () => {
                   </ReferenceLine>
                 )}
                 <Bar dataKey="count" fill="var(--color-count)" />
-                <Line dataKey="theoretical" type="monotone" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
+                <Line dataKey="kde" type="monotone" stroke="var(--color-kde)" dot={false} strokeWidth={2} />
               </ComposedChart>
             </ChartContainer>
             <div className="mt-2 text-center text-sm text-muted-foreground">
