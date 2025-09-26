@@ -159,7 +159,7 @@ const CLTChart = () => {
     const { data, mean, stdDev } = generatePopulation(distributionType, 10000);
     setPopulation(data);
     setPopStats({ mean, stdDev });
-    setPopulationHist(createHistogram(data).bins.map(b => ({ ...b, name: b.name.toFixed(1)})));
+    setPopulationHist(createHistogram(data).bins);
     resetSimulation();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [distributionType]);
