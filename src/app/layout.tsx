@@ -16,8 +16,8 @@ const fontHeadline = Space_Grotesk({
 
 
 export const metadata: Metadata = {
-  title: 'QuantPrep',
-  description: 'An AI-powered learning platform for quantitative finance aspirants.',
+  title: 'QuantFinance Lab',
+  description: 'An AI-powered learning platform for quantitative finance.',
 };
 
 export default function RootLayout({

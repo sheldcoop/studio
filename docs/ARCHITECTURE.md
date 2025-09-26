@@ -1,6 +1,6 @@
-# QuantPrep High-Level Architecture
+# QuantFinance Lab High-Level Architecture
 
-This document provides a high-level overview of the QuantPrep application's architecture to help new developers get up to speed quickly.
+This document provides a high-level overview of the QuantFinance Lab application's architecture to help new developers get up to speed quickly.
 
 ## Tech Stack
 

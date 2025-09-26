@@ -4,8 +4,8 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 200 50"
-      width="120"
+      viewBox="0 0 250 50"
+      width="150"
       height="30"
       {...props}
     >
@@ -13,12 +13,12 @@ export function Logo(props: SVGProps<SVGSVGElement>) {
         x="10"
         y="35"
         fontFamily="'Poppins', sans-serif"
-        fontSize="32"
+        fontSize="28"
         fontWeight="bold"
         fill="hsl(var(--foreground))"
       >
-        Quant
-        <tspan fill="hsl(var(--primary))">Prep</tspan>
+        QuantFinance
+        <tspan fill="hsl(var(--primary))"> Lab</tspan>
       </text>
     </svg>
   );
