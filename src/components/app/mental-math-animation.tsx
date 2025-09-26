@@ -63,39 +63,35 @@ export function MentalMathAnimation({
     const particles: { mesh: THREE.Mesh; velocity: number }[] = [];
     const symbols = ['+', '−', '×', '÷', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 
-    const createTextParticle = () => {
-      if (!fontRef.current) return;
-      const char = symbols[Math.floor(Math.random() * symbols.length)];
-      const geometry = new TextGeometry(char, {
-        font: fontRef.current!,
-        size: Math.random() * 0.6 + 0.4,
-        height: 0.02,
-        curveSegments: 4,
-      });
-      geometry.center();
-      
-      const particle = new THREE.Mesh(geometry, textMaterial);
-      particle.position.set(
-        (Math.random() - 0.5) * 18,
-        (Math.random() - 0.5) * 18,
-        -60
-      );
-      particle.rotation.x = Math.random() * Math.PI;
-      particle.rotation.y = Math.random() * Math.PI;
+    for(let i = 0; i < 150; i++) {
+        const char = symbols[Math.floor(Math.random() * symbols.length)];
+        const geometry = new TextGeometry(char, {
+            font: fontRef.current!,
+            size: Math.random() * 0.6 + 0.4,
+            height: 0.02,
+            curveSegments: 4,
+        });
+        geometry.center();
+        
+        const particle = new THREE.Mesh(geometry, textMaterial);
+        particle.position.set(
+            (Math.random() - 0.5) * 18,
+            (Math.random() - 0.5) * 18,
+            -60
+        );
+        particle.rotation.x = Math.random() * Math.PI;
+        particle.rotation.y = Math.random() * Math.PI;
 
-      scene.add(particle);
-      particles.push({ mesh: particle, velocity: Math.random() * 0.6 + 0.3 });
-    };
-
-    for(let i=0; i<150; i++) {
-        createTextParticle();
+        scene.add(particle);
+        particles.push({ mesh: particle, velocity: Math.random() * 0.6 + 0.3 });
     }
     
     // --- Animation Logic ---
     let speed = 1;
+    let frameId: number;
 
     const animate = () => {
-      requestAnimationFrame(animate);
+      frameId = requestAnimationFrame(animate);
 
       if(isMouseOver.current) {
         speed += (12 - speed) * 0.05;
@@ -118,23 +114,7 @@ export function MentalMathAnimation({
       renderer.render(scene, camera);
     };
     
-    let frameId: number;
-    const startAnimation = () => {
-        if (!frameId) {
-            frameId = requestAnimationFrame(animate);
-        }
-    }
-    
-    // Only start animating if font is loaded
-    const checkFontAndAnimate = () => {
-      if (fontRef.current) {
-        startAnimation();
-      } else {
-        setTimeout(checkFontAndAnimate, 100);
-      }
-    };
-    checkFontAndAnimate();
-
+    animate();
 
     // --- Event Listeners ---
     const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
