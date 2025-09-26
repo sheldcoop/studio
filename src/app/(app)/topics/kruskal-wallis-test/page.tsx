@@ -41,15 +41,15 @@ const kruskalWallisChartConfig = {
   value: {
     label: 'Median Profit',
   },
-  ML_Bot: {
+  'ML_Bot': {
     label: 'ML Bot',
     color: 'hsl(var(--chart-1))',
   },
-  Rule_Based_Bot: {
+  'Rule_Based_Bot': {
     label: 'Rule-Based Bot',
     color: 'hsl(var(--chart-2))',
   },
-  Hybrid_Bot: {
+  'Hybrid_Bot': {
     label: 'Hybrid Bot',
     color: 'hsl(var(--chart-3))',
   },
@@ -156,5 +156,3 @@ export default function KruskalWallisTestPage() {
     </>
   );
 }
-
-    

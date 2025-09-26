@@ -43,15 +43,15 @@ const oneWayAnovaChartConfig = {
   value: {
     label: 'Value',
   },
-  Algorithm_Alpha: {
+  'Algorithm_Alpha': {
     label: 'Alpha',
     color: 'hsl(var(--chart-1))',
   },
-  Algorithm_Beta: {
+  'Algorithm_Beta': {
     label: 'Beta',
     color: 'hsl(var(--chart-2))',
   },
-  Algorithm_Gamma: {
+  'Algorithm_Gamma': {
     label: 'Gamma',
     color: 'hsl(var(--chart-3))',
   },
@@ -315,5 +315,3 @@ export default function AnovaPage() {
     </>
   );
 }
-
-    
