@@ -19,8 +19,6 @@ export function MachineLearningAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
-  const pointsRef = useRef<THREE.Points | null>(null);
-  const originalPositions = useRef<Float32Array | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -34,74 +32,86 @@ export function MachineLearningAnimation({
       0.1,
       1000
     );
-    camera.position.z = 15;
+    camera.position.z = 12;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
+    
+    // --- Vector Field ---
+    const vectorGroup = new THREE.Group();
+    scene.add(vectorGroup);
 
-    // --- Data Cloud ---
-    const particles = 2000;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particles * 3);
+    const vectorMaterial = new THREE.MeshBasicMaterial({ color: 0x58a6ff, transparent: true, opacity: 0.5 });
+    const vectorLength = 1;
+    const density = 8;
+    const spacing = 2;
+    const vectors: THREE.ArrowHelper[] = [];
 
-    for (let i = 0; i < particles; i++) {
-      // Create points in an ellipsoid shape to represent correlated data
-      const u = Math.random();
-      const v = Math.random();
-      const theta = 2 * Math.PI * u;
-      const phi = Math.acos(2 * v - 1);
-      const x = 8 * Math.sin(phi) * Math.cos(theta);
-      const y = 4 * Math.sin(phi) * Math.sin(theta);
-      const z = 2 * Math.cos(phi);
-
-      positions[i * 3] = x;
-      positions[i * 3 + 1] = y;
-      positions[i * 3 + 2] = z;
+    for (let x = -density; x <= density; x++) {
+      for (let y = -density; y <= density; y++) {
+        if (x === 0 && y === 0) continue;
+        const origin = new THREE.Vector3(x * spacing, y * spacing, 0);
+        const dir = new THREE.Vector3(1, 0, 0).normalize(); // Initial direction
+        const arrow = new THREE.ArrowHelper(dir, origin, vectorLength, 0x58a6ff, 0.4, 0.2);
+        // @ts-ignore
+        arrow.originalPosition = origin.clone();
+        vectorGroup.add(arrow);
+        vectors.push(arrow);
+      }
     }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    originalPositions.current = positions.slice(); // Save original state
-
-    const material = new THREE.PointsMaterial({
-      color: 0x58a6ff,
-      size: 0.08,
-      transparent: true,
-      opacity: 0.7,
-    });
+    // --- Eigenvectors ---
+    const eigenMaterial = new THREE.LineBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0, linewidth: 2 });
+    const eigenVector1 = new THREE.Vector3(1, 1, 0).normalize();
+    const eigenVector2 = new THREE.Vector3(-1, 1, 0).normalize();
     
-    const points = new THREE.Points(geometry, material);
-    pointsRef.current = points;
-    scene.add(points);
-
+    const eigenLine1 = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([eigenVector1.clone().multiplyScalar(-20), eigenVector1.clone().multiplyScalar(20)]),
+        eigenMaterial.clone()
+    );
+    const eigenLine2 = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([eigenVector2.clone().multiplyScalar(-20), eigenVector2.clone().multiplyScalar(20)]),
+        eigenMaterial.clone()
+    );
+    scene.add(eigenLine1);
+    scene.add(eigenLine2);
+    
     // --- Animation & Interaction ---
     const clock = new THREE.Clock();
 
     const animate = () => {
       requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
+
+      // Transformation Matrix (Shear + Rotation)
+      const angle = elapsedTime * 0.3;
+      const shearValue = isMouseOver.current ? Math.sin(elapsedTime * 2) * 0.5 : 0;
       
-      if (pointsRef.current && originalPositions.current) {
-        const positions = pointsRef.current.geometry.getAttribute('position').array as Float32Array;
-        
-        for (let i = 0; i < particles; i++) {
-          const z_original = originalPositions.current[i * 3 + 2];
-          const z_current = positions[i * 3 + 2];
-          
-          if (isMouseOver.current) {
-            // Lerp towards z=0 (flatten to 2D plane)
-            positions[i * 3 + 2] += (0 - z_current) * 0.05;
-          } else {
-            // Lerp back to original z position
-            positions[i * 3 + 2] += (z_original - z_current) * 0.05;
-          }
-        }
-        pointsRef.current.geometry.getAttribute('position').needsUpdate = true;
+      const transformMatrix = new THREE.Matrix4().set(
+        Math.cos(angle), -Math.sin(angle), 0, 0,
+        Math.sin(angle) + shearValue, Math.cos(angle), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+      );
+
+      vectors.forEach(arrow => {
+        // @ts-ignore
+        const newDir = arrow.originalPosition.clone().normalize().applyMatrix4(transformMatrix);
+        arrow.setDirection(newDir);
+      });
+
+      // Fade in/out eigenvectors
+      if (isMouseOver.current) {
+        eigenLine1.material.opacity += (0.8 - eigenLine1.material.opacity) * 0.1;
+        eigenLine2.material.opacity += (0.8 - eigenLine2.material.opacity) * 0.1;
+      } else {
+        eigenLine1.material.opacity += (0 - eigenLine1.material.opacity) * 0.1;
+        eigenLine2.material.opacity += (0 - eigenLine2.material.opacity) * 0.1;
       }
-      
-      points.rotation.y = elapsedTime * 0.1;
-      points.rotation.x = elapsedTime * 0.05;
+
+      vectorGroup.rotation.z += 0.001; // slow constant rotation of the group
 
       renderer.render(scene, camera);
     };
@@ -145,8 +155,18 @@ export function MachineLearningAnimation({
         currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
-      geometry.dispose();
-      material.dispose();
+      // Dispose all geometries and materials
+      vectorGroup.children.forEach(child => {
+        const arrow = child as THREE.ArrowHelper;
+        arrow.line.geometry.dispose();
+        (arrow.line.material as THREE.Material).dispose();
+        arrow.cone.geometry.dispose();
+        (arrow.cone.material as THREE.Material).dispose();
+      });
+      eigenLine1.geometry.dispose();
+      (eigenLine1.material as THREE.Material).dispose();
+      eigenLine2.geometry.dispose();
+      (eigenLine2.material as THREE.Material).dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
