@@ -1,12 +1,8 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -17,6 +13,11 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(recharts => recharts.Cell), { ssr: false });
 
 /**
  * Generates normally distributed random data using the Box-Muller transform.
@@ -218,7 +219,3 @@ export default function FTestPage() {
     </>
   );
 }
-
-    
-
-    

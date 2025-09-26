@@ -1,11 +1,8 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -19,6 +16,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
 
 const goodnessOfFitChartConfig = {
   observed: {
@@ -294,7 +295,3 @@ export default function ChiSquaredTestPage() {
     </>
   );
 }
-
-    
-
-    

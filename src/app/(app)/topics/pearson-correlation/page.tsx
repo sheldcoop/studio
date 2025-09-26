@@ -1,12 +1,9 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  CartesianGrid,
   ResponsiveContainer,
-  Scatter,
-  ScatterChart,
   Tooltip,
   XAxis,
   YAxis,
@@ -20,13 +17,17 @@ import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Crosshair } from 'lucide-react';
 
+const ScatterChart = dynamic(() => import('recharts').then(recharts => recharts.ScatterChart), { ssr: false });
+const Scatter = dynamic(() => import('recharts').then(recharts => recharts.Scatter), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+
 /**
  * Generates two correlated datasets using a variation of the Cholesky decomposition method.
  * This function creates two independent standard normal variables (z1, z2)
  * from a uniform distribution via the Box-Muller transform. It then combines
  * them to produce a second variable 'y' that has a specified correlation 'rho'
  * with the first variable 'x'. This is a standard technique in statistical
-- * simulation to model the relationship between two financial assets.
+ * simulation to model the relationship between two financial assets.
  *
  * @param n The number of data points to generate.
  * @param correlation The desired correlation coefficient (rho), between -1 and 1.

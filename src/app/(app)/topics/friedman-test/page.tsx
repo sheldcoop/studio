@@ -1,11 +1,8 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
-  LineChart,
-  Line,
-  CartesianGrid,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -17,6 +14,10 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+
+const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
+const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
 
 // Helper to generate rank-like data for demonstration
 const generateRankData = (numSubjects: number) => {
@@ -143,6 +144,3 @@ export default function FriedmanTestPage() {
     </>
   );
 }
-
-
-    
