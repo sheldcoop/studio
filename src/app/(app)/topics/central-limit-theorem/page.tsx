@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
@@ -78,7 +78,7 @@ const generatePopulation = (type: DistributionType, n: number) => {
 
 // A more robust histogram function using the Freedman-Diaconis rule for binning
 const createHistogram = (data: number[]) => {
-  if (data.length < 2) return { bins: [], maxCount: 0 };
+  if (data.length < 2) return { bins: [], maxCount: 0, binSize: 1 };
   
   const sortedData = [...data].sort((a,b) => a - b);
   const q1 = sortedData[Math.floor(sortedData.length / 4)];
@@ -89,9 +89,15 @@ const createHistogram = (data: number[]) => {
   const min = sortedData[0];
   const max = sortedData[sortedData.length - 1];
 
-  if (binSize <= 0) return { bins: [{ name: min.toFixed(0), count: data.length }], maxCount: data.length, binSize: 1 };
+  if (binSize <= 0) {
+    if (min === max) {
+      return { bins: [{ name: min.toFixed(1), count: data.length }], maxCount: data.length, binSize: 1 };
+    }
+    return { bins: [], maxCount: 0, binSize: 1 };
+  }
 
-  const numBins = Math.ceil((max - min) / binSize);
+
+  const numBins = Math.max(1, Math.ceil((max - min) / binSize));
   const bins = Array.from({ length: numBins }, (_, i) => ({
     name: (min + i * binSize).toFixed(1),
     count: 0,
@@ -99,7 +105,7 @@ const createHistogram = (data: number[]) => {
 
   for (const val of data) {
     let binIndex = Math.floor((val - min) / binSize);
-    if (binIndex === numBins) binIndex--; // Handle edge case for max value
+    if (binIndex >= numBins) binIndex = numBins - 1; // Handle edge case for max value
     if (bins[binIndex]) {
       bins[binIndex].count++;
     }
@@ -176,14 +182,14 @@ const CLTChart = () => {
             lastMean = sampleMean;
         }
 
-        setSampleMeans(prev => [...prev, ...newMeans]);
+        setSampleMeans(prev => [...prev, ...newMeans].slice(0, MAX_SIM_SAMPLES));
         setLastSampleMean(numSamples === 1 ? lastMean : null);
     },
     [population, sampleSize]
   );
   
   useEffect(() => {
-      const { bins, maxCount, binSize } = createHistogram(sampleMeans);
+      const { bins, binSize } = createHistogram(sampleMeans);
       if (bins.length > 0 && popStats.stdDev > 0) {
         const stdError = popStats.stdDev / Math.sqrt(sampleSize);
         // Scale factor for PDF: N * bin_width
@@ -271,7 +277,10 @@ const CLTChart = () => {
         <CardContent>
           <Tabs
             defaultValue={distributionType}
-            onValueChange={(val) => setDistributionType(val as DistributionType)}
+            onValueChange={(val) => {
+              stopSimulation();
+              setDistributionType(val as DistributionType);
+            }}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
@@ -300,12 +309,15 @@ const CLTChart = () => {
             >
               <RechartsBarChart accessibilityLayer data={populationHist} barGap={0} barCategoryGap="10%">
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" unit="$" />
+                <XAxis dataKey="name" unit="$" tickFormatter={(val) => Number(val).toFixed(0)} />
                 <YAxis allowDecimals={false} />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="count" fill="var(--color-count)" />
               </RechartsBarChart>
             </ChartContainer>
+             <div className="mt-2 text-center text-sm text-muted-foreground">
+                Population Mean: <span className="font-semibold text-foreground">{popStats.mean.toFixed(2)}</span>
+            </div>
           </CardContent>
         </Card>
 
