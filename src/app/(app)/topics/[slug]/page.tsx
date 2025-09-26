@@ -35,6 +35,7 @@ export default async function TopicPage({ params }: { params: { slug: string } }
     'friedman-test',
     'kolmogorov-smirnov-k-s-test',
     'stat-toolkit',
+    'central-limit-theorem',
   ];
 
   // If the slug is for a dedicated page, we return null to prevent this component from rendering.
