@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -32,21 +33,20 @@ const normalPDF = (x: number, mean: number, stdDev: number) => {
   );
 };
 
-// Approximation of the inverse error function
-function erfinv(x: number) {
-  const a = 0.147;
-  const sgn = x < 0 ? -1 : 1;
-  const lnx = Math.log(1 - x*x);
-  const lnx2 = lnx / 2;
-  const a2 = (2 / (Math.PI * a)) + lnx2;
-  return sgn * Math.sqrt(Math.sqrt(a2*a2 - (lnx / a)) - a2);
+// More stable approximation of the inverse standard normal CDF (probit function)
+function standardNormalInvCdf(p: number): number {
+    if (p < 0.5) {
+        return -rationalApproximation(Math.sqrt(-2.0 * Math.log(p)));
+    }
+    return rationalApproximation(Math.sqrt(-2.0 * Math.log(1.0 - p)));
 }
 
-// Inverse of the standard normal CDF
-function standardNormalInvCdf(p: number) {
-  if (p <= 0 || p >= 1) return p <= 0 ? -Infinity : Infinity;
-  return Math.sqrt(2) * erfinv(2*p - 1);
+function rationalApproximation(t: number): number {
+    const c = [2.515517, 0.802853, 0.010328];
+    const d = [1.432788, 0.189269, 0.001308];
+    return t - ((c[2] * t + c[1]) * t + c[0]) / (((d[2] * t + d[1]) * t + d[0]) * t + 1.0);
 }
+
 
 const chartConfig = {
   null: { label: 'Null Hypothesis (H₀)', color: 'hsl(var(--chart-2))' },
