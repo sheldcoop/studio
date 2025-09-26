@@ -2,21 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-const LineChart = dynamic(() => import('recharts').then(recharts => recharts.LineChart), { ssr: false });
-const Line = dynamic(() => import('recharts').then(recharts => recharts.Line), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+import { Line, LineChart as RechartsLineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -62,7 +53,7 @@ const WilcoxonSignedRankChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={wilcoxonChartConfig} className="h-full w-full">
-            <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
+            <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
@@ -70,7 +61,7 @@ const WilcoxonSignedRankChart = () => {
                 <Legend formatter={(value) => wilcoxonChartConfig[value as keyof typeof wilcoxonChartConfig]?.label || value} />
                 <Line type="monotone" dataKey="Before_Risk_Model" stroke="var(--color-Before_Risk_Model)" />
                 <Line type="monotone" dataKey="After_Risk_Model" stroke="var(--color-After_Risk_Model)" />
-            </LineChart>
+            </RechartsLineChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -79,6 +70,8 @@ const WilcoxonSignedRankChart = () => {
     </div>
   );
 };
+
+const DynamicWilcoxonSignedRankChart = dynamic(() => Promise.resolve(WilcoxonSignedRankChart), { ssr: false });
 
 export default function WilcoxonSignedRankTestPage() {
   return (
@@ -127,7 +120,7 @@ export default function WilcoxonSignedRankTestPage() {
               risk management team implements a new model for 10 of their portfolios. They record the maximum drawdown of each portfolio for a month before the change and a month after. Since drawdown data is often skewed (many small values, few large ones), they use the Wilcoxon Signed-Rank Test to see if the new model led to a statistically significant reduction in drawdown.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <WilcoxonSignedRankChart />
+              <DynamicWilcoxonSignedRankChart />
             </div>
           </CardContent>
         </Card>

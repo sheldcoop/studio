@@ -2,13 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  ReferenceLine,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,10 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -69,7 +59,7 @@ const OneSampleZTestChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={oneSampleZTestChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
+          <RechartsBarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <CartesianGrid horizontal={false} />
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120} tickFormatter={() => "Stock A's Recent Avg."}/>
             <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
@@ -83,7 +73,7 @@ const OneSampleZTestChart = () => {
             >
               <Label value={`Historical Avg: ${target}%`} position="insideTopRight" fill="hsl(var(--destructive))" fontSize={12} />
             </ReferenceLine>
-          </BarChart>
+          </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm flex-shrink-0 text-center">
@@ -136,7 +126,7 @@ const TwoSampleZTestChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={twoSampleZTestChartConfig} className="h-full w-full">
-            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
@@ -144,7 +134,7 @@ const TwoSampleZTestChart = () => {
                 <Legend />
                 <Bar dataKey="Stock_A" radius={4} fill="var(--color-Stock_A)" />
                 <Bar dataKey="Stock_B" radius={4} fill="var(--color-Stock_B)" />
-            </BarChart>
+            </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -153,6 +143,10 @@ const TwoSampleZTestChart = () => {
     </div>
   );
 };
+
+const DynamicOneSampleZTestChart = dynamic(() => Promise.resolve(OneSampleZTestChart), { ssr: false });
+const DynamicTwoSampleZTestChart = dynamic(() => Promise.resolve(TwoSampleZTestChart), { ssr: false });
+
 
 export default function ZTestPage() {
   return (
@@ -216,7 +210,7 @@ export default function ZTestPage() {
                   After a major platform update, you analyze the daily returns of 'Stock A' for the last 100 trading days. You want to know if its average daily return is now different from its known historical average of 0.05% over the past 10 years (with a population standard deviation of 1.2%).
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <OneSampleZTestChart />
+                  <DynamicOneSampleZTestChart />
                 </div>
               </TabsContent>
               <TabsContent value="two-sample" className="mt-6">
@@ -231,7 +225,7 @@ export default function ZTestPage() {
                   A firm compares the average daily volatility of 'Stock A' vs. 'Stock B' over the past five years (~1260 data points each). With known population standard deviations for both stocks' volatility, they test if there is a significant difference between them.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <TwoSampleZTestChart />
+                  <DynamicTwoSampleZTestChart />
                 </div>
               </TabsContent>
             </Tabs>

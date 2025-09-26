@@ -2,21 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-const ScatterChart = dynamic(() => import('recharts').then(recharts => recharts.ScatterChart), { ssr: false });
-const Scatter = dynamic(() => import('recharts').then(recharts => recharts.Scatter), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+import { Scatter, ScatterChart as RechartsScatterChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
 /**
  * Generates two correlated datasets using a variation of the Cholesky decomposition method.
@@ -83,7 +75,7 @@ const PearsonCorrelationChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={pearsonCorrelationChartConfig} className="h-full w-full">
-          <ScatterChart
+          <RechartsScatterChart
             accessibilityLayer
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
@@ -95,7 +87,7 @@ const PearsonCorrelationChart = () => {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Scatter data={chartData} fill="var(--color-data)" />
-          </ScatterChart>
+          </RechartsScatterChart>
         </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm flex-shrink-0 text-center">
@@ -117,6 +109,7 @@ const PearsonCorrelationChart = () => {
   );
 };
 
+const DynamicPearsonCorrelationChart = dynamic(() => Promise.resolve(PearsonCorrelationChart), { ssr: false });
 
 export default function PearsonCorrelationPage() {
   return (
@@ -163,7 +156,7 @@ export default function PearsonCorrelationPage() {
               <span className="font-semibold text-foreground">Example:</span> We plot the daily returns of two assets. By adjusting the slider, you can change the underlying correlation between their returns and see how it affects the scatter plot. This is fundamental to pairs trading, where you look for highly correlated assets whose prices have temporarily diverged.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-                <PearsonCorrelationChart />
+                <DynamicPearsonCorrelationChart />
             </div>
           </CardContent>
         </Card>

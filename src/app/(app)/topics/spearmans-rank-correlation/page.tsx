@@ -2,21 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-const ScatterChart = dynamic(() => import('recharts').then(recharts => recharts.ScatterChart), { ssr: false });
-const Scatter = dynamic(() => import('recharts').then(recharts => recharts.Scatter), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
+import { Scatter, ScatterChart as RechartsScatterChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
 const generateMonotonicData = (n: number, strength: number) => {
@@ -52,7 +44,7 @@ const SpearmanCorrelationChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={spearmanCorrelationChartConfig} className="h-full w-full">
-          <ScatterChart
+          <RechartsScatterChart
             accessibilityLayer
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
@@ -64,7 +56,7 @@ const SpearmanCorrelationChart = () => {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Scatter data={chartData} fill="var(--color-data)" />
-          </ScatterChart>
+          </RechartsScatterChart>
         </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm flex-shrink-0 text-center">
@@ -85,6 +77,8 @@ const SpearmanCorrelationChart = () => {
     </div>
   );
 };
+
+const DynamicSpearmanCorrelationChart = dynamic(() => Promise.resolve(SpearmanCorrelationChart), { ssr: false });
 
 export default function SpearmansRankCorrelationPage() {
   return (
@@ -132,7 +126,7 @@ export default function SpearmansRankCorrelationPage() {
               <span className="font-semibold text-foreground">Example:</span> Let's say we're analyzing the relationship between a custom 'Market Sentiment Score' and a stock's daily return. The return might increase faster as sentiment gets very high. A linear model (Pearson) would miss this, but Spearman's would capture the strong monotonic trend.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <SpearmanCorrelationChart />
+              <DynamicSpearmanCorrelationChart />
             </div>
           </CardContent>
         </Card>

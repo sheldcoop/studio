@@ -2,22 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  Legend,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 
-const BarChart = dynamic(() => import('recharts').then(recharts => recharts.BarChart), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(recharts => recharts.Bar), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(recharts => recharts.CartesianGrid), { ssr: false });
 
 const goodnessOfFitChartConfig = {
   observed: {
@@ -89,7 +81,7 @@ const GoodnessOfFitChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={goodnessOfFitChartConfig} className="h-full w-full">
-            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis />
@@ -97,7 +89,7 @@ const GoodnessOfFitChart = () => {
                 <Legend />
                 <Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
                 <Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
-            </BarChart>
+            </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
@@ -147,7 +139,7 @@ const TestForIndependenceChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={testForIndependenceChartConfig} className="h-full w-full">
-            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.split(' ')[0]}/>
                 <YAxis />
@@ -155,7 +147,7 @@ const TestForIndependenceChart = () => {
                 <Legend />
                 <Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
                 <Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
-            </BarChart>
+            </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
@@ -194,7 +186,7 @@ const TestForHomogeneityChart = () => {
         <div className="flex h-[420px] w-full flex-col">
           <div className="flex-grow">
             <ChartContainer config={testForHomogeneityChartConfig} className="h-full w-full">
-                <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                     <CartesianGrid vertical={false} />
                     <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                     <YAxis />
@@ -202,7 +194,7 @@ const TestForHomogeneityChart = () => {
                     <Legend />
                     <Bar dataKey="ny" fill="var(--color-ny)" radius={4} />
                     <Bar dataKey="london" fill="var(--color-london)" radius={4} />
-                </BarChart>
+                </RechartsBarChart>
             </ChartContainer>
           </div>
           <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Survey Data</Button></div>
@@ -210,6 +202,10 @@ const TestForHomogeneityChart = () => {
     );
 };
 
+
+const DynamicGoodnessOfFitChart = dynamic(() => Promise.resolve(GoodnessOfFitChart), { ssr: false });
+const DynamicTestForIndependenceChart = dynamic(() => Promise.resolve(TestForIndependenceChart), { ssr: false });
+const DynamicTestForHomogeneityChart = dynamic(() => Promise.resolve(TestForHomogeneityChart), { ssr: false });
 
 export default function ChiSquaredTestPage() {
   return (
@@ -251,7 +247,7 @@ export default function ChiSquaredTestPage() {
                    A firm wants to know if profitable trades are uniformly distributed throughout the week. The null hypothesis is that each day has an equal number of profitable trades. The Chi-Squared Goodness of Fit test checks if the observed daily counts are significantly different from the expected counts.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <GoodnessOfFitChart />
+                  <DynamicGoodnessOfFitChart />
                 </div>
               </TabsContent>
 
@@ -267,7 +263,7 @@ export default function ChiSquaredTestPage() {
                   A quant analyst tracks profitable trades for three strategies across different market conditions. They want to know if "Strategy Type" and "Market Condition" are independent. The test compares the observed counts to what we'd expect if no relationship existed.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <TestForIndependenceChart />
+                  <DynamicTestForIndependenceChart />
                 </div>
               </TabsContent>
 
@@ -283,7 +279,7 @@ export default function ChiSquaredTestPage() {
                   A global firm surveys traders in their New York and London offices (two populations) about their preferred asset class (one variable: Stocks, Forex, or Crypto). The Test for Homogeneity determines if the proportion of traders who prefer each asset class is the same in both offices.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                    <TestForHomogeneityChart />
+                    <DynamicTestForHomogeneityChart />
                 </div>
               </TabsContent>
             </Tabs>
