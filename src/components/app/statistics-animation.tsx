@@ -42,16 +42,17 @@ export function StatisticsAnimation({
     const group = new THREE.Group();
     scene.add(group);
 
-    // --- Dice/Cubes ---
+    // --- Dice/Polyhedra ---
     const dice = [];
     const diceCount = 50;
     const spacing = 4;
-    const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+    // Use IcosahedronGeometry for a more complex, crystal-like shape
+    const geometry = new THREE.IcosahedronGeometry(1.2, 0);
     const material = new THREE.MeshBasicMaterial({
       color: 0x58a6ff,
       wireframe: true,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.4,
     });
 
     for (let i = 0; i < diceCount; i++) {
@@ -74,7 +75,7 @@ export function StatisticsAnimation({
       const targetPos = new THREE.Vector3(
         ((i % 5) - 2) * spacing,
         (Math.floor((i % 25) / 5) - 2) * spacing,
-        (Math.floor(i / 25) - 2) * spacing,
+        (Math.floor(i / 25) - 2) * spacing
       );
 
       die.position.copy(initialPos);
@@ -89,7 +90,7 @@ export function StatisticsAnimation({
           randomSpin: new THREE.Vector3(
               (Math.random() - 0.5) * 0.02,
               (Math.random() - 0.5) * 0.02,
-              (Math.random() - 0.5) * 0.02,
+              (Math.random() - 0.5) * 0.02
           )
       });
     }
