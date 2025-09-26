@@ -9,6 +9,11 @@ function slugToTitle(slug: string) {
 }
 
 export default async function TopicPage({ params }: { params: { slug: string } }) {
+  // Guard against undefined slug during build time.
+  if (!params.slug) {
+    return null;
+  }
+
   const title = slugToTitle(params.slug);
 
   // A list of slugs that have their own dedicated page.
