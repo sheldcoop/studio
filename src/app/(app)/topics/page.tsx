@@ -2,8 +2,6 @@ import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { quantJourney } from '@/lib/data';
 import Link from 'next/link';
@@ -14,6 +12,7 @@ export default function TopicsIndexPage() {
       <PageHeader
         title="All Topics"
         description="Browse all available topic pages."
+        variant="aligned-left"
       />
       <Card>
         <CardContent className="p-6">
