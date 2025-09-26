@@ -10,14 +10,30 @@ function slugToTitle(slug: string) {
 
 export default async function TopicPage({ params }: { params: { slug: string } }) {
   // A list of slugs that have their own dedicated page.
-  const dedicatedPages = ['hypothesis-testing-p-values', 'mental-math', 'confidence-intervals', 'linear-algebra', 't-test', 'z-test', 'anova'];
+  // This prevents this dynamic route from rendering over a specific, static page.
+  const dedicatedPages = [
+    'confidence-intervals',
+    'hypothesis-testing-p-values',
+    'mental-math',
+    'linear-algebra',
+    't-test',
+    'z-test',
+    'anova',
+    'f-test',
+    'chi-squared-test',
+    'pearson-correlation',
+    'mann-whitney-u-test',
+    'kruskal-wallis-test',
+    'wilcoxon-signed-rank-test',
+    'spearmans-rank-correlation',
+    'friedman-test',
+    'kolmogorov-smirnov-k-s-test',
+    'stat-toolkit',
+  ];
 
-  // Guard against undefined slug during build time or if the slug is for a dedicated page.
-  // This prevents a TypeError during prerendering when Next.js tries to build this page without a specific slug.
+  // If the slug is for a dedicated page, or if it's undefined during build,
+  // we return null to prevent this component from rendering.
   if (!params.slug || dedicatedPages.includes(params.slug)) {
-    // This condition should ideally not be met if linking is correct,
-    // but it's a safeguard. Returning null will prevent this generic
-    // page from rendering over a specific one if a conflict occurs.
     return null;
   }
 
@@ -28,6 +44,7 @@ export default async function TopicPage({ params }: { params: { slug: string } }
       <PageHeader
         title={title}
         description={`An overview of ${title}.`}
+        variant="aligned-left"
       />
       <div className="flex h-96 items-center justify-center rounded-lg border border-dashed">
         <p className="text-muted-foreground">Topic content will go here.</p>
