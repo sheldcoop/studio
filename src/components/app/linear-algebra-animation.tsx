@@ -47,9 +47,9 @@ export function LinearAlgebraAnimation({
     const gridDivisions = 10;
     const pointCloudMaterial = new THREE.PointsMaterial({
         color: 0x58a6ff,
-        size: 0.1,
+        size: 0.15,
         transparent: true,
-        opacity: 0.4
+        opacity: 0.8
     });
 
     const points = [];
