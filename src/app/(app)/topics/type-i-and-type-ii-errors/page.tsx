@@ -33,18 +33,41 @@ const normalPDF = (x: number, mean: number, stdDev: number) => {
   );
 };
 
-// More stable approximation of the inverse standard normal CDF (probit function)
+// A more stable rational approximation for the inverse standard normal CDF
 function standardNormalInvCdf(p: number): number {
-    if (p < 0.5) {
-        return -rationalApproximation(Math.sqrt(-2.0 * Math.log(p)));
+    if (p <= 0.0 || p >= 1.0) {
+        // Return a finite value for edge cases to prevent crashes
+        return p <= 0.0 ? -10.0 : 10.0;
     }
-    return rationalApproximation(Math.sqrt(-2.0 * Math.log(1.0 - p)));
-}
 
-function rationalApproximation(t: number): number {
-    const c = [2.515517, 0.802853, 0.010328];
-    const d = [1.432788, 0.189269, 0.001308];
-    return t - ((c[2] * t + c[1]) * t + c[0]) / (((d[2] * t + d[1]) * t + d[0]) * t + 1.0);
+    // Coefficients for the rational approximation
+    const a = [-3.969683028665376e+01,  2.209460984245205e+02,
+               -2.759285104469687e+02,  1.383577518672690e+02,
+               -3.066479806614716e+01,  2.506628277459239e+00];
+    const b = [-5.447609879822406e+01,  1.615858368580409e+02,
+               -1.556989798598866e+02,  6.680131188771972e+01,
+               -1.328068155288572e+01];
+
+    let q = p - 0.5;
+    if (Math.abs(q) <= 0.42) {
+        let r = q * q;
+        let num = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q;
+        let den = (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+        return num / den;
+    } else {
+        let r = p;
+        if (q > 0) {
+            r = 1 - p;
+        }
+        r = Math.log(-Math.log(r));
+        let num = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]);
+        let den = (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+        let ret = num / den;
+        if (q < 0) {
+            ret = -ret;
+        }
+        return ret;
+    }
 }
 
 
@@ -68,8 +91,6 @@ const ErrorChart = () => {
     const zScore = standardNormalInvCdf(1 - alpha);
     const criticalValue = meanH0 + zScore * stdDev;
 
-    let typeIProb = 0;
-    let typeIIProb = 0;
     const step = 0.2;
 
     for (let x = 80; x <= 125; x += step) {
@@ -80,11 +101,9 @@ const ErrorChart = () => {
 
       if (x >= criticalValue) {
         areaTypeI = h0; // Shade area under H0, right of the line
-        typeIProb += h0 * step;
       }
       if (x < criticalValue) {
         areaTypeII = h1; // Shade area under H1, left of the line
-        typeIIProb += h1 * step;
       }
 
       data.push({ x, h0, h1, areaTypeI, areaTypeII, criticalValue });
