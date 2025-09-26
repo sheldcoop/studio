@@ -67,8 +67,8 @@ const FTestChart = () => {
     const varianceGrowth = getVariance(dataGrowth);
 
     setChartData([
-        { name: 'StableStock (Utility)', value: varianceStable },
-        { name: 'GrowthStock (Tech)', value: varianceGrowth },
+        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-StableStock (Utility))' },
+        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-GrowthStock (Tech))' },
     ]);
     setFStat(varianceGrowth / varianceStable);
   };
@@ -123,11 +123,7 @@ const FTestChart = () => {
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<CustomTooltip />}
             />
-            <Bar dataKey="value" radius={8}>
-              {chartData.map((entry, index) => (
-                <Rectangle key={`cell-${index}`} fill={fTestChartConfig[entry.name as keyof typeof fTestChartConfig]?.color} />
-              ))}
-            </Bar>
+            <Bar dataKey="value" radius={8} />
           </BarChart>
         </ChartContainer>
       </div>
