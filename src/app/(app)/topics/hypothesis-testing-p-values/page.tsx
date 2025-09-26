@@ -17,6 +17,7 @@ export default function HypothesisTestingPage() {
     { name: 'ANOVA', description: 'Compares the averages of three or more groups.', slug: 'anova' },
     { name: 'F-Test', description: 'Compares the variances (spread) of two or more groups.', slug: 'f-test' },
     { name: 'Pearson Correlation', description: 'Measures the linear relationship between two continuous variables.', slug: 'pearson-correlation' },
+    { name: 'Confidence Intervals', description: 'Understanding the range where a true value likely lies.', slug: 'ci'},
   ];
 
   const nonParametricTests = [
@@ -45,7 +46,7 @@ export default function HypothesisTestingPage() {
               Think of hypothesis testing as being a data detective. You start with a default assumption, the <strong>Null Hypothesis (H₀)</strong>, which states there is no effect or no difference (e.g., "a new drug has no effect"). Then, you gather evidence (your sample data) to see if you have enough proof to reject that default assumption in favor of an alternative, the <strong>Alternative Hypothesis (H₁)</strong> (e.g., "the new drug has an effect").
             </p>
             <p>
-                The <strong>p-value</strong> is the crucial piece of evidence. It's the probability of observing your data (or something even more extreme) if the null hypothesis were actually true. A small p-value (typically &lt; 0.05) suggests that your observed data is very unlikely under the null hypothesis, giving you a reason to reject it.
+                The <strong>p-value</strong> is the crucial piece of evidence. It's the probability of observing your data (or something even more extreme) if the null hypothesis were actually true. A small p-value (typically < 0.05) suggests that your observed data is very unlikely under the null hypothesis, giving you a reason to reject it.
             </p>
           </CardContent>
         </Card>
