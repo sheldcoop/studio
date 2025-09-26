@@ -131,6 +131,8 @@ const CLTChart = () => {
   const [isSimulating, setIsSimulating] = useState(false);
   const simulationRef = useRef<NodeJS.Timeout | null>(null);
 
+  const MAX_SIM_SAMPLES = 10000;
+
   const regeneratePopulation = useCallback(() => {
     const { data, mean, stdDev } = generatePopulation(distributionType, 10000);
     setPopulation(data);
@@ -146,23 +148,26 @@ const CLTChart = () => {
   
   const takeSample = useCallback(
     (numSamples = 1) => {
-      if (population.length === 0) return;
-      const newMeans = [...sampleMeans];
-      let lastMean = 0;
-      for (let s = 0; s < numSamples; s++) {
-        let currentSampleSum = 0;
-        for (let i = 0; i < sampleSize; i++) {
-          const randIndex = Math.floor(Math.random() * population.length);
-          currentSampleSum += population[randIndex];
+        if (population.length === 0) return;
+        
+        let lastMean = 0;
+        const newMeans: number[] = [];
+
+        for (let s = 0; s < numSamples; s++) {
+            let currentSampleSum = 0;
+            for (let i = 0; i < sampleSize; i++) {
+            const randIndex = Math.floor(Math.random() * population.length);
+            currentSampleSum += population[randIndex];
+            }
+            const sampleMean = currentSampleSum / sampleSize;
+            newMeans.push(sampleMean);
+            lastMean = sampleMean;
         }
-        const sampleMean = currentSampleSum / sampleSize;
-        newMeans.push(sampleMean);
-        lastMean = sampleMean;
-      }
-      setSampleMeans(newMeans);
-      setLastSampleMean(numSamples === 1 ? lastMean : null);
+
+        setSampleMeans(prev => [...prev, ...newMeans]);
+        setLastSampleMean(numSamples === 1 ? lastMean : null);
     },
-    [population, sampleMeans, sampleSize]
+    [population, sampleSize]
   );
   
   useEffect(() => {
@@ -181,20 +186,40 @@ const CLTChart = () => {
         setSamplingDistHist(bins);
       }
     }, [sampleMeans, popStats, sampleSize]);
-
-  const startSimulation = () => {
-    setIsSimulating(true);
-    simulationRef.current = setInterval(() => {
-      takeSample(20);
-    }, 50);
-  };
-
-  const stopSimulation = () => {
+    
+  const stopSimulation = useCallback(() => {
     setIsSimulating(false);
     if (simulationRef.current) {
       clearInterval(simulationRef.current);
+      simulationRef.current = null;
     }
-  };
+  }, []);
+
+  const startSimulation = useCallback(() => {
+    setIsSimulating(true);
+    simulationRef.current = setInterval(() => {
+      // We use a functional update for `setSampleMeans` to get the latest state
+      // and check the length inside to decide whether to stop.
+      setSampleMeans(prevMeans => {
+        if (prevMeans.length >= MAX_SIM_SAMPLES) {
+          stopSimulation();
+          return prevMeans;
+        }
+        
+        const newMeans: number[] = [];
+        const samplesToTake = 20;
+        for (let s = 0; s < samplesToTake; s++) {
+            let currentSampleSum = 0;
+            for (let i = 0; i < sampleSize; i++) {
+                const randIndex = Math.floor(Math.random() * population.length);
+                currentSampleSum += population[randIndex];
+            }
+            newMeans.push(currentSampleSum / sampleSize);
+        }
+        return [...prevMeans, ...newMeans];
+      });
+    }, 50);
+  }, [population, sampleSize, stopSimulation]);
 
   const resetSimulation = () => {
     stopSimulation();
@@ -204,6 +229,7 @@ const CLTChart = () => {
   };
   
   useEffect(() => {
+    // Cleanup interval on component unmount
     return () => {
       if (simulationRef.current) {
         clearInterval(simulationRef.current);
@@ -283,8 +309,9 @@ const CLTChart = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="name"
+                  type="number"
+                  domain={['dataMin - 5', 'dataMax + 5']}
                   unit="$"
-                  domain={['dataMin - 10', 'dataMax + 10']}
                 />
                 <YAxis allowDecimals={false} domain={[0, 'dataMax + 5']} />
                 <Tooltip content={<ChartTooltipContent />} />
@@ -340,10 +367,10 @@ const CLTChart = () => {
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-              <Button onClick={() => takeSample(1)} className="flex-1">
+              <Button onClick={() => takeSample(1)} className="flex-1" disabled={isSimulating}>
                 Take 1 Sample
               </Button>
-              <Button onClick={() => takeSample(100)} className="flex-1">
+              <Button onClick={() => takeSample(100)} className="flex-1" disabled={isSimulating}>
                 Take 100 Samples
               </Button>
                {isSimulating ? (
@@ -351,7 +378,7 @@ const CLTChart = () => {
                    <Pause className="mr-2" /> Stop
                  </Button>
               ) : (
-                <Button onClick={startSimulation} className="flex-1 bg-green-600 hover:bg-green-700">
+                <Button onClick={startSimulation} className="flex-1 bg-green-600 hover:bg-green-700" disabled={sampleMeans.length >= MAX_SIM_SAMPLES}>
                   <Play className="mr-2" /> Run Sim
                 </Button>
               )}
