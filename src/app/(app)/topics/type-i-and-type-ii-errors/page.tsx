@@ -1,8 +1,6 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -11,208 +9,180 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
-const ComposedChart = dynamic(() => import('recharts').then(mod => mod.ComposedChart), { ssr: false });
-const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
-const Line = dynamic(() => import('recharts').then(mod => mod.Line), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
-const ReferenceLine = dynamic(() => import('recharts').then(mod => mod.ReferenceLine), { ssr: false });
+const decisionMatrix = [
+  {
+    decision: 'Decision: GO LIVE with it',
+    h0_true: {
+      title: 'Type I Error (False Positive)',
+      subtitle: '"Fooled by Randomness" 💸',
+      isError: true,
+    },
+    h0_false: {
+      title: 'Correct Decision (True Positive)',
+      subtitle: '"You found Alpha!" 🏆',
+      isError: false,
+    },
+  },
+  {
+    decision: 'Decision: DISCARD it',
+    h0_true: {
+      title: 'Correct Decision (True Negative)',
+      subtitle: '"Dodged a Bullet" ✅',
+      isError: false,
+    },
+    h0_false: {
+      title: 'Type II Error (False Negative)',
+      subtitle: '"Missed a Golden Goose" 😭',
+      isError: true,
+    },
+  },
+];
 
-
-// --- Math & Chart Helpers ---
-
-const normalPDF = (x: number, mean: number, stdDev: number) => {
-  return (
-    (1 / (stdDev * Math.sqrt(2 * Math.PI))) *
-    Math.exp(-0.5 * ((x - mean) / stdDev) ** 2)
-  );
-};
-
-// A more stable rational approximation for the inverse standard normal CDF
-function standardNormalInvCdf(p: number): number {
-    if (p <= 0.0 || p >= 1.0) {
-        // Return a finite value for edge cases to prevent crashes
-        return p <= 0.0 ? -10.0 : 10.0;
-    }
-
-    // Coefficients for the rational approximation
-    const a = [-3.969683028665376e+01,  2.209460984245205e+02,
-               -2.759285104469687e+02,  1.383577518672690e+02,
-               -3.066479806614716e+01,  2.506628277459239e+00];
-    const b = [-5.447609879822406e+01,  1.615858368580409e+02,
-               -1.556989798598866e+02,  6.680131188771972e+01,
-               -1.328068155288572e+01];
-
-    let q = p - 0.5;
-    if (Math.abs(q) <= 0.42) {
-        let r = q * q;
-        let num = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q;
-        let den = (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
-        return num / den;
-    } else {
-        let r = p;
-        if (q > 0) {
-            r = 1 - p;
-        }
-        r = Math.log(-Math.log(r));
-        let num = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]);
-        let den = (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
-        let ret = num / den;
-        if (q < 0) {
-            ret = -ret;
-        }
-        return ret;
-    }
-}
-
-
-const chartConfig = {
-  null: { label: 'Null Hypothesis (H₀)', color: 'hsl(var(--chart-2))' },
-  alt: { label: 'Alternative Hypothesis (H₁)', color: 'hsl(var(--chart-1))' },
-  typeI: { label: 'Type I Error (α)', color: 'hsl(var(--destructive))' },
-  typeII: { label: 'Type II Error (β)', color: 'hsl(var(--chart-4))' },
-} satisfies ChartConfig;
-
-const ErrorChart = () => {
-  const [alpha, setAlpha] = useState(0.05);
-  const [chartData, setChartData] = useState<any[]>([]);
-
-  const meanH0 = 100; // Old strategy avg return
-  const meanH1 = 105; // New strategy avg return
-  const stdDev = 5;
-
-  useEffect(() => {
-    const data = [];
-    const zScore = standardNormalInvCdf(1 - alpha);
-    const criticalValue = meanH0 + zScore * stdDev;
-
-    const step = 0.2;
-
-    for (let x = 80; x <= 125; x += step) {
-      const h0 = normalPDF(x, meanH0, stdDev);
-      const h1 = normalPDF(x, meanH1, stdDev);
-      let areaTypeI = 0;
-      let areaTypeII = 0;
-
-      if (x >= criticalValue) {
-        areaTypeI = h0; // Shade area under H0, right of the line
-      }
-      if (x < criticalValue) {
-        areaTypeII = h1; // Shade area under H1, left of the line
-      }
-
-      data.push({ x, h0, h1, areaTypeI, areaTypeII, criticalValue });
-    }
-
-    setChartData(data);
-  }, [alpha, meanH0, stdDev, meanH1]);
-  
-  const criticalValue = chartData[0]?.criticalValue || 0;
-  const typeIError = chartData.reduce((acc, d) => acc + d.areaTypeI * 0.2, 0) * 100;
-  const typeIIError = chartData.reduce((acc, d) => acc + d.areaTypeII * 0.2, 0) * 100;
-
-
-  return (
-    <>
-      <ChartContainer config={chartConfig} className="h-80 w-full">
-        <ComposedChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-          <defs>
-            <linearGradient id="fillTypeI" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--color-typeI)" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="var(--color-typeI)" stopOpacity={0.1} />
-            </linearGradient>
-            <linearGradient id="fillTypeII" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--color-typeII)" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="var(--color-typeII)" stopOpacity={0.1} />
-            </linearGradient>
-          </defs>
-          <XAxis dataKey="x" type="number" unit="$" domain={[80, 125]} />
-          <YAxis domain={[0, 'dataMax']} tick={false} axisLine={false} />
-          <Tooltip contentStyle={{ display: 'none' }} />
-          <Area type="monotone" dataKey="areaTypeI" stroke={0} fill="url(#fillTypeI)" />
-          <Area type="monotone" dataKey="areaTypeII" stroke={0} fill="url(#fillTypeII)" />
-          <Line dataKey="h0" stroke="var(--color-null)" strokeWidth={2} dot={false} name="H₀" />
-          <Line dataKey="h1" stroke="var(--color-alt)" strokeWidth={2} dot={false} name="H₁" />
-          <ReferenceLine x={criticalValue} stroke="hsl(var(--foreground))" strokeDasharray="3 3">
-             <Label value="Decision Threshold" position="insideTop" dy={-10} />
-          </ReferenceLine>
-        </ComposedChart>
-      </ChartContainer>
-      <div className="mx-auto max-w-sm py-4">
-        <Label htmlFor="alpha-slider" className="text-center block">
-          Adjust Significance Level (α)
-        </Label>
-        <Slider
-          id="alpha-slider"
-          min={0.01}
-          max={0.25}
-          step={0.01}
-          value={[alpha]}
-          onValueChange={(val) => setAlpha(val[0])}
-          className="my-4"
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-4 text-center">
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground">Type I Error (α) Rate</p>
-          <p className="font-bold text-2xl text-destructive">{typeIError.toFixed(1)}%</p>
-          <p className="text-xs text-muted-foreground">Wrongly finding an effect.</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground">Type II Error (β) Rate</p>
-          <p className="font-bold text-2xl text-yellow-500">{typeIIError.toFixed(1)}%</p>
-          <p className="text-xs text-muted-foreground">Failing to find a real effect.</p>
-        </Card>
-      </div>
-    </>
-  );
-};
-
+const dilemmaData = [
+  {
+    level: 'Low',
+    rule: 'Go live if it looks even slightly good',
+    type1: 'High',
+    type2: 'Low',
+  },
+  {
+    level: 'Medium',
+    rule: 'Go live if the evidence is strong',
+    type1: 'Medium',
+    type2: 'Medium',
+  },
+  {
+    level: 'High',
+    rule: 'Go live only if the proof is undeniable',
+    type1: 'Low',
+    type2: 'High',
+  },
+];
 
 export default function TypeErrorsPage() {
   return (
     <>
       <PageHeader
-        title="The Balancing Act: Type I vs. Type II Errors"
-        description="Understanding the fundamental trade-off in hypothesis testing."
+        title="The Trader's Dilemma: Type I vs. Type II Errors"
+        description="Understanding the fundamental trade-off in quantitative research."
         variant="aligned-left"
       />
       <div className="mx-auto max-w-5xl space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">The Core Idea</CardTitle>
+            <CardTitle className="font-headline">
+              The "Alpha" Hunter Analogy
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              In quantitative finance, we're always making decisions under uncertainty. Did our new trading strategy actually beat the old one, or was it just luck? Hypothesis testing gives us a framework for this, but it's not perfect. There are two ways we can be wrong.
+              Imagine you're a quantitative trader who has just developed a new
+              automated trading strategy. Your goal is to find "alpha"—a
+              strategy that can consistently beat the market.
             </p>
             <ul className="list-disc space-y-2 pl-5">
               <li>
-                <strong className="text-destructive">Type I Error (False Positive):</strong> This is when we <strong className="text-destructive">reject the null hypothesis when it's actually true</strong>. In our example, this means concluding our new strategy is better, shipping it to production, and then realizing it was just random noise. We found an effect that wasn't there.
+                <strong>Null Hypothesis (H₀):</strong> Your strategy has no
+                "alpha." It's a dud, and its past performance was just random
+                luck.
               </li>
               <li>
-                <strong className="text-yellow-500">Type II Error (False Negative):</strong> This is when we <strong className="text-yellow-500">fail to reject the null hypothesis when it's false</strong>. This means our new strategy genuinely IS better, but our test wasn't sensitive enough to detect it. We missed a real opportunity to improve.
+                <strong>Alternative Hypothesis (H₁):</strong> Your strategy has
+                real "alpha." It has a genuine predictive edge.
               </li>
             </ul>
-             <p>
-              The crucial point is the **trade-off**. Lowering the risk of a Type I error (by setting a stricter decision threshold) inherently increases the risk of a Type II error, and vice versa. Your job as a quant is to decide which error is more costly for your specific situation.
+            <p>
+              Based on your back-test results, you have to decide whether to
+              risk real money on it. This leads to four possible outcomes.
             </p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle>Interactive Visualization</CardTitle>
+            <CardTitle className="font-headline">
+              The Trading Decision Matrix
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Your Decision</TableHead>
+                    <TableHead>Reality: Strategy is a Dud (H₀ is True)</TableHead>
+                    <TableHead>Reality: Strategy has Alpha (H₀ is False)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {decisionMatrix.map((row) => (
+                    <TableRow key={row.decision}>
+                      <TableCell className="font-medium">
+                        {row.decision}
+                      </TableCell>
+                      <TableCell
+                        className={
+                          row.h0_true.isError ? 'text-destructive' : ''
+                        }
+                      >
+                        <p className="font-semibold">{row.h0_true.title}</p>
+                        <p className="text-sm">{row.h0_true.subtitle}</p>
+                      </TableCell>
+                      <TableCell
+                        className={
+                          row.h0_false.isError ? 'text-yellow-500' : ''
+                        }
+                      >
+                        <p className="font-semibold">{row.h0_false.title}</p>
+                        <p className="text-sm">{row.h0_false.subtitle}</p>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">
+              The Trader's Dilemma
+            </CardTitle>
             <CardDescription>
-                Here, the blue curve represents the distribution of returns for an old strategy (H₀), and the green curve is a new, potentially better strategy (H₁). Use the slider to move the decision threshold and see how the probabilities of each error type change.
+              This illustrates the fundamental trade-off. Lowering the risk of one error increases the risk of the other.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ErrorChart />
+             <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Skepticism Level</TableHead>
+                        <TableHead>Decision Rule</TableHead>
+                        <TableHead>Likelihood of Type I Error (💸)</TableHead>
+                        <TableHead>Likelihood of Type II Error (😭)</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {dilemmaData.map((row) => (
+                        <TableRow key={row.level}>
+                            <TableCell className="font-semibold">{row.level}</TableCell>
+                            <TableCell className="italic text-muted-foreground">"{row.rule}"</TableCell>
+                            <TableCell className="font-medium text-destructive">{row.type1}</TableCell>
+                            <TableCell className="font-medium text-yellow-500">{row.type2}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+             </Table>
           </CardContent>
         </Card>
       </div>
