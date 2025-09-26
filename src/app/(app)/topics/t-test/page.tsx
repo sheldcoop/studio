@@ -3,34 +3,30 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  ReferenceLine,
+  Rectangle,
+  ResponsiveContainer,
   Tooltip,
+  XAxis,
+  YAxis,
   Legend,
-} from 'chart.js';
-import { Bar, Line } from 'react-chartjs-2';
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -48,26 +44,47 @@ const generateNormalData = (mean: number, stdDev: number, n: number) =>
 const getMean = (data: number[]) =>
   data.reduce((a, b) => a + b, 0) / data.length;
 
+const independentTestChartConfig = {
+  Momentum: {
+    label: 'Momentum',
+    color: 'hsl(var(--chart-1))',
+  },
+  Mean_Reversion: {
+    label: 'Mean-Reversion',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
+const pairedTestChartConfig = {
+  before: {
+    label: 'Before',
+    color: 'hsl(var(--chart-2))',
+  },
+  after: {
+    label: 'After',
+    color: 'hsl(var(--chart-1))',
+  },
+} satisfies ChartConfig;
+
+const oneSampleTestChartConfig = {
+  value: {
+    label: 'Value',
+    color: 'hsl(var(--chart-1))',
+  },
+} satisfies ChartConfig;
+
 // --- Chart Components ---
 
 const IndependentTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
-    setChartData({
-      labels: ['Momentum Strategy', 'Mean-Reversion Strategy'],
-      datasets: [
-        {
-          label: 'Average Daily Return',
-          data: [getMean(dataA), getMean(dataB)],
-          backgroundColor: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))'],
-          borderColor: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))'],
-          borderWidth: 1,
-        },
-      ],
-    });
+    setChartData([
+      { name: 'Momentum', value: getMean(dataA) },
+      { name: 'Mean_Reversion', value: getMean(dataB) },
+    ]);
   };
 
   useEffect(() => {
@@ -75,45 +92,39 @@ const IndependentTestChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Bar
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer
+          config={independentTestChartConfig}
+          className="h-full w-full"
+        >
+          <BarChart
+            accessibilityLayer
             data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  suggestedMin: -0.5,
-                  suggestedMax: 0.5,
-                  title: {
-                    display: true,
-                    text: 'Average Daily Return (%)',
-                    color: 'hsl(var(--muted-foreground))',
-                  },
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                x: {
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { display: false },
-                },
-              },
-              plugins: {
-                legend: { display: false },
-                title: {
-                  display: true,
-                  text: 'Comparing Average Daily Returns of Two Strategies',
-                  color: 'hsl(var(--foreground))',
-                },
-              },
-            }}
-          />
-        </div>
-      )}
-      <div className="text-center">
+            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tickFormatter={(value) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value}
+            />
+            <YAxis unit="%" />
+            <Tooltip
+              cursor={{ fill: 'hsl(var(--muted))' }}
+              content={<ChartTooltipContent indicator="dot" />}
+            />
+            <Bar dataKey="value" radius={8}>
+                {chartData.map((entry) => (
+                    <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                ))}
+            </Bar>
+          </BarChart>
+        </ChartContainer>
+      </div>
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New 60-Day Period</Button>
       </div>
     </div>
@@ -121,7 +132,7 @@ const IndependentTestChart = () => {
 };
 
 const PairedTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
     const numSubjects = 12;
@@ -130,25 +141,14 @@ const PairedTestChart = () => {
       () => 0.5 + (Math.random() - 0.5) * 2
     );
     const afterData = beforeData.map((d) => d + (0.1 + Math.random() * 0.5));
-    setChartData({
-      labels: Array.from({ length: numSubjects }, (_, i) => `Week ${i + 1}`),
-      datasets: [
-        {
-          label: 'Before Algorithm',
-          data: beforeData,
-          borderColor: 'hsl(var(--muted-foreground))',
-          backgroundColor: 'hsl(var(--muted-foreground))',
-          tension: 0.1,
-        },
-        {
-          label: 'After Algorithm',
-          data: afterData,
-          borderColor: 'hsl(var(--primary))',
-          backgroundColor: 'hsl(var(--primary))',
-          tension: 0.1,
-        },
-      ],
-    });
+
+    setChartData(
+      Array.from({ length: numSubjects }, (_, i) => ({
+        name: `Week ${i + 1}`,
+        before: beforeData[i],
+        after: afterData[i],
+      }))
+    );
   };
 
   useEffect(() => {
@@ -156,45 +156,42 @@ const PairedTestChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Line
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer
+          config={pairedTestChartConfig}
+          className="h-full w-full"
+        >
+          <LineChart
+            accessibilityLayer
             data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Weekly Return (%)',
-                    color: 'hsl(var(--muted-foreground))',
-                  },
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                x: {
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-              },
-              plugins: {
-                legend: {
-                  position: 'top',
-                  labels: { color: 'hsl(var(--foreground))' },
-                },
-                title: {
-                  display: true,
-                  text: 'Portfolio Returns Before and After Algorithm Change',
-                  color: 'hsl(var(--foreground))',
-                },
-              },
-            }}
-          />
-        </div>
-      )}
-      <div className="text-center">
+            margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+            />
+            <YAxis unit="%" />
+            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Line
+              type="monotone"
+              dataKey="before"
+              strokeWidth={2}
+              stroke="var(--color-before)"
+            />
+            <Line
+              type="monotone"
+              dataKey="after"
+              strokeWidth={2}
+              stroke="var(--color-after)"
+            />
+          </LineChart>
+        </ChartContainer>
+      </div>
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New Data</Button>
       </div>
     </div>
@@ -205,108 +202,73 @@ const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
   const target = 1.5;
 
-  const chartData = {
-    labels: ['Avg. Monthly Return'],
-    datasets: [
-      {
-        label: 'Sample Mean',
-        data: [meanValue],
-        backgroundColor: 'hsl(var(--primary) / 0.8)',
-        borderColor: 'hsl(var(--primary))',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const options = {
-    indexAxis: 'y' as const,
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        beginAtZero: false,
-        suggestedMin: 0,
-        suggestedMax: 3,
-        title: {
-          display: true,
-          text: 'Monthly Return (%)',
-          color: 'hsl(var(--muted-foreground))',
-        },
-        ticks: { color: 'hsl(var(--muted-foreground))' },
-        grid: { color: 'hsl(var(--border) / 0.5)' },
-      },
-      y: {
-        ticks: { color: 'hsl(var(--muted-foreground))' },
-        grid: { display: false },
-      },
-    },
-    plugins: {
-      legend: { display: false },
-      title: {
-        display: true,
-        text: "Comparing Fund Returns to its Claim",
-        color: 'hsl(var(--foreground))',
-      },
-    },
-  };
-
-  const annotationPlugin = {
-    id: 'customAnnotationLine',
-    afterDraw(chart: ChartJS) {
-      const ctx = chart.ctx;
-      const xScale = chart.scales.x;
-      const topY = chart.chartArea.top;
-      const bottomY = chart.chartArea.bottom;
-      const x = xScale.getPixelForValue(target);
-
-      // Line
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(x, topY);
-      ctx.lineTo(x, bottomY);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'hsl(var(--destructive))';
-      ctx.stroke();
-
-      // Label
-      const labelText = `Claimed: ${target}%`;
-      ctx.font = 'bold 12px sans-serif';
-      const textWidth = ctx.measureText(labelText).width;
-
-      ctx.fillStyle = 'hsl(var(--destructive))';
-      ctx.fillRect(x - textWidth / 2 - 5, topY, textWidth + 10, 20);
-
-      ctx.fillStyle = 'hsl(var(--destructive-foreground))';
-      ctx.textAlign = 'center';
-      ctx.fillText(labelText, x, topY + 14);
-      ctx.restore();
-    },
-  };
+  const chartData = [{ name: 'Avg. Return', value: meanValue, fill: 'var(--color-value)' }];
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <Bar data={chartData} options={options} plugins={[annotationPlugin]} />
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer
+          config={oneSampleTestChartConfig}
+          className="h-full w-full"
+        >
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            layout="vertical"
+            margin={{ top: 20, right: 40, bottom: 20, left: 40 }}
+          >
+            <CartesianGrid horizontal={false} />
+            <YAxis
+              type="category"
+              dataKey="name"
+              tickLine={false}
+              axisLine={false}
+              width={80}
+            />
+            <XAxis type="number" unit="%" domain={[0, 3]} />
+            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Bar
+              dataKey="value"
+              radius={8}
+            />
+            <ReferenceLine
+              x={target}
+              stroke="hsl(var(--destructive))"
+              strokeWidth={2}
+              strokeDasharray="3 3"
+            >
+              <Label
+                value={`Claimed: ${target}%`}
+                position="insideTopRight"
+                fill="hsl(var(--destructive))"
+                fontSize={12}
+              />
+            </ReferenceLine>
+          </BarChart>
+        </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center">
-        <Label htmlFor="mean-slider">
-          Adjust Sample&apos;s Average Monthly Return (%)
-        </Label>
-        <Slider
-          id="mean-slider"
-          min={0.5}
-          max={2.5}
-          value={[meanValue]}
-          step={0.05}
-          onValueChange={(value) => setMeanValue(value[0])}
-          className="my-4"
-        />
+      <div className="mt-4 flex-shrink-0 text-center">
+        <div className="mx-auto max-w-sm py-4">
+          <Label htmlFor="mean-slider">
+            Adjust Sample's Average Monthly Return (%)
+          </Label>
+          <Slider
+            id="mean-slider"
+            min={0.5}
+            max={2.5}
+            value={[meanValue]}
+            step={0.05}
+            onValueChange={(value) => setMeanValue(value[0])}
+            className="my-4"
+          />
+        </div>
         <div className="text-sm text-muted-foreground">
           Current Mean:{' '}
           <span className="font-bold text-foreground">
             {meanValue.toFixed(2)}
           </span>{' '}
-          %
+          % vs Claimed{' '}
+          <span className="font-bold text-destructive">{target}%</span>
         </div>
       </div>
     </div>
@@ -329,7 +291,7 @@ export default function TTestPage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <h3 className="mb-1 font-semibold text-primary">
-                  Purpose & Analogy
+                  Purpose &amp; Analogy
                 </h3>
                 <p className="text-muted-foreground">
                   A t-test checks if the difference between two average returns
@@ -438,3 +400,5 @@ export default function TTestPage() {
     </>
   );
 }
+
+    

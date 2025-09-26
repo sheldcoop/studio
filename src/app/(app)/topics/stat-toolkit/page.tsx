@@ -10,15 +10,6 @@ import { statsToolkitTiers } from '@/lib/data';
 import { CheckCircle, Route } from 'lucide-react';
 import Link from 'next/link';
 
-// Helper to convert title to a URL-friendly slug
-const toSlug = (title: string) => {
-  return title
-    .toLowerCase()
-    .replace(/ & /g, '-') // Handle " & " case
-    .replace(/[ /]/g, '-') // Handle spaces and slashes
-    .replace(/[^\w-]+/g, ''); // Remove all non-word chars except -
-};
-
 export default function StatToolkitPage() {
   return (
     <>
@@ -38,14 +29,14 @@ export default function StatToolkitPage() {
             <CardContent className="flex flex-1 flex-col">
               <ul className="flex-1 space-y-2">
                 {tier.concepts.map((concept) => (
-                  <li key={concept}>
+                  <li key={concept.name}>
                     <Link
-                      href={`/topics/${toSlug(concept)}`}
+                      href={`/topics/${concept.slug}`}
                       className="group flex items-center gap-3 rounded-md p-2 text-sm transition-colors hover:bg-secondary"
                     >
                       <CheckCircle className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
                       <span className="font-medium text-foreground/80 group-hover:text-foreground">
-                        {concept}
+                        {concept.name}
                       </span>
                     </Link>
                   </li>
@@ -58,3 +49,5 @@ export default function StatToolkitPage() {
     </>
   );
 }
+
+    

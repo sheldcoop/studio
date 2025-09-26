@@ -14,7 +14,7 @@ import { AnimatedTagline } from '@/components/app/animated-tagline';
 export default function DashboardPage() {
   return (
     <div className="flex flex-col items-center justify-center p-4 md:p-8">
-      <div className="mb-12 max-w-2xl text-center">
+      <div className="mb-12 max-w-3xl text-center">
         <AnimatedTagline />
         <p className="mt-4 text-lg text-muted-foreground">
           Master the core pillars of quantitative finance and data science, from
@@ -26,9 +26,9 @@ export default function DashboardPage() {
           <Link
             href={item.href}
             key={item.id}
-            className="rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <Card className="flex h-full transform-gpu flex-col bg-card/50 text-left transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
+            <Card className="flex h-full transform-gpu flex-col bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
               <CardHeader>
                 <div className="mb-4">
                   <item.icon className="h-8 w-8 text-primary" />

@@ -1,6 +1,26 @@
 "use client"
 
 import * as React from "react"
+import {
+  Chart as ChartJS,
+  Tooltip as ChartJSTooltip,
+  type TooltipItem,
+} from "chart.js"
+import {
+  Area,
+  Bar,
+  Line,
+  AreaChart as RechartsAreaChart,
+  BarChart as RechartsBarChart,
+  LineChart as RechartsLineChart,
+  CartesianGrid,
+  Dot,
+  Rectangle,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  XAxis,
+  YAxis,
+} from "recharts"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
@@ -39,7 +59,7 @@ const ChartContainer = React.forwardRef<
   React.ComponentProps<"div"> & {
     config: ChartConfig
     children: React.ComponentProps<
-      typeof RechartsPrimitive.ResponsiveContainer
+      typeof ResponsiveContainer
     >["children"]
   }
 >(({ id, className, children, config, ...props }, ref) => {
@@ -58,9 +78,7 @@ const ChartContainer = React.forwardRef<
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
-          {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        <ResponsiveContainer>{children}</ResponsiveContainer>
       </div>
     </ChartContext.Provider>
   )
@@ -100,11 +118,11 @@ ${colorConfig
   )
 }
 
-const ChartTooltip = RechartsPrimitive.Tooltip
+const ChartTooltip = RechartsTooltip
 
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+  React.ComponentProps<typeof RechartsTooltip> &
     React.ComponentProps<"div"> & {
       hideLabel?: boolean
       hideIndicator?: boolean

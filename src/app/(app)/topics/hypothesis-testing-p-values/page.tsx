@@ -1,23 +1,23 @@
-
 'use client';
 
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from '@/components/ui/card';
 import Link from 'next/link';
 
 export default function HypothesisTestingPage() {
   const parametricTests = [
-    { name: 'ANOVA', description: 'Compares the averages of three or more groups.', slug: 'anova' },
-    { name: 'Pearson Correlation', description: 'Measures the linear relationship between two continuous variables.', slug: 'pearson-correlation' },
-    { name: 'F-Test', description: 'Compares the variances (spread) of two or more groups.', slug: 'f-test' },
     { name: 'T-Test', description: 'Compares the means of two groups, assuming normal distribution.', slug: 't-test'},
-    { name: 'Z-Test', description: 'Compares means of large samples (n>30) with known population variance.', slug: 'z-test'}
+    { name: 'Z-Test', description: 'Compares means of large samples (n>30) with known population variance.', slug: 'z-test'},
+    { name: 'ANOVA', description: 'Compares the averages of three or more groups.', slug: 'anova' },
+    { name: 'F-Test', description: 'Compares the variances (spread) of two or more groups.', slug: 'f-test' },
+    { name: 'Confidence Intervals', description: 'Understanding the range where a true value likely lies.', slug: 'confidence-intervals'},
+    { name: 'Pearson Correlation', description: 'Measures the linear relationship between two continuous variables.', slug: 'pearson-correlation' },
   ];
 
   const nonParametricTests = [

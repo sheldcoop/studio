@@ -1,31 +1,27 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  ReferenceLine,
+  Rectangle,
+  ResponsiveContainer,
   Tooltip,
+  XAxis,
+  YAxis,
   Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { ChartTooltipContent } from '@/lib/chart-config';
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -43,107 +39,69 @@ const generateNormalData = (mean: number, stdDev: number, n: number) =>
 const getMean = (data: number[]) =>
   data.reduce((a, b) => a + b, 0) / data.length;
 
+const oneSampleZTestChartConfig = {
+  value: {
+    label: "Stock A's Recent Avg.",
+    color: 'hsl(var(--chart-1))',
+  },
+} satisfies ChartConfig;
+
+const twoSampleZTestChartConfig = {
+  Stock_A: {
+    label: 'Stock A',
+    color: 'hsl(var(--chart-1))',
+  },
+  Stock_B: {
+    label: 'Stock B',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
+
 // --- Chart Components ---
 
 const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
   const target = 0.05;
 
-  const chartData = {
-    labels: ["Stock A's Recent Avg."],
-    datasets: [
-      {
-        label: 'Sample Mean',
-        data: [meanValue],
-        backgroundColor: 'hsl(var(--primary) / 0.8)',
-        borderColor: 'hsl(var(--primary))',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const options = {
-    indexAxis: 'y' as const,
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        beginAtZero: false,
-        suggestedMin: -0.2,
-        suggestedMax: 0.3,
-        title: {
-          display: true,
-          text: 'Average Daily Return (%)',
-          color: 'hsl(var(--muted-foreground))',
-        },
-        ticks: { color: 'hsl(var(--muted-foreground))' },
-        grid: { color: 'hsl(var(--border) / 0.5)' },
-      },
-      y: {
-        ticks: { color: 'hsl(var(--muted-foreground))' },
-        grid: { display: false },
-      },
-    },
-    plugins: {
-      legend: { display: false },
-      title: {
-        display: true,
-        text: "Comparing Stock A's Recent Return to Historical Average",
-        color: 'hsl(var(--foreground))',
-        font: { size: 16 },
-      },
-    },
-  };
-
-  const annotationPlugin = {
-    id: 'customAnnotationLine',
-    afterDraw(chart: ChartJS) {
-      const ctx = chart.ctx;
-      const xScale = chart.scales.x;
-      const topY = chart.chartArea.top;
-      const bottomY = chart.chartArea.bottom;
-      const x = xScale.getPixelForValue(target);
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(x, topY);
-      ctx.lineTo(x, bottomY);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'hsl(var(--destructive))';
-      ctx.stroke();
-
-      const labelText = `Historical Avg: ${target}%`;
-      ctx.font = 'bold 12px sans-serif';
-      const textWidth = ctx.measureText(labelText).width;
-      
-      ctx.fillStyle = 'hsl(var(--destructive))';
-      ctx.fillRect(x - textWidth / 2 - 5, topY, textWidth + 10, 20);
-      
-      ctx.fillStyle = 'hsl(var(--destructive-foreground))';
-      ctx.textAlign = 'center';
-      ctx.fillText(labelText, x, topY + 14);
-      ctx.restore();
-    },
-  };
+  const chartData = [{ name: "Stock_A_Recent_Avg", value: meanValue }];
 
   return (
-    <div className="space-y-4">
-      <div className="h-[350px]">
-        <Bar data={chartData} options={options} plugins={[annotationPlugin]} />
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={oneSampleZTestChartConfig} className="h-full w-full">
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
+            <CartesianGrid horizontal={false} />
+            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120} tickFormatter={() => "Stock A's Recent Avg."}/>
+            <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
+            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Bar dataKey="value" radius={8} fill="var(--color-value)" />
+            <ReferenceLine
+              x={target}
+              stroke="hsl(var(--destructive))"
+              strokeWidth={2}
+              strokeDasharray="3 3"
+            >
+              <Label value={`Historical Avg: ${target}%`} position="insideTopRight" fill="hsl(var(--destructive))" fontSize={12} />
+            </ReferenceLine>
+          </BarChart>
+        </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm text-center">
-        <Label htmlFor="mean-slider">
-          Adjust Stock A&apos;s Recent Avg. Daily Return (%)
-        </Label>
-        <Slider
-          id="mean-slider"
-          min={-0.1}
-          max={0.2}
-          value={[meanValue]}
-          step={0.005}
-          onValueChange={(value) => setMeanValue(value[0])}
-          className="my-4"
-        />
+      <div className="mx-auto max-w-sm flex-shrink-0 text-center">
+        <div className="py-4">
+          <Label htmlFor="mean-slider">
+            Adjust Stock A&apos;s Recent Avg. Daily Return (%)
+          </Label>
+          <Slider
+            id="mean-slider"
+            min={-0.1}
+            max={0.2}
+            value={[meanValue]}
+            step={0.005}
+            onValueChange={(value) => setMeanValue(value[0])}
+            className="my-4"
+          />
+        </div>
         <div className="text-sm text-muted-foreground">
           Current Mean:{' '}
           <span className="font-bold text-foreground">
@@ -157,21 +115,18 @@ const OneSampleZTestChart = () => {
 };
 
 const TwoSampleZTestChart = () => {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const generateData = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
-    setChartData({
-      labels: ['Stock A', 'Stock B'],
-      datasets: [
-        {
-          label: 'Average Daily Volatility',
-          data: [getMean(dataA), getMean(dataB)],
-          backgroundColor: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))'],
-        },
-      ],
-    });
+    setChartData([
+      {
+        month: 'Volatility',
+        Stock_A: getMean(dataA),
+        Stock_B: getMean(dataB),
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -179,46 +134,21 @@ const TwoSampleZTestChart = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      {chartData && (
-        <div className="h-[350px]">
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  suggestedMin: 0,
-                  suggestedMax: 3,
-                  title: {
-                    display: true,
-                    text: 'Average Daily Volatility (%)',
-                    color: 'hsl(var(--muted-foreground))',
-                  },
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { color: 'hsl(var(--border) / 0.5)' },
-                },
-                x: {
-                  ticks: { color: 'hsl(var(--muted-foreground))' },
-                  grid: { display: false },
-                },
-              },
-              plugins: {
-                legend: { display: false },
-                title: {
-                  display: true,
-                  text: 'Comparing Average Daily Volatility of Two Stocks',
-                  color: 'hsl(var(--foreground))',
-                  font: { size: 16 },
-                },
-              },
-            }}
-          />
-        </div>
-      )}
-      <div className="text-center">
+    <div className="flex h-[420px] w-full flex-col">
+      <div className="flex-grow">
+        <ChartContainer config={twoSampleZTestChartConfig} className="h-full w-full">
+            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
+                <YAxis unit="%" />
+                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Legend />
+                <Bar dataKey="Stock_A" radius={4} fill="var(--color-Stock_A)" />
+                <Bar dataKey="Stock_B" radius={4} fill="var(--color-Stock_B)" />
+            </BarChart>
+        </ChartContainer>
+      </div>
+      <div className="mt-4 flex-shrink-0 text-center">
         <Button onClick={generateData}>Simulate New 5-Year Period</Button>
       </div>
     </div>
@@ -270,7 +200,7 @@ export default function ZTestPage() {
 
         <Card>
           <CardContent className="p-6">
-            <Tabs defaultValue="one-sample">
+            <Tabs defaultValue="two-sample">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="one-sample">One-Sample</TabsTrigger>
                 <TabsTrigger value="two-sample">Two-Sample</TabsTrigger>
@@ -312,3 +242,5 @@ export default function ZTestPage() {
     </>
   );
 }
+
+    
