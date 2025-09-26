@@ -81,8 +81,8 @@ const IndependentTestChart = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
     setChartData([
-      { name: 'Momentum', value: getMean(dataA), fill: "hsl(var(--chart-1))" },
-      { name: 'Mean-Reversion', value: getMean(dataB), fill: "hsl(var(--chart-2))" },
+      { name: 'Momentum', value: getMean(dataA), fill: 'var(--color-Momentum)' },
+      { name: 'Mean-Reversion', value: getMean(dataB), fill: 'var(--color-Mean-Reversion)' },
     ]);
   };
 
@@ -174,13 +174,13 @@ const PairedTestChart = () => {
               type="monotone"
               dataKey="before"
               strokeWidth={2}
-              stroke={pairedTestChartConfig.before.color}
+              stroke="var(--color-before)"
             />
             <Line
               type="monotone"
               dataKey="after"
               strokeWidth={2}
-              stroke={pairedTestChartConfig.after.color}
+              stroke="var(--color-after)"
             />
           </LineChart>
         </ChartContainer>
@@ -196,7 +196,7 @@ const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
   const target = 1.5;
 
-  const chartData = [{ name: 'Avg. Return', value: meanValue }];
+  const chartData = [{ name: 'Avg. Return', value: meanValue, fill: 'var(--color-value)' }];
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -224,7 +224,6 @@ const OneSampleTestChart = () => {
             <Bar
               dataKey="value"
               radius={8}
-              fill={oneSampleTestChartConfig.value.color}
             />
             <ReferenceLine
               x={target}

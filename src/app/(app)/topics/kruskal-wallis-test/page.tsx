@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -65,9 +66,9 @@ const KruskalWallisChart = () => {
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
 
     setChartData([
-        { name: 'ML Bot', value: getMedian(dataBotA) },
-        { name: 'Rule-Based Bot', value: getMedian(dataBotB) },
-        { name: 'Hybrid Bot', value: getMedian(dataBotC) },
+        { name: 'ML Bot', value: getMedian(dataBotA), fill: 'var(--color-ML Bot)' },
+        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: 'var(--color-Rule-Based Bot)' },
+        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: 'var(--color-Hybrid Bot)' },
     ]);
   };
 
@@ -84,11 +85,7 @@ const KruskalWallisChart = () => {
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis unit="$" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Bar dataKey="value" name="Median Profit" radius={4}>
-                {chartData.map((entry, index) => (
-                    <Rectangle key={`cell-${index}`} fill={kruskalWallisChartConfig[entry.name as keyof typeof kruskalWallisChartConfig]?.color} />
-                ))}
-            </Bar>
+            <Bar dataKey="value" name="Median Profit" radius={4} />
           </BarChart>
         </ChartContainer>
       </div>
@@ -143,7 +140,10 @@ export default function KruskalWallisTestPage() {
               This test is ideal for comparing the central tendency of multiple groups when dealing with skewed data, like trade returns or algorithmic performance metrics.
             </p>
             <p className="text-sm text-muted-foreground mb-4">
-              <span className="font-semibold text-foreground">Example:</span> A trading firm wants to compare the profitability of three different trading bots: a machine learning bot, a traditional rule-based bot, and a hybrid model. The profit-per-trade data for each bot is heavily skewed. They use the Kruskal-Wallis test to determine if there is a statistically significant difference in the median profit among the three bots.
+              <span className="font-semibold text-foreground">
+                Example:
+              </span>{' '}
+              A trading firm wants to compare the profitability of three different trading bots: a machine learning bot, a traditional rule-based bot, and a hybrid model. The profit-per-trade data for each bot is heavily skewed. They use the Kruskal-Wallis test to determine if there is a statistically significant difference in the median profit among the three bots.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
               <KruskalWallisChart />

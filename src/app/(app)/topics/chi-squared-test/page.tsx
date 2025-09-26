@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -95,8 +96,8 @@ const GoodnessOfFitChart = () => {
                 <YAxis />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Legend />
-                <Bar dataKey="observed" name="Observed Trades" fill={goodnessOfFitChartConfig.observed.color} radius={4} />
-                <Bar dataKey="expected" name="Expected Trades" fill={goodnessOfFitChartConfig.expected.color} radius={4} />
+                <Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
+                <Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
             </BarChart>
         </ChartContainer>
       </div>
@@ -153,8 +154,8 @@ const TestForIndependenceChart = () => {
                 <YAxis />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Legend />
-                <Bar dataKey="observed" name="Observed (Bullish Market)" fill={testForIndependenceChartConfig.observed.color} radius={4} />
-                <Bar dataKey="expected" name="Expected (If Independent)" fill={testForIndependenceChartConfig.expected.color} radius={4} />
+                <Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
+                <Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
             </BarChart>
         </ChartContainer>
       </div>
@@ -200,8 +201,8 @@ const TestForHomogeneityChart = () => {
                     <YAxis />
                     <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                     <Legend />
-                    <Bar dataKey="ny" name="New York Office" fill={testForHomogeneityChartConfig.ny.color} radius={4} />
-                    <Bar dataKey="london" name="London Office" fill={testForHomogeneityChartConfig.london.color} radius={4} />
+                    <Bar dataKey="ny" fill="var(--color-ny)" radius={4} />
+                    <Bar dataKey="london" fill="var(--color-london)" radius={4} />
                 </BarChart>
             </ChartContainer>
           </div>

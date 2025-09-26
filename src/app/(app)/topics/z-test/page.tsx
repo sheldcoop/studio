@@ -64,7 +64,7 @@ const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
   const target = 0.05;
 
-  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: oneSampleZTestChartConfig.value.color }];
+  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: 'var(--color-value)' }];
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -121,8 +121,8 @@ const TwoSampleZTestChart = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
     setChartData([
-        { name: 'Stock A', value: getMean(dataA), fill: 'hsl(var(--chart-1))' },
-        { name: 'Stock B', value: getMean(dataB), fill: 'hsl(var(--chart-2))' },
+        { name: 'Stock A', value: getMean(dataA), fill: 'var(--color-Stock A)' },
+        { name: 'Stock B', value: getMean(dataB), fill: 'var(--color-Stock B)' },
     ]);
   };
 
@@ -237,5 +237,3 @@ export default function ZTestPage() {
     </>
   );
 }
-
-    
