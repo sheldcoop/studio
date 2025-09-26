@@ -64,7 +64,7 @@ const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
   const target = 0.05;
 
-  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue, fill: 'var(--color-value)' }];
+  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue }];
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -75,7 +75,7 @@ const OneSampleZTestChart = () => {
             <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120}/>
             <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
             <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey="value" radius={8} />
+            <Bar dataKey="value" radius={8} fill="var(--color-value)" />
             <ReferenceLine
               x={target}
               stroke="hsl(var(--destructive))"
@@ -121,8 +121,11 @@ const TwoSampleZTestChart = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
     const dataB = generateNormalData(1.6, 0.8, 1260);
     setChartData([
-      { name: 'Stock A', value: getMean(dataA), fill: 'var(--color-Stock A)' },
-      { name: 'Stock B', value: getMean(dataB), fill: 'var(--color-Stock B)' },
+      {
+        month: 'Volatility',
+        'Stock A': getMean(dataA),
+        'Stock B': getMean(dataB),
+      },
     ]);
   };
 
@@ -136,10 +139,12 @@ const TwoSampleZTestChart = () => {
         <ChartContainer config={twoSampleZTestChartConfig} className="h-full w-full">
             <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                <Bar dataKey="value" radius={4} />
+                <Legend />
+                <Bar dataKey="Stock A" radius={4} fill="var(--color-Stock A)" />
+                <Bar dataKey="Stock B" radius={4} fill="var(--color-Stock B)" />
             </BarChart>
         </ChartContainer>
       </div>
@@ -237,3 +242,5 @@ export default function ZTestPage() {
     </>
   );
 }
+
+    
