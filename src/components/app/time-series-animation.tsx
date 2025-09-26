@@ -7,14 +7,10 @@ import { cn } from '@/lib/utils';
 
 interface TimeSeriesAnimationProps {
   className?: string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
 }
 
 export function TimeSeriesAnimation({
   className,
-  onPointerEnter,
-  onPointerLeave,
 }: TimeSeriesAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
@@ -22,12 +18,13 @@ export function TimeSeriesAnimation({
 
   useEffect(() => {
     if (!mountRef.current) return;
+    const currentMount = mountRef.current;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
+      currentMount.clientWidth / currentMount.clientHeight,
       0.1,
       1000
     );
@@ -35,11 +32,11 @@ export function TimeSeriesAnimation({
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(
-      mountRef.current.clientWidth,
-      mountRef.current.clientHeight
+      currentMount.clientWidth,
+      currentMount.clientHeight
     );
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mountRef.current.appendChild(renderer.domElement);
+    currentMount.appendChild(renderer.domElement);
     
     // --- Grid ---
     const grid = new THREE.GridHelper(20, 20, 0x22c55e, 0x22c55e);
@@ -55,7 +52,7 @@ export function TimeSeriesAnimation({
     lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
     
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x22c55e, // A lighter, glowing blue
+      color: 0x22c55e,
       linewidth: 3,
       transparent: true,
       opacity: 0.9
@@ -97,27 +94,26 @@ export function TimeSeriesAnimation({
 
     // --- Event Listeners ---
     const handleMouseMove = (event: MouseEvent) => {
-      if (mountRef.current) {
-        const rect = mountRef.current.getBoundingClientRect();
+      if (currentMount) {
+        const rect = currentMount.getBoundingClientRect();
         mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
       }
     };
 
-    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
-    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
+    const handleMouseEnter = () => { isMouseOver.current = true; }
+    const handleMouseLeave = () => { isMouseOver.current = false; }
 
-    const currentRef = mountRef.current;
-    currentRef.addEventListener('mousemove', handleMouseMove);
-    currentRef.addEventListener('mouseenter', handleMouseEnter);
-    currentRef.addEventListener('mouseleave', handleMouseLeave);
+    currentMount.addEventListener('mousemove', handleMouseMove);
+    currentMount.addEventListener('mouseenter', handleMouseEnter);
+    currentMount.addEventListener('mouseleave', handleMouseLeave);
 
 
     // --- Resize handler ---
     const handleResize = () => {
-      if (mountRef.current) {
-        renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-        camera.aspect = mountRef.current.clientWidth / mountRef.clientHeight;
+      if (currentMount) {
+        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
         camera.updateProjectionMatrix();
       }
     };
@@ -126,12 +122,12 @@ export function TimeSeriesAnimation({
     // --- Cleanup ---
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (currentRef) {
-        currentRef.removeEventListener('mousemove', handleMouseMove);
-        currentRef.removeEventListener('mouseenter', handleMouseEnter);
-        currentRef.removeEventListener('mouseleave', handleMouseLeave);
+      if (currentMount) {
+        currentMount.removeEventListener('mousemove', handleMouseMove);
+        currentMount.removeEventListener('mouseenter', handleMouseEnter);
+        currentMount.removeEventListener('mouseleave', handleMouseLeave);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        currentRef.removeChild(renderer.domElement);
+        currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
       lineGeometry.dispose();
@@ -144,5 +140,3 @@ export function TimeSeriesAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
-
-    
