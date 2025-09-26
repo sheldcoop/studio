@@ -61,10 +61,10 @@ export function StatisticsAnimation({
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     
     const particleMaterial = new THREE.PointsMaterial({
-        color: 0x58a6ff, // Use a consistent theme color
-        size: 0.3,
+        color: 0x22c55e, // Brighter theme color
+        size: 0.4,       // Increased size
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.8,    // Increased opacity
         blending: THREE.AdditiveBlending,
     });
     
