@@ -228,7 +228,7 @@ export const statsToolkitTiers = [
       { name: 'Descriptive Statistics Explorer', slug: 'descriptive-statistics-explorer' },
       { name: 'The Normal Distribution', slug: 'normal-distribution' },
       { name: 'The Central Limit Theorem (CLT)', slug: 'central-limit-theorem' },
-      { name: 'Confidence Intervals', slug: 'confidence-intervals' },
+      { name: 'Confidence Intervals', slug: 'ci' },
       { name: 'Hypothesis Testing & P-Values', slug: 'hypothesis-testing-p-values' },
       { name: 'Type I & Type II Errors', slug: 'type-i-and-type-ii-errors' },
       { name: 'Correlation vs. Causation', slug: 'correlation-vs-causation' },

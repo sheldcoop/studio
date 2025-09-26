@@ -1,176 +1,266 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { PageHeader } from '@/components/app/page-header';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Calculator } from 'lucide-react';
+  Calculator,
+  BarChart3,
+  AreaChart,
+  BrainCircuit,
+  CandlestickChart,
+  Sigma,
+  Pi,
+  Cpu,
+  LineChart,
+  Boxes,
+  type LucideIcon,
+  FunctionSquare,
+  FolderKanban
+} from 'lucide-react';
 
-const zScores = {
-  '90': 1.645,
-  '95': 1.96,
-  '99': 2.576,
+export const taglines = [
+  ['From Data to ', 'Insight'],
+  ['From Insight to ', 'Model'],
+  ['From Model to ', 'Signal'],
+  ['From Signal to ', 'Trade'],
+  ['From Trade to ', 'Alpha'],
+  ['From Alpha to ', 'Mastery'],
+];
+
+export type LearningPath = {
+  id: string;
+  title: string;
+  icon: LucideIcon;
+  description: string;
+  lessons: {
+    title:string;
+    duration: number; // in minutes
+    status: 'completed' | 'in-progress' | 'not-started';
+  }[];
 };
 
-export default function ConfidenceIntervalsPage() {
-  const [mean, setMean] = useState(100);
-  const [stdDev, setStdDev] = useState(15);
-  const [sampleSize, setSampleSize] = useState(30);
-  const [confidenceLevel, setConfidenceLevel] =
-    useState<keyof typeof zScores>('95');
-  const [result, setResult] = useState<{ lower: number; upper: number } | null>(
-    null
-  );
+export const learningPaths: LearningPath[] = [
+  {
+    id: 'linear-algebra',
+    title: 'Linear Algebra for Quants',
+    icon: Calculator,
+    description: 'Master vectors, matrices, and eigenvalues for financial modeling.',
+    lessons: [
+      { title: 'Vectors and Spaces', duration: 45, status: 'completed' },
+      { title: 'Matrix Transformations', duration: 60, status: 'completed' },
+      { title: 'Eigenvalues and Eigenvectors', duration: 75, status: 'in-progress' },
+      { title: 'Principal Component Analysis (PCA)', duration: 90, status: 'not-started' },
+    ],
+  },
+  {
+    id: 'statistics',
+    title: 'Advanced Statistics',
+    icon: BarChart3,
+    description: 'Deep dive into probability, distributions, and hypothesis testing.',
+    lessons: [
+        { title: 'Probability Theory', duration: 60, status: 'completed' },
+        { title: 'Common Distributions', duration: 75, status: 'in-progress' },
+        { title: 'Hypothesis Testing & P-Values', duration: 90, status: 'not-started' },
+        { title: 'Bayesian Statistics Intro', duration: 60, status: 'not-started' },
+    ],
+  },
+  {
+    id: 'time-series',
+    title: 'Time Series Analysis',
+    icon: AreaChart,
+    description: 'Learn to model and forecast financial time series data.',
+    lessons: [
+        { title: 'AR, MA, ARMA, ARIMA Models', duration: 75, status: 'completed' },
+        { title: 'Stationarity and Cointegration', duration: 60, status: 'not-started' },
+        { title: 'ARCH/GARCH Models', duration: 60, status: 'not-started' },
+        { title: 'Forecasting Techniques', duration: 45, status: 'not-started' },
+    ],
+  },
+  {
+    id: 'machine-learning',
+    title: 'Machine Learning in Finance',
+    icon: BrainCircuit,
+    description: 'Apply ML algorithms to trading, risk, and asset management.',
+    lessons: [
+        { title: 'Supervised vs. Unsupervised', duration: 45, status: 'in-progress' },
+        { title: 'Regression and Classification', duration: 90, status: 'not-started' },
+        { title: 'Intro to Neural Networks', duration: 75, status: 'not-started' },
+        { title: 'Feature Engineering for Finance', duration: 60, status: 'not-started' },
+    ],
+  },
+  {
+    id: 'algo-trading',
+    title: 'Algorithmic Trading Strategies',
+    icon: CandlestickChart,
+    description: 'Design, backtest, and deploy automated trading strategies.',
+    lessons: [
+        { title: 'Strategy Backtesting', duration: 90, status: 'not-started' },
+        { title: 'Risk Management in Algo Trading', duration: 60, status: 'not-started' },
+        { title: 'Execution and Slippage', duration: 45, status: 'not-started' },
+        { title: 'Mean Reversion Strategies', duration: 75, status: 'not-started' },
+    ],
+  },
+];
 
-  const calculateInterval = () => {
-    const n = Number(sampleSize);
-    const M = Number(mean);
-    const s = Number(stdDev);
-    const z = zScores[confidenceLevel];
+export const quantTopics = [
+  { value: 'Linear Algebra', label: 'Linear Algebra' },
+  { value: 'Calculus', label: 'Calculus' },
+  { value: 'Probability Theory', label: 'Probability Theory' },
+  { value: 'Statistics', label: 'Statistics' },
+  { value: 'Stochastic Processes', label: 'Stochastic Processes' },
+  { value: 'Time Series Analysis', label: 'Time Series Analysis' },
+  { value: 'Machine Learning', label: 'Machine Learning' },
+  { value: 'Options Pricing', label: 'Options Pricing' },
+  { value: 'Risk Management', label: 'Risk Management' },
+  { value: 'Algorithmic Trading', label: 'Algorithmic Trading' },
+  { value: 'Portfolio Management', label: 'Portfolio Management' },
+];
 
-    if (n > 0 && s >= 0) {
-      const marginOfError = z * (s / Math.sqrt(n));
-      const lowerBound = M - marginOfError;
-      const upperBound = M + marginOfError;
-      setResult({
-        lower: parseFloat(lowerBound.toFixed(3)),
-        upper: parseFloat(upperBound.toFixed(3)),
-      });
-    } else {
-      setResult(null);
-    }
-  };
-  
-  useEffect(() => {
-    calculateInterval();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  return (
-    <div>
-      <PageHeader
-        title="Confidence Intervals"
-        description="Understanding the range where a true value likely lies."
-      />
-      <div className="mx-auto max-w-4xl space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">What Are They?</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
-            <p>
-              A confidence interval is a range of values, derived from sample
-              data, that is likely to contain the value of an unknown population
-              parameter. It's a fundamental concept in inferential statistics.
-            </p>
-            <p>
-              Instead of giving a single number as an estimate (a "point
-              estimate"), which is almost certainly not exactly correct, we provide a plausible range. For example, instead of saying
-              "the average IQ is 100," we might say "we are 95% confident that
-              the true average IQ of the population is between 97 and 103." This range is the
-              confidence interval. The "95% confidence" means that if we were to take many samples and build a confidence interval from each one, 95% of those intervals would contain the true population mean.
-            </p>
-          </CardContent>
-        </Card>
+export type CommunityPost = {
+    id: string;
+    topic: string;
+    author: string;
+    replies: number;
+    views: number;
+    lastPost: {
+        author: string;
+        time: string;
+    };
+};
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">Interactive Calculator</CardTitle>
-            <CardDescription>
-              Calculate a confidence interval for a population mean. Adjust the values to see how they affect the interval width.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-4 rounded-lg border p-6">
-              <div>
-                <Label htmlFor="mean">Sample Mean (μ)</Label>
-                <Input
-                  id="mean"
-                  type="number"
-                  value={mean}
-                  onChange={(e) => setMean(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="stddev">Standard Deviation (σ)</Label>
-                <Input
-                  id="stddev"
-                  type="number"
-                  value={stdDev}
-                  onChange={(e) => setStdDev(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="sample-size">Sample Size (n)</Label>
-                <Input
-                  id="sample-size"
-                  type="number"
-                  value={sampleSize}
-                  min="1"
-                  onChange={(e) => setSampleSize(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="confidence">Confidence Level</Label>
-                <Select
-                  value={confidenceLevel}
-                  onValueChange={(val: keyof typeof zScores) =>
-                    setConfidenceLevel(val)
-                  }
-                >
-                  <SelectTrigger id="confidence">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="90">90%</SelectItem>
-                    <SelectItem value="95">95%</SelectItem>
-                    <SelectItem value="99">99%</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button onClick={calculateInterval} className="w-full">
-                <Calculator className="mr-2" /> Calculate
-              </Button>
-            </div>
-            <div className="flex items-center justify-center rounded-lg bg-muted/50 p-6">
-              {result ? (
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground">
-                    {confidenceLevel}% Confidence Interval
-                  </p>
-                  <p className="font-headline text-4xl font-bold tracking-tight text-primary">
-                    [{result.lower}, {result.upper}]
-                  </p>
-                  <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-                    This means we are {confidenceLevel}% confident that the true
-                    population mean lies between {result.lower} and{' '}
-                    {result.upper}.
-                  </p>
-                </div>
-              ) : (
-                <p className="text-center text-muted-foreground">
-                  Enter your data and click calculate to see the result.
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
+export const communityPosts: CommunityPost[] = [
+    {
+        id: '1',
+        topic: 'Best resources for understanding Ito\'s Lemma?',
+        author: 'newbie_quant',
+        replies: 12,
+        views: 125,
+        lastPost: { author: 'quant_master', time: '2 hours ago' },
+    },
+    {
+        id: '2',
+        topic: 'PCA for Pairs Trading - Does it work?',
+        author: 'algo_trader_88',
+        replies: 8,
+        views: 98,
+        lastPost: { author: 'stat_arb_king', time: '5 hours ago' },
+    },
+    {
+        id: '3',
+        topic: 'Interview Experience at Jane Street (First Round)',
+        author: 'future_hf_trader',
+        replies: 25,
+        views: 543,
+        lastPost: { author: 'jane_street_alum', time: '1 day ago' },
+    },
+    {
+        id: '4',
+        topic: 'Python vs C++ for high-frequency trading',
+        author: 'speed_demon',
+        replies: 42,
+        views: 890,
+        lastPost: { author: 'c++_purist', time: '1 day ago' },
+    },
+    {
+        id: '5',
+        topic: 'GARCH model implementation query',
+        author: 'volatility_smile',
+        replies: 5,
+        views: 67,
+        lastPost: { author: 'econometrics_wiz', time: '2 days ago' },
+    },
+];
+
+export const quantJourney = [
+  {
+    id: 'linear-algebra',
+    title: 'Linear Algebra',
+    description: 'Vectors, matrices, and tensors. The language of data.',
+    icon: Pi,
+    href: '/topics/linear-algebra',
+  },
+  {
+    id: 'stats-prob',
+    title: 'Statistics & Probability',
+    description: 'Quantifying uncertainty and making sense of distributions.',
+    icon: Sigma,
+    href: '/topics/hypothesis-testing-p-values',
+  },
+  {
+    id: 'mental-math',
+    title: 'Mental Math',
+    description: 'Train your calculation speed and accuracy for interviews.',
+    icon: BrainCircuit,
+    href: '/topics/mental-math',
+  },
+  {
+    id: 'time-series',
+    title: 'Time Series Analysis',
+    description: 'ARIMA, GARCH, and forecasting market movements.',
+    icon: LineChart,
+    href: '/topics/time-series',
+  },
+  {
+    id: 'machine-learning',
+    title: 'Machine Learning',
+    description: 'Building predictive models for financial markets.',
+    icon: Cpu,
+    href: '/topics/machine-learning',
+  },
+  {
+    id: 'algo-trading',
+    title: 'Algorithmic Trading',
+    description: 'From strategy backtesting to live deployment.',
+    icon: CandlestickChart,
+    href: '/topics/algo-trading',
+  },
+  {
+    id: 'stat-toolkit',
+    title: "Statistician's Toolkit",
+    description: 'Interactive tools for hands-on statistical analysis.',
+    icon: Boxes,
+    href: '/topics/stat-toolkit',
+  },
+];
+
+export const statsToolkitTiers = [
+  {
+    title: 'Tier 1: The Absolute Foundations',
+    concepts: [
+      { name: 'Descriptive Statistics Explorer', slug: 'descriptive-statistics-explorer' },
+      { name: 'The Normal Distribution', slug: 'normal-distribution' },
+      { name: 'The Central Limit Theorem (CLT)', slug: 'central-limit-theorem' },
+      { name: 'Confidence Intervals', slug: 'ci' },
+      { name: 'Hypothesis Testing & P-Values', slug: 'hypothesis-testing-p-values' },
+      { name: 'Type I & Type II Errors', slug: 'type-i-and-type-ii-errors' },
+      { name: 'Correlation vs. Causation', slug: 'correlation-vs-causation' },
+      { name: 'Linear Regression', slug: 'linear-regression' },
+      { name: 'Standard Deviation & Variance', slug: 'standard-deviation-variance' },
+      { name: 'R-squared & Goodness of Fit', slug: 'r-squared-goodness-of-fit' },
+    ],
+  },
+  {
+    title: 'Tier 2: Intermediate & Specialized Tools',
+    concepts: [
+      { name: 'Bayes\' Theorem', slug: 'bayes-theorem' },
+      { name: 'The Law of Large Numbers', slug: 'law-of-large-numbers' },
+      { name: 'Binomial Distribution', slug: 'binomial-distribution' },
+      { name: 'Poisson Distribution', slug: 'poisson-distribution' },
+      { name: 'Chi-Squared Test', slug: 'chi-squared-test' },
+      { name: 'Analysis of Variance (ANOVA)', slug: 'anova' },
+      { name: 'Logistic Regression', slug: 'logistic-regression' },
+      { name: 'Moment Generating Functions', slug: 'moment-generating-functions' },
+      { name: 'Maximum Likelihood Estimation (MLE)', slug: 'maximum-likelihood-estimation' },
+    ],
+  },
+  {
+    title: 'Tier 3: Advanced & Quant-Specific Concepts',
+    concepts: [
+      { name: 'Monte Carlo Simulation', slug: 'monte-carlo-simulation' },
+      { name: 'Time Series Decomposition', slug: 'time-series-decomposition' },
+      { name: 'Autocorrelation (ACF & PACF)', slug: 'autocorrelation-acf-pacf' },
+      { name: 'Volatility & Standard Deviation (GARCH)', slug: 'volatility-garch' },
+      { name: 'Efficient Frontier & Sharpe Ratio', slug: 'efficient-frontier-sharpe-ratio' },
+      { name: 'Principal Component Analysis (PCA)', slug: 'principal-component-analysis-pca' },
+      { name: 'Kalman Filters', slug: 'kalman-filters' },
+      { name: 'Stochastic Calculus & Ito\'s Lemma', slug: 'stochastic-calculus-itos-lemma' },
+    ],
+  },
+];
