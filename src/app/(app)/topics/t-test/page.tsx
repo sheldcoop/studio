@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,6 +7,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Line,
   LineChart,
   ReferenceLine,
@@ -48,7 +48,7 @@ const independentTestChartConfig = {
     label: 'Momentum',
     color: 'hsl(var(--chart-1))',
   },
-  'Mean-Reversion': {
+  Mean_Reversion: {
     label: 'Mean-Reversion',
     color: 'hsl(var(--chart-2))',
   },
@@ -81,8 +81,8 @@ const IndependentTestChart = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
     setChartData([
-      { name: 'Momentum', value: getMean(dataA), fill: 'var(--color-Momentum)' },
-      { name: 'Mean-Reversion', value: getMean(dataB), fill: 'var(--color-Mean-Reversion)' },
+      { name: 'Momentum', value: getMean(dataA) },
+      { name: 'Mean_Reversion', value: getMean(dataB) },
     ]);
   };
 
@@ -108,13 +108,18 @@ const IndependentTestChart = () => {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              tickFormatter={(value) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value}
             />
             <YAxis unit="%" />
             <Tooltip
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Bar dataKey="value" radius={8} />
+            <Bar dataKey="value" radius={8}>
+                {chartData.map((entry) => (
+                    <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </div>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,6 +5,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -44,12 +44,12 @@ const fTestChartConfig = {
   value: {
     label: 'Variance',
   },
-  'StableStock (Utility)': {
-    label: 'StableStock',
+  'StableStock_Utility': {
+    label: 'StableStock (Utility)',
     color: 'hsl(var(--chart-1))',
   },
-  'GrowthStock (Tech)': {
-    label: 'GrowthStock',
+  'GrowthStock_Tech': {
+    label: 'GrowthStock (Tech)',
     color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
@@ -68,8 +68,8 @@ const FTestChart = () => {
     const varianceGrowth = getVariance(dataGrowth);
 
     setChartData([
-        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-StableStock (Utility))' },
-        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-GrowthStock (Tech))' },
+        { name: 'StableStock_Utility', value: varianceStable },
+        { name: 'GrowthStock_Tech', value: varianceGrowth },
     ]);
     setFStat(varianceGrowth / varianceStable);
   };
@@ -80,6 +80,8 @@ const FTestChart = () => {
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const configKey = label as keyof typeof fTestChartConfig;
+      const displayName = fTestChartConfig[configKey]?.label || label;
       return (
         <div className="rounded-lg border bg-background p-2 shadow-sm">
           <div className="grid grid-cols-2 gap-2">
@@ -87,7 +89,7 @@ const FTestChart = () => {
               <span className="text-[0.70rem] uppercase text-muted-foreground">
                 Stock
               </span>
-              <span className="font-bold text-muted-foreground">{label}</span>
+              <span className="font-bold text-muted-foreground">{displayName}</span>
             </div>
             <div className="flex flex-col">
               <span className="text-[0.70rem] uppercase text-muted-foreground">
@@ -118,13 +120,17 @@ const FTestChart = () => {
         <ChartContainer config={fTestChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => fTestChartConfig[value as keyof typeof fTestChartConfig]?.label || value} />
             <YAxis />
             <Tooltip
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<CustomTooltip />}
             />
-            <Bar dataKey="value" radius={8} />
+            <Bar dataKey="value" radius={8}>
+              {chartData.map((entry) => (
+                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+              ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </div>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -47,11 +46,11 @@ const oneSampleZTestChartConfig = {
 } satisfies ChartConfig;
 
 const twoSampleZTestChartConfig = {
-  'Stock A': {
+  Stock_A: {
     label: 'Stock A',
     color: 'hsl(var(--chart-1))',
   },
-  'Stock B': {
+  Stock_B: {
     label: 'Stock B',
     color: 'hsl(var(--chart-2))',
   },
@@ -64,7 +63,7 @@ const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
   const target = 0.05;
 
-  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue }];
+  const chartData = [{ name: "Stock_A_Recent_Avg", value: meanValue }];
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -72,7 +71,7 @@ const OneSampleZTestChart = () => {
         <ChartContainer config={oneSampleZTestChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <CartesianGrid horizontal={false} />
-            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120}/>
+            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120} tickFormatter={() => "Stock A's Recent Avg."}/>
             <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
             <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Bar dataKey="value" radius={8} fill="var(--color-value)" />
@@ -123,8 +122,8 @@ const TwoSampleZTestChart = () => {
     setChartData([
       {
         month: 'Volatility',
-        'Stock A': getMean(dataA),
-        'Stock B': getMean(dataB),
+        Stock_A: getMean(dataA),
+        Stock_B: getMean(dataB),
       },
     ]);
   };
@@ -143,8 +142,8 @@ const TwoSampleZTestChart = () => {
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Legend />
-                <Bar dataKey="Stock A" radius={4} fill="var(--color-Stock A)" />
-                <Bar dataKey="Stock B" radius={4} fill="var(--color-Stock B)" />
+                <Bar dataKey="Stock_A" radius={4} fill="var(--color-Stock_A)" />
+                <Bar dataKey="Stock_B" radius={4} fill="var(--color-Stock_B)" />
             </BarChart>
         </ChartContainer>
       </div>

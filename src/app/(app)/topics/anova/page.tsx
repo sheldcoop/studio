@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,6 +7,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Line,
   LineChart,
   Rectangle,
@@ -43,15 +43,15 @@ const oneWayAnovaChartConfig = {
   value: {
     label: 'Value',
   },
-  'Algorithm Alpha': {
+  Algorithm_Alpha: {
     label: 'Alpha',
     color: 'hsl(var(--chart-1))',
   },
-  'Algorithm Beta': {
+  Algorithm_Beta: {
     label: 'Beta',
     color: 'hsl(var(--chart-2))',
   },
-  'Algorithm Gamma': {
+  Algorithm_Gamma: {
     label: 'Gamma',
     color: 'hsl(var(--chart-3))',
   },
@@ -85,9 +85,9 @@ const OneWayAnovaChart = () => {
     const dataBeta = generateNormalData(1.5, 0.8, 50);
     const dataGamma = generateNormalData(0.9, 0.8, 50);
     setChartData([
-        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: 'var(--color-Algorithm Alpha)' },
-        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: 'var(--color-Algorithm Beta)' },
-        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: 'var(--color-Algorithm Gamma)' },
+        { name: 'Algorithm_Alpha', value: getMean(dataAlpha)},
+        { name: 'Algorithm_Beta', value: getMean(dataBeta) },
+        { name: 'Algorithm_Gamma', value: getMean(dataGamma) },
     ]);
   };
 
@@ -101,10 +101,14 @@ const OneWayAnovaChart = () => {
         <ChartContainer config={oneWayAnovaChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid vertical={false} />
-              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => oneWayAnovaChartConfig[value as keyof typeof oneWayAnovaChartConfig]?.label || value} />
               <YAxis unit="%" />
               <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
-              <Bar dataKey="value" radius={8} />
+              <Bar dataKey="value" radius={8}>
+                {chartData.map((entry) => (
+                    <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                ))}
+              </Bar>
           </BarChart>
         </ChartContainer>
       </div>
@@ -311,5 +315,3 @@ export default function AnovaPage() {
     </>
   );
 }
-
-    

@@ -6,6 +6,7 @@ import {
   BarChart,
   Bar,
   CartesianGrid,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -42,15 +43,15 @@ const kruskalWallisChartConfig = {
   value: {
     label: 'Median Profit',
   },
-  'ML Bot': {
+  ML_Bot: {
     label: 'ML Bot',
     color: 'hsl(var(--chart-1))',
   },
-  'Rule-Based Bot': {
+  Rule_Based_Bot: {
     label: 'Rule-Based Bot',
     color: 'hsl(var(--chart-2))',
   },
-  'Hybrid Bot': {
+  Hybrid_Bot: {
     label: 'Hybrid Bot',
     color: 'hsl(var(--chart-3))',
   },
@@ -66,9 +67,9 @@ const KruskalWallisChart = () => {
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
 
     setChartData([
-        { name: 'ML Bot', value: getMedian(dataBotA), fill: 'var(--color-ML Bot)' },
-        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: 'var(--color-Rule-Based Bot)' },
-        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: 'var(--color-Hybrid Bot)' },
+        { name: 'ML_Bot', value: getMedian(dataBotA) },
+        { name: 'Rule_Based_Bot', value: getMedian(dataBotB) },
+        { name: 'Hybrid_Bot', value: getMedian(dataBotC) },
     ]);
   };
 
@@ -82,10 +83,14 @@ const KruskalWallisChart = () => {
         <ChartContainer config={kruskalWallisChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
             <YAxis unit="$" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Bar dataKey="value" name="Median Profit" radius={4} />
+            <Bar dataKey="value" name="Median Profit" radius={4}>
+              {chartData.map((entry) => (
+                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+              ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </div>
