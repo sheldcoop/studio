@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -84,9 +85,9 @@ const OneWayAnovaChart = () => {
     const dataBeta = generateNormalData(1.5, 0.8, 50);
     const dataGamma = generateNormalData(0.9, 0.8, 50);
     setChartData([
-        { name: 'Algorithm Alpha', value: getMean(dataAlpha) },
-        { name: 'Algorithm Beta', value: getMean(dataBeta) },
-        { name: 'Algorithm Gamma', value: getMean(dataGamma) },
+        { name: 'Algorithm Alpha', value: getMean(dataAlpha), fill: 'var(--color-Algorithm Alpha)' },
+        { name: 'Algorithm Beta', value: getMean(dataBeta), fill: 'var(--color-Algorithm Beta)' },
+        { name: 'Algorithm Gamma', value: getMean(dataGamma), fill: 'var(--color-Algorithm Gamma)' },
     ]);
   };
 
@@ -103,11 +104,7 @@ const OneWayAnovaChart = () => {
               <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
               <YAxis unit="%" />
               <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
-              <Bar dataKey="value" radius={8}>
-                  {chartData.map((entry, index) => (
-                    <Rectangle key={`cell-${index}`} fill={oneWayAnovaChartConfig[entry.name as keyof typeof oneWayAnovaChartConfig]?.color} />
-                  ))}
-              </Bar>
+              <Bar dataKey="value" radius={8} />
           </BarChart>
         </ChartContainer>
       </div>
@@ -150,8 +147,8 @@ const TwoWayAnovaChart = () => {
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis unit="$" />
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                        <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke={twoWayAnovaChartConfig.stocks.color} />
-                        <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke={twoWayAnovaChartConfig.crypto.color} />
+                        <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-stocks)" />
+                        <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-crypto)" />
                     </LineChart>
                 </ChartContainer>
             </div>
@@ -194,11 +191,11 @@ const RepeatedMeasuresAnovaChart = () => {
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                         <defs>
                             <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={repeatedMeasuresAnovaChartConfig.value.color} stopOpacity={0.8} />
-                                <stop offset="95%" stopColor={repeatedMeasuresAnovaChartConfig.value.color} stopOpacity={0.1} />
+                                <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0.1} />
                             </linearGradient>
                         </defs>
-                        <Area type="monotone" dataKey="value" strokeWidth={2} stroke={repeatedMeasuresAnovaChartConfig.value.color} fill="url(#fillValue)" />
+                        <Area type="monotone" dataKey="value" strokeWidth={2} stroke="var(--color-value)" fill="url(#fillValue)" />
                     </AreaChart>
                 </ChartContainer>
             </div>
@@ -314,3 +311,5 @@ export default function AnovaPage() {
     </>
   );
 }
+
+    
