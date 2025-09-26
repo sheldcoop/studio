@@ -24,10 +24,10 @@ export function ConfidenceIntervalAnimation({
     () =>
       new THREE.PointsMaterial({
         color: 0x22c55e,
-        size: 0.15,
+        size: 0.2, // Increased size
         blending: THREE.AdditiveBlending,
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.95, // Increased opacity
         sizeAttenuation: true,
       }),
     []
@@ -61,12 +61,12 @@ export function ConfidenceIntervalAnimation({
     scene.add(orbGroup);
 
     // --- Particles ---
-    const particleCount = 1000;
+    const particleCount = 1500; // Increased particle count
     const particlesGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const particleData = [];
 
-    const sphereRadius = 6;
+    const sphereRadius = 7; // Increased sphere radius
     for (let i = 0; i < particleCount; i++) {
       const theta = Math.random() * 2 * Math.PI;
       const phi = Math.acos(2 * Math.random() - 1);
@@ -89,8 +89,8 @@ export function ConfidenceIntervalAnimation({
 
     // --- Axis Line ---
     const axisGeometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, -10, 0),
-      new THREE.Vector3(0, 10, 0),
+      new THREE.Vector3(0, -12, 0),
+      new THREE.Vector3(0, 12, 0),
     ]);
     const axisLine = new THREE.Line(axisGeometry, axisMaterial);
     orbGroup.add(axisLine);
@@ -106,31 +106,30 @@ export function ConfidenceIntervalAnimation({
 
       // --- Update Interaction State ---
       const targetCorrelation = isMouseOver.current ? 1 : 0;
-      correlationFactor += (targetCorrelation - correlationFactor) * 0.05;
+      correlationFactor += (targetCorrelation - correlationFactor) * 0.1; // Faster transition
 
-      (axisLine.material as THREE.LineBasicMaterial).opacity = correlationFactor * 0.7;
+      (axisLine.material as THREE.LineBasicMaterial).opacity = correlationFactor * 0.9; // Brighter axis
 
       // --- Update Particle Positions ---
       const currentPositions = particleSystem.geometry.getAttribute('position') as THREE.BufferAttribute;
       for (let i = 0; i < particleCount; i++) {
-        const { theta, phi, randomPhase, randomSpeed } = particleData[i];
+        const { theta, phi, randomSpeed } = particleData[i];
 
-        // State 1: Random drift
-        const randomX = sphereRadius * Math.sin(phi) * Math.cos(theta + elapsedTime * randomSpeed * 0.5);
-        const randomY = sphereRadius * Math.sin(phi) * Math.sin(theta + elapsedTime * randomSpeed * 0.5);
+        // State 1: Random drift on sphere surface
+        const randomX = sphereRadius * Math.sin(phi) * Math.cos(theta + elapsedTime * randomSpeed * 0.3);
+        const randomY = sphereRadius * Math.sin(phi) * Math.sin(theta + elapsedTime * randomSpeed * 0.3);
         const randomZ = sphereRadius * Math.cos(phi);
 
         // State 2: Correlated ellipse
-        const ellipseAngle = elapsedTime * 0.5 + i * 0.1;
+        const ellipseAngle = elapsedTime * 0.8 + i * 0.1;
         const ellipseRadiusX = sphereRadius * Math.sin(phi);
-        const ellipseRadiusY = sphereRadius * Math.sin(phi) * 0.3; // Make it an ellipse
+        const ellipseRadiusY = sphereRadius * Math.sin(phi) * 0.2; // Tighter ellipse for more drama
         
-        // Align ellipse to a rotated axis
         const axis = new THREE.Vector3(0.5, 1, 0).normalize();
         const ellipsePoint = new THREE.Vector3(
           ellipseRadiusX * Math.cos(ellipseAngle),
           ellipseRadiusY * Math.sin(ellipseAngle),
-          sphereRadius * Math.cos(phi) // this seems off but gives a decent 3d feel
+          sphereRadius * Math.cos(phi)
         );
         ellipsePoint.applyAxisAngle(axis, Math.PI / 4);
 
