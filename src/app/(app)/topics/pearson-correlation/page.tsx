@@ -20,7 +20,20 @@ import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Crosshair } from 'lucide-react';
 
-// Helper function to generate correlated data
+/**
+ * Generates two correlated datasets using the Box-Muller transform.
+ * This method creates two independent, standard normal variables (z1, z2)
+ * and then combines them to produce a second variable 'y' that has a
+ * specified correlation with the first variable 'x'.
+ *
+ * @param n The number of data points to generate.
+ * @param correlation The desired correlation coefficient, between -1 and 1.
+ * @param meanX The mean of the first dataset.
+ * @param meanY The mean of the second dataset.
+ * @param stdDevX The standard deviation of the first dataset.
+ * @param stdDevY The standard deviation of the second dataset.
+ * @returns An array of {x, y} data points.
+ */
 const generateCorrelatedData = (
   n: number,
   correlation: number,
@@ -33,10 +46,12 @@ const generateCorrelatedData = (
   for (let i = 0; i < n; i++) {
     const u1 = Math.random();
     const u2 = Math.random();
+    // Box-Muller transform to get two standard normal variables
     const z1 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
     const z2 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
 
     const x = meanX + stdDevX * z1;
+    // Induce correlation in y
     const y =
       meanY + stdDevY * (correlation * z1 + Math.sqrt(1 - correlation ** 2) * z2);
     data.push({ x, y });
@@ -153,6 +168,3 @@ export default function PearsonCorrelationPage() {
     </>
   );
 }
-
-
-    
