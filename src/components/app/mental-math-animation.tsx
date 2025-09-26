@@ -1,10 +1,8 @@
 
 'use client';
 
-import { useEffect, useRef, useMemo, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { cn } from '@/lib/utils';
 
 interface MentalMathAnimationProps {
@@ -13,46 +11,29 @@ interface MentalMathAnimationProps {
   onPointerLeave: () => void;
 }
 
-type CharacterParticle = {
-  mesh: THREE.Mesh;
-  targetPosition: THREE.Vector3;
-  originalPosition: THREE.Vector3;
-  originalRotation: THREE.Euler;
-  isActive: boolean;
-};
-
 export function MentalMathAnimation({
   className,
   onPointerEnter,
   onPointerLeave,
 }: MentalMathAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
-  const fontRef = useRef<THREE.Font>();
-  const [fontLoaded, setFontLoaded] = useState(false);
 
-  const textMaterial = useMemo(
+  const particlesMaterial = useMemo(
     () =>
-      new THREE.MeshBasicMaterial({
+      new THREE.PointsMaterial({
         color: 0x22c55e,
-        transparent: true,
-        opacity: 0.9,
+        size: 0.1,
         blending: THREE.AdditiveBlending,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true,
       }),
     []
   );
 
   useEffect(() => {
-    // Load the font once and set the state when ready
-    new FontLoader().load('/fonts/helvetiker_bold.typeface.json', (font) => {
-      fontRef.current = font;
-      setFontLoaded(true);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!mountRef.current || !fontLoaded || !fontRef.current) return;
+    if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let frameId: number;
 
@@ -64,155 +45,114 @@ export function MentalMathAnimation({
       0.1,
       100
     );
-    camera.position.z = 15;
+    camera.position.z = 20;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
 
-    const equationGroup = new THREE.Group();
-    scene.add(equationGroup);
+    // --- Particle System ---
+    const particleCount = 2000;
+    const particlesGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = new Float32Array(particleCount * 3);
 
-    const characterPool: CharacterParticle[] = [];
-    const chars = '0123456789+-×÷= ';
-    const POOL_SIZE = 150;
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      // Start in a large spherical volume
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      const radius = 10 + Math.random() * 15;
+      positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i3 + 2] = radius * Math.cos(phi);
 
-    // --- Pre-create a large pool of character meshes ---
-    for (let i = 0; i < POOL_SIZE; i++) {
-      const char = chars[i % chars.length];
-      const geometry = new TextGeometry(char, {
-        font: fontRef.current!,
-        size: 1.2,
-        height: 0.2,
-        curveSegments: 5,
-      });
-      geometry.center();
-      const mesh = new THREE.Mesh(geometry, textMaterial);
-      mesh.visible = false;
-      equationGroup.add(mesh);
-      
-      characterPool.push({
-        mesh,
-        targetPosition: new THREE.Vector3(),
-        originalPosition: new THREE.Vector3(),
-        originalRotation: new THREE.Euler(),
-        isActive: false,
-      });
+      velocities[i3] = 0;
+      velocities[i3 + 1] = 0;
+      velocities[i3 + 2] = 0;
     }
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particlesGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
 
-    const generateAndPositionEquation = () => {
-      // Deactivate all current particles
-      characterPool.forEach(p => p.isActive = false);
+    const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particleSystem);
 
-      const num1 = Math.floor(Math.random() * 15) + 1;
-      const num2 = Math.floor(Math.random() * 9) + 2;
-      const result = num1 * num2;
-      const equationString = `${num1} × ${num2} = ${result}`;
+    const clock = new THREE.Clock();
 
-      let currentX = 0;
-      const chars = equationString.split('');
-      const totalWidth = chars.length * 1.4; // Approximate width
-
-      chars.forEach((char, index) => {
-        const particle = characterPool.find(p => !p.isActive && (p.mesh.geometry as TextGeometry).parameters.text === char);
-        const genericParticle = characterPool.find(p => !p.isActive);
-        let currentParticle = particle || genericParticle;
-        
-        if (currentParticle) {
-          currentParticle.isActive = true;
-          const { mesh } = currentParticle;
-          
-          // If we had to fall back to a generic particle, update its geometry
-          if (!particle) {
-            mesh.geometry.dispose();
-            mesh.geometry = new TextGeometry(char, {
-              font: fontRef.current!,
-              size: (char === '×' || char === '=') ? 1 : 1.2,
-              height: 0.2, curveSegments: 5,
-            });
-            mesh.geometry.center();
-          }
-
-          mesh.visible = true;
-          
-          currentParticle.originalPosition.set(
-            (Math.random() - 0.5) * 25, (Math.random() - 0.5) * 25, (Math.random() - 0.5) * 25
-          );
-          currentParticle.originalRotation.set(
-            Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI
-          );
-          
-          // Set initial state based on mouse hover
-          if (!isMouseOver.current) {
-            mesh.position.copy(currentParticle.originalPosition);
-            mesh.rotation.copy(currentParticle.originalRotation);
-          }
-          
-          currentParticle.targetPosition.set(currentX - totalWidth / 2, 0, 0);
-          currentX += (char === ' ') ? 0.7 : 1.5;
-        }
-      });
-
-      // Hide all non-active particles
-      characterPool.forEach(p => {
-        if (!p.isActive) p.mesh.visible = false;
-      });
-    }
-
-    generateAndPositionEquation();
-    
     const animate = () => {
       frameId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
 
-      const lerpFactor = 0.05;
-      const rotationLerpFactor = 0.04;
+      const positionAttribute = particleSystem.geometry.getAttribute('position');
+      const velocityAttribute = particleSystem.geometry.getAttribute('velocity');
 
-      characterPool.forEach(part => {
-        if (!part.isActive || !part.mesh.visible) return;
+      let targetSpeed = isMouseOver.current ? 0.8 : 0.2;
 
-        let targetPos = isMouseOver.current ? part.targetPosition : part.originalPosition;
-        let targetRot = isMouseOver.current ? new THREE.Euler(0,0,0) : part.originalRotation;
+      for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
 
-        part.mesh.position.lerp(targetPos, lerpFactor);
-        part.mesh.rotation.x += (targetRot.x - part.mesh.rotation.x) * rotationLerpFactor;
-        part.mesh.rotation.y += (targetRot.y - part.mesh.rotation.y) * rotationLerpFactor;
-        part.mesh.rotation.z += (targetRot.z - part.mesh.rotation.z) * rotationLerpFactor;
-      });
+        const pos = new THREE.Vector3(
+          positionAttribute.getX(i),
+          positionAttribute.getY(i),
+          positionAttribute.getZ(i)
+        );
+        const vel = new THREE.Vector3(
+          velocityAttribute.getX(i),
+          velocityAttribute.getY(i),
+          velocityAttribute.getZ(i)
+        );
+        
+        // Attract to center
+        const directionToCenter = new THREE.Vector3().sub(pos).normalize();
+        const acceleration = directionToCenter.multiplyScalar(targetSpeed * 15 * delta);
+        
+        vel.add(acceleration);
+
+        // Add rotational velocity
+        const rotationalVel = new THREE.Vector3().crossVectors(pos, new THREE.Vector3(0.1, 0.2, 0.3)).normalize();
+        vel.add(rotationalVel.multiplyScalar(targetSpeed * 0.5 * delta));
+        
+        // Update position and apply damping
+        pos.add(vel.multiplyScalar(0.98));
+        
+        // Reset if particle gets too close to center or too far
+        if (pos.length() < 1 || pos.length() > 30) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(Math.random() * 2 - 1);
+            const radius = 20 + Math.random() * 5;
+            pos.set(
+              radius * Math.sin(phi) * Math.cos(theta),
+              radius * Math.sin(phi) * Math.sin(theta),
+              radius * Math.cos(phi)
+            );
+            vel.set(0, 0, 0);
+        }
+
+        positionAttribute.setXYZ(i, pos.x, pos.y, pos.z);
+        velocityAttribute.setXYZ(i, vel.x, vel.y, vel.z);
+      }
+
+      positionAttribute.needsUpdate = true;
       
-      equationGroup.position.x += (mouse.current.x * 2 - equationGroup.position.x) * 0.1;
-      equationGroup.position.y += (mouse.current.y * 2 - equationGroup.position.y) * 0.1;
-      equationGroup.lookAt(new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z-5));
-
+      particleSystem.rotation.y += 0.0005;
 
       renderer.render(scene, camera);
     };
-    
-    animate();
 
-    let regenerationTimeout: NodeJS.Timeout;
+    animate();
 
     const handleMouseEnter = () => {
       isMouseOver.current = true;
       onPointerEnter();
-      clearTimeout(regenerationTimeout);
     };
     const handleMouseLeave = () => {
       isMouseOver.current = false;
       onPointerLeave();
-      regenerationTimeout = setTimeout(generateAndPositionEquation, 1200);
-    };
-    const handleMouseMove = (event: MouseEvent) => {
-      if (currentMount) {
-        const rect = currentMount.getBoundingClientRect();
-        mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
-      }
     };
 
     currentMount.addEventListener('mouseenter', handleMouseEnter);
     currentMount.addEventListener('mouseleave', handleMouseLeave);
-    currentMount.addEventListener('mousemove', handleMouseMove);
 
     const handleResize = () => {
       if (currentMount) {
@@ -223,26 +163,21 @@ export function MentalMathAnimation({
     };
     window.addEventListener('resize', handleResize);
 
-    // --- Cleanup ---
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
       if (currentMount) {
         currentMount.removeEventListener('mouseenter', handleMouseEnter);
         currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        currentMount.removeEventListener('mousemove', handleMouseMove);
         if (renderer.domElement) {
           currentMount.removeChild(renderer.domElement);
         }
       }
       renderer.dispose();
-      characterPool.forEach(p => {
-        p.mesh.geometry.dispose();
-      });
-      textMaterial.dispose();
+      particlesGeometry.dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fontLoaded]); // Rerun effect only when font is loaded
+  }, [particlesMaterial]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
