@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -75,7 +76,7 @@ const PearsonCorrelationChart = () => {
               cursor={{ strokeDasharray: '3 3' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Scatter data={chartData} fill={pearsonCorrelationChartConfig.data.color} />
+            <Scatter data={chartData} fill="var(--color-data)" />
           </ScatterChart>
         </ChartContainer>
       </div>
@@ -152,3 +153,6 @@ export default function PearsonCorrelationPage() {
     </>
   );
 }
+
+
+    

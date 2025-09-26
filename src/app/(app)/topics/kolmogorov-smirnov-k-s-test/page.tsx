@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -98,8 +99,8 @@ const KSTestChart = () => {
                 <YAxis domain={[0,1]} />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
-                <Line type="step" dataKey="empirical" name="Empirical CDF (Sample)" stroke={ksTestChartConfig.empirical.color} dot={false} strokeWidth={2}/>
-                <Line type="monotone" dataKey="theoretical" name="Theoretical CDF (Normal)" stroke={ksTestChartConfig.theoretical.color} dot={false} strokeWidth={2} />
+                <Line type="step" dataKey="empirical" stroke="var(--color-empirical)" dot={false} strokeWidth={2}/>
+                <Line type="monotone" dataKey="theoretical" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
             </LineChart>
         </ChartContainer>
       </div>
@@ -167,3 +168,6 @@ export default function KolmogorovSmirnovTestPage() {
     </>
   );
 }
+
+
+    

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -30,8 +31,8 @@ const generateLogNormalData = (mu: number, sigma: number, n: number) => {
 };
 
 const wilcoxonChartConfig = {
-    'Before Risk Model': { label: 'Before', color: 'hsl(var(--chart-2))' },
-    'After Risk Model': { label: 'After', color: 'hsl(var(--chart-1))' },
+    'Before_Risk_Model': { label: 'Before', color: 'hsl(var(--chart-2))' },
+    'After_Risk_Model': { label: 'After', color: 'hsl(var(--chart-1))' },
 } satisfies ChartConfig;
 
 
@@ -47,8 +48,8 @@ const WilcoxonSignedRankChart = () => {
     setChartData(
         Array.from({length: numPortfolios}, (_, i) => ({
             name: `Portfolio ${i+1}`,
-            'Before Risk Model': beforeData[i],
-            'After Risk Model': afterData[i],
+            'Before_Risk_Model': beforeData[i],
+            'After_Risk_Model': afterData[i],
         }))
     );
   };
@@ -66,9 +67,9 @@ const WilcoxonSignedRankChart = () => {
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Line type="monotone" dataKey="Before Risk Model" stroke={wilcoxonChartConfig['Before Risk Model'].color} />
-                <Line type="monotone" dataKey="After Risk Model" stroke={wilcoxonChartConfig['After Risk Model'].color} />
+                <Legend formatter={(value) => wilcoxonChartConfig[value as keyof typeof wilcoxonChartConfig]?.label || value} />
+                <Line type="monotone" dataKey="Before_Risk_Model" stroke="var(--color-Before_Risk_Model)" />
+                <Line type="monotone" dataKey="After_Risk_Model" stroke="var(--color-After_Risk_Model)" />
             </LineChart>
         </ChartContainer>
       </div>
@@ -134,3 +135,6 @@ export default function WilcoxonSignedRankTestPage() {
     </>
   );
 }
+
+
+    

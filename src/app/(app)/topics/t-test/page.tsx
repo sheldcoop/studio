@@ -202,7 +202,7 @@ const OneSampleTestChart = () => {
   const [meanValue, setMeanValue] = useState(1.7);
   const target = 1.5;
 
-  const chartData = [{ name: 'Avg. Return', value: meanValue, fill: 'var(--color-value)' }];
+  const chartData = [{ name: 'Avg. Return', value: meanValue }];
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -230,6 +230,7 @@ const OneSampleTestChart = () => {
             <Bar
               dataKey="value"
               radius={8}
+              fill="var(--color-value)"
             />
             <ReferenceLine
               x={target}
@@ -400,5 +401,7 @@ export default function TTestPage() {
     </>
   );
 }
+
+    
 
     
