@@ -76,27 +76,33 @@ const generatePopulation = (type: DistributionType, n: number) => {
   return { data, mean, stdDev };
 };
 
-const createHistogram = (data: number[], binSize: number) => {
-  if (data.length === 0) return { bins: [], maxCount: 0 };
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  let binCount = Math.ceil((max - min) / binSize);
-  if (binCount <= 0 || !isFinite(binCount)) binCount = 1;
+const createHistogram = (data: number[], numBins = 20) => {
+    if (data.length === 0) return { bins: [], maxCount: 0 };
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const binSize = (max - min) / numBins;
 
-  const bins = Array.from({ length: binCount }, (_, i) => ({
-    name: (min + i * binSize).toFixed(0),
-    count: 0,
-  }));
+    if (binSize <= 0) return { bins: [{ name: min.toFixed(0), count: data.length }], maxCount: data.length};
 
-  for (const val of data) {
-    const binIndex = Math.floor((val - min) / binSize);
-    if (bins[binIndex]) {
-      bins[binIndex].count++;
+    const bins = Array.from({ length: numBins }, (_, i) => ({
+      name: (min + i * binSize).toFixed(0),
+      count: 0,
+    }));
+
+    for (const val of data) {
+      let binIndex = Math.floor((val - min) / binSize);
+      // Handle the edge case where the max value falls into a non-existent bin
+      if (binIndex === numBins) {
+        binIndex--;
+      }
+      if (bins[binIndex]) {
+        bins[binIndex].count++;
+      }
     }
-  }
-  const maxCount = Math.max(...bins.map((b) => b.count));
-  return { bins, maxCount };
+    const maxCount = Math.max(...bins.map((b) => b.count));
+    return { bins, maxCount };
 };
+
 
 const normalPDF = (x: number, mu: number, sigma: number) => {
   if (sigma <= 0) return 0;
@@ -137,7 +143,7 @@ const CLTChart = () => {
     const { data, mean, stdDev } = generatePopulation(distributionType, 10000);
     setPopulation(data);
     setPopStats({ mean, stdDev });
-    setPopulationHist(createHistogram(data, 10).bins);
+    setPopulationHist(createHistogram(data, 40).bins);
     resetSimulation();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [distributionType]);
@@ -171,7 +177,7 @@ const CLTChart = () => {
   );
   
   useEffect(() => {
-      const { bins, maxCount } = createHistogram(sampleMeans, 2);
+      const { bins, maxCount } = createHistogram(sampleMeans, 30);
       if (bins.length > 0 && popStats.stdDev > 0) {
         const stdError = popStats.stdDev / Math.sqrt(sampleSize);
         const maxPdf = normalPDF(popStats.mean, popStats.mean, stdError);
@@ -333,6 +339,9 @@ const CLTChart = () => {
                 <Line dataKey="theoretical" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
               </ComposedChart>
             </ChartContainer>
+            <div className="mt-2 text-center text-sm text-muted-foreground">
+                Samples Taken: <span className="font-semibold text-foreground">{sampleMeans.length.toLocaleString()}</span>
+            </div>
           </CardContent>
         </Card>
 
@@ -444,3 +453,5 @@ export default function CentralLimitTheoremPage() {
     </>
   );
 }
+
+    
