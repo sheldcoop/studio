@@ -16,6 +16,8 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import {
   Bar,
+  ComposedChart,
+  Line,
   BarChart as RechartsBarChart,
   XAxis,
   YAxis,
@@ -27,58 +29,59 @@ import { ChartTooltipContent } from '@/lib/chart-config';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Pause, Play } from 'lucide-react';
 
-// --- Data Generation ---
+// --- Data Generation & Math Helpers ---
 
 type DistributionType = 'log-normal' | 'uniform' | 'exponential' | 'bimodal';
 
-const generatePopulation = (
-  type: DistributionType,
-  n: number
-): number[] => {
-  const data = [];
+const getMean = (data: number[]): number => data.reduce((a, b) => a + b, 0) / data.length;
+
+const getStdDev = (data: number[], mean: number): number => {
+  const variance = data.reduce((acc, val) => acc + (val - mean) ** 2, 0) / data.length;
+  return Math.sqrt(variance);
+};
+
+const generatePopulation = (type: DistributionType, n: number) => {
+  const data: number[] = [];
   switch (type) {
     case 'log-normal': // Skewed returns
       for (let i = 0; i < n; i++) {
         const u1 = Math.random();
         const u2 = Math.random();
         const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-        data.push(Math.exp(0 + 0.8 * z) * 50); // mu=0, sigma=0.8
+        data.push(Math.exp(0 + 0.8 * z) * 50);
       }
       break;
     case 'uniform': // Evenly spread returns
       for (let i = 0; i < n; i++) {
-        data.push(Math.random() * 200); // returns between 0 and 200
+        data.push(Math.random() * 200);
       }
       break;
     case 'exponential': // Many small returns, few large
       for (let i = 0; i < n; i++) {
-        data.push(-Math.log(1.0 - Math.random()) * 50); // lambda=1/50
+        data.push(-Math.log(1.0 - Math.random()) * 50);
       }
       break;
     case 'bimodal': // Two common outcomes
       for (let i = 0; i < n; i++) {
-        if (Math.random() > 0.5) {
-          // First peak (e.g., small loss)
-          data.push(80 + (Math.random() - 0.5) * 40);
-        } else {
-          // Second peak (e.g., small gain)
-          data.push(160 + (Math.random() - 0.5) * 40);
-        }
+        data.push(
+          Math.random() > 0.5
+            ? 80 + (Math.random() - 0.5) * 40
+            : 160 + (Math.random() - 0.5) * 40
+        );
       }
       break;
   }
-  return data;
+  const mean = getMean(data);
+  const stdDev = getStdDev(data, mean);
+  return { data, mean, stdDev };
 };
 
-
-// Creates a histogram from a dataset
 const createHistogram = (data: number[], binSize: number) => {
   if (data.length === 0) return { bins: [], maxCount: 0 };
-
   const min = Math.min(...data);
   const max = Math.max(...data);
   let binCount = Math.ceil((max - min) / binSize);
-  if (binCount === 0) binCount = 1;
+  if (binCount <= 0 || !isFinite(binCount)) binCount = 1;
 
   const bins = Array.from({ length: binCount }, (_, i) => ({
     name: (min + i * binSize).toFixed(0),
@@ -91,10 +94,18 @@ const createHistogram = (data: number[], binSize: number) => {
       bins[binIndex].count++;
     }
   }
-
   const maxCount = Math.max(...bins.map((b) => b.count));
   return { bins, maxCount };
 };
+
+const normalPDF = (x: number, mu: number, sigma: number) => {
+  if (sigma <= 0) return 0;
+  return (
+    (1 / (sigma * Math.sqrt(2 * Math.PI))) *
+    Math.exp(-0.5 * ((x - mu) / sigma) ** 2)
+  );
+};
+
 
 const populationChartConfig = {
   count: { label: 'Frequency', color: 'hsl(var(--chart-1))' },
@@ -102,6 +113,7 @@ const populationChartConfig = {
 
 const samplingDistChartConfig = {
   count: { label: 'Frequency', color: 'hsl(var(--chart-2))' },
+  theoretical: { label: 'Theoretical Normal', color: 'hsl(var(--destructive))' },
 } satisfies ChartConfig;
 
 // --- Main Chart Component ---
@@ -110,6 +122,7 @@ const CLTChart = () => {
   const [distributionType, setDistributionType] =
     useState<DistributionType>('log-normal');
   const [population, setPopulation] = useState<number[]>([]);
+  const [popStats, setPopStats] = useState({ mean: 0, stdDev: 0 });
   const [populationHist, setPopulationHist] = useState<any[]>([]);
   const [sampleMeans, setSampleMeans] = useState<number[]>([]);
   const [samplingDistHist, setSamplingDistHist] = useState<any[]>([]);
@@ -119,9 +132,10 @@ const CLTChart = () => {
   const simulationRef = useRef<NodeJS.Timeout | null>(null);
 
   const regeneratePopulation = useCallback(() => {
-    const pop = generatePopulation(distributionType, 10000);
-    setPopulation(pop);
-    setPopulationHist(createHistogram(pop, 10).bins);
+    const { data, mean, stdDev } = generatePopulation(distributionType, 10000);
+    setPopulation(data);
+    setPopStats({ mean, stdDev });
+    setPopulationHist(createHistogram(data, 10).bins);
     resetSimulation();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [distributionType]);
@@ -136,26 +150,37 @@ const CLTChart = () => {
       const newMeans = [...sampleMeans];
       let lastMean = 0;
       for (let s = 0; s < numSamples; s++) {
-        let currentSample = [];
+        let currentSampleSum = 0;
         for (let i = 0; i < sampleSize; i++) {
           const randIndex = Math.floor(Math.random() * population.length);
-          currentSample.push(population[randIndex]);
+          currentSampleSum += population[randIndex];
         }
-        const sampleMean =
-          currentSample.reduce((a, b) => a + b, 0) / sampleSize;
+        const sampleMean = currentSampleSum / sampleSize;
         newMeans.push(sampleMean);
         lastMean = sampleMean;
       }
       setSampleMeans(newMeans);
-      setSamplingDistHist(createHistogram(newMeans, 2).bins);
-      if (numSamples === 1) {
-        setLastSampleMean(lastMean);
-      } else {
-        setLastSampleMean(null);
-      }
+      setLastSampleMean(numSamples === 1 ? lastMean : null);
     },
     [population, sampleMeans, sampleSize]
   );
+  
+  useEffect(() => {
+      const { bins, maxCount } = createHistogram(sampleMeans, 2);
+      if (bins.length > 0 && popStats.stdDev > 0) {
+        const stdError = popStats.stdDev / Math.sqrt(sampleSize);
+        const maxPdf = normalPDF(popStats.mean, popStats.mean, stdError);
+        const scaleFactor = maxCount > 0 ? maxCount / maxPdf : 1;
+        
+        const theoreticalData = bins.map(bin => ({
+            ...bin,
+            theoretical: normalPDF(parseFloat(bin.name), popStats.mean, stdError) * scaleFactor
+        }));
+        setSamplingDistHist(theoreticalData);
+      } else {
+        setSamplingDistHist(bins);
+      }
+    }, [sampleMeans, popStats, sampleSize]);
 
   const startSimulation = () => {
     setIsSimulating(true);
@@ -179,7 +204,6 @@ const CLTChart = () => {
   };
   
   useEffect(() => {
-    // Cleanup on unmount
     return () => {
       if (simulationRef.current) {
         clearInterval(simulationRef.current);
@@ -221,8 +245,7 @@ const CLTChart = () => {
           <CardHeader>
             <CardTitle className="font-headline">The Population</CardTitle>
             <CardDescription>
-              A universe of 10,000 possible trade returns from your strategy.
-              Notice its unique shape.
+              A universe of 10,000 possible trade returns. Notice its shape.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -248,8 +271,7 @@ const CLTChart = () => {
               The Distribution of Sample Means
             </CardTitle>
             <CardDescription>
-              This chart plots the average return from each sample we take. Watch
-              what shape emerges.
+              This chart plots the average of each sample. Watch the bell curve emerge.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -257,31 +279,32 @@ const CLTChart = () => {
               config={samplingDistChartConfig}
               className="h-64 w-full"
             >
-              <RechartsBarChart accessibilityLayer data={samplingDistHist}>
+              <ComposedChart accessibilityLayer data={samplingDistHist}>
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="name"
                   unit="$"
                   domain={['dataMin - 10', 'dataMax + 10']}
                 />
-                <YAxis allowDecimals={false} />
+                <YAxis allowDecimals={false} domain={[0, 'dataMax + 5']} />
                 <Tooltip content={<ChartTooltipContent />} />
                 {lastSampleMean && (
                   <ReferenceLine
                     x={lastSampleMean}
-                    stroke="hsl(var(--destructive))"
+                    stroke="hsl(var(--primary))"
                     strokeDasharray="3 3"
                   >
                     <Label
-                      value={`Last Sample Mean: ${lastSampleMean.toFixed(1)}`}
-                      fill="hsl(var(--destructive))"
+                      value={`Last Mean: ${lastSampleMean.toFixed(1)}`}
+                      fill="hsl(var(--primary))"
                       position="insideTop"
                       dy={-10}
                     />
                   </ReferenceLine>
                 )}
                 <Bar dataKey="count" fill="var(--color-count)" />
-              </RechartsBarChart>
+                <Line dataKey="theoretical" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
+              </ComposedChart>
             </ChartContainer>
           </CardContent>
         </Card>
@@ -306,7 +329,10 @@ const CLTChart = () => {
                 max={100}
                 step={1}
                 value={[sampleSize]}
-                onValueChange={(val) => setSampleSize(val[0])}
+                onValueChange={(val) => {
+                    setSampleSize(val[0]);
+                    resetSimulation();
+                }}
               />
               <p className="mt-2 text-xs text-muted-foreground">
                 A larger sample size results in a narrower, more precise bell
@@ -369,7 +395,7 @@ export default function CentralLimitTheoremPage() {
               and its distribution might be weirdly shaped (skewed, bimodal, etc.).
             </p>
             <p>
-              Your goal is simple: find the true average return of the strategy
+              Your goal is simple: estimate the true average return of the strategy
               without running it for an eternity. You decide to take a random
               sample of trades (e.g., 30 trades), calculate their average return,
               and write it down. Then you do it again. And again.
@@ -379,7 +405,7 @@ export default function CentralLimitTheoremPage() {
               if your original population of returns is not normally
               distributed, the **distribution of your sample averages** will
               be. And the more sample averages you collect, the more perfectly
-              it will form a beautiful, symmetrical bell curve. This allows you
+              it will form a beautiful, symmetrical bell curve whose center is the true population mean. This allows you
               to make powerful inferences about the strategy's true average
               return.
             </p>
