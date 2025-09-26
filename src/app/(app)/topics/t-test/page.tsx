@@ -45,11 +45,14 @@ const getMean = (data: number[]) =>
   data.reduce((a, b) => a + b, 0) / data.length;
 
 const independentTestChartConfig = {
+  value: {
+    label: 'Value',
+  },
   Momentum: {
     label: 'Momentum',
     color: 'hsl(var(--chart-1))',
   },
-  Mean_Reversion: {
+  'Mean-Reversion': {
     label: 'Mean-Reversion',
     color: 'hsl(var(--chart-2))',
   },
@@ -83,7 +86,7 @@ const IndependentTestChart = () => {
     const dataB = generateNormalData(0.03, 0.5, 60);
     setChartData([
       { name: 'Momentum', value: getMean(dataA) },
-      { name: 'Mean_Reversion', value: getMean(dataB) },
+      { name: 'Mean-Reversion', value: getMean(dataB) },
     ]);
   };
 
@@ -176,6 +179,7 @@ const PairedTestChart = () => {
             />
             <YAxis unit="%" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Legend formatter={(value) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
             <Line
               type="monotone"
               dataKey="before"
@@ -401,7 +405,3 @@ export default function TTestPage() {
     </>
   );
 }
-
-    
-
-    
