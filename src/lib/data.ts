@@ -13,7 +13,8 @@ import {
   FunctionSquare,
   FolderKanban,
   FileJson,
-  Waypoints
+  Waypoints,
+  Percent,
 } from 'lucide-react';
 
 export const taglines = [
@@ -49,11 +50,19 @@ export const allTopics: Topic[] = [
     category: 'main',
   },
   {
-    id: 'stats-prob',
-    title: 'Statistics & Probability',
+    id: 'statistics',
+    title: 'Statistics',
     description: 'Quantifying uncertainty and making sense of distributions.',
     icon: Sigma,
     href: '/topics/hypothesis-testing-p-values',
+    category: 'main',
+  },
+  {
+    id: 'probability',
+    title: 'Probability',
+    description: 'Understanding chance and modeling random events.',
+    icon: Percent,
+    href: '/topics/probability',
     category: 'main',
   },
   {
@@ -152,10 +161,10 @@ export const allTopics: Topic[] = [
   { id: 'monte-carlo-simulation', title: 'Monte Carlo Simulation', href: '/topics/monte-carlo-simulation', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
   { id: 'time-series-decomposition', title: 'Time Series Decomposition', href: '/topics/time-series-decomposition', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
   { id: 'autocorrelation-acf-pacf', title: 'Autocorrelation (ACF & PACF)', href: '/topics/autocorrelation-acf-pacf', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
-  { id: 'volatility-garch', title: 'Volatility & Standard Deviation (GARCH)', href: '/topics/volatility-garch', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
-  { id: 'efficient-frontier-sharpe-ratio', title: 'Efficient Frontier & Sharpe Ratio', href: '/topics/efficient-frontier-sharpe-ratio', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
+  { id: 'volatility-garch', title: 'Volatility &amp; Standard Deviation (GARCH)', href: '/topics/volatility-garch', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
+  { id: 'efficient-frontier-sharpe-ratio', title: 'Efficient Frontier &amp; Sharpe Ratio', href: '/topics/efficient-frontier-sharpe-ratio', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
   { id: 'kalman-filters', title: 'Kalman Filters', href: '/topics/kalman-filters', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
-  { id: 'stochastic-calculus-itos-lemma', title: "Stochastic Calculus & Ito's Lemma", href: '/topics/stochastic-calculus-itos-lemma', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
+  { id: 'stochastic-calculus-itos-lemma', title: "Stochastic Calculus &amp; Ito's Lemma", href: '/topics/stochastic-calculus-itos-lemma', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'stats-advanced' },
 
 ];
 

@@ -20,12 +20,14 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ConfidenceIntervalAnimation } from '@/components/app/confidence-interval-animation';
 import { Header } from '@/components/app/header';
+import { ProbabilityAnimation } from '@/components/app/probability-animation';
 
 export default function RootPage() {
   const [isLaCardActive, setIsLaCardActive] = useState(false);
   const [isMmCardActive, setIsMmCardActive] = useState(false);
   const [isTsCardActive, setIsTsCardActive] = useState(false);
   const [isStatsCardActive, setIsStatsCardActive] = useState(false);
+  const [isProbCardActive, setIsProbCardActive] = useState(false);
   const [isMlCardActive, setIsMlCardActive] = useState(false);
   const [isStCardActive, setIsStCardActive] = useState(false);
 
@@ -185,7 +187,7 @@ export default function RootPage() {
                   </div>
                 );
               }
-              if (item.id === 'stats-prob') {
+              if (item.id === 'statistics') {
                 return (
                   <div
                     key={item.id}
@@ -223,6 +225,54 @@ export default function RootPage() {
                             className={cn(
                               'transition-colors',
                               isStatsCardActive && 'text-primary-foreground/70'
+                            )}
+                          >
+                            {item.description}
+                          </CardDescription>
+                        </div>
+                      </Card>
+                    </Link>
+                  </div>
+                );
+              }
+              if (item.id === 'probability') {
+                return (
+                  <div
+                    key={item.id}
+                    className="group relative rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <Link href={item.href} className="h-full w-full">
+                      <Card className="flex h-full transform-gpu flex-col overflow-hidden bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
+                        <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                          <ProbabilityAnimation
+                            onPointerEnter={() => setIsProbCardActive(true)}
+                            onPointerLeave={() => setIsProbCardActive(false)}
+                          />
+                        </div>
+                        <div className="relative z-10 flex h-full flex-col justify-between p-6">
+                          <div>
+                            <div className="mb-4">
+                              <item.icon
+                                className={cn(
+                                  'h-8 w-8 text-primary transition-colors',
+                                  isProbCardActive &&
+                                    'text-primary-foreground/80'
+                                )}
+                              />
+                            </div>
+                            <CardTitle
+                              className={cn(
+                                'font-headline text-xl transition-colors',
+                                isProbCardActive && 'text-card'
+                              )}
+                            >
+                              {item.title}
+                            </CardTitle>
+                          </div>
+                          <CardDescription
+                            className={cn(
+                              'transition-colors',
+                              isProbCardActive && 'text-primary-foreground/70'
                             )}
                           >
                             {item.description}
