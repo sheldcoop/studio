@@ -1,28 +1,7 @@
 
 import { PageHeader } from '@/components/app/page-header';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
+import { LearningPathCard } from '@/components/app/learning-path-card';
 import { learningPaths } from '@/lib/data';
-import { CheckCircle2, Clock, PlayCircle } from 'lucide-react';
-import Link from 'next/link';
-
-const statusIcons = {
-  completed: <CheckCircle2 className="text-green-500" />,
-  'in-progress': <PlayCircle className="text-primary" />,
-  'not-started': <Clock className="text-muted-foreground" />,
-};
-
-const statusBadges = {
-    completed: 'secondary',
-    'in-progress': 'default',
-    'not-started': 'outline',
-} as const;
-
 
 export default function PathsPage() {
   return (
@@ -30,56 +9,13 @@ export default function PathsPage() {
       <PageHeader
         title="Learning Paths"
         description="Follow our curated paths to build a solid foundation in quantitative finance."
+        variant="aligned-left"
       />
-      <Accordion type="single" collapsible className="w-full space-y-4">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {learningPaths.map((path) => (
-          <AccordionItem
-            key={path.id}
-            value={path.id}
-            className="rounded-lg border bg-card"
-          >
-            <AccordionTrigger className="px-6 text-lg hover:no-underline">
-              <div className="flex items-center gap-4">
-                <path.icon className="h-8 w-8 text-primary" />
-                <div className="text-left">
-                  <h3 className="font-headline font-semibold">{path.title}</h3>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    {path.description}
-                  </p>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="border-t">
-              <ul className="divide-y divide-border">
-                {path.lessons.map((lesson) => (
-                  <li key={lesson.id}>
-                    <Link
-                      href={lesson.href}
-                      className="flex items-center justify-between p-4 px-6 transition-colors hover:bg-secondary/50"
-                    >
-                      <div className="flex items-center gap-4">
-                        {statusIcons[lesson.status || 'not-started']}
-                        <span className="font-medium">{lesson.title}</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <Badge
-                          variant={statusBadges[lesson.status || 'not-started']}
-                          className="w-24 justify-center capitalize hidden sm:flex"
-                        >
-                          {(lesson.status || 'not-started').replace('-', ' ')}
-                        </Badge>
-                        {lesson.duration && <span className="text-sm text-muted-foreground">
-                          {lesson.duration} min
-                        </span>}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
+          <LearningPathCard key={path.id} path={path} />
         ))}
-      </Accordion>
+      </div>
     </>
   );
 }
