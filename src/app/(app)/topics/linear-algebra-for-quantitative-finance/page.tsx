@@ -166,7 +166,7 @@ export default function LinearAlgebraPage() {
                  <div>
                   <h4 className="font-semibold">Linear Regression</h4>
                   <ul className="mt-2 list-disc space-y-2 pl-6">
-                    <li>Framing regression as a problem of <strong>solving a system of linear equations</strong> (the "Normal Equation," {`$\\hat{\\beta} = (X^T X)^{-1} X^T y$`}) to find the best-fit line or plane.</li>
+                    <li>Framing regression as a problem of <strong>solving a system of linear equations</strong> (the "Normal Equation," {`$\\hat{\\beta} = (X^T X)^{-1} X^T y$}) to find the best-fit line or plane.`}</li>
                   </ul>
                 </div>
               </div>
