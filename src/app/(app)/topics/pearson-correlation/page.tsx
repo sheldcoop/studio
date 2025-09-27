@@ -84,7 +84,7 @@ const PearsonCorrelationChart = () => {
             <YAxis type="number" dataKey="y" name="Asset B" unit="%" />
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
-              content={<ChartTooltipContent indicator="dot" />}
+              content={<ChartTooltipContent />}
             />
             <Scatter data={chartData} fill="var(--color-data)" />
           </RechartsScatterChart>

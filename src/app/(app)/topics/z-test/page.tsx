@@ -130,7 +130,7 @@ const TwoSampleZTestChart = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
-                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
                 <Bar dataKey="Stock_A" radius={4} fill="var(--color-Stock_A)" />
                 <Bar dataKey="Stock_B" radius={4} fill="var(--color-Stock_B)" />

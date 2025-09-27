@@ -113,7 +113,7 @@ const IndependentTestChart = () => {
             <YAxis unit="%" />
             <Tooltip
               cursor={{ fill: 'hsl(var(--muted))' }}
-              content={<ChartTooltipContent indicator="dot" />}
+              content={<ChartTooltipContent />}
             />
             <Bar dataKey="value" radius={8}>
                 {chartData.map((entry) => (
@@ -174,7 +174,7 @@ const PairedTestChart = () => {
               axisLine={false}
             />
             <YAxis unit="%" />
-            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Tooltip content={<ChartTooltipContent />} />
             <Legend formatter={(value) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
             <Line
               type="monotone"

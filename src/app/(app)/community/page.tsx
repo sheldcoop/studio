@@ -49,7 +49,7 @@ export default function CommunityPage() {
                   </Avatar>
                   <div className="flex-1">
                     <Link
-                      href="#"
+                      href="/community"
                       className="font-medium hover:underline"
                       rel="noopener noreferrer"
                     >

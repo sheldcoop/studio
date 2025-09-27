@@ -46,16 +46,19 @@ export default async function TopicPage({
   ];
 
   if (dedicatedPages.includes(slug)) {
+    // This route doesn't handle dedicated pages; Next.js will fall through
+    // to the page defined at that specific route.
+    // If that page doesn't exist, Next.js will correctly 404.
     return null;
   }
 
   const topicInfo = allTopics.find((t) => t.id === slug);
-  const subTopics = allTopics.filter((t) => t.parent === slug);
   
   if (!topicInfo) {
     notFound();
   }
   
+  const subTopics = allTopics.filter((t) => t.parent === slug);
   const { title, description } = topicInfo;
 
   return (

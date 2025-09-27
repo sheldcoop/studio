@@ -75,7 +75,7 @@ const KruskalWallisChart = () => {
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
             <YAxis unit="$" />
-            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Tooltip content={<ChartTooltipContent />} />
             <Bar dataKey="value" name="Median Profit" radius={4}>
               {chartData.map((entry) => (
                 <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />

@@ -85,7 +85,7 @@ const GoodnessOfFitChart = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis />
-                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
                 <Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
                 <Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
@@ -143,7 +143,7 @@ const TestForIndependenceChart = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.split(' ')[0]}/>
                 <YAxis />
-                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Tooltip content={<ChartTooltipContent />} />
                 <Legend />
                 <Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
                 <Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
@@ -190,7 +190,7 @@ const TestForHomogeneityChart = () => {
                     <CartesianGrid vertical={false} />
                     <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                     <YAxis />
-                    <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                    <Tooltip content={<ChartTooltipContent />} />
                     <Legend />
                     <Bar dataKey="ny" fill="var(--color-ny)" radius={4} />
                     <Bar dataKey="london" fill="var(--color-london)" radius={4} />
