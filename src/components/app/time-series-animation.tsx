@@ -55,7 +55,7 @@ export function TimeSeriesAnimation({
     lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
     
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x22c55e, // A lighter, glowing blue
+      color: 0x22c55e,
       linewidth: 3,
       transparent: true,
       opacity: 0.9
@@ -106,11 +106,34 @@ export function TimeSeriesAnimation({
 
     const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
     const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
+    const handleTouchStart = (event: TouchEvent) => {
+        isMouseOver.current = true;
+        onPointerEnter();
+        if (event.touches.length > 0 && mountRef.current) {
+            const touch = event.touches[0];
+            const rect = mountRef.current.getBoundingClientRect();
+            mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+        }
+    }
+    const handleTouchEnd = () => { isMouseOver.current = false; onPointerLeave(); }
+    const handleTouchMove = (event: TouchEvent) => {
+        if (event.touches.length > 0 && mountRef.current) {
+            const touch = event.touches[0];
+            const rect = mountRef.current.getBoundingClientRect();
+            mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+        }
+    }
+
 
     const currentRef = mountRef.current;
     currentRef.addEventListener('mousemove', handleMouseMove);
     currentRef.addEventListener('mouseenter', handleMouseEnter);
     currentRef.addEventListener('mouseleave', handleMouseLeave);
+    currentRef.addEventListener('touchstart', handleTouchStart);
+    currentRef.addEventListener('touchend', handleTouchEnd);
+    currentRef.addEventListener('touchmove', handleTouchMove);
 
 
     // --- Resize handler ---
@@ -130,6 +153,9 @@ export function TimeSeriesAnimation({
         currentRef.removeEventListener('mousemove', handleMouseMove);
         currentRef.removeEventListener('mouseenter', handleMouseEnter);
         currentRef.removeEventListener('mouseleave', handleMouseLeave);
+        currentRef.removeEventListener('touchstart', handleTouchStart);
+        currentRef.removeEventListener('touchend', handleTouchEnd);
+        currentRef.removeEventListener('touchmove', handleTouchMove);
         // eslint-disable-next-line react-hooks/exhaustive-deps
         currentRef.removeChild(renderer.domElement);
       }
