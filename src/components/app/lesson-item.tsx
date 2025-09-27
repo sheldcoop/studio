@@ -38,18 +38,18 @@ export function LessonItem({ lesson, isLast }: LessonItemProps) {
   const variant = statusVariants[lesson.status || 'not-started'] as "completed" | "inProgress" | "notStarted";
 
   return (
-    <li className={cn('mx-6 border-t', isLast && 'border-b')}>
-        <Link href={lesson.href} className="flex items-center justify-between p-4 transition-colors hover:bg-secondary/50">
+    <li className={cn('mx-6 border-t border-border/50', isLast && 'border-b')}>
+        <Link href={lesson.href} className="group flex items-center justify-between p-4 transition-colors hover:bg-secondary/30">
             <div className="flex items-center gap-4">
                 <Icon className={cn("h-6 w-6", 
                     lesson.status === 'completed' && 'text-green-500',
                     lesson.status === 'in-progress' && 'text-teal-500',
                     lesson.status === 'not-started' && 'text-muted-foreground'
                 )} />
-                <span className="font-medium">{lesson.title}</span>
+                <span className="font-medium text-foreground/90 group-hover:text-foreground">{lesson.title}</span>
             </div>
             <div className="flex items-center gap-6">
-                <Badge variant={variant} className="w-24 justify-center">{label}</Badge>
+                <Badge variant={variant} className="hidden w-24 justify-center sm:flex">{label}</Badge>
                 <span className="w-16 text-right text-sm text-muted-foreground">{lesson.duration} min</span>
             </div>
         </Link>

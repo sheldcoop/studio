@@ -38,7 +38,7 @@ function ModuleItem({ module }: { module: Module }) {
     const variant = statusVariants[module.status || 'not-started'] as "completed" | "inProgress" | "notStarted";
 
     return (
-        <AccordionItem value={module.id} key={module.id} className="border-t">
+        <AccordionItem value={module.id} key={module.id} className="border-t border-border/50">
             <AccordionTrigger className="px-6 text-base hover:no-underline">
                 <div className="flex flex-1 items-center justify-between">
                     <span className="font-medium">{module.title}</span>
@@ -104,9 +104,13 @@ export function LearningPathCard({ path }: LearningPathCardProps) {
              <div className="flex-1">
                 <Progress value={progress} className="h-2" />
              </div>
-             <div className="flex w-32 shrink-0 items-center justify-end gap-4 text-muted-foreground">
-                <span>{path.modules.length} Modules</span>
-                <span>{Math.floor(totalDuration / 60)}h {totalDuration % 60}m</span>
+             <div className="flex w-40 shrink-0 items-center justify-end gap-6 text-muted-foreground">
+                <div className="text-right">
+                  <span className="font-semibold text-foreground">{path.modules.length}</span> Modules
+                </div>
+                 <div className="text-right">
+                  <span className="font-semibold text-foreground">{Math.floor(totalDuration / 60)}h {totalDuration % 60}m</span>
+                 </div>
              </div>
            </div>
         </div>
