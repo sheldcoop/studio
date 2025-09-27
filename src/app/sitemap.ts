@@ -27,9 +27,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const topicRoutes = allTopics.map((topic) => ({
-    url: `${URL}${topic.href}`,
-    lastModified: new Date(),
+  // We filter out the 'parent' category topics as they are not actual pages
+  const topicRoutes = allTopics
+    .filter(topic => topic.category !== 'parent')
+    .map((topic) => ({
+      url: `${URL}${topic.href}`,
+      lastModified: new Date(),
   }));
 
   return [...staticRoutes, ...topicRoutes];

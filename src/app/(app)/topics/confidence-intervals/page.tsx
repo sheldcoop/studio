@@ -68,7 +68,7 @@ export default function ConfidenceIntervalsPage() {
   }, []);
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Confidence Intervals"
         description="Understanding the range where a true value likely lies."
@@ -186,6 +186,6 @@ export default function ConfidenceIntervalsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
   );
 }

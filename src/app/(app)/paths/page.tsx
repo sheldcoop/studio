@@ -23,13 +23,6 @@ const statusBadges = {
     'not-started': 'outline',
 } as const;
 
-// Helper to convert title to a URL-friendly slug
-const toSlug = (title: string) => {
-  return title
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '');
-};
 
 export default function PathsPage() {
   return (
@@ -59,25 +52,25 @@ export default function PathsPage() {
             <AccordionContent className="border-t">
               <ul className="divide-y divide-border">
                 {path.lessons.map((lesson) => (
-                  <li key={lesson.title}>
+                  <li key={lesson.id}>
                     <Link
-                      href={`/topics/${toSlug(lesson.title)}`}
+                      href={lesson.href}
                       className="flex items-center justify-between p-4 px-6 transition-colors hover:bg-secondary/50"
                     >
                       <div className="flex items-center gap-4">
-                        {statusIcons[lesson.status]}
+                        {statusIcons[lesson.status || 'not-started']}
                         <span className="font-medium">{lesson.title}</span>
                       </div>
                       <div className="flex items-center gap-4">
                         <Badge
-                          variant={statusBadges[lesson.status]}
+                          variant={statusBadges[lesson.status || 'not-started']}
                           className="w-24 justify-center capitalize hidden sm:flex"
                         >
-                          {lesson.status.replace('-', ' ')}
+                          {(lesson.status || 'not-started').replace('-', ' ')}
                         </Badge>
-                        <span className="text-sm text-muted-foreground">
+                        {lesson.duration && <span className="text-sm text-muted-foreground">
                           {lesson.duration} min
-                        </span>
+                        </span>}
                       </div>
                     </Link>
                   </li>
