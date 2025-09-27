@@ -26,32 +26,28 @@ export default function MLEPage() {
           </CardHeader>
           <CardContent className="prose prose-invert max-w-none text-base text-foreground/90">
             <p>
-              Ever wondered how we find the best parameters for a financial
-              model? Whether you're modeling asset returns, default
-              probabilities, or market volatility, you need a way to fit your
-              model to the data you have. One of the most powerful and
-              fundamental tools in our quantitative toolkit for this job is
-              Maximum Likelihood Estimation (MLE).
+              Imagine you're a detective who's found a series of footprints. You have several suspects, each with a different shoe size. Your goal is to figure out which suspect is the most likely culprit. You'd compare their shoe size to the prints you found. If the prints are a size 9, the suspect with size 9 shoes is your most likely candidate.
+            </p>
+             <p>
+              MLE does the exact same thing, but with data and statistical models. It answers the question:
             </p>
             <blockquote className="border-l-4 border-primary pl-4 italic">
-              "Given the data we've observed, what are the model parameters
-              that make this data the most probable?"
+              "Given the data we've observed, what are the model parameters that make this data the most probable?"
             </blockquote>
             <p>
-              Let's use a finance example. Say we're analyzing a stock's daily
-              returns for the past year. We might assume the returns follow a
-              Normal (Gaussian) distribution, but we don't know the mean (μ) or
-              the standard deviation (σ). MLE is the tool that looks at all the
-              return data and finds the specific values of μ and σ that best
-              explain the price movements we've seen.
+              Let's use a finance example. Say we're analyzing a stock's daily returns for the past year. We might assume the returns follow a Normal (Gaussian) distribution, but we don't know the mean (μ) or the standard deviation (σ). MLE is the tool that looks at all the return data and finds the specific values of μ and σ that best explain the price movements we've seen.
             </p>
-            <h3 className="text-xl font-semibold text-primary">
+          </CardContent>
+        </Card>
+
+        <Card>
+           <CardHeader>
+            <CardTitle className="font-headline">
               Why is MLE a Quant's Best Friend?
-            </h3>
-            <p>
-              MLE is the engine behind many of the models we use daily. It's how we **fit a model to our data**.
-            </p>
-             <ul className="list-disc pl-5">
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="prose prose-invert max-w-none text-base text-foreground/90">
+             <ul className="list-disc pl-5 space-y-2">
                 <li>
                   <strong>Modeling Binary Events:</strong> We can use it to estimate the probability (p) of an event, like a stock finishing the day up or down, or a borrower defaulting on a loan.
                 </li>
@@ -65,62 +61,74 @@ export default function MLEPage() {
           </CardContent>
         </Card>
 
+        <div className="text-center">
+            <h2 className="font-headline text-2xl font-bold">Let's Get Our Hands Dirty: The Math Behind MLE</h2>
+            <p className="mt-1 text-muted-foreground">The best way to understand MLE is to walk through an example. We'll use a simple one—the coin flip—because it makes the math clear.</p>
+        </div>
+        
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">
-              Let's Get Our Hands Dirty: The Math Behind MLE
-            </CardTitle>
+            <CardTitle>The Scenario: A Simple Trading Signal</CardTitle>
             <CardDescription>
-              We'll use a simple one—the coin flip—because it makes the math clear. Imagine we're testing a trading signal that is either profitable (Heads) or not (Tails) each day. Over 10 days, we observe: {' '}
-              <strong>H, T, H, H, H, T, H, H, T, H</strong> (7 Heads and 3
-              Tails).
+                Imagine we're testing a trading signal that is either profitable (Heads) or not (Tails) each day. Over 10 days, we observe: {' '}
+              <strong>H, T, H, H, H, T, H, H, T, H</strong> (7 Heads and 3 Tails). Our goal is to find the most likely probability of success (p) for this signal.
             </CardDescription>
           </CardHeader>
-          <CardContent className="prose prose-invert max-w-none space-y-4 text-base text-foreground/90">
-            
-            <div className="space-y-2">
-              <h4 className="font-semibold">Step 1: Define the Likelihood Function, L(p|data)</h4>
-              <p>
-                Next, we write a formula for the probability (or likelihood) of getting our exact observed sequence, given some value of p. Since each day is independent, we just multiply their probabilities together.
-              </p>
-              <div className="my-4 rounded-md bg-muted/50 p-4 text-center font-mono text-lg">
-                L(p|data) = p⁷ (1-p)³
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="font-semibold">Step 2: Take the Log-Likelihood, ln(L)</h4>
-              <p>
-                Multiplying many small numbers together can be messy. To make our lives easier, we take the natural logarithm of the likelihood. Because the logarithm is a monotonically increasing function, the value of p that maximizes the original likelihood is the exact same value that maximizes the log-likelihood.
-              </p>
-              <div className="my-4 rounded-md bg-muted/50 p-4 text-center font-mono text-lg">
-                ln(L) = 7ln(p) + 3ln(1-p)
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="font-semibold">Step 3: Maximize with Calculus</h4>
-              <p>
-                How do you find the peak of any function? You find the point where its slope is zero by taking the derivative and setting it to zero. Let's take the derivative with respect to p:
-              </p>
-              <div className="my-4 rounded-md bg-muted/50 p-4 text-center font-mono text-lg">
-                d/dp [ln(L)] = 7/p - 3/(1-p)
-              </div>
-              <p>Now, set it to zero to find the maximum and solve for p:</p>
-              <div className="my-4 space-y-2 rounded-md bg-muted/50 p-4 text-center font-mono text-lg">
-                <div>7/p = 3/(1-p)</div>
-                <div>7(1-p) = 3p</div>
-                <div>7 - 7p = 3p</div>
-                <div>7 = 10p</div>
-                <div className="font-bold">p = 0.7</div>
-              </div>
-            </div>
-            
-            <p className="font-semibold">
-              And there you have it! The Maximum Likelihood Estimate for the probability of success is 0.7. This makes perfect sense—the most likely parameter is the one that matches the frequency we actually saw in our data.
-            </p>
-          </CardContent>
         </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Step 1: Write Down the Likelihood Function</CardTitle>
+                <CardDescription>
+                First, we write a formula for the probability (likelihood) of getting our exact sequence. Since each day is independent, we just multiply their probabilities together. The probability of a Head is $p$ and a Tail is $(1-p)$.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center text-lg">
+                {"\\[L(p|\\text{data}) = p^7(1-p)^3\\]"}
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Step 2: Take the Log-Likelihood (A Nifty Trick)</CardTitle>
+                <CardDescription>
+                To make the calculus easier, we take the natural log. The value of $p$ that maximizes the likelihood also maximizes the log-likelihood.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center text-lg">
+                 {"\\[\\ln(L) = 7\\ln(p) + 3\\ln(1-p)\\]"}
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Step 3: Maximize with Calculus</CardTitle>
+                <CardDescription>
+                To find the peak of the function, we take the derivative with respect to $p$ and set it to zero.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-center text-lg">
+                <div>{"\\[\\frac{d}{dp}[\\ln(L)] = \\frac{7}{p} - \\frac{3}{1-p}\\]"}</div>
+                <p className="text-sm text-muted-foreground">Now, set to zero and solve for $p$:</p>
+                <div>{"\\[\\frac{7}{p} = \\frac{3}{1-p}\\]"}</div>
+                <div>{"\\[7(1-p) = 3p\\]"}</div>
+                <div>{"\\[7 - 7p = 3p\\]"}</div>
+                <div>{"\\[7 = 10p\\]"}</div>
+            </CardContent>
+        </Card>
+        
+        <Card className="border-primary bg-primary/10">
+             <CardHeader>
+                <CardTitle>The Result</CardTitle>
+                <CardDescription>
+                The Maximum Likelihood Estimate for the probability of a profitable day is:
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center text-3xl font-bold">
+                 {"\\[p = 0.7\\]"}
+            </CardContent>
+        </Card>
+        
       </div>
     </>
   );
