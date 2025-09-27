@@ -22,12 +22,13 @@ export function TimeSeriesAnimation({
 
   useEffect(() => {
     if (!mountRef.current) return;
+    const currentMount = mountRef.current;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
+      currentMount.clientWidth / currentMount.clientHeight,
       0.1,
       1000
     );
@@ -35,11 +36,11 @@ export function TimeSeriesAnimation({
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(
-      mountRef.current.clientWidth,
-      mountRef.current.clientHeight
+      currentMount.clientWidth,
+      currentMount.clientHeight
     );
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mountRef.current.appendChild(renderer.domElement);
+    currentMount.appendChild(renderer.domElement);
     
     // --- Grid ---
     const grid = new THREE.GridHelper(20, 20, 0x22c55e, 0x22c55e);
@@ -67,15 +68,16 @@ export function TimeSeriesAnimation({
     // --- Animation & Interaction ---
     const clock = new THREE.Clock();
     let targetVolatility = 0.5;
+    let frameId: number;
 
     const animate = () => {
+      frameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
-      requestAnimationFrame(animate);
 
       if (isMouseOver.current) {
         targetVolatility = (mouse.current.y + 1) * 1.5; // Map mouse Y to volatility (0 to 3)
       } else {
-        targetVolatility = 0.5; // Default low volatility
+        targetVolatility += (0.5 - targetVolatility) * 0.1; // Ease back to default
       }
 
       const positions = line.geometry.attributes.position.array as Float32Array;
@@ -97,67 +99,67 @@ export function TimeSeriesAnimation({
 
     // --- Event Listeners ---
     const handleMouseMove = (event: MouseEvent) => {
-      if (mountRef.current) {
-        const rect = mountRef.current.getBoundingClientRect();
+      if (currentMount) {
+        const rect = currentMount.getBoundingClientRect();
         mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
       }
     };
-
     const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
     const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
+    
     const handleTouchStart = (event: TouchEvent) => {
-        isMouseOver.current = true;
-        onPointerEnter();
-        if (event.touches.length > 0 && mountRef.current) {
-            const touch = event.touches[0];
-            const rect = mountRef.current.getBoundingClientRect();
-            mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
-        }
-    }
-    const handleTouchEnd = () => { isMouseOver.current = false; onPointerLeave(); }
+      isMouseOver.current = true;
+      onPointerEnter();
+      if (event.touches.length > 0 && currentMount) {
+        const touch = event.touches[0];
+        const rect = currentMount.getBoundingClientRect();
+        mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+      }
+    };
+    
+    const handleTouchEnd = () => { isMouseOver.current = false; onPointerLeave(); };
+
     const handleTouchMove = (event: TouchEvent) => {
-        if (event.touches.length > 0 && mountRef.current) {
-            const touch = event.touches[0];
-            const rect = mountRef.current.getBoundingClientRect();
-            mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
-        }
-    }
+      if (event.touches.length > 0 && currentMount) {
+        const touch = event.touches[0];
+        const rect = currentMount.getBoundingClientRect();
+        mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+      }
+    };
 
-
-    const currentRef = mountRef.current;
-    currentRef.addEventListener('mousemove', handleMouseMove);
-    currentRef.addEventListener('mouseenter', handleMouseEnter);
-    currentRef.addEventListener('mouseleave', handleMouseLeave);
-    currentRef.addEventListener('touchstart', handleTouchStart);
-    currentRef.addEventListener('touchend', handleTouchEnd);
-    currentRef.addEventListener('touchmove', handleTouchMove);
+    currentMount.addEventListener('mousemove', handleMouseMove);
+    currentMount.addEventListener('mouseenter', handleMouseEnter);
+    currentMount.addEventListener('mouseleave', handleMouseLeave);
+    currentMount.addEventListener('touchstart', handleTouchStart, { passive: true });
+    currentMount.addEventListener('touchend', handleTouchEnd);
+    currentMount.addEventListener('touchmove', handleTouchMove, { passive: true });
 
 
     // --- Resize handler ---
     const handleResize = () => {
-      if (mountRef.current) {
-        renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-        camera.aspect = mountRef.current.clientWidth / mountRef.clientHeight;
+      if (currentMount) {
+        camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
         camera.updateProjectionMatrix();
+        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
       }
     };
     window.addEventListener('resize', handleResize);
 
     // --- Cleanup ---
     return () => {
+      cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
-      if (currentRef) {
-        currentRef.removeEventListener('mousemove', handleMouseMove);
-        currentRef.removeEventListener('mouseenter', handleMouseEnter);
-        currentRef.removeEventListener('mouseleave', handleMouseLeave);
-        currentRef.removeEventListener('touchstart', handleTouchStart);
-        currentRef.removeEventListener('touchend', handleTouchEnd);
-        currentRef.removeEventListener('touchmove', handleTouchMove);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        currentRef.removeChild(renderer.domElement);
+      if (currentMount) {
+        currentMount.removeEventListener('mousemove', handleMouseMove);
+        currentMount.removeEventListener('mouseenter', handleMouseEnter);
+        currentMount.removeEventListener('mouseleave', handleMouseLeave);
+        currentMount.removeEventListener('touchstart', handleTouchStart);
+        currentMount.removeEventListener('touchend', handleTouchEnd);
+        currentMount.removeEventListener('touchmove', handleTouchMove);
+        currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
       lineGeometry.dispose();
@@ -170,5 +172,3 @@ export function TimeSeriesAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
-
-    
