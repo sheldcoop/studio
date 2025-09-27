@@ -111,7 +111,11 @@ export const allTopics: Topic[] = [
   { id: 'matrix-transformations', title: 'Matrix Transformations', href: '/topics/matrix-transformations', icon: FileJson, description: 'Learn how matrices act as functions.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 60 },
   { id: 'eigenvalues-eigenvectors', title: 'Eigenvalues and Eigenvectors', href: '/topics/eigenvalues-and-eigenvectors', icon: LineChart, description: 'Discover the "special" vectors.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'in-progress', duration: 75 },
   { id: 'pca', title: 'Principal Component Analysis (PCA)', href: '/topics/principal-component-analysis-pca', icon: BrainCircuit, description: 'A powerful dimensionality reduction technique.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
-
+  { id: 'svd', title: 'Singular Value Decomposition (SVD)', href: '/topics/singular-value-decomposition', icon: BrainCircuit, description: 'A powerful matrix factorization technique.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
+  { id: 'covariance-matrices', title: 'Covariance Matrices', href: '/topics/covariance-matrices', icon: BrainCircuit, description: 'Understanding portfolio risk and asset relationships.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 60 },
+  { id: 'solving-linear-systems', title: 'Solving Systems of Linear Equations', href: '/topics/solving-linear-systems', icon: BrainCircuit, description: 'The foundation for optimization and regression.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 60 },
+  { id: 'portfolio-optimization', title: 'Applications in Portfolio Optimization', href: '/topics/portfolio-optimization', icon: BrainCircuit, description: 'Applying linear algebra to build optimal portfolios.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
+  
   // Parent "topic" for Hypothesis testing
   { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/topics/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics-for-quantitative-finance' },
 
