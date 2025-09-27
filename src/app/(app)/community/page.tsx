@@ -20,9 +20,11 @@ export default function CommunityPage() {
         title="Community Forum"
         description="Connect with peers, ask questions, and grow together."
       >
-        <Button>
-          <PlusCircle className="mr-2" />
-          Start a Discussion
+        <Button asChild>
+          <Link href="/community">
+            <PlusCircle className="mr-2" />
+            Start a Discussion
+          </Link>
         </Button>
       </PageHeader>
       <Card>

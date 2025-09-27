@@ -2,6 +2,7 @@
 import { PageHeader } from '@/components/app/page-header';
 import { allTopics } from '@/lib/data';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -9,14 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
-// Helper to convert slug back to a readable title
-function slugToTitle(slug: string) {
-  return slug
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
 
 export default async function TopicPage({
   params,
@@ -26,7 +19,7 @@ export default async function TopicPage({
   const { slug } = params;
 
   if (!slug) {
-    return null;
+    notFound();
   }
 
   // A list of slugs that have their own dedicated, custom-built page.
@@ -58,9 +51,12 @@ export default async function TopicPage({
 
   const topicInfo = allTopics.find((t) => t.id === slug);
   const subTopics = allTopics.filter((t) => t.parent === slug);
-  const title = topicInfo?.title || slugToTitle(slug);
-  const description =
-    topicInfo?.description || `An overview of ${title}.`;
+  
+  if (!topicInfo) {
+    notFound();
+  }
+  
+  const { title, description } = topicInfo;
 
   return (
     <div>
