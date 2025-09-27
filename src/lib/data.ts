@@ -106,7 +106,7 @@ export const allTopics: Topic[] = [
     category: 'main',
   },
 
-  // Sub-topics for Linear Algebra
+  // Sub-topics for Linear Algebra - THIS IS THE NEW CURRICULUM
   { id: 'vectors-spaces', title: 'Vectors and Spaces', href: '/topics/vectors-and-spaces', icon: Waypoints, description: 'The fundamental building blocks.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 45 },
   { id: 'matrix-transformations', title: 'Matrix Transformations', href: '/topics/matrix-transformations', icon: FileJson, description: 'Learn how matrices act as functions.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 60 },
   { id: 'eigenvalues-eigenvectors', title: 'Eigenvalues and Eigenvectors', href: '/topics/eigenvalues-and-eigenvectors', icon: LineChart, description: 'Discover the "special" vectors.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'in-progress', duration: 75 },
