@@ -106,10 +106,30 @@ export const allTopics: Topic[] = [
     category: 'main',
   },
 
-  // Sub-topics for Linear Algebra Path
+  // --- Linear Algebra Path Topics ---
+
+  // Module 1: Foundations
   { id: 'la-vectors-spaces', title: 'Vectors and Spaces', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-1', status: 'completed', duration: 20 },
   { id: 'la-matrices-ops', title: 'Matrices and Operations', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-1', status: 'completed', duration: 25 },
   
+  // Module 2: Core Concepts
+  { id: 'la-matrix-transformations', title: 'Matrix Transformations', href: '/topics/linear-algebra-for-quantitative-finance#module-2', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-2', status: 'completed', duration: 20 },
+  { id: 'la-solving-systems', title: 'Solving Systems of Linear Equations', href: '/topics/linear-algebra-for-quantitative-finance#module-2', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-2', status: 'completed', duration: 20 },
+  { id: 'la-eigenvalues-eigenvectors', title: 'Eigenvalues and Eigenvectors', href: '/topics/linear-algebra-for-quantitative-finance#module-2', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-2', status: 'in-progress', duration: 35 },
+  { id: 'la-decompositions', title: 'Key Matrix Decompositions (SVD, Cholesky)', href: '/topics/linear-algebra-for-quantitative-finance#module-2', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-2', status: 'not-started', duration: 30 },
+  
+  // Module 3: Applications in ML & Statistics
+  { id: 'la-covariance-matrices', title: 'Covariance Matrices', href: '/topics/linear-algebra-for-quantitative-finance#module-3', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-3', status: 'not-started', duration: 30 },
+  { id: 'la-pca', title: 'Principal Component Analysis (PCA)', href: '/topics/linear-algebra-for-quantitative-finance#module-3', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-3', status: 'not-started', duration: 45 },
+  { id: 'la-linear-regression', title: 'Linear Regression applications', href: '/topics/linear-algebra-for-quantitative-finance#module-3', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-3', status: 'not-started', duration: 30 },
+  
+  // Module 4: Applications in Quantitative Finance
+  { id: 'la-portfolio-optimization', title: 'Portfolio Optimization', href: '/topics/linear-algebra-for-quantitative-finance#module-4', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-4', status: 'not-started', duration: 45 },
+  { id: 'la-factor-models', title: 'Factor Models (CAPM)', href: '/topics/linear-algebra-for-quantitative-finance#module-4', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-4', status: 'not-started', duration: 30 },
+  { id: 'la-risk-management', title: 'Risk Management (VaR, Monte Carlo)', href: '/topics/linear-algebra-for-quantitative-finance#module-4', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-4', status: 'not-started', duration: 45 },
+  
+  // --- Statistics Topics ---
+
   // Parent "topic" for Hypothesis testing
   { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/topics/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics-for-quantitative-finance' },
 
@@ -171,7 +191,7 @@ export type Module = {
   title: string;
   lessons: Topic[];
   status?: 'completed' | 'in-progress' | 'not-started';
-  duration?: number;
+  duration: number;
 };
 
 export type LearningPath = {
@@ -190,9 +210,9 @@ export const learningPaths: LearningPath[] = [
     description: 'Master vectors, matrices, and eigenvalues for financial modeling.',
     modules: [
         { id: 'la-module-1', title: 'Module 1: Foundations of Vectors and Matrices', status: 'completed', duration: 45, lessons: allTopics.filter(t => t.parent === 'la-module-1')},
-        { id: 'la-module-2', title: 'Module 2: Core Concepts & Decompositions', status: 'completed', duration: 60, lessons: [] },
-        { id: 'la-module-3', title: 'Module 3: Applications in ML & Statistics', status: 'in-progress', duration: 75, lessons: [] },
-        { id: 'la-module-4', title: 'Module 4: Applications in Quantitative Finance', status: 'not-started', duration: 90, lessons: [] },
+        { id: 'la-module-2', title: 'Module 2: Core Concepts & Decompositions', status: 'in-progress', duration: 105, lessons: allTopics.filter(t => t.parent === 'la-module-2') },
+        { id: 'la-module-3', title: 'Module 3: Applications in ML & Statistics', status: 'not-started', duration: 105, lessons: allTopics.filter(t => t.parent === 'la-module-3') },
+        { id: 'la-module-4', title: 'Module 4: Applications in Quantitative Finance', status: 'not-started', duration: 120, lessons: allTopics.filter(t => t.parent === 'la-module-4') },
     ],
   },
   {
