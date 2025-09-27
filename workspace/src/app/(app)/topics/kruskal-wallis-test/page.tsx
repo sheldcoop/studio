@@ -1,21 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  BarChart,
-  Bar,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Rectangle,
-} from 'recharts';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -41,15 +33,15 @@ const kruskalWallisChartConfig = {
   value: {
     label: 'Median Profit',
   },
-  'ML Bot': {
+  ML_Bot: {
     label: 'ML Bot',
     color: 'hsl(var(--chart-1))',
   },
-  'Rule-Based Bot': {
+  Rule_Based_Bot: {
     label: 'Rule-Based Bot',
     color: 'hsl(var(--chart-2))',
   },
-  'Hybrid Bot': {
+  Hybrid_Bot: {
     label: 'Hybrid Bot',
     color: 'hsl(var(--chart-3))',
   },
@@ -65,9 +57,9 @@ const KruskalWallisChart = () => {
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
 
     setChartData([
-        { name: 'ML Bot', value: getMedian(dataBotA), fill: 'var(--color-ML Bot)' },
-        { name: 'Rule-Based Bot', value: getMedian(dataBotB), fill: 'var(--color-Rule-Based Bot)' },
-        { name: 'Hybrid Bot', value: getMedian(dataBotC), fill: 'var(--color-Hybrid Bot)' },
+        { name: 'ML_Bot', value: getMedian(dataBotA) },
+        { name: 'Rule_Based_Bot', value: getMedian(dataBotB) },
+        { name: 'Hybrid_Bot', value: getMedian(dataBotC) },
     ]);
   };
 
@@ -79,13 +71,17 @@ const KruskalWallisChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={kruskalWallisChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
             <YAxis unit="$" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Bar dataKey="value" name="Median Profit" radius={4} />
-          </BarChart>
+            <Bar dataKey="value" name="Median Profit" radius={4}>
+              {chartData.map((entry) => (
+                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+              ))}
+            </Bar>
+          </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -95,6 +91,7 @@ const KruskalWallisChart = () => {
   );
 };
 
+const DynamicKruskalWallisChart = dynamic(() => Promise.resolve(KruskalWallisChart), { ssr: false });
 
 export default function KruskalWallisTestPage() {
   return (
@@ -145,7 +142,7 @@ export default function KruskalWallisTestPage() {
               A trading firm wants to compare the profitability of three different trading bots: a machine learning bot, a traditional rule-based bot, and a hybrid model. The profit-per-trade data for each bot is heavily skewed. They use the Kruskal-Wallis test to determine if there is a statistically significant difference in the median profit among the three bots.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <KruskalWallisChart />
+              <DynamicKruskalWallisChart />
             </div>
           </CardContent>
         </Card>

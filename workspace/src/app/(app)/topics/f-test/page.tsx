@@ -1,30 +1,36 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Rectangle,
-} from 'recharts';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
 
-// Helper to generate normally distributed data using Box-Muller transform
+/**
+ * Generates normally distributed random data using the Box-Muller transform.
+ * This is a common method for creating realistic sample data for statistical
+ * tests that assume a normal distribution. It works by transforming two
+ * independent, uniformly distributed random numbers (u, v) into two
+ * independent, standard normal random numbers.
+ *
+ * @param mean The desired mean of the distribution.
+ * @param stdDev The desired standard deviation of the distribution.
+ * @param n The number of data points to generate.
+ * @returns An array of normally distributed numbers.
+ */
 const generateNormalData = (mean: number, stdDev: number, n: number) => {
   let data = [];
   for (let i = 0; i < n; i++) {
     let u = 0,
       v = 0;
+    // Ensure u and v are not 0 to avoid issues with log(0)
     while (u === 0) u = Math.random();
     while (v === 0) v = Math.random();
+    // The Box-Muller transform formula
     let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    // Scale and shift the standard normal number to the desired mean and stdDev
     data.push(mean + stdDev * num);
   }
   return data;
@@ -43,12 +49,12 @@ const fTestChartConfig = {
   value: {
     label: 'Variance',
   },
-  'StableStock (Utility)': {
-    label: 'StableStock',
+  'StableStock_Utility': {
+    label: 'StableStock (Utility)',
     color: 'hsl(var(--chart-1))',
   },
-  'GrowthStock (Tech)': {
-    label: 'GrowthStock',
+  'GrowthStock_Tech': {
+    label: 'GrowthStock (Tech)',
     color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
@@ -67,8 +73,8 @@ const FTestChart = () => {
     const varianceGrowth = getVariance(dataGrowth);
 
     setChartData([
-        { name: 'StableStock (Utility)', value: varianceStable, fill: 'var(--color-StableStock (Utility))' },
-        { name: 'GrowthStock (Tech)', value: varianceGrowth, fill: 'var(--color-GrowthStock (Tech))' },
+        { name: 'StableStock_Utility', value: varianceStable },
+        { name: 'GrowthStock_Tech', value: varianceGrowth },
     ]);
     setFStat(varianceGrowth / varianceStable);
   };
@@ -79,6 +85,8 @@ const FTestChart = () => {
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const configKey = label as keyof typeof fTestChartConfig;
+      const displayName = fTestChartConfig[configKey]?.label || label;
       return (
         <div className="rounded-lg border bg-background p-2 shadow-sm">
           <div className="grid grid-cols-2 gap-2">
@@ -86,7 +94,7 @@ const FTestChart = () => {
               <span className="text-[0.70rem] uppercase text-muted-foreground">
                 Stock
               </span>
-              <span className="font-bold text-muted-foreground">{label}</span>
+              <span className="font-bold text-muted-foreground">{displayName}</span>
             </div>
             <div className="flex flex-col">
               <span className="text-[0.70rem] uppercase text-muted-foreground">
@@ -115,16 +123,20 @@ const FTestChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={fTestChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => fTestChartConfig[value as keyof typeof fTestChartConfig]?.label || value} />
             <YAxis />
             <Tooltip
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<CustomTooltip />}
             />
-            <Bar dataKey="value" radius={8} />
-          </BarChart>
+            <Bar dataKey="value" radius={8}>
+              {chartData.map((entry) => (
+                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+              ))}
+            </Bar>
+          </RechartsBarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -133,6 +145,8 @@ const FTestChart = () => {
     </div>
   );
 };
+
+const DynamicFTestChart = dynamic(() => Promise.resolve(FTestChart), { ssr: false });
 
 export default function FTestPage() {
   return (
@@ -188,7 +202,7 @@ export default function FTestPage() {
               'StableStock', indicating higher volatility and risk.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <FTestChart />
+              <DynamicFTestChart />
             </div>
           </CardContent>
         </Card>
