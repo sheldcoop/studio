@@ -35,7 +35,7 @@ export default async function TopicPage({
     'confidence-intervals',
     'hypothesis-testing-p-values',
     'mental-math',
-    'linear-algebra',
+    'linear-algebra-for-quantitative-finance',
     't-test',
     'z-test',
     'anova',
@@ -49,6 +49,7 @@ export default async function TopicPage({
     'friedman-test',
     'kolmogorov-smirnov-k-s-test',
     'stat-toolkit',
+    'maximum-likelihood-estimation',
   ];
 
   if (dedicatedPages.includes(slug)) {
