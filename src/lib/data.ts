@@ -50,7 +50,7 @@ export const allTopics: Topic[] = [
     category: 'main',
   },
   {
-    id: 'statistics',
+    id: 'statistics-for-quantitative-finance',
     title: 'Statistics',
     description: 'Quantifying uncertainty and making sense of distributions.',
     icon: Sigma,
@@ -74,19 +74,19 @@ export const allTopics: Topic[] = [
     category: 'main',
   },
   {
-    id: 'time-series',
+    id: 'time-series-analysis-for-quantitative-finance',
     title: 'Time Series Analysis',
     description: 'ARIMA, GARCH, and forecasting market movements.',
     icon: LineChart,
-    href: '/topics/time-series',
+    href: '/topics/time-series-analysis-for-quantitative-finance',
     category: 'main',
   },
   {
-    id: 'machine-learning',
+    id: 'machine-learning-for-quantitative-finance',
     title: 'Machine Learning',
     description: 'Building predictive models for financial markets.',
     icon: Cpu,
-    href: '/topics/machine-learning',
+    href: '/topics/machine-learning-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -113,7 +113,7 @@ export const allTopics: Topic[] = [
   { id: 'pca', title: 'Principal Component Analysis (PCA)', href: '/topics/principal-component-analysis-pca', icon: BrainCircuit, description: 'A powerful dimensionality reduction technique.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
 
   // Parent "topic" for Hypothesis testing
-  { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/topics/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics' },
+  { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/topics/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics-for-quantitative-finance' },
 
   // Parametric Tests (sub-topics of hypothesis testing)
   { id: 't-test', title: 'T-Test', href: '/topics/t-test', icon: FunctionSquare, description: 'Compares the means of two groups, assuming normal distribution.', category: 'parametric', parent: 'hypothesis-testing-p-values' },
@@ -179,46 +179,46 @@ export type LearningPath = {
 
 export const learningPaths: LearningPath[] = [
   {
-    id: 'linear-algebra',
+    id: 'linear-algebra-for-quantitative-finance',
     title: 'Linear Algebra for Quants',
     icon: Calculator,
     description: 'Master vectors, matrices, and eigenvalues for financial modeling.',
     lessons: allTopics.filter(t => t.parent === 'linear-algebra-for-quantitative-finance'),
   },
   {
-    id: 'statistics',
+    id: 'statistics-for-quantitative-finance',
     title: 'Advanced Statistics',
     icon: BarChart3,
     description: 'Deep dive into probability, distributions, and hypothesis testing.',
     lessons: [
-      { id: 'prob-theory', title: 'Probability Theory', href: '/topics/probability-theory', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics', status: 'completed', duration: 60 },
-      { id: 'common-dist', title: 'Common Distributions', href: '/topics/common-distributions', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics', status: 'in-progress', duration: 75 },
+      { id: 'prob-theory', title: 'Probability Theory', href: '/topics/probability-theory', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics-for-quantitative-finance', status: 'completed', duration: 60 },
+      { id: 'common-dist', title: 'Common Distributions', href: '/topics/common-distributions', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics-for-quantitative-finance', status: 'in-progress', duration: 75 },
       allTopics.find(t => t.id === 'hypothesis-testing-p-values')!,
-      { id: 'bayes-intro', title: 'Bayesian Statistics Intro', href: '/topics/bayesian-statistics-intro', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics', status: 'not-started', duration: 60 },
+      { id: 'bayes-intro', title: 'Bayesian Statistics Intro', href: '/topics/bayesian-statistics-intro', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics-for-quantitative-finance', status: 'not-started', duration: 60 },
     ].filter(Boolean) as Topic[],
   },
   {
-    id: 'time-series',
+    id: 'time-series-analysis-for-quantitative-finance',
     title: 'Time Series Analysis',
     icon: AreaChart,
     description: 'Learn to model and forecast financial time series data.',
     lessons: [
-      { id: 'arma', title: 'AR, MA, ARMA, ARIMA Models', href: '/topics/arma-arima', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series', status: 'completed', duration: 75 },
-      { id: 'stationarity', title: 'Stationarity and Cointegration', href: '/topics/stationarity-cointegration', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series', status: 'not-started', duration: 60 },
-      { id: 'garch', title: 'ARCH/GARCH Models', href: '/topics/arch-garch', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series', status: 'not-started', duration: 60 },
-      { id: 'forecasting', title: 'Forecasting Techniques', href: '/topics/forecasting-techniques', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series', status: 'not-started', duration: 45 },
+      { id: 'arma', title: 'AR, MA, ARMA, ARIMA Models', href: '/topics/arma-arima', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series-analysis-for-quantitative-finance', status: 'completed', duration: 75 },
+      { id: 'stationarity', title: 'Stationarity and Cointegration', href: '/topics/stationarity-cointegration', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series-analysis-for-quantitative-finance', status: 'not-started', duration: 60 },
+      { id: 'garch', title: 'ARCH/GARCH Models', href: '/topics/arch-garch', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series-analysis-for-quantitative-finance', status: 'not-started', duration: 60 },
+      { id: 'forecasting', title: 'Forecasting Techniques', href: '/topics/forecasting-techniques', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series-analysis-for-quantitative-finance', status: 'not-started', duration: 45 },
     ],
   },
   {
-    id: 'machine-learning',
+    id: 'machine-learning-for-quantitative-finance',
     title: 'Machine Learning in Finance',
     icon: BrainCircuit,
     description: 'Apply ML algorithms to trading, risk, and asset management.',
     lessons: [
-      { id: 'supervised-unsupervised', title: 'Supervised vs. Unsupervised', href: '/topics/supervised-unsupervised', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning', status: 'in-progress', duration: 45 },
-      { id: 'regression-classification', title: 'Regression and Classification', href: '/topics/regression-classification', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning', status: 'not-started', duration: 90 },
-      { id: 'intro-neural-networks', title: 'Intro to Neural Networks', href: '/topics/intro-neural-networks', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning', status: 'not-started', duration: 75 },
-      { id: 'feature-engineering', title: 'Feature Engineering for Finance', href: '/topics/feature-engineering', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning', status: 'not-started', duration: 60 },
+      { id: 'supervised-unsupervised', title: 'Supervised vs. Unsupervised', href: '/topics/supervised-unsupervised', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning-for-quantitative-finance', status: 'in-progress', duration: 45 },
+      { id: 'regression-classification', title: 'Regression and Classification', href: '/topics/regression-classification', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning-for-quantitative-finance', status: 'not-started', duration: 90 },
+      { id: 'intro-neural-networks', title: 'Intro to Neural Networks', href: '/topics/intro-neural-networks', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning-for-quantitative-finance', status: 'not-started', duration: 75 },
+      { id: 'feature-engineering', title: 'Feature Engineering for Finance', href: '/topics/feature-engineering', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning-for-quantitative-finance', status: 'not-started', duration: 60 },
     ],
   },
   {
