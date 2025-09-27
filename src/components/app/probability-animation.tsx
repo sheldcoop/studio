@@ -19,24 +19,12 @@ export function ProbabilityAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
 
-  const particlesMaterial = useMemo(
-    () =>
-      new THREE.PointsMaterial({
-        color: 0x22c55e,
-        size: 0.25,
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        opacity: 0.9,
-        sizeAttenuation: true,
-      }),
-    []
-  );
-
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let frameId: number;
 
+    // --- Scene Setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -44,48 +32,78 @@ export function ProbabilityAnimation({
       0.1,
       100
     );
-    camera.position.z = 25;
+    camera.position.set(0, 0, 18);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
 
-    const particleCount = 1000;
+    const group = new THREE.Group();
+    scene.add(group);
+    
+    // --- Materials ---
+    const particleMaterial = new THREE.PointsMaterial({
+        color: 0x22c55e,
+        size: 0.35,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        opacity: 1,
+        sizeAttenuation: true,
+    });
+    
+    const pegMaterial = new THREE.MeshBasicMaterial({
+        color: 0x22c55e,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.3
+    });
+
+    // --- Galton Board Pegs ---
+    const pegGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 8);
+    const pegGroup = new THREE.Group();
+    const rows = 12;
+    const rowSpacing = 1.2;
+    const colSpacing = 1.4;
+
+    for (let row = 0; row < rows; row++) {
+        const numPegs = row + 1;
+        for (let col = 0; col < numPegs; col++) {
+            const peg = new THREE.Mesh(pegGeometry, pegMaterial);
+            peg.position.x = (col - (numPegs - 1) / 2) * colSpacing;
+            peg.position.y = 6 - row * rowSpacing;
+            peg.rotation.x = Math.PI / 2;
+            pegGroup.add(peg);
+        }
+    }
+    group.add(pegGroup);
+
+    // --- Particles (Beans) ---
+    const particleCount = 400;
     const particlesGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const particleData = [];
 
     for (let i = 0; i < particleCount; i++) {
-      const i3 = i * 3;
-      positions[i3] = (Math.random() - 0.5) * 30;
-      positions[i3 + 1] = (Math.random() - 0.5) * 30;
-      positions[i3 + 2] = (Math.random() - 0.5) * 30;
-      
-      particleData.push({
-        velocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.1,
-          (Math.random() - 0.5) * 0.1,
-          (Math.random() - 0.5) * 0.1
-        ),
-        originalPos: new THREE.Vector3(positions[i3], positions[i3+1], positions[i3+2]),
-      });
+        positions[i * 3] = (Math.random() - 0.5) * 0.5;
+        positions[i * 3 + 1] = 8 + Math.random() * 4;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 2;
+        particleData.push({
+            velocity: new THREE.Vector3(0, -Math.random() * 0.1 - 0.1, 0),
+            currentRow: -1,
+            life: Math.random() * 200,
+        });
     }
-
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particleSystem);
+    const particleSystem = new THREE.Points(particlesGeometry, particleMaterial);
+    group.add(particleSystem);
     
-    const planeGeometry = new THREE.PlaneGeometry(15, 15, 1, 1);
-    const planeMaterial = new THREE.MeshBasicMaterial({
-        color: 0x22c55e,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0,
-        wireframe: true,
-    });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    scene.add(plane);
+    // --- Bins at the bottom ---
+    const numBins = rows + 2;
+    const binWidth = colSpacing * 0.9;
+    const binHeight = 5;
+    const binCounts = new Array(numBins).fill(0);
+    const binYOffset = 6 - (rows) * rowSpacing - binHeight / 2;
 
 
     const clock = new THREE.Clock();
@@ -95,34 +113,58 @@ export function ProbabilityAnimation({
       const delta = clock.getDelta();
 
       const positionAttribute = particleSystem.geometry.getAttribute('position');
-      
-      let attractFactor = isMouseOver.current ? 1.0 : 0.0;
-      plane.material.opacity += ( (isMouseOver.current ? 0.3 : 0.0) - plane.material.opacity) * 0.1;
 
-      for (let i = 0; i < particleCount; i++) {
-        const pos = new THREE.Vector3(
-          positionAttribute.getX(i),
-          positionAttribute.getY(i),
-          positionAttribute.getZ(i)
-        );
-        
-        pos.add(particleData[i].velocity);
-        
-        // Bounce off walls
-        if (Math.abs(pos.x) > 15) particleData[i].velocity.x *= -1;
-        if (Math.abs(pos.y) > 15) particleData[i].velocity.y *= -1;
-        if (Math.abs(pos.z) > 15) particleData[i].velocity.z *= -1;
+      if (isMouseOver.current) {
+        for (let i = 0; i < particleCount; i++) {
+          const pos = new THREE.Vector3(
+            positionAttribute.getX(i),
+            positionAttribute.getY(i),
+            positionAttribute.getZ(i)
+          );
+          
+          particleData[i].velocity.y -= 0.5 * delta; // Gravity
+          pos.add(particleData[i].velocity.clone().multiplyScalar(delta * 20));
 
-        // Attract to plane
-        const targetPos = new THREE.Vector3(pos.x, pos.y, 0);
-        pos.lerp(targetPos, attractFactor * 0.05);
+          // Check for peg collision
+          const currentRow = Math.floor((6.5 - pos.y) / rowSpacing);
+          if (currentRow >= 0 && currentRow < rows && currentRow !== particleData[i].currentRow) {
+             particleData[i].currentRow = currentRow;
+             particleData[i].velocity.x += (Math.random() - 0.5) * 0.15;
+          }
 
-        positionAttribute.setXYZ(i, pos.x, pos.y, pos.z);
+          // Check if particle reached bottom
+          if (pos.y < binYOffset + binHeight/2) {
+              const binIndex = Math.round((pos.x / colSpacing) + (numBins-1)/2);
+              if (binIndex >= 0 && binIndex < numBins) {
+                 const pileHeight = binCounts[binIndex] * 0.2;
+                 if (pos.y < binYOffset + pileHeight) {
+                    pos.y = binYOffset + pileHeight;
+                    pos.x = ((binIndex - (numBins-1)/2) + (Math.random()-0.5)*0.5) * colSpacing;
+                    particleData[i].velocity.set(0,0,0);
+                    binCounts[binIndex] += 1;
+                 }
+              }
+          }
+          
+          // Reset particle if it falls off bottom
+          if (pos.y < binYOffset - 5) {
+            pos.x = (Math.random() - 0.5) * 0.5;
+            pos.y = 8 + Math.random() * 4;
+            pos.z = (Math.random() - 0.5) * 2;
+            particleData[i].velocity.set(0, -Math.random() * 0.1 - 0.1, 0);
+            particleData[i].currentRow = -1;
+
+            const oldBinIndex = Math.round((positionAttribute.getX(i) / colSpacing) + (numBins-1)/2);
+            if (oldBinIndex >= 0 && oldBinIndex < numBins) {
+                binCounts[oldBinIndex] = Math.max(0, binCounts[oldBinIndex]-1);
+            }
+          }
+          positionAttribute.setXYZ(i, pos.x, pos.y, pos.z);
+        }
       }
 
       positionAttribute.needsUpdate = true;
-      particleSystem.rotation.y += delta * 0.05;
-      plane.rotation.y = particleSystem.rotation.y
+      group.rotation.y += delta * 0.03;
 
       renderer.render(scene, camera);
     };
@@ -159,10 +201,11 @@ export function ProbabilityAnimation({
       }
       renderer.dispose();
       particlesGeometry.dispose();
-      planeGeometry.dispose();
-      planeMaterial.dispose();
+      particleMaterial.dispose();
+      pegGeometry.dispose();
+      pegMaterial.dispose();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
