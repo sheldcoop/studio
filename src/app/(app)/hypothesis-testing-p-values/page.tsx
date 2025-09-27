@@ -77,7 +77,7 @@ export default function HypothesisTestingPage() {
                                  </li>
                             ))}
                         </ul>
-                    </CardContent>
+                    </Content>
                 </Card>
             </div>
         </section>
