@@ -106,15 +106,12 @@ export const allTopics: Topic[] = [
     category: 'main',
   },
 
-  // Sub-topics for Linear Algebra - THIS IS THE NEW CURRICULUM
-  { id: 'vectors-spaces', title: 'Vectors and Spaces', href: '/topics/vectors-and-spaces', icon: Waypoints, description: 'The fundamental building blocks.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 45 },
-  { id: 'matrix-transformations', title: 'Matrix Transformations', href: '/topics/matrix-transformations', icon: FileJson, description: 'Learn how matrices act as functions.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 60 },
-  { id: 'eigenvalues-eigenvectors', title: 'Eigenvalues and Eigenvectors', href: '/topics/eigenvalues-and-eigenvectors', icon: LineChart, description: 'Discover the "special" vectors.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'in-progress', duration: 75 },
-  { id: 'pca', title: 'Principal Component Analysis (PCA)', href: '/topics/principal-component-analysis-pca', icon: BrainCircuit, description: 'A powerful dimensionality reduction technique.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
-  { id: 'svd', title: 'Singular Value Decomposition (SVD)', href: '/topics/singular-value-decomposition', icon: BrainCircuit, description: 'A powerful matrix factorization technique.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
-  { id: 'covariance-matrices', title: 'Covariance Matrices', href: '/topics/covariance-matrices', icon: BrainCircuit, description: 'Understanding portfolio risk and asset relationships.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 60 },
-  { id: 'solving-linear-systems', title: 'Solving Systems of Linear Equations', href: '/topics/solving-linear-systems', icon: BrainCircuit, description: 'The foundation for optimization and regression.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 60 },
-  { id: 'portfolio-optimization', title: 'Applications in Portfolio Optimization', href: '/topics/portfolio-optimization', icon: BrainCircuit, description: 'Applying linear algebra to build optimal portfolios.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
+  // Sub-topics for Linear Algebra
+  { id: 'vectors-and-matrices-foundations', title: 'Module 1: Foundations of Vectors & Matrices', href: '/topics/linear-algebra-for-quantitative-finance', icon: Waypoints, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 45 },
+  { id: 'core-concepts-and-decompositions', title: 'Module 2: Core Concepts & Decompositions', href: '/topics/linear-algebra-for-quantitative-finance', icon: FileJson, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 60 },
+  { id: 'ml-and-stats-applications', title: 'Module 3: Applications in ML & Statistics', href: '/topics/linear-algebra-for-quantitative-finance', icon: BrainCircuit, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'in-progress', duration: 75 },
+  { id: 'quant-finance-applications', title: 'Module 4: Applications in Quantitative Finance', href: '/topics/linear-algebra-for-quantitative-finance', icon: CandlestickChart, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
+
   
   // Parent "topic" for Hypothesis testing
   { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/topics/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics-for-quantitative-finance' },
