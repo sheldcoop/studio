@@ -40,12 +40,22 @@ export function AnimatedTagline() {
   const staticPart = taglines[taglineIndex][0];
 
   return (
-    <h1 className="font-headline text-5xl font-bold tracking-tight md:text-6xl">
-      <span className="inline-block h-14">
-        <span>{staticPart}</span>
-        <span className="text-primary">{animatedText}</span>
-        <span className="animate-blink border-r-2 border-foreground align-bottom" aria-hidden="true"></span>
-      </span>
-    </h1>
+    <>
+      {/* This h2 is for SEO and screen readers, providing a stable, non-animated version */}
+      <h2 className="sr-only">From Data to Insight, From Model to Alpha.</h2>
+      <div
+        aria-hidden="true"
+        className="font-headline text-5xl font-bold tracking-tight md:text-6xl"
+      >
+        <span className="inline-block h-14">
+          <span>{staticPart}</span>
+          <span className="text-primary">{animatedText}</span>
+          <span
+            className="animate-blink border-r-2 border-foreground align-bottom"
+            aria-hidden="true"
+          ></span>
+        </span>
+      </div>
+    </>
   );
 }
