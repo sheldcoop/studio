@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -103,7 +102,7 @@ export default function MLEPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="text-center text-lg">
-                {`$$L(p|\\text{data}) = p^7(1-p)^3$$`}
+                $$L(p|\text{data}) = p^7(1-p)^3$$
             </CardContent>
         </Card>
 
@@ -115,7 +114,7 @@ export default function MLEPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="text-center text-lg">
-                 {`$$\\ln(L) = 7\\ln(p) + 3\\ln(1-p)$$`}
+                 $$\ln(L) = 7\ln(p) + 3\ln(1-p)$$
             </CardContent>
         </Card>
 
@@ -127,12 +126,12 @@ export default function MLEPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-center text-lg">
-                <div>{`$$ \\frac{d}{dp}[\\ln(L)] = \\frac{7}{p} - \\frac{3}{1-p} $$`}</div>
+                <div>$$ \frac{d}{dp}[\ln(L)] = \frac{7}{p} - \frac{3}{1-p} $$</div>
                 <p className="text-sm text-muted-foreground">Now, set to zero and solve for $p$:</p>
-                <div>{`$$ \\frac{7}{p} = \\frac{3}{1-p} $$`}</div>
-                <div>{`$$ 7(1-p) = 3p $$`}</div>
-                <div>{`$$ 7 - 7p = 3p $$`}</div>
-                <div>{`$$ 7 = 10p $$`}</div>
+                <div>$$ \frac{7}{p} = \frac{3}{1-p} $$</div>
+                <div>$$ 7(1-p) = 3p $$</div>
+                <div>$$ 7 - 7p = 3p $$</div>
+                <div>$$ 7 = 10p $$</div>
             </CardContent>
         </Card>
         
@@ -144,7 +143,7 @@ export default function MLEPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="text-center text-3xl font-bold">
-                 {`$$p = 0.7$$`}
+                 $$p = 0.7$$
             </CardContent>
         </Card>
         
