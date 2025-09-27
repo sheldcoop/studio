@@ -30,7 +30,7 @@ export function LearningPathCard({ path }: LearningPathCardProps) {
   );
 
   return (
-    <Link href={`/paths#${path.id}`} className="group block">
+    <Link href={path.lessons[0]?.href || '#'} className="group block h-full">
       <Card className="flex h-full flex-col transition-all duration-300 ease-in-out group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/10">
         <CardHeader>
           <div className="mb-4">
