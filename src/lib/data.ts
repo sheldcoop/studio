@@ -107,11 +107,8 @@ export const allTopics: Topic[] = [
   },
 
   // Sub-topics for Linear Algebra Path
-  { id: 'module-1-foundations', title: 'Module 1: Foundations of Vectors & Matrices', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 45 },
-  { id: 'module-2-core-concepts', title: 'Module 2: Core Concepts & Decompositions', href: '/topics/linear-algebra-for-quantitative-finance#module-2', icon: FileJson, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 60 },
-  { id: 'module-3-ml-apps', title: 'Module 3: Applications in ML & Statistics', href: '/topics/linear-algebra-for-quantitative-finance#module-3', icon: BrainCircuit, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'in-progress', duration: 75 },
-  { id: 'module-4-quant-apps', title: 'Module 4: Applications in Quantitative Finance', href: '/topics/linear-algebra-for-quantitative-finance#module-4', icon: CandlestickChart, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
-
+  { id: 'la-vectors-spaces', title: 'Vectors and Spaces', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-1', status: 'completed', duration: 20 },
+  { id: 'la-matrices-ops', title: 'Matrices and Operations', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-1', status: 'completed', duration: 25 },
   
   // Parent "topic" for Hypothesis testing
   { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/topics/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics-for-quantitative-finance' },
@@ -169,13 +166,20 @@ export const allTopics: Topic[] = [
 
 ];
 
+export type Module = {
+  id: string;
+  title: string;
+  lessons: Topic[];
+  status?: 'completed' | 'in-progress' | 'not-started';
+  duration?: number;
+};
 
 export type LearningPath = {
   id: string;
   title: string;
   icon: LucideIcon;
   description: string;
-  lessons: Topic[];
+  modules: Module[];
 };
 
 export const learningPaths: LearningPath[] = [
@@ -184,55 +188,45 @@ export const learningPaths: LearningPath[] = [
     title: 'Linear Algebra for Quants',
     icon: Calculator,
     description: 'Master vectors, matrices, and eigenvalues for financial modeling.',
-    lessons: allTopics.filter(t => t.parent === 'linear-algebra-for-quantitative-finance'),
+    modules: [
+        { id: 'la-module-1', title: 'Module 1: Foundations of Vectors and Matrices', status: 'completed', duration: 45, lessons: allTopics.filter(t => t.parent === 'la-module-1')},
+        { id: 'la-module-2', title: 'Module 2: Core Concepts & Decompositions', status: 'completed', duration: 60, lessons: [] },
+        { id: 'la-module-3', title: 'Module 3: Applications in ML & Statistics', status: 'in-progress', duration: 75, lessons: [] },
+        { id: 'la-module-4', title: 'Module 4: Applications in Quantitative Finance', status: 'not-started', duration: 90, lessons: [] },
+    ],
   },
   {
     id: 'statistics-for-quantitative-finance',
     title: 'Advanced Statistics',
     icon: BarChart3,
     description: 'Deep dive into probability, distributions, and hypothesis testing.',
-    lessons: [
-      { id: 'prob-theory', title: 'Probability Theory', href: '/topics/probability-theory', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics-for-quantitative-finance', status: 'completed', duration: 60 },
-      { id: 'common-dist', title: 'Common Distributions', href: '/topics/common-distributions', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics-for-quantitative-finance', status: 'in-progress', duration: 75 },
-      allTopics.find(t => t.id === 'hypothesis-testing-p-values')!,
-      { id: 'bayes-intro', title: 'Bayesian Statistics Intro', href: '/topics/bayesian-statistics-intro', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'statistics-for-quantitative-finance', status: 'not-started', duration: 60 },
-    ].filter(Boolean) as Topic[],
+    modules: [
+      { id: 'stats-module-1', title: 'Probability Theory', status: 'completed', duration: 60, lessons: []},
+      { id: 'stats-module-2', title: 'Common Distributions', status: 'in-progress', duration: 75, lessons: [] },
+      { id: 'stats-module-3', title: 'Hypothesis Testing', status: 'not-started', duration: 120, lessons: [] },
+      { id: 'stats-module-4', title: 'Bayesian Statistics Intro', status: 'not-started', duration: 60, lessons: [] },
+    ],
   },
   {
     id: 'time-series-analysis-for-quantitative-finance',
     title: 'Time Series Analysis',
     icon: AreaChart,
     description: 'Learn to model and forecast financial time series data.',
-    lessons: [
-      { id: 'arma', title: 'AR, MA, ARMA, ARIMA Models', href: '/topics/arma-arima', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series-analysis-for-quantitative-finance', status: 'completed', duration: 75 },
-      { id: 'stationarity', title: 'Stationarity and Cointegration', href: '/topics/stationarity-cointegration', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series-analysis-for-quantitative-finance', status: 'not-started', duration: 60 },
-      { id: 'garch', title: 'ARCH/GARCH Models', href: '/topics/arch-garch', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series-analysis-for-quantitative-finance', status: 'not-started', duration: 60 },
-      { id: 'forecasting', title: 'Forecasting Techniques', href: '/topics/forecasting-techniques', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'time-series-analysis-for-quantitative-finance', status: 'not-started', duration: 45 },
-    ],
+    modules: [],
   },
   {
     id: 'machine-learning-for-quantitative-finance',
     title: 'Machine Learning in Finance',
     icon: BrainCircuit,
     description: 'Apply ML algorithms to trading, risk, and asset management.',
-    lessons: [
-      { id: 'supervised-unsupervised', title: 'Supervised vs. Unsupervised', href: '/topics/supervised-unsupervised', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning-for-quantitative-finance', status: 'in-progress', duration: 45 },
-      { id: 'regression-classification', title: 'Regression and Classification', href: '/topics/regression-classification', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning-for-quantitative-finance', status: 'not-started', duration: 90 },
-      { id: 'intro-neural-networks', title: 'Intro to Neural Networks', href: '/topics/intro-neural-networks', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning-for-quantitative-finance', status: 'not-started', duration: 75 },
-      { id: 'feature-engineering', title: 'Feature Engineering for Finance', href: '/topics/feature-engineering', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'machine-learning-for-quantitative-finance', status: 'not-started', duration: 60 },
-    ],
+    modules: [],
   },
   {
     id: 'algo-trading',
     title: 'Algorithmic Trading Strategies',
     icon: CandlestickChart,
     description: 'Design, backtest, and deploy automated trading strategies.',
-    lessons: [
-        { id: 'backtesting', title: 'Strategy Backtesting', href: '/topics/strategy-backtesting', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'algo-trading', status: 'not-started', duration: 90 },
-        { id: 'risk-management', title: 'Risk Management in Algo Trading', href: '/topics/risk-management-algo', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'algo-trading', status: 'not-started', duration: 60 },
-        { id: 'execution-slippage', title: 'Execution and Slippage', href: '/topics/execution-slippage', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'algo-trading', status: 'not-started', duration: 45 },
-        { id: 'mean-reversion-strategies', title: 'Mean Reversion Strategies', href: '/topics/mean-reversion-strategies', icon: FunctionSquare, description: '', category: 'sub-topic', parent: 'algo-trading', status: 'not-started', duration: 75 },
-    ],
+    modules: [],
   },
 ];
 
