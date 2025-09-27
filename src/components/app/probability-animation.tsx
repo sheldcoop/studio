@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 
@@ -11,6 +11,27 @@ interface ProbabilityAnimationProps {
   onPointerLeave: () => void;
 }
 
+const createFaceMaterial = (dots: { x: number; y: number }[]) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const context = canvas.getContext('2d');
+  if (!context) return new THREE.MeshStandardMaterial({ color: 0x111111 });
+
+  context.fillStyle = '#333'; // Dark grey die face
+  context.fillRect(0, 0, 128, 128);
+
+  context.fillStyle = '#22c55e'; // Primary green for the dots
+  dots.forEach((dot) => {
+    context.beginPath();
+    context.arc(dot.x, dot.y, 12, 0, Math.PI * 2);
+    context.fill();
+  });
+
+  return new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(canvas) });
+};
+
+
 export function ProbabilityAnimation({
   className,
   onPointerEnter,
@@ -18,36 +39,11 @@ export function ProbabilityAnimation({
 }: ProbabilityAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
-
-  // Memoize materials and geometries for performance
-  const coinMaterials = useMemo(
-    () => [
-      new THREE.MeshStandardMaterial({
-        color: 0xcccccc,
-        metalness: 0.7,
-        roughness: 0.3,
-      }), // side
-      new THREE.MeshStandardMaterial({
-        color: 0xffd700,
-        metalness: 0.8,
-        roughness: 0.2,
-      }), // heads
-      new THREE.MeshStandardMaterial({
-        color: 0x818cf8,
-        metalness: 0.8,
-        roughness: 0.2,
-      }), // tails
-    ],
-    []
-  );
-
-  const coinGeometry = useMemo(
-    () => new THREE.CylinderGeometry(1, 1, 0.2, 32),
-    []
-  );
+  const dieRef = useRef<THREE.Mesh>();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    if (!mountRef.current || isInitialized) return;
     const currentMount = mountRef.current;
     let frameId: number;
 
@@ -58,53 +54,51 @@ export function ProbabilityAnimation({
       0.1,
       1000
     );
-    let targetCameraZ = 20;
-    camera.position.z = targetCameraZ;
+    camera.position.z = 10;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
 
-    // --- Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 10, 7.5);
     scene.add(directionalLight);
+    
+    // --- Client-side Geometry and Material creation ---
+    const dotsConfig = [
+      [{ x: 64, y: 64 }], // 1
+      [{ x: 32, y: 32 }, { x: 96, y: 96 }], // 2
+      [{ x: 32, y: 32 }, { x: 64, y: 64 }, { x: 96, y: 96 }], // 3
+      [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 4
+      [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 64, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 5
+      [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 6
+    ];
 
-    // --- Coin Instancing ---
-    const numCoins = 200;
-    const coinsGroup = new THREE.Group();
-    scene.add(coinsGroup);
-    const coinData = [];
+    const dieMaterials = [
+      createFaceMaterial(dotsConfig[3]), // right: 4
+      createFaceMaterial(dotsConfig[2]), // left: 3
+      createFaceMaterial(dotsConfig[4]), // top: 5
+      createFaceMaterial(dotsConfig[1]), // bottom: 2
+      createFaceMaterial(dotsConfig[0]), // front: 1
+      createFaceMaterial(dotsConfig[5]), // back: 6
+    ];
+    
+    const dieGeometry = new THREE.BoxGeometry(5, 5, 5);
 
-    for (let i = 0; i < numCoins; i++) {
-      const coin = new THREE.Mesh(coinGeometry, coinMaterials);
-      coin.rotation.x = Math.random() * Math.PI;
-      coin.rotation.y = Math.random() * Math.PI;
+    const die = new THREE.Mesh(dieGeometry, dieMaterials);
+    scene.add(die);
+    dieRef.current = die;
+    setIsInitialized(true);
 
-      const x = (Math.random() - 0.5) * 30;
-      const y = (Math.random() - 0.5) * 30;
-      const z = (Math.random() - 0.5) * 30;
-      coin.position.set(x, y, z);
 
-      coinsGroup.add(coin);
-
-      coinData.push({
-        mesh: coin,
-        velocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.1,
-          (Math.random() - 0.5) * 0.1,
-          (Math.random() - 0.5) * 0.1,
-        ),
-        angularVelocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.1,
-          (Math.random() - 0.5) * 0.1,
-          (Math.random() - 0.5) * 0.1
-        ),
-      });
-    }
+    let angularVelocity = new THREE.Vector3(
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2
+    );
 
     const clock = new THREE.Clock();
 
@@ -112,40 +106,34 @@ export function ProbabilityAnimation({
       frameId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
 
-      const timeScale = isMouseOver.current ? 0.1 : 1.0;
-      targetCameraZ = isMouseOver.current ? 8 : 20;
-
-      camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
-
-      coinData.forEach((data) => {
-        data.mesh.position.add(
-          data.velocity.clone().multiplyScalar(delta * 60 * timeScale)
-        );
-        data.mesh.rotation.x += data.angularVelocity.x * timeScale;
-        data.mesh.rotation.y += data.angularVelocity.y * timeScale;
-        data.mesh.rotation.z += data.angularVelocity.z * timeScale;
-
-        // Wrap around logic
-        if (data.mesh.position.y < -20) data.mesh.position.y = 20;
-        if (data.mesh.position.x < -20) data.mesh.position.x = 20;
-        if (data.mesh.position.x > 20) data.mesh.position.x = -20;
-      });
-
-      coinsGroup.rotation.y += 0.0005;
+      if (isMouseOver.current) {
+        // Slow down to a stop
+        angularVelocity.multiplyScalar(0.95);
+      } else {
+        // Maintain a minimum speed
+        if (angularVelocity.length() < 0.5) {
+             angularVelocity.set(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+             );
+        }
+         angularVelocity.multiplyScalar(0.99); // Slow damping
+      }
+      
+      if(dieRef.current) {
+        dieRef.current.rotation.x += angularVelocity.x * delta;
+        dieRef.current.rotation.y += angularVelocity.y * delta;
+        dieRef.current.rotation.z += angularVelocity.z * delta;
+      }
 
       renderer.render(scene, camera);
     };
 
     animate();
 
-    const handleMouseEnter = () => {
-      isMouseOver.current = true;
-      onPointerEnter();
-    };
-    const handleMouseLeave = () => {
-      isMouseOver.current = false;
-      onPointerLeave();
-    };
+    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
+    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
     currentMount.addEventListener('mouseenter', handleMouseEnter);
     currentMount.addEventListener('mouseleave', handleMouseLeave);
 
@@ -164,13 +152,19 @@ export function ProbabilityAnimation({
       if (currentMount) {
         currentMount.removeEventListener('mouseenter', handleMouseEnter);
         currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        currentMount.removeChild(renderer.domElement);
+        if (renderer.domElement) {
+           currentMount.removeChild(renderer.domElement);
+        }
       }
+      // Dispose of renderer and materials
       renderer.dispose();
-      coinGeometry.dispose();
-      coinMaterials.forEach((m) => m.dispose());
+      dieGeometry.dispose();
+      dieMaterials.forEach(m => {
+        m.map?.dispose();
+        m.dispose();
+      });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
