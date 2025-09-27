@@ -106,11 +106,11 @@ export const allTopics: Topic[] = [
     category: 'main',
   },
 
-  // Sub-topics for Linear Algebra
-  { id: 'vectors-and-matrices-foundations', title: 'Module 1: Foundations of Vectors & Matrices', href: '/topics/linear-algebra-for-quantitative-finance', icon: Waypoints, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 45 },
-  { id: 'core-concepts-and-decompositions', title: 'Module 2: Core Concepts & Decompositions', href: '/topics/linear-algebra-for-quantitative-finance', icon: FileJson, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 60 },
-  { id: 'ml-and-stats-applications', title: 'Module 3: Applications in ML & Statistics', href: '/topics/linear-algebra-for-quantitative-finance', icon: BrainCircuit, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'in-progress', duration: 75 },
-  { id: 'quant-finance-applications', title: 'Module 4: Applications in Quantitative Finance', href: '/topics/linear-algebra-for-quantitative-finance', icon: CandlestickChart, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
+  // Sub-topics for Linear Algebra Path
+  { id: 'module-1-foundations', title: 'Module 1: Foundations of Vectors & Matrices', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 45 },
+  { id: 'module-2-core-concepts', title: 'Module 2: Core Concepts & Decompositions', href: '/topics/linear-algebra-for-quantitative-finance#module-2', icon: FileJson, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 60 },
+  { id: 'module-3-ml-apps', title: 'Module 3: Applications in ML & Statistics', href: '/topics/linear-algebra-for-quantitative-finance#module-3', icon: BrainCircuit, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'in-progress', duration: 75 },
+  { id: 'module-4-quant-apps', title: 'Module 4: Applications in Quantitative Finance', href: '/topics/linear-algebra-for-quantitative-finance#module-4', icon: CandlestickChart, description: '', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
 
   
   // Parent "topic" for Hypothesis testing

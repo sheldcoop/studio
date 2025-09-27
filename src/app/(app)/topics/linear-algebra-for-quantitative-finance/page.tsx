@@ -49,7 +49,7 @@ export default function LinearAlgebraPage() {
         </Card>
 
         <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-          <AccordionItem value="item-1">
+          <AccordionItem value="item-1" id="module-1">
             <AccordionTrigger className="px-6 text-lg hover:no-underline">
               Module 1: Foundations of Vectors and Matrices
             </AccordionTrigger>
@@ -103,7 +103,7 @@ export default function LinearAlgebraPage() {
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value="item-2" id="module-2">
             <AccordionTrigger className="px-6 text-lg hover:no-underline">
               Module 2: Core Concepts and Decompositions
             </AccordionTrigger>
@@ -144,7 +144,7 @@ export default function LinearAlgebraPage() {
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3">
+          <AccordionItem value="item-3" id="module-3">
             <AccordionTrigger className="px-6 text-lg hover:no-underline">
               Module 3: Applications in Machine Learning & Statistics
             </AccordionTrigger>
@@ -172,7 +172,7 @@ export default function LinearAlgebraPage() {
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-4">
+          <AccordionItem value="item-4" id="module-4">
             <AccordionTrigger className="px-6 text-lg hover:no-underline">
               Module 4: Applications in Quantitative Finance
             </AccordionTrigger>
