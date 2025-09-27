@@ -45,7 +45,7 @@ export default function RootPage() {
           </div>
           <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {quantJourney.map((item) => {
-              if (item.id === 'linear-algebra') {
+              if (item.id === 'linear-algebra-for-quantitative-finance') {
                 return (
                   <div
                     key={item.id}
@@ -140,7 +140,7 @@ export default function RootPage() {
                   </div>
                 );
               }
-              if (item.id === 'time-series') {
+              if (item.id === 'time-series-analysis-for-quantitative-finance') {
                 return (
                   <div
                     key={item.id}
@@ -187,7 +187,7 @@ export default function RootPage() {
                   </div>
                 );
               }
-              if (item.id === 'statistics') {
+              if (item.id === 'statistics-for-quantitative-finance') {
                 return (
                   <div
                     key={item.id}
@@ -283,7 +283,7 @@ export default function RootPage() {
                   </div>
                 );
               }
-              if (item.id === 'machine-learning') {
+              if (item.id === 'machine-learning-for-quantitative-finance') {
                 return (
                   <div
                     key={item.id}
