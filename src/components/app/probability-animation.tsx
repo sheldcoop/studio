@@ -19,11 +19,32 @@ export function ProbabilityAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
 
-  // Memoize materials for performance
-  const nodeMaterial = useMemo(() => new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide }), []);
-  const edgeMaterial = useMemo(() => new THREE.LineBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0.5 }), []);
-  const highlightedEdgeMaterial = useMemo(() => new THREE.LineBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0.9, linewidth: 2 }), []);
-  const highlightedNodeMaterial = useMemo(() => new THREE.MeshBasicMaterial({ color: 0x818cf8, side: THREE.DoubleSide }), []);
+  // Memoize materials and geometries for performance
+  const coinMaterials = useMemo(
+    () => [
+      new THREE.MeshStandardMaterial({
+        color: 0xcccccc,
+        metalness: 0.7,
+        roughness: 0.3,
+      }), // side
+      new THREE.MeshStandardMaterial({
+        color: 0xffd700,
+        metalness: 0.8,
+        roughness: 0.2,
+      }), // heads
+      new THREE.MeshStandardMaterial({
+        color: 0x818cf8,
+        metalness: 0.8,
+        roughness: 0.2,
+      }), // tails
+    ],
+    []
+  );
+
+  const coinGeometry = useMemo(
+    () => new THREE.CylinderGeometry(1, 1, 0.2, 32),
+    []
+  );
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -31,145 +52,100 @@ export function ProbabilityAnimation({
     let frameId: number;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-    camera.position.set(0, 0, 18);
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      currentMount.clientWidth / currentMount.clientHeight,
+      0.1,
+      1000
+    );
+    let targetCameraZ = 20;
+    camera.position.z = targetCameraZ;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
 
-    const group = new THREE.Group();
-    scene.add(group);
+    // --- Lighting ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 10, 7.5);
+    scene.add(directionalLight);
 
-    // --- Graph Generation ---
-    const levels = 4;
-    const nodesPerLevel = [1, 2, 4, 8];
-    const levelDistance = 5;
-    const graph: { nodes: THREE.Mesh[], edges: THREE.Line[] } = { nodes: [], edges: [] };
-    let nodeIndex = 0;
-    
-    let parentNodes: THREE.Mesh[] = [];
+    // --- Coin Instancing ---
+    const numCoins = 200;
+    const coinsGroup = new THREE.Group();
+    scene.add(coinsGroup);
+    const coinData = [];
 
-    for (let i = 0; i < levels; i++) {
-        const currentLevelNodes: THREE.Mesh[] = [];
-        const y = 6 - i * levelDistance;
-        const count = nodesPerLevel[i];
-        
-        for (let j = 0; j < count; j++) {
-            const x = (j - (count - 1) / 2) * (18 / count);
-            const nodeGeometry = new THREE.CircleGeometry(0.5, 32);
-            const node = new THREE.Mesh(nodeGeometry, nodeMaterial.clone());
-            node.position.set(x, y, 0);
-            (node.material as THREE.Material).transparent = true;
-            (node.material as THREE.Material).opacity = 0;
-            group.add(node);
-            graph.nodes.push(node);
-            currentLevelNodes.push(node);
+    for (let i = 0; i < numCoins; i++) {
+      const coin = new THREE.Mesh(coinGeometry, coinMaterials);
+      coin.rotation.x = Math.random() * Math.PI;
+      coin.rotation.y = Math.random() * Math.PI;
 
-            // Create edges to parents
-            if (i > 0) {
-                const parent = parentNodes[Math.floor(j / 2)];
-                const points = [parent.position, node.position];
-                const edgeGeometry = new THREE.BufferGeometry().setFromPoints(points);
-                const edge = new THREE.Line(edgeGeometry, edgeMaterial.clone());
-                (edge.material as THREE.Material).opacity = 0;
-                group.add(edge);
-                graph.edges.push(edge);
-            }
-        }
-        parentNodes = currentLevelNodes;
-    }
-    
-    // --- Highlight Path ---
-    let highlightedPath: (THREE.Mesh | THREE.Line)[] = [];
-    const selectNewHighlightedPath = () => {
-        // Clear previous path
-        highlightedPath.forEach(obj => {
-            obj.material = obj instanceof THREE.Mesh ? nodeMaterial : edgeMaterial;
-        });
-        highlightedPath = [];
+      const x = (Math.random() - 0.5) * 30;
+      const y = (Math.random() - 0.5) * 30;
+      const z = (Math.random() - 0.5) * 30;
+      coin.position.set(x, y, z);
 
-        let pathIndex = 0;
-        let parentNodeIndex = 0;
-        
-        const rootNode = graph.nodes[0];
-        highlightedPath.push(rootNode);
+      coinsGroup.add(coin);
 
-        for (let level = 0; level < levels - 1; level++) {
-            const choice = Math.random() < 0.5 ? 0 : 1;
-            const childNodeIndex = parentNodeIndex * 2 + 1 + choice;
-            
-            // find edge connecting parentNodeIndex and childNodeIndex
-            const edge = graph.edges.find(e => {
-                const positions = e.geometry.attributes.position;
-                const startNode = graph.nodes.find(n => n.position.equals(new THREE.Vector3(positions.getX(0), positions.getY(0), positions.getZ(0))));
-                const endNode = graph.nodes.find(n => n.position.equals(new THREE.Vector3(positions.getX(1), positions.getY(1), positions.getZ(1))));
-                return (graph.nodes.indexOf(startNode!) === parentNodeIndex && graph.nodes.indexOf(endNode!) === childNodeIndex);
-            });
-            
-            if (edge) highlightedPath.push(edge);
-            highlightedPath.push(graph.nodes[childNodeIndex]);
-
-            parentNodeIndex = childNodeIndex;
-        }
-        
-        highlightedPath.forEach(obj => {
-            obj.material = obj instanceof THREE.Mesh ? highlightedNodeMaterial : highlightedEdgeMaterial;
-        });
+      coinData.push({
+        mesh: coin,
+        velocity: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.1,
+          (Math.random() - 0.5) * 0.1,
+          (Math.random() - 0.5) * 0.1,
+        ),
+        angularVelocity: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.1,
+          (Math.random() - 0.5) * 0.1,
+          (Math.random() - 0.5) * 0.1
+        ),
+      });
     }
 
     const clock = new THREE.Clock();
-    let lastHighlightTime = 0;
-    
+
     const animate = () => {
-        frameId = requestAnimationFrame(animate);
-        const elapsedTime = clock.getElapsedTime();
+      frameId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
 
-        // Animate opacity based on level
-        graph.nodes.forEach(node => {
-            const level = Math.floor((6.5 - node.position.y) / levelDistance);
-            const revealTime = level * 0.5;
-            const targetOpacity = elapsedTime > revealTime ? 1 : 0;
-            node.material.opacity += (targetOpacity - node.material.opacity) * 0.1;
-        });
-         graph.edges.forEach(edge => {
-            const endNodeY = edge.geometry.attributes.position.getY(1);
-            const level = Math.floor((6.5 - endNodeY) / levelDistance);
-            const revealTime = level * 0.5;
-            const targetOpacity = elapsedTime > revealTime ? 0.5 : 0;
-             // Don't fade out highlighted edges
-            if (highlightedPath.includes(edge)) {
-                edge.material.opacity = 0.9;
-            } else {
-                edge.material.opacity += (targetOpacity - edge.material.opacity) * 0.1;
-            }
-        });
+      const timeScale = isMouseOver.current ? 0.1 : 1.0;
+      targetCameraZ = isMouseOver.current ? 8 : 20;
 
-        // Handle hover state
-        if (isMouseOver.current) {
-            if (elapsedTime - lastHighlightTime > 1.5) { // every 1.5 seconds
-                selectNewHighlightedPath();
-                lastHighlightTime = elapsedTime;
-            }
-        } else {
-             // Fade out highlighted path when not hovering
-            if (highlightedPath.length > 0) {
-                 highlightedPath.forEach(obj => {
-                    obj.material = obj instanceof THREE.Mesh ? nodeMaterial : edgeMaterial;
-                });
-                highlightedPath = [];
-            }
-        }
-        
-        group.rotation.y = elapsedTime * 0.05;
-        renderer.render(scene, camera);
+      camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
+
+      coinData.forEach((data) => {
+        data.mesh.position.add(
+          data.velocity.clone().multiplyScalar(delta * 60 * timeScale)
+        );
+        data.mesh.rotation.x += data.angularVelocity.x * timeScale;
+        data.mesh.rotation.y += data.angularVelocity.y * timeScale;
+        data.mesh.rotation.z += data.angularVelocity.z * timeScale;
+
+        // Wrap around logic
+        if (data.mesh.position.y < -20) data.mesh.position.y = 20;
+        if (data.mesh.position.x < -20) data.mesh.position.x = 20;
+        if (data.mesh.position.x > 20) data.mesh.position.x = -20;
+      });
+
+      coinsGroup.rotation.y += 0.0005;
+
+      renderer.render(scene, camera);
     };
 
     animate();
 
-    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
-    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
+    const handleMouseEnter = () => {
+      isMouseOver.current = true;
+      onPointerEnter();
+    };
+    const handleMouseLeave = () => {
+      isMouseOver.current = false;
+      onPointerLeave();
+    };
     currentMount.addEventListener('mouseenter', handleMouseEnter);
     currentMount.addEventListener('mouseleave', handleMouseLeave);
 
@@ -191,14 +167,10 @@ export function ProbabilityAnimation({
         currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
-      graph.nodes.forEach(node => node.geometry.dispose());
-      graph.edges.forEach(edge => edge.geometry.dispose());
-      nodeMaterial.dispose();
-      edgeMaterial.dispose();
-      highlightedNodeMaterial.dispose();
-      highlightedEdgeMaterial.dispose();
+      coinGeometry.dispose();
+      coinMaterials.forEach((m) => m.dispose());
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
