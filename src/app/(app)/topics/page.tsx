@@ -3,7 +3,7 @@ import {
   Card,
   CardContent,
 } from '@/components/ui/card';
-import { quantJourney } from '@/lib/data';
+import { allTopics } from '@/lib/data';
 import Link from 'next/link';
 
 export default function TopicsIndexPage() {
@@ -17,7 +17,7 @@ export default function TopicsIndexPage() {
       <Card>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {quantJourney.map((topic) => (
+            {allTopics.map((topic) => (
               <Link
                 key={topic.id}
                 href={topic.href}
@@ -27,9 +27,9 @@ export default function TopicsIndexPage() {
                 <h3 className="mt-2 font-semibold text-foreground/90 group-hover:text-foreground">
                   {topic.title}
                 </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
+                {topic.description && <p className="mt-1 text-sm text-muted-foreground">
                   {topic.description}
-                </p>
+                </p>}
               </Link>
             ))}
           </div>

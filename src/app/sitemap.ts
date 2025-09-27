@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { quantJourney } from '@/lib/data';
+import { allTopics } from '@/lib/data';
 
 const URL = 'https://quantfinancelab.com';
 
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const topicRoutes = quantJourney.map((topic) => ({
+  const topicRoutes = allTopics.map((topic) => ({
     url: `${URL}${topic.href}`,
     lastModified: new Date(),
   }));

@@ -169,7 +169,7 @@ export const communityPosts: CommunityPost[] = [
     },
 ];
 
-export const quantJourney = [
+const mainTopics = [
   {
     id: 'linear-algebra',
     title: 'Linear Algebra',
@@ -220,6 +220,39 @@ export const quantJourney = [
     href: '/topics/stat-toolkit',
   },
 ];
+
+const parametricTests = [
+    { name: 'T-Test', slug: 't-test'},
+    { name: 'Z-Test', slug: 'z-test'},
+    { name: 'ANOVA', slug: 'anova' },
+    { name: 'F-Test', slug: 'f-test' },
+    { name: 'Confidence Intervals', slug: 'confidence-intervals'},
+    { name: 'Pearson Correlation', slug: 'pearson-correlation' },
+];
+
+const nonParametricTests = [
+    { name: 'Mann-Whitney U Test', slug: 'mann-whitney-u-test' },
+    { name: 'Kruskal-Wallis Test', slug: 'kruskal-wallis-test' },
+    { name: 'Wilcoxon Signed-Rank Test', slug: 'wilcoxon-signed-rank-test' },
+    { name: 'Spearman\'s Rank Correlation', slug: 'spearmans-rank-correlation' },
+    { name: 'Friedman Test', slug: 'friedman-test' },
+    { name: 'Kolmogorov-Smirnov (K-S) Test', slug: 'kolmogorov-smirnov-k-s-test' },
+    { name: 'Chi-Squared Test', slug: 'chi-squared-test' }
+];
+
+const hypothesisSubTopics = [...parametricTests, ...nonParametricTests].map(t => ({
+  id: t.slug,
+  title: t.name,
+  description: '', 
+  icon: FunctionSquare,
+  href: `/topics/${t.slug}`
+}));
+
+// A single, consolidated list of all topics for the sitemap and topic pages.
+export const allTopics = [...mainTopics, ...hypothesisSubTopics];
+
+// The list for the main topic cards on the homepage.
+export const quantJourney = mainTopics;
 
 export const statsToolkitTiers = [
   {
