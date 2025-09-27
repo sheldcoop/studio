@@ -42,11 +42,11 @@ export type Topic = {
 export const allTopics: Topic[] = [
   // Main Topics (for homepage cards)
   {
-    id: 'linear-algebra',
+    id: 'linear-algebra-for-quantitative-finance',
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
-    href: '/topics/linear-algebra',
+    href: '/topics/linear-algebra-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -107,10 +107,10 @@ export const allTopics: Topic[] = [
   },
 
   // Sub-topics for Linear Algebra
-  { id: 'vectors-spaces', title: 'Vectors and Spaces', href: '/topics/vectors-and-spaces', icon: Waypoints, description: 'The fundamental building blocks.', category: 'sub-topic', parent: 'linear-algebra', status: 'completed', duration: 45 },
-  { id: 'matrix-transformations', title: 'Matrix Transformations', href: '/topics/matrix-transformations', icon: FileJson, description: 'Learn how matrices act as functions.', category: 'sub-topic', parent: 'linear-algebra', status: 'completed', duration: 60 },
-  { id: 'eigenvalues-eigenvectors', title: 'Eigenvalues and Eigenvectors', href: '/topics/eigenvalues-and-eigenvectors', icon: LineChart, description: 'Discover the "special" vectors.', category: 'sub-topic', parent: 'linear-algebra', status: 'in-progress', duration: 75 },
-  { id: 'pca', title: 'Principal Component Analysis (PCA)', href: '/topics/principal-component-analysis-pca', icon: BrainCircuit, description: 'A powerful dimensionality reduction technique.', category: 'sub-topic', parent: 'linear-algebra', status: 'not-started', duration: 90 },
+  { id: 'vectors-spaces', title: 'Vectors and Spaces', href: '/topics/vectors-and-spaces', icon: Waypoints, description: 'The fundamental building blocks.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 45 },
+  { id: 'matrix-transformations', title: 'Matrix Transformations', href: '/topics/matrix-transformations', icon: FileJson, description: 'Learn how matrices act as functions.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'completed', duration: 60 },
+  { id: 'eigenvalues-eigenvectors', title: 'Eigenvalues and Eigenvectors', href: '/topics/eigenvalues-and-eigenvectors', icon: LineChart, description: 'Discover the "special" vectors.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'in-progress', duration: 75 },
+  { id: 'pca', title: 'Principal Component Analysis (PCA)', href: '/topics/principal-component-analysis-pca', icon: BrainCircuit, description: 'A powerful dimensionality reduction technique.', category: 'sub-topic', parent: 'linear-algebra-for-quantitative-finance', status: 'not-started', duration: 90 },
 
   // Parent "topic" for Hypothesis testing
   { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/topics/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics' },
@@ -183,7 +183,7 @@ export const learningPaths: LearningPath[] = [
     title: 'Linear Algebra for Quants',
     icon: Calculator,
     description: 'Master vectors, matrices, and eigenvalues for financial modeling.',
-    lessons: allTopics.filter(t => t.parent === 'linear-algebra'),
+    lessons: allTopics.filter(t => t.parent === 'linear-algebra-for-quantitative-finance'),
   },
   {
     id: 'statistics',
