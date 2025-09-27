@@ -19,7 +19,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
-          <Link href="/dashboard" className="mr-6">
+          <Link href="/" className="mr-6">
             <Logo />
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
@@ -39,7 +39,7 @@ export function Header() {
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
             <Link
-              href="/dashboard"
+              href="/"
               className="mb-6 flex items-center"
               onClick={() => setMobileMenuOpen(false)}
             >

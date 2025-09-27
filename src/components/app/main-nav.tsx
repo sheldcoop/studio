@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 const links = [
   {
-    href: '/dashboard',
+    href: '/',
     label: 'Dashboard',
     icon: LayoutDashboard,
   },
