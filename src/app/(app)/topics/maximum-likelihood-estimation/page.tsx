@@ -104,7 +104,7 @@ export default function MLEPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="text-center text-lg">
-                $$L(p|\\text{data}) = p^7(1-p)^3$$
+                $$L(p|\text{data}) = p^7(1-p)^3$$
             </CardContent>
         </Card>
 
