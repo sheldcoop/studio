@@ -11,16 +11,22 @@ import {
 } from '@/components/ui/card';
 import { quantJourney } from '@/lib/data';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
-import { LinearAlgebraAnimation } from '@/components/app/linear-algebra-animation';
-import { MentalMathAnimation } from '@/components/app/mental-math-animation';
-import { TimeSeriesAnimation } from '@/components/app/time-series-animation';
-import { StatisticsAnimation } from '@/components/app/statistics-animation';
-import { MachineLearningAnimation } from '@/components/app/machine-learning-animation';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { ConfidenceIntervalAnimation } from '@/components/app/confidence-interval-animation';
 import { Header } from '@/components/app/header';
-import { ProbabilityAnimation } from '@/components/app/probability-animation';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const AnimationLoader = () => <Skeleton className="h-full w-full" />;
+
+const LinearAlgebraAnimation = dynamic(() => import('@/components/app/linear-algebra-animation').then(mod => mod.LinearAlgebraAnimation), { loading: () => <AnimationLoader /> });
+const MentalMathAnimation = dynamic(() => import('@/components/app/mental-math-animation').then(mod => mod.MentalMathAnimation), { loading: () => <AnimationLoader /> });
+const TimeSeriesAnimation = dynamic(() => import('@/components/app/time-series-animation').then(mod => mod.TimeSeriesAnimation), { loading: () => <AnimationLoader /> });
+const StatisticsAnimation = dynamic(() => import('@/components/app/statistics-animation').then(mod => mod.StatisticsAnimation), { loading: () => <AnimationLoader /> });
+const MachineLearningAnimation = dynamic(() => import('@/components/app/machine-learning-animation').then(mod => mod.MachineLearningAnimation), { loading: () => <AnimationLoader /> });
+const ConfidenceIntervalAnimation = dynamic(() => import('@/components/app/confidence-interval-animation').then(mod => mod.ConfidenceIntervalAnimation), { loading: () => <AnimationLoader /> });
+const ProbabilityAnimation = dynamic(() => import('@/components/app/probability-animation').then(mod => mod.ProbabilityAnimation), { loading: () => <AnimationLoader /> });
+
 
 export default function RootPage() {
   const [isLaCardActive, setIsLaCardActive] = useState(false);
