@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
 import { allTopics } from '@/lib/data';
 import Link from 'next/link';
@@ -10,6 +10,27 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const { slug } = params;
+  const topicInfo = allTopics.find((t) => t.id === slug);
+
+  if (!topicInfo) {
+    return {
+      title: 'Topic Not Found',
+      description: 'The requested topic could not be found.',
+    };
+  }
+
+  return {
+    title: topicInfo.title,
+    description: topicInfo.description,
+  };
+}
 
 export default async function TopicPage({
   params,
@@ -49,7 +70,7 @@ export default async function TopicPage({
     // This route doesn't handle dedicated pages; Next.js will fall through
     // to the page defined at that specific route.
     // If that page doesn't exist, Next.js will correctly 404.
-    return null;
+    notFound();
   }
 
   const topicInfo = allTopics.find((t) => t.id === slug);

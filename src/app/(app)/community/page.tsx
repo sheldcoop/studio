@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
 import { Button } from '@/components/ui/button';
 import { communityPosts } from '@/lib/data';
@@ -12,6 +12,11 @@ import {
 } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Community Forum',
+  description: 'Connect with peers, ask questions about quantitative finance, and grow your knowledge together in the QuantPrep community forum.',
+};
 
 export default function CommunityPage() {
   return (
