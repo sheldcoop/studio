@@ -46,7 +46,7 @@ const GoodnessOfFitChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={goodnessOfFitChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -98,7 +98,7 @@ const TestForIndependenceChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={testForIndependenceChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -112,8 +112,10 @@ const TestForIndependenceChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
-      <p className="pt-4 text-center text-sm text-muted-foreground">The test checks if the differences between observed and expected counts are significant.</p>
+      <div className="mt-4 flex-shrink-0 text-center">
+        <p className="text-sm text-muted-foreground">The test checks if the differences between observed and expected counts are significant.</p>
+        <Button onClick={generateData} className="mt-2">Simulate New Data</Button>
+      </div>
     </div>
   );
 };
@@ -132,7 +134,7 @@ const TestForHomogeneityChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={testForHomogeneityChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>

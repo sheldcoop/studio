@@ -54,16 +54,34 @@ const IndependentTestChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
-        <ChartContainer config={independentTestChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ChartContainer
+          config={independentTestChartConfig}
+          className="h-full w-full"
+        >
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          >
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tickFormatter={(value) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value}
+            />
             <YAxis unit="%" />
-            <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} content={<ChartTooltipContent indicator="dot" />} />
+            <Tooltip
+              cursor={{ fill: 'hsl(var(--muted))' }}
+              content={<ChartTooltipContent indicator="dot" />}
+            />
             <Bar dataKey="value" radius={8}>
-              {chartData.map((entry) => ( <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} /> ))}
+                {chartData.map((entry) => (
+                    <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                ))}
             </Bar>
           </BarChart>
         </ChartContainer>
@@ -92,17 +110,39 @@ const PairedTestChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
-        <ChartContainer config={pairedTestChartConfig} className="h-full w-full">
-          <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
+        <ChartContainer
+          config={pairedTestChartConfig}
+          className="h-full w-full"
+        >
+          <LineChart
+            accessibilityLayer
+            data={chartData}
+            margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
+          >
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+            />
             <YAxis unit="%" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
             <Legend formatter={(value) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
-            <Line type="monotone" dataKey="before" strokeWidth={2} stroke="var(--color-before)" />
-            <Line type="monotone" dataKey="after" strokeWidth={2} stroke="var(--color-after)" />
+            <Line
+              type="monotone"
+              dataKey="before"
+              strokeWidth={2}
+              stroke="var(--color-before)"
+            />
+            <Line
+              type="monotone"
+              dataKey="after"
+              strokeWidth={2}
+              stroke="var(--color-after)"
+            />
           </LineChart>
         </ChartContainer>
       </div>
@@ -119,27 +159,72 @@ const OneSampleTestChart = () => {
   const chartData = [{ name: 'Avg. Return', value: meanValue }];
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
-        <ChartContainer config={oneSampleTestChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
+        <ChartContainer
+          config={oneSampleTestChartConfig}
+          className="h-full w-full"
+        >
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            layout="vertical"
+            margin={{ top: 20, right: 40, bottom: 20, left: 40 }}
+          >
             <CartesianGrid horizontal={false} />
-            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={80} />
+            <YAxis
+              type="category"
+              dataKey="name"
+              tickLine={false}
+              axisLine={false}
+              width={80}
+            />
             <XAxis type="number" unit="%" domain={[0, 3]} />
             <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey="value" radius={8} fill="var(--color-value)" />
-            <ReferenceLine x={target} stroke="hsl(var(--destructive))" strokeWidth={2} strokeDasharray="3 3">
-              <Label value={`Claimed: ${target}%`} position="insideTopRight" fill="hsl(var(--destructive))" fontSize={12} />
+            <Bar
+              dataKey="value"
+              radius={8}
+              fill="var(--color-value)"
+            />
+            <ReferenceLine
+              x={target}
+              stroke="hsl(var(--destructive))"
+              strokeWidth={2}
+              strokeDasharray="3 3"
+            >
+              <Label
+                value={`Claimed: ${target}%`}
+                position="insideTopRight"
+                fill="hsl(var(--destructive))"
+                fontSize={12}
+              />
             </ReferenceLine>
           </BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
         <div className="mx-auto max-w-sm py-4">
-          <Label htmlFor="mean-slider">Adjust Sample's Average Monthly Return (%)</Label>
-          <Slider id="mean-slider" min={0.5} max={2.5} value={[meanValue]} step={0.05} onValueChange={(value) => setMeanValue(value[0])} className="my-4" />
+          <Label htmlFor="mean-slider">
+            Adjust Sample's Average Monthly Return (%)
+          </Label>
+          <Slider
+            id="mean-slider"
+            min={0.5}
+            max={2.5}
+            value={[meanValue]}
+            step={0.05}
+            onValueChange={(value) => setMeanValue(value[0])}
+            className="my-4"
+          />
         </div>
-        <div className="text-sm text-muted-foreground">Current Mean: <span className="font-bold text-foreground">{meanValue.toFixed(2)}</span> % vs Claimed <span className="font-bold text-destructive">{target}%</span></div>
+        <div className="text-sm text-muted-foreground">
+          Current Mean:{' '}
+          <span className="font-bold text-foreground">
+            {meanValue.toFixed(2)}
+          </span>{' '}
+          % vs Claimed{' '}
+          <span className="font-bold text-destructive">{target}%</span>
+        </div>
       </div>
     </div>
   );

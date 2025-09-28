@@ -51,7 +51,7 @@ const FriedmanTestChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={friedmanTestChartConfig} className="h-full w-full">
           <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>

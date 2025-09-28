@@ -34,7 +34,7 @@ const SpearmanCorrelationChart = () => {
   React.useEffect(() => { setChartData(generateMonotonicData(100, strength)); }, [strength]);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={spearmanCorrelationChartConfig} className="h-full w-full">
           <ScatterChart accessibilityLayer margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -46,7 +46,7 @@ const SpearmanCorrelationChart = () => {
           </ScatterChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm flex-shrink-0 text-center">
+      <div className="mx-auto mt-4 max-w-sm flex-shrink-0 text-center">
         <div className="py-4">
           <Label htmlFor="strength-slider">Adjust Relationship Strength</Label>
           <Slider

@@ -55,7 +55,7 @@ const OneWayAnovaChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={oneWayAnovaChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -94,7 +94,7 @@ const TwoWayAnovaChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={twoWayAnovaChartConfig} className="h-full w-full">
           <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -107,10 +107,10 @@ const TwoWayAnovaChart = () => {
           </LineChart>
         </ChartContainer>
       </div>
-      <p className="pt-4 text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
-      <div className="mt-4 flex-shrink-0 text-center">
-        <Button onClick={generateData}>Simulate New Trading Data</Button>
-      </div>
+       <div className="mt-4 flex-shrink-0 text-center">
+          <p className="text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
+          <Button onClick={generateData} className="mt-2">Simulate New Trading Data</Button>
+       </div>
     </div>
   );
 };
@@ -130,7 +130,7 @@ const RepeatedMeasuresAnovaChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={repeatedMeasuresAnovaChartConfig} className="h-full w-full">
           <AreaChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -162,7 +162,7 @@ const pageData = {
   description: "ANOVA (Analysis of Variance) lets you compare the average performance of three or more groups. This guide explains its main types using interactive trading examples.",
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
+      title: 'Purpose & Analogy for Quants',
       description: "ANOVA checks if there's a significant difference somewhere among the means of several groups. Think of it as a 'group chaperone': instead of doing many t-tests (which increases error rates), it first tells you if any group is behaving differently from the others overall.",
     },
     {

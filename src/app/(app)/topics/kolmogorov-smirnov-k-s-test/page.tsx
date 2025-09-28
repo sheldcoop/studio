@@ -49,7 +49,7 @@ const KSTestChart = () => {
   React.useEffect(() => { generateAndSetData(dataType); }, [dataType]);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={ksTestChartConfig} className="h-full w-full">
           <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -63,11 +63,13 @@ const KSTestChart = () => {
           </LineChart>
         </ChartContainer>
       </div>
-      <div className="mt-4 flex flex-shrink-0 justify-center gap-4">
-        <Button onClick={() => setDataType('normal')} variant={dataType === 'normal' ? 'default' : 'outline'}>Generate Normal Sample</Button>
-        <Button onClick={() => setDataType('uniform')} variant={dataType === 'uniform' ? 'default' : 'outline'}>Generate Uniform Sample</Button>
+      <div className="mt-4 flex flex-shrink-0 flex-col items-center justify-center gap-4">
+        <div className="flex gap-2">
+            <Button onClick={() => setDataType('normal')} variant={dataType === 'normal' ? 'default' : 'outline'}>Generate Normal Sample</Button>
+            <Button onClick={() => setDataType('uniform')} variant={dataType === 'uniform' ? 'default' : 'outline'}>Generate Uniform Sample</Button>
+        </div>
+        <p className="text-sm text-muted-foreground">The K-S statistic is the maximum vertical distance between the two curves.</p>
       </div>
-      <p className="pt-4 text-center text-sm text-muted-foreground">The K-S statistic is the maximum vertical distance between the two curves.</p>
     </div>
   );
 };

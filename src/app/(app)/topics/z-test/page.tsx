@@ -29,7 +29,7 @@ const OneSampleZTestChart = () => {
   const chartData = [{ name: "Stock_A_Recent_Avg", value: meanValue }];
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={oneSampleZTestChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
@@ -44,8 +44,8 @@ const OneSampleZTestChart = () => {
           </BarChart>
         </ChartContainer>
       </div>
-      <div className="mx-auto max-w-sm flex-shrink-0 text-center">
-        <div className="py-4">
+      <div className="mt-4 flex-shrink-0 text-center">
+        <div className="mx-auto max-w-sm py-4">
           <Label htmlFor="mean-slider">Adjust Stock A&apos;s Recent Avg. Daily Return (%)</Label>
           <Slider id="mean-slider" min={-0.1} max={0.2} value={[meanValue]} step={0.005} onValueChange={(value) => setMeanValue(value[0])} className="my-4" />
         </div>
@@ -65,7 +65,7 @@ const TwoSampleZTestChart = () => {
   React.useEffect(() => { generateData(); }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={twoSampleZTestChartConfig} className="h-full w-full">
           <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>

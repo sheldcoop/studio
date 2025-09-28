@@ -46,7 +46,7 @@ function ExampleContent({ example }: { example: Example }) {
     });
   
     return (
-      <>
+      <div className="flex h-full flex-col">
         {example.description && (
           <div className="mb-4">
             <p className="mt-2 text-muted-foreground">{example.description}</p>
@@ -58,10 +58,12 @@ function ExampleContent({ example }: { example: Example }) {
             {example.exampleText}
           </p>
         )}
-        <div className="mt-4 rounded-lg bg-background/50 p-4">
-          <DynamicChart />
+        <div className="mt-4 flex flex-1 flex-col rounded-lg bg-background/50 p-4">
+          <div className="flex-grow">
+            <DynamicChart />
+          </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -78,7 +80,7 @@ export function InteractiveTestPage({
 
   return (
     <>
-      <PageHeader title={title} description={description} />
+      <PageHeader title={title} description={description} variant="aligned-left" />
       <div className="mx-auto max-w-5xl space-y-8">
         <Card>
           <CardHeader>
