@@ -3,7 +3,6 @@
 
 import type { ComponentType } from 'react';
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
@@ -31,9 +30,10 @@ const mannWhitneyChartConfig = {
 } satisfies ChartConfig;
 
 // --- Chart Component ---
-const MannWhitneyChart = () => {
+const MannWhitneyChart = ({ generateData }: { generateData: () => void }) => {
   const [chartData, setChartData] = React.useState<any[]>([]);
-  const generateData = () => {
+  
+  React.useEffect(() => {
     const algoAData = generateLogNormalData(0, 0.5, 500); 
     const algoBData = generateLogNormalData(0.2, 0.7, 500);
     const combinedData = [...algoAData, ...algoBData];
@@ -48,27 +48,21 @@ const MannWhitneyChart = () => {
       'Algo_B': histB.counts[index],
     }));
     setChartData(finalData);
-  };
-  React.useEffect(() => { generateData(); }, []);
+  }, [generateData]);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="relative mx-auto flex-grow w-full">
-        <ChartContainer config={mannWhitneyChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} barCategoryGap="0%" margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis />
-            <Tooltip content={<ChartTooltipContent indicator="dot" />} wrapperStyle={{ zIndex: 1000 }} />
-            <Legend formatter={(value) => mannWhitneyChartConfig[value as keyof typeof mannWhitneyChartConfig]?.label || value} />
-            <Bar dataKey="Algo_A" fill="var(--color-Algo_A)" />
-            <Bar dataKey="Algo_B" fill="var(--color-Algo_B)" />
-          </BarChart>
-        </ChartContainer>
-      </div>
-      <div className="mt-4 flex-shrink-0 text-center">
-        <Button onClick={generateData}>Simulate New Trading Data</Button>
-      </div>
+    <div className="relative mx-auto w-full">
+      <ChartContainer config={mannWhitneyChartConfig} className="h-full w-full">
+        <BarChart accessibilityLayer data={chartData} barCategoryGap="0%" margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+          <YAxis />
+          <Tooltip content={<ChartTooltipContent indicator="dot" />} wrapperStyle={{ zIndex: 1000 }} />
+          <Legend formatter={(value) => mannWhitneyChartConfig[value as keyof typeof mannWhitneyChartConfig]?.label || value} />
+          <Bar dataKey="Algo_A" fill="var(--color-Algo_A)" />
+          <Bar dataKey="Algo_B" fill="var(--color-Algo_B)" />
+        </BarChart>
+      </ChartContainer>
     </div>
   );
 };
@@ -93,7 +87,8 @@ const pageData = {
       title: 'Comparing Skewed Distributions',
       description: 'This test is perfect for comparing groups where the data is skewed. A classic example is trade profitability, where you might have many small gains and a few very large gains, creating a long tail.',
       exampleText: "A quant firm develops a new trading algorithm ('Algo B') and wants to see if it generates significantly different profits than their old one ('Algo A'). The profit distributions are known to be skewed (not normal). They use the Mann-Whitney U Test to determine if there's a statistical difference in the distribution of profits between the two algorithms.",
-      ChartComponent: MannWhitneyChart as ComponentType,
+      ChartComponent: MannWhitneyChart as ComponentType<{ generateData: () => void }>,
+      buttonText: 'Simulate New Trading Data',
     },
   ],
 };

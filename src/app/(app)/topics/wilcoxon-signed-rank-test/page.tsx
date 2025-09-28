@@ -3,7 +3,6 @@
 
 import type { ComponentType } from 'react';
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Line, LineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
@@ -17,9 +16,10 @@ const wilcoxonChartConfig = {
 } satisfies ChartConfig;
 
 // --- Chart Component ---
-const WilcoxonSignedRankChart = () => {
+const WilcoxonSignedRankChart = ({ generateData }: { generateData: () => void }) => {
   const [chartData, setChartData] = React.useState<any[]>([]);
-  const generateData = () => {
+  
+  React.useEffect(() => {
     const numPortfolios = 10;
     const beforeData = generateLogNormalData(0.5, 0.4, numPortfolios);
     const afterData = beforeData.map((d) => d + (Math.random() * 0.8 - 0.1));
@@ -30,28 +30,20 @@ const WilcoxonSignedRankChart = () => {
         'After_Risk_Model': afterData[i],
       }))
     );
-  };
-  React.useEffect(() => { generateData(); }, []);
+  }, [generateData]);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-grow">
-        <ChartContainer config={wilcoxonChartConfig} className="h-full w-full">
-          <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis unit="%" />
-            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Legend formatter={(value) => wilcoxonChartConfig[value as keyof typeof wilcoxonChartConfig]?.label || value} />
-            <Line type="monotone" dataKey="Before_Risk_Model" stroke="var(--color-Before_Risk_Model)" />
-            <Line type="monotone" dataKey="After_Risk_Model" stroke="var(--color-After_Risk_Model)" />
-          </LineChart>
-        </ChartContainer>
-      </div>
-      <div className="mt-4 flex-shrink-0 text-center">
-        <Button onClick={generateData}>Simulate New Data</Button>
-      </div>
-    </div>
+    <ChartContainer config={wilcoxonChartConfig} className="h-full w-full">
+      <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
+        <CartesianGrid vertical={false} />
+        <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+        <YAxis unit="%" />
+        <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+        <Legend formatter={(value) => wilcoxonChartConfig[value as keyof typeof wilcoxonChartConfig]?.label || value} />
+        <Line type="monotone" dataKey="Before_Risk_Model" stroke="var(--color-Before_Risk_Model)" />
+        <Line type="monotone" dataKey="After_Risk_Model" stroke="var(--color-After_Risk_Model)" />
+      </LineChart>
+    </ChartContainer>
   );
 };
 
@@ -75,7 +67,8 @@ const pageData = {
       title: 'Analyzing Paired, Non-Normal Data',
       description: 'This test is ideal for seeing if a change had a consistent effect across a group, even when the outcomes are skewed.',
       exampleText: "A risk management team implements a new model for 10 of their portfolios. They record the maximum drawdown of each portfolio for a month before the change and a month after. Since drawdown data is often skewed (many small values, few large ones), they use the Wilcoxon Signed-Rank Test to see if the new model led to a statistically significant reduction in drawdown.",
-      ChartComponent: WilcoxonSignedRankChart as ComponentType,
+      ChartComponent: WilcoxonSignedRankChart as ComponentType<{ generateData: () => void }>,
+      buttonText: 'Simulate New Data',
     },
   ],
 };

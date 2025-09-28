@@ -3,7 +3,6 @@
 
 import type { ComponentType } from 'react';
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Line, LineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
@@ -32,9 +31,10 @@ const friedmanTestChartConfig = {
 } satisfies ChartConfig;
 
 // --- Chart Component ---
-const FriedmanTestChart = () => {
+const FriedmanTestChart = ({ generateData }: { generateData: () => void }) => {
   const [chartData, setChartData] = React.useState<any[]>([]);
-  const generateData = () => {
+  
+  React.useEffect(() => {
     const numAlgos = 5;
     const algoRanks = generateRankData(numAlgos);
     const regimes = ['Low Volatility', 'Medium Volatility', 'High Volatility'];
@@ -47,31 +47,23 @@ const FriedmanTestChart = () => {
       'Algo_E': algoRanks[4][i],
     }));
     setChartData(processedData);
-  };
-  React.useEffect(() => { generateData(); }, []);
+  }, [generateData]);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-grow">
-        <ChartContainer config={friedmanTestChartConfig} className="h-full w-full">
-          <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis reversed domain={[1, 5]} tickCount={5} label={{ value: 'Performance Rank', angle: -90, position: 'insideLeft' }}/>
-            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Legend formatter={(value) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
-            <Line type="monotone" dataKey="Algo_A" stroke="var(--color-Algo_A)" />
-            <Line type="monotone" dataKey="Algo_B" stroke="var(--color-Algo_B)" />
-            <Line type="monotone" dataKey="Algo_C" stroke="var(--color-Algo_C)" />
-            <Line type="monotone" dataKey="Algo_D" stroke="var(--color-Algo_D)" />
-            <Line type="monotone" dataKey="Algo_E" stroke="var(--color-Algo_E)" />
-          </LineChart>
-        </ChartContainer>
-      </div>
-      <div className="mt-4 flex-shrink-0 text-center">
-        <Button onClick={generateData}>Simulate New Data</Button>
-      </div>
-    </div>
+    <ChartContainer config={friedmanTestChartConfig} className="h-full w-full">
+      <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <CartesianGrid vertical={false} />
+        <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+        <YAxis reversed domain={[1, 5]} tickCount={5} label={{ value: 'Performance Rank', angle: -90, position: 'insideLeft' }}/>
+        <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+        <Legend formatter={(value) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
+        <Line type="monotone" dataKey="Algo_A" stroke="var(--color-Algo_A)" />
+        <Line type="monotone" dataKey="Algo_B" stroke="var(--color-Algo_B)" />
+        <Line type="monotone" dataKey="Algo_C" stroke="var(--color-Algo_C)" />
+        <Line type="monotone" dataKey="Algo_D" stroke="var(--color-Algo_D)" />
+        <Line type="monotone" dataKey="Algo_E" stroke="var(--color-Algo_E)" />
+      </LineChart>
+    </ChartContainer>
   );
 };
 
@@ -95,7 +87,8 @@ const pageData = {
       title: 'Comparing Algorithm Performance Across Regimes',
       description: 'This test is ideal for analyzing how the same subjects (e.g., algorithms, portfolios) perform across multiple different, related conditions.',
       exampleText: "A quant team wants to compare the performance of five trading algorithms across three different market volatility regimes (Low, Medium, and High). For each regime, they rank the algorithms from 1 (best) to 5 (worst). The Friedman test is used to determine if there is a significant difference in the algorithms' median ranks across the different volatility conditions.",
-      ChartComponent: FriedmanTestChart as ComponentType,
+      ChartComponent: FriedmanTestChart as ComponentType<{ generateData: () => void }>,
+      buttonText: 'Simulate New Data',
     },
   ],
 };

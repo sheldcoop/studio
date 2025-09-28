@@ -3,7 +3,6 @@
 
 import type { ComponentType } from 'react';
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
@@ -27,9 +26,10 @@ const kruskalWallisChartConfig = {
 } satisfies ChartConfig;
 
 // --- Chart Component ---
-const KruskalWallisChart = () => {
+const KruskalWallisChart = ({ generateData }: { generateData: () => void }) => {
   const [chartData, setChartData] = React.useState<any[]>([]);
-  const generateData = () => {
+  
+  React.useEffect(() => {
     const dataBotA = generateLogNormalData(0.1, 0.5, 100);
     const dataBotB = generateLogNormalData(0.2, 0.6, 100);
     const dataBotC = generateLogNormalData(0.05, 0.7, 100);
@@ -38,28 +38,20 @@ const KruskalWallisChart = () => {
       { name: 'Rule_Based_Bot', value: getMedian(dataBotB) },
       { name: 'Hybrid_Bot', value: getMedian(dataBotC) },
     ]);
-  };
-  React.useEffect(() => { generateData(); }, []);
+  }, [generateData]);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-grow">
-        <ChartContainer config={kruskalWallisChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
-            <YAxis unit="$" />
-            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Bar dataKey="value" name="Median Profit" radius={4}>
-              {chartData.map((entry) => ( <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} /> ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
-      </div>
-      <div className="mt-4 flex-shrink-0 text-center">
-        <Button onClick={generateData}>Simulate New Data</Button>
-      </div>
-    </div>
+    <ChartContainer config={kruskalWallisChartConfig} className="h-full w-full">
+      <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <CartesianGrid vertical={false} />
+        <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
+        <YAxis unit="$" />
+        <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+        <Bar dataKey="value" name="Median Profit" radius={4}>
+          {chartData.map((entry) => ( <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} /> ))}
+        </Bar>
+      </BarChart>
+    </ChartContainer>
   );
 };
 
@@ -83,7 +75,8 @@ const pageData = {
       title: 'Comparing Multiple Skewed Distributions',
       description: 'This test is ideal for comparing the central tendency of multiple groups when dealing with skewed data, like trade returns or algorithmic performance metrics.',
       exampleText: "A trading firm wants to compare the profitability of three different trading bots: a machine learning bot, a traditional rule-based bot, and a hybrid model. The profit-per-trade data for each bot is heavily skewed. They use the Kruskal-Wallis test to determine if there is a statistically significant difference in the median profit among the three bots.",
-      ChartComponent: KruskalWallisChart as ComponentType,
+      ChartComponent: KruskalWallisChart as ComponentType<{ generateData: () => void }>,
+      buttonText: 'Simulate New Data',
     },
   ],
 };

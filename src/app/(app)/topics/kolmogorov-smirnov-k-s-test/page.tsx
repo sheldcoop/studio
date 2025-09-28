@@ -29,27 +29,25 @@ const ksTestChartConfig = {
 } satisfies ChartConfig;
 
 // --- Chart Component ---
-const KSTestChart = () => {
+const KSTestChart = ({ generateData }: { generateData: () => void }) => {
   const [chartData, setChartData] = React.useState<any[]>([]);
   const [dataType, setDataType] = React.useState<'normal' | 'uniform'>('normal');
 
-  const generateAndSetData = (type: 'normal' | 'uniform') => {
+  React.useEffect(() => {
     const n = 100;
     const mean = 0;
     const stdDev = 1;
-    let sampleData: number[] = type === 'normal' ? generateNormalData(mean, stdDev, n) : generateUniformData(-3, 3, n);
+    let sampleData: number[] = dataType === 'normal' ? generateNormalData(mean, stdDev, n) : generateUniformData(-3, 3, n);
     
     const sortedSample = [...sampleData].sort((a,b) => a - b);
     const ecdfPoints = sortedSample.map((val, i) => ({ x: val, empirical: (i+1)/n }));
     const cdfPoints = sortedSample.map(val => ({ x: val, theoretical: standardNormalCdf((val - mean) / stdDev) }));
     const mergedData = ecdfPoints.map((point, i) => ({ ...point, theoretical: cdfPoints[i].theoretical }));
     setChartData(mergedData);
-  };
-
-  React.useEffect(() => { generateAndSetData(dataType); }, [dataType]);
+  }, [dataType, generateData]);
 
   return (
-    <div className="flex h-full flex-col">
+    <>
       <div className="flex-grow">
         <ChartContainer config={ksTestChartConfig} className="h-full w-full">
           <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -63,14 +61,14 @@ const KSTestChart = () => {
           </LineChart>
         </ChartContainer>
       </div>
-      <div className="mt-4 flex flex-shrink-0 flex-col items-center justify-center gap-4">
+      <div className="mt-4 flex flex-col items-center gap-2">
         <div className="flex gap-2">
             <Button onClick={() => setDataType('normal')} variant={dataType === 'normal' ? 'default' : 'outline'}>Generate Normal Sample</Button>
             <Button onClick={() => setDataType('uniform')} variant={dataType === 'uniform' ? 'default' : 'outline'}>Generate Uniform Sample</Button>
         </div>
         <p className="text-sm text-muted-foreground">The K-S statistic is the maximum vertical distance between the two curves.</p>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -94,12 +92,25 @@ const pageData = {
       title: 'Visualizing Goodness-of-Fit',
       description: 'This chart plots the cumulative distribution of your sample data against the ideal cumulative distribution of a perfect normal curve. The closer the two lines are, the better the fit.',
       exampleText: "We generate a sample of data and plot its Empirical Cumulative Distribution Function (ECDF). We then overlay the theoretical Cumulative Distribution Function (CDF) of a normal distribution. Toggle between a normal sample and a uniform sample to see how the ECDF's fit changes, and how the K-S statistic would capture this difference.",
-      ChartComponent: KSTestChart as ComponentType,
+      ChartComponent: KSTestChart as ComponentType<{ generateData: () => void }>,
+      buttonText: 'This button is not used', // Placeholder, functionality is in the component
     },
   ],
 };
 
 // --- Page Component ---
 export default function KolmogorovSmirnovTestPage() {
-  return <InteractiveTestPage {...pageData} />;
+  // This component has its own buttons, so we hide the InteractiveTestPage button
+  // by passing an empty buttonText, but this is a hack.
+  // A better solution might involve conditional rendering in InteractiveTestPage
+  const pageDataForRender = {
+    ...pageData,
+    examples: pageData.examples.map(ex => ({ ...ex, buttonText: '' }))
+  };
+
+  return (
+    <>
+      <InteractiveTestPage {...pageDataForRender} />
+    </>
+  );
 }

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '../ui/skeleton';
+import { Button } from '../ui/button';
 
 // --- Component Props ---
 
@@ -25,7 +26,8 @@ type Example = {
   title: string;
   description: string;
   exampleText: string;
-  ChartComponent: ComponentType;
+  ChartComponent: ComponentType<{ generateData: () => void }>;
+  buttonText: string;
 };
 
 interface InteractiveTestPageProps {
@@ -38,8 +40,9 @@ interface InteractiveTestPageProps {
 // --- Sub-component for Example Content ---
 
 function ExampleContent({ example }: { example: Example }) {
-    // Dynamically import the chart component only when this component is rendered.
-    // This ensures recharts is only loaded on the client when needed.
+    const [key, setKey] = React.useState(0);
+    const generateData = () => setKey(prev => prev + 1);
+
     const DynamicChart = dynamic(() => Promise.resolve(example.ChartComponent), {
       ssr: false,
       loading: () => <Skeleton className="h-[420px] w-full" />,
@@ -60,7 +63,10 @@ function ExampleContent({ example }: { example: Example }) {
         )}
         <div className="mt-4 flex flex-1 flex-col rounded-lg bg-background/50 p-4">
           <div className="flex-grow">
-            <DynamicChart />
+            <DynamicChart key={key} generateData={generateData} />
+          </div>
+          <div className="mt-4 flex-shrink-0 text-center">
+            <Button onClick={generateData}>{example.buttonText}</Button>
           </div>
         </div>
       </div>
@@ -104,7 +110,7 @@ export function InteractiveTestPage({
           <CardContent className="p-6">
             {hasMultipleExamples ? (
               <Tabs defaultValue={examples[0].id}>
-                <TabsList className={`grid w-full grid-cols-${examples.length}`}>
+                <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${examples.length}, 1fr)` }}>
                   {examples.map((example) => (
                     <TabsTrigger key={example.id} value={example.id}>
                       {example.title}

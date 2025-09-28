@@ -3,7 +3,6 @@
 
 import type { ComponentType } from 'react';
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
 import { generateNormalData, getVariance } from '@/lib/math';
@@ -17,11 +16,11 @@ const fTestChartConfig = {
 } satisfies ChartConfig;
 
 // --- Chart Component ---
-const FTestChart = () => {
+const FTestChart = ({ generateData }: { generateData: () => void }) => {
   const [chartData, setChartData] = React.useState<any[]>([]);
   const [fStat, setFStat] = React.useState(0);
 
-  const generateData = () => {
+  React.useEffect(() => {
     const dataStable = generateNormalData(0.05, 0.5, 100);
     const dataGrowth = generateNormalData(0.1, 1.2, 100);
     const varianceStable = getVariance(dataStable);
@@ -31,8 +30,7 @@ const FTestChart = () => {
       { name: 'GrowthStock_Tech', value: varianceGrowth },
     ]);
     setFStat(varianceGrowth / varianceStable);
-  };
-  React.useEffect(() => { generateData(); }, []);
+  }, [generateData]);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -61,23 +59,18 @@ const FTestChart = () => {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="relative mx-auto flex-grow w-full max-w-2xl">
-        <ChartContainer config={fTestChartConfig} className="h-full w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => fTestChartConfig[value as keyof typeof fTestChartConfig]?.label || value} />
-            <YAxis />
-            <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} content={<CustomTooltip />} />
-            <Bar dataKey="value" radius={8}>
-              {chartData.map((entry) => ( <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} /> ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
-      </div>
-      <div className="mt-4 flex-shrink-0 text-center">
-        <Button onClick={generateData}>Simulate New 100-Day Period</Button>
-      </div>
+    <div className="relative mx-auto w-full max-w-2xl">
+      <ChartContainer config={fTestChartConfig} className="h-full w-full">
+        <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => fTestChartConfig[value as keyof typeof fTestChartConfig]?.label || value} />
+          <YAxis />
+          <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} content={<CustomTooltip />} />
+          <Bar dataKey="value" radius={8}>
+            {chartData.map((entry) => ( <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} /> ))}
+          </Bar>
+        </BarChart>
+      </ChartContainer>
     </div>
   );
 };
@@ -102,7 +95,8 @@ const pageData = {
       title: 'F-Test for Comparing Two Variances',
       description: 'This is the most common use of the F-Test. It directly compares the variance from two independent groups to see if one is significantly larger than the other.',
       exampleText: "An investor wants to compare the risk profiles of two stocks: a well-established utility company ('StableStock') and a new tech startup ('GrowthStock'). They collect 100 days of return data for each and use an F-Test to determine if the variance of 'GrowthStock's' returns is statistically greater than that of 'StableStock', indicating higher volatility and risk.",
-      ChartComponent: FTestChart as ComponentType,
+      ChartComponent: FTestChart as ComponentType<{ generateData: () => void }>,
+      buttonText: 'Simulate New 100-Day Period',
     },
   ],
 };

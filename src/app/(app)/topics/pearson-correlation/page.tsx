@@ -36,14 +36,17 @@ const pearsonCorrelationChartConfig = {
 } satisfies ChartConfig;
 
 // --- Chart Component ---
-const PearsonCorrelationChart = () => {
+const PearsonCorrelationChart = ({ generateData }: { generateData: () => void }) => {
   const [correlation, setCorrelation] = React.useState(0.8);
   const [chartData, setChartData] = React.useState<any[]>([]);
-  React.useEffect(() => { setChartData(generateCorrelatedData(100, correlation)); }, [correlation]);
+  
+  React.useEffect(() => { 
+    setChartData(generateCorrelatedData(100, correlation)); 
+  }, [correlation, generateData]);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="relative mx-auto flex-grow w-full max-w-2xl">
+    <>
+      <div className="relative mx-auto w-full max-w-2xl">
         <ChartContainer config={pearsonCorrelationChartConfig} className="h-full w-full">
           <ScatterChart accessibilityLayer margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid />
@@ -69,7 +72,7 @@ const PearsonCorrelationChart = () => {
         </div>
         <p>Current Correlation: {correlation.toFixed(1)}</p>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -93,12 +96,17 @@ const pageData = {
       title: 'Visualizing Pearson Correlation',
       description: 'A scatter plot is the best way to visualize the relationship between two variables. The tighter the points are to forming a straight line, the stronger the linear correlation.',
       exampleText: "We plot the daily returns of two assets. By adjusting the slider, you can change the underlying correlation between their returns and see how it affects the scatter plot. This is fundamental to pairs trading, where you look for highly correlated assets whose prices have temporarily diverged.",
-      ChartComponent: PearsonCorrelationChart as ComponentType,
+      ChartComponent: PearsonCorrelationChart as ComponentType<{ generateData: () => void }>,
+      buttonText: 'This button is not used', // This chart has its own controls
     },
   ],
 };
 
 // --- Page Component ---
 export default function PearsonCorrelationPage() {
-  return <InteractiveTestPage {...pageData} />;
+   const pageDataForRender = {
+    ...pageData,
+    examples: pageData.examples.map(ex => ({ ...ex, buttonText: '' }))
+  };
+  return <InteractiveTestPage {...pageDataForRender} />;
 }

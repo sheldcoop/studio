@@ -28,14 +28,17 @@ const spearmanCorrelationChartConfig = {
 } satisfies ChartConfig;
 
 // --- Chart Component ---
-const SpearmanCorrelationChart = () => {
+const SpearmanCorrelationChart = ({ generateData }: { generateData: () => void }) => {
   const [strength, setStrength] = React.useState(3);
   const [chartData, setChartData] = React.useState<any[]>([]);
-  React.useEffect(() => { setChartData(generateMonotonicData(100, strength)); }, [strength]);
+  
+  React.useEffect(() => { 
+    setChartData(generateMonotonicData(100, strength)); 
+  }, [strength, generateData]);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="relative mx-auto flex-grow w-full max-w-2xl">
+    <>
+      <div className="relative mx-auto w-full max-w-2xl">
         <ChartContainer config={spearmanCorrelationChartConfig} className="h-full w-full">
           <ScatterChart accessibilityLayer margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid />
@@ -61,7 +64,7 @@ const SpearmanCorrelationChart = () => {
         </div>
         <p>Current Strength: {strength.toFixed(1)}</p>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -85,12 +88,17 @@ const pageData = {
       title: 'Visualizing Monotonic Relationships',
       description: "A scatter plot can reveal relationships that aren't linear. Spearman's can detect a strong relationship even if the points form a curve.",
       exampleText: "Let's say we're analyzing the relationship between a custom 'Market Sentiment Score' and a stock's daily return. The return might increase faster as sentiment gets very high. A linear model (Pearson) would miss this, but Spearman's would capture the strong monotonic trend.",
-      ChartComponent: SpearmanCorrelationChart as ComponentType,
+      ChartComponent: SpearmanCorrelationChart as ComponentType<{ generateData: () => void }>,
+      buttonText: 'This button is not used',
     },
   ],
 };
 
 // --- Page Component ---
 export default function SpearmansRankCorrelationPage() {
-  return <InteractiveTestPage {...pageData} />;
+   const pageDataForRender = {
+    ...pageData,
+    examples: pageData.examples.map(ex => ({ ...ex, buttonText: '' }))
+  };
+  return <InteractiveTestPage {...pageDataForRender} />;
 }
