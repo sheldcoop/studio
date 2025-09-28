@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { quantJourney } from '@/lib/site';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
