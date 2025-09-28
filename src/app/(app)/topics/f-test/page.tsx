@@ -7,43 +7,8 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
+import { generateNormalData, getVariance } from '@/lib/math';
 
-/**
- * Generates normally distributed random data using the Box-Muller transform.
- * This is a common method for creating realistic sample data for statistical
- * tests that assume a normal distribution. It works by transforming two
- * independent, uniformly distributed random numbers (u, v) into two
- * independent, standard normal random numbers.
- *
- * @param mean The desired mean of the distribution.
- * @param stdDev The desired standard deviation of the distribution.
- * @param n The number of data points to generate.
- * @returns An array of normally distributed numbers.
- */
-const generateNormalData = (mean: number, stdDev: number, n: number) => {
-  let data = [];
-  for (let i = 0; i < n; i++) {
-    let u = 0,
-      v = 0;
-    // Ensure u and v are not 0 to avoid issues with log(0)
-    while (u === 0) u = Math.random();
-    while (v === 0) v = Math.random();
-    // The Box-Muller transform formula
-    let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-    // Scale and shift the standard normal number to the desired mean and stdDev
-    data.push(mean + stdDev * num);
-  }
-  return data;
-};
-
-const getVariance = (data: number[]) => {
-  if (data.length < 2) return 0;
-  const mean = data.reduce((a, b) => a + b, 0) / data.length;
-  return (
-    data.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
-    (data.length - 1)
-  );
-};
 
 const fTestChartConfig = {
   value: {

@@ -8,18 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Line, LineChart as RechartsLineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
-
-// Helper to generate skewed data (log-normal distribution)
-const generateLogNormalData = (mu: number, sigma: number, n: number) => {
-  const data = [];
-  for (let i = 0; i < n; i++) {
-    const u1 = Math.random();
-    const u2 = Math.random();
-    const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-    data.push(Math.exp(mu + sigma * z));
-  }
-  return data;
-};
+import { generateLogNormalData } from '@/lib/math';
 
 const wilcoxonChartConfig = {
     'Before_Risk_Model': { label: 'Before', color: 'hsl(var(--chart-2))' },
@@ -57,7 +46,7 @@ const WilcoxonSignedRankChart = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
-                <Tooltip content={<ChartTooltipContent />} />
+                <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                 <Legend formatter={(value) => wilcoxonChartConfig[value as keyof typeof wilcoxonChartConfig]?.label || value} />
                 <Line type="monotone" dataKey="Before_Risk_Model" stroke="var(--color-Before_Risk_Model)" />
                 <Line type="monotone" dataKey="After_Risk_Model" stroke="var(--color-After_Risk_Model)" />

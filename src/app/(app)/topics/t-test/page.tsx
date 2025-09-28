@@ -23,22 +23,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-
-// Helper function to generate normally distributed data
-const generateNormalData = (mean: number, stdDev: number, n: number) =>
-  Array.from(
-    { length: n },
-    () =>
-      mean +
-      stdDev *
-        (Math.random() * 2 -
-          1 +
-          (Math.random() * 2 - 1) +
-          (Math.random() * 2 - 1))
-  );
-
-const getMean = (data: number[]) =>
-  data.reduce((a, b) => a + b, 0) / data.length;
+import { generateNormalData, getMean } from '@/lib/math';
 
 const independentTestChartConfig = {
   value: {
@@ -113,7 +98,7 @@ const IndependentTestChart = () => {
             <YAxis unit="%" />
             <Tooltip
               cursor={{ fill: 'hsl(var(--muted))' }}
-              content={<ChartTooltipContent />}
+              content={<ChartTooltipContent indicator="dot" />}
             />
             <Bar dataKey="value" radius={8}>
                 {chartData.map((entry) => (
@@ -174,7 +159,7 @@ const PairedTestChart = () => {
               axisLine={false}
             />
             <YAxis unit="%" />
-            <Tooltip content={<ChartTooltipContent />} />
+            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
             <Legend formatter={(value) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
             <Line
               type="monotone"

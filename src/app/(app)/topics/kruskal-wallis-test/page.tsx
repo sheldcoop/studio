@@ -8,18 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
+import { generateLogNormalData } from '@/lib/math';
 
-// Helper to generate skewed data (log-normal distribution)
-const generateLogNormalData = (mu: number, sigma: number, n: number) => {
-  const data = [];
-  for (let i = 0; i < n; i++) {
-    const u1 = Math.random();
-    const u2 = Math.random();
-    const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-    data.push(Math.exp(mu + sigma * z));
-  }
-  return data;
-};
 
 // Helper to calculate the median
 const getMedian = (data: number[]) => {
@@ -75,7 +65,7 @@ const KruskalWallisChart = () => {
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
             <YAxis unit="$" />
-            <Tooltip content={<ChartTooltipContent />} />
+            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
             <Bar dataKey="value" name="Median Profit" radius={4}>
               {chartData.map((entry) => (
                 <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />

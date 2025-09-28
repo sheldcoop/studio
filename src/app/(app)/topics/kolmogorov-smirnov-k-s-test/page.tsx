@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Line, LineChart as RechartsLineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+import { generateNormalData } from '@/lib/math';
 
 
 // --- Math Helpers ---
@@ -20,10 +21,6 @@ const standardNormalCdf = (x: number) => {
   if (x > 0) prob = 1 - prob;
   return prob;
 };
-
-// Generate normally distributed data
-const generateNormalData = (mean: number, stdDev: number, n: number) =>
-  Array.from({ length: n }, () => mean + stdDev * (Math.random() * 2 - 1 + (Math.random() * 2 - 1) + (Math.random() * 2 - 1)));
 
 // Generate uniformly distributed data
 const generateUniformData = (min: number, max: number, n: number) =>
@@ -89,7 +86,7 @@ const KSTestChart = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis type="number" dataKey="x" name="Value" domain={['dataMin', 'dataMax']} tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis domain={[0,1]} />
-                <Tooltip content={<ChartTooltipContent />} />
+                <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                 <Legend />
                 <Line type="step" dataKey="empirical" stroke="var(--color-empirical)" dot={false} strokeWidth={2}/>
                 <Line type="monotone" dataKey="theoretical" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />

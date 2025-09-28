@@ -9,22 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { Area, Bar, Line, AreaChart as RechartsAreaChart, BarChart as RechartsBarChart, LineChart as RechartsLineChart, CartesianGrid, XAxis, YAxis, Tooltip, Cell } from 'recharts';
-
-// Helper function to generate normally distributed data
-const generateNormalData = (mean: number, stdDev: number, n: number) =>
-  Array.from(
-    { length: n },
-    () =>
-      mean +
-      stdDev *
-        (Math.random() * 2 -
-          1 +
-          (Math.random() * 2 - 1) +
-          (Math.random() * 2 - 1))
-  );
-
-const getMean = (data: number[]) =>
-  data.reduce((a, b) => a + b, 0) / data.length;
+import { generateNormalData, getMean } from '@/lib/math';
 
 const oneWayAnovaChartConfig = {
   value: {
@@ -90,7 +75,7 @@ const OneWayAnovaChart = () => {
               <CartesianGrid vertical={false} />
               <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => oneWayAnovaChartConfig[value as keyof typeof oneWayAnovaChartConfig]?.label || value} />
               <YAxis unit="%" />
-              <Tooltip cursor={false} content={<ChartTooltipContent />} />
+              <Tooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
               <Bar dataKey="value" radius={8}>
                 {chartData.map((entry) => (
                     <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
@@ -137,7 +122,7 @@ const TwoWayAnovaChart = () => {
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis unit="$" />
-                        <Tooltip content={<ChartTooltipContent />} />
+                        <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                         <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-stocks)" />
                         <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-crypto)" />
                     </RechartsLineChart>
@@ -179,7 +164,7 @@ const RepeatedMeasuresAnovaChart = () => {
                         <CartesianGrid vertical={false} />
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis />
-                        <Tooltip content={<ChartTooltipContent />} />
+                        <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                         <defs>
                             <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />

@@ -62,7 +62,7 @@ const FriedmanTestChart = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis reversed domain={[1, 5]} tickCount={5} />
-                <Tooltip content={<ChartTooltipContent />} />
+                <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                 <Legend formatter={(value) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
                 <Line type="monotone" dataKey="Algo_A" stroke="var(--color-Algo_A)" />
                 <Line type="monotone" dataKey="Algo_B" stroke="var(--color-Algo_B)" />

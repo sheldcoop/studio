@@ -53,7 +53,7 @@ const SpearmanCorrelationChart = () => {
             <YAxis type="number" dataKey="y" name="Return" unit="%" />
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
-              content={<ChartTooltipContent />}
+              content={<ChartTooltipContent indicator="dot" />}
             />
             <Scatter data={chartData} fill="var(--color-data)" />
           </RechartsScatterChart>

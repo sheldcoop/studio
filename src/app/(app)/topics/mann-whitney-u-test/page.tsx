@@ -8,18 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
-
-// Helper to generate skewed data (log-normal distribution)
-const generateLogNormalData = (mu: number, sigma: number, n: number) => {
-  const data = [];
-  for (let i = 0; i < n; i++) {
-    const u1 = Math.random();
-    const u2 = Math.random();
-    const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-    data.push(Math.exp(mu + sigma * z));
-  }
-  return data;
-};
+import { generateLogNormalData } from '@/lib/math';
 
 // Helper to create a histogram from data
 const createHistogram = (data: number[], binSize: number, min: number, max: number) => {
@@ -78,7 +67,7 @@ const MannWhitneyChart = () => {
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
-            <Tooltip content={<ChartTooltipContent />} wrapperStyle={{ zIndex: 1000 }} />
+            <Tooltip content={<ChartTooltipContent indicator="dot" />} wrapperStyle={{ zIndex: 1000 }} />
             <Legend formatter={(value) => mannWhitneyChartConfig[value as keyof typeof mannWhitneyChartConfig]?.label || value} />
             <Bar dataKey="Algo_A" fill="var(--color-Algo_A)" />
             <Bar dataKey="Algo_B" fill="var(--color-Algo_B)" />

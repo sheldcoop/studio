@@ -11,22 +11,7 @@ import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts';
-
-// Helper function to generate normally distributed data
-const generateNormalData = (mean: number, stdDev: number, n: number) =>
-  Array.from(
-    { length: n },
-    () =>
-      mean +
-      stdDev *
-        (Math.random() * 2 -
-          1 +
-          (Math.random() * 2 - 1) +
-          (Math.random() * 2 - 1))
-  );
-
-const getMean = (data: number[]) =>
-  data.reduce((a, b) => a + b, 0) / data.length;
+import { generateNormalData, getMean } from '@/lib/math';
 
 const oneSampleZTestChartConfig = {
   value: {
@@ -130,7 +115,7 @@ const TwoSampleZTestChart = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis unit="%" />
-                <Tooltip content={<ChartTooltipContent />} />
+                <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                 <Legend />
                 <Bar dataKey="Stock_A" radius={4} fill="var(--color-Stock_A)" />
                 <Bar dataKey="Stock_B" radius={4} fill="var(--color-Stock_B)" />
