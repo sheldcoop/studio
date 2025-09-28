@@ -3,7 +3,7 @@ import {
   Card,
   CardContent,
 } from '@/components/ui/card';
-import { allTopics } from '@/lib/data';
+import { allTopics } from '@/lib/topics';
 import Link from 'next/link';
 
 export default function TopicsIndexPage() {

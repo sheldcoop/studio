@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { allTopics } from '@/lib/data';
+import { allTopics } from '@/lib/topics';
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 

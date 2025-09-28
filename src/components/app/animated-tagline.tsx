@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { taglines } from '@/lib/data';
+import { taglines } from '@/lib/site';
 
 export function AnimatedTagline() {
   const [taglineIndex, setTaglineIndex] = useState(0);

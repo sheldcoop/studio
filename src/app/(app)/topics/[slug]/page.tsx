@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
-import { allTopics } from '@/lib/data';
+import { allTopics } from '@/lib/topics';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {

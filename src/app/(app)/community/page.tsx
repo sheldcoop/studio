@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
 import { Button } from '@/components/ui/button';
-import { communityPosts } from '@/lib/data';
+import { communityPosts } from '@/lib/community';
 import { PlusCircle, MessageSquare, Eye } from 'lucide-react';
 import {
   Card,

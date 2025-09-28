@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { allTopics } from '@/lib/data';
+import { allTopics } from '@/lib/topics';
 
 const URL = 'https://quantfinancelab.com';
 

@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { PageHeader } from '@/components/app/page-header';
-import { LearningPathCard } from '@/components/app/learning-path-card';
-import { learningPaths } from '@/lib/data';
+import { learningPaths } from '@/lib/learning-paths';
 import {
-  Accordion
-} from '@/components/ui/accordion';
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card';
 
 export const metadata: Metadata = {
   title: 'Learning Paths',
@@ -19,11 +23,29 @@ export default function PathsPage() {
         description="Follow our curated paths to build a solid foundation in quantitative finance."
         variant="aligned-left"
       />
-      <Accordion type="single" collapsible className="w-full space-y-4">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {learningPaths.map((path) => (
-          <LearningPathCard key={path.id} path={path} />
+           <Link
+            key={path.id}
+            href={`/paths/${path.id}`}
+            className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <Card className="flex h-full transform-gpu flex-col transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
+              <CardHeader className="flex-row items-start gap-4">
+                <div className="rounded-lg bg-primary/10 p-3">
+                  <path.icon className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="font-headline text-lg">
+                    {path.title}
+                  </CardTitle>
+                  <CardDescription className="mt-1">{path.description}</CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
+          </Link>
         ))}
-      </Accordion>
+      </div>
     </>
   );
 }

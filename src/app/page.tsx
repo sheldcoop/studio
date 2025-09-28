@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { quantJourney } from '@/lib/data';
+import { quantJourney } from '@/lib/site';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
