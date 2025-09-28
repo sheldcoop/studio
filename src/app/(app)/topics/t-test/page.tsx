@@ -69,7 +69,7 @@ const IndependentTestChart = () => {
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
-        <Button onClick={generateData}>his one</Button>
+        <Button onClick={generateData}>Simulate New 60-Day Period</Button>
       </div>
     </div>
   );
