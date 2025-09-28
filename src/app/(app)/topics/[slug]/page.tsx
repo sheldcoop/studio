@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
 import { allTopics } from '@/lib/topics';
@@ -49,7 +50,6 @@ export default async function TopicPage({
     'confidence-intervals',
     'hypothesis-testing-p-values',
     'mental-math',
-    'linear-algebra-for-quantitative-finance',
     't-test',
     'z-test',
     'anova',
