@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import './globals.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
 import { AuthProvider } from './auth-provider';
+import { Header } from '@/components/app/header';
+import { Footer } from '@/components/app/footer';
 
 const fontBody = Inter({
   subsets: ['latin'],
@@ -53,7 +55,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1 p-4 md:p-8">{children}</main>
+              <Footer />
+            </div>
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
