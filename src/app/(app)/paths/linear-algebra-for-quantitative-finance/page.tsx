@@ -19,12 +19,18 @@ const Unit = ({ title, description, children }: { title: string; description: st
     </section>
 );
 
-const Chapter = ({ title, href, children }: { title: string; href: string, children: React.ReactNode }) => (
+const Chapter = ({ title, href, children, isClickable = false }: { title: string; href: string, children: React.ReactNode, isClickable?: boolean }) => (
     <article>
         <h3 className="mb-4">
-            <Link href={href} className="text-xl font-semibold border-b border-border/50 pb-2 block hover:text-primary hover:border-primary transition-colors">
-                {title}
-            </Link>
+            {isClickable ? (
+                <Link href={href} className="text-xl font-semibold border-b border-border/50 pb-2 block hover:text-primary hover:border-primary transition-colors">
+                    {title}
+                </Link>
+            ) : (
+                <span className="text-xl font-semibold border-b border-border/50 pb-2 block">
+                    {title}
+                </span>
+            )}
         </h3>
         <ul className="list-none pl-4 mt-3 border-l border-dashed border-border/50 space-y-3">
             {children}
@@ -55,7 +61,7 @@ export default function LinearAlgebraRoadmapPage() {
       />
       <main className="max-w-5xl">
         <Unit title="Unit 1: Foundations - Matrices & Equations" description="We start with the basics: representing and solving the systems that form the bedrock of financial models.">
-          <Chapter title="Chapter 1: Linear Equation Systems" href="/linear-algebra/linear-equation-systems">
+          <Chapter title="Chapter 1: Linear Equation Systems" href="/linear-algebra/linear-equation-systems" isClickable={true}>
             <Subtopic>What is a Linear System?</Subtopic>
             <Subtopic>Geometric Interpretation in 2D and 3D</Subtopic>
             <Subtopic>Solving Systems with Gaussian Elimination</Subtopic>
