@@ -62,10 +62,7 @@ export const getPathById = (id: string): LearningPath | undefined => {
   if (!pathInfo) return undefined;
 
   const allModules = [
-    { id: 'la-module-1', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 1: Foundations of Vectors and Matrices', status: 'completed', duration: 75 },
-    { id: 'la-module-2', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 2: Core Concepts & Decompositions', status: 'in-progress', duration: 105 },
-    { id: 'la-module-3', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 3: Applications in ML & Statistics', status: 'not-started', duration: 105 },
-    { id: 'la-module-4', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 4: Applications in Quantitative Finance', status: 'not-started', duration: 120 },
+    { id: 'la-main-chapters', parent: 'linear-algebra-for-quantitative-finance', title: 'Chapters', status: 'in-progress', duration: 0 },
     { id: 'stats-module-1', parent: 'statistics-for-quantitative-finance', title: 'Probability Theory', status: 'completed', duration: 60},
     { id: 'stats-module-2', parent: 'statistics-for-quantitative-finance', title: 'Common Distributions', status: 'in-progress', duration: 75 },
     { id: 'stats-module-3', parent: 'statistics-for-quantitative-finance', title: 'Hypothesis Testing', status: 'not-started', duration: 120 },

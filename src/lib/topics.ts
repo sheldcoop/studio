@@ -95,27 +95,19 @@ export const allTopics: Topic[] = [
   },
 
   // --- Linear Algebra Path Topics ---
+  { id: 'linear-equation-system', title: 'Chapter 1: Linear Equation System', href: '/linear-algebra/linear-equation-system', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'basic-matrix-algebra', title: 'Chapter 2: Basic Matrix Algebra', href: '/linear-algebra/basic-matrix-algebra', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'determinant', title: 'Chapter 3: Determinant', href: '/linear-algebra/determinant', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'lu-factorization', title: 'Chapter 4: Lu Factorization', href: '/linear-algebra/lu-factorization', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'vector-addition-subtraction-scalar-multiplication', title: 'Chapter 5: Vector Addition, Subtraction And Scalar Multiplication', href: '/linear-algebra/vector-addition-subtraction-scalar-multiplication', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'linear-combination', title: 'Chapter 6: Linear Combination', href: '/linear-algebra/linear-combination', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'linear-independence', title: 'Chapter 7: Linear Independence', href: '/linear-algebra/linear-independence', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'vector-space-and-subspace', title: 'Chapter 8: Vector Space And Subspace', href: '/linear-algebra/vector-space-and-subspace', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'basis-and-dimension', title: 'Chapter 9: Basis And Dimension', href: '/linear-algebra/basis-and-dimension', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'null-space-vs-col-space-row-space-and-rank', title: 'Chapter 10: Null Space Vs Col Space, Row Space And Rank', href: '/linear-algebra/null-space-vs-col-space-row-space-and-rank', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'linear-transformation', title: 'Chapter 11: Linear Transformation', href: '/linear-algebra/linear-transformation', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
+  { id: 'eigenvalues-and-eigenvectors', title: 'Chapter 12: Eigenvalues And Eigenvectors', href: '/linear-algebra/eigenvalues-and-eigenvectors', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
 
-  // Module 1: Foundations
-  { id: 'linear-algebra-vectors-and-spaces', title: 'Vectors and Spaces', href: '/linear-algebra/vectors-and-spaces-for-quantitative-finance', icon: Waypoints, description: 'Learn about vector spaces for quantitative finance.', category: 'sub-topic', parent: 'la-module-1', status: 'completed', duration: 20 },
-  { id: 'linear-algebra-matrices-and-operations', title: 'Matrices and Operations', href: '/linear-algebra/matrices-and-operations-for-quantitative-finance', icon: Waypoints, description: 'An introduction to matrices and operations for quants.', category: 'sub-topic', parent: 'la-module-1', status: 'completed', duration: 25 },
-  { id: 'linear-algebra-projection-vectors', title: 'Projection Vectors', href: '/linear-algebra/projection-vectors-for-quantitative-finance', icon: Waypoints, description: 'Learn about projection vectors for quantitative finance.', category: 'sub-topic', parent: 'la-module-1', status: 'not-started', duration: 15 },
-  
-  // Module 2: Core Concepts
-  { id: 'linear-algebra-matrix-transformations', title: 'Matrix Transformations', href: '/linear-algebra/matrix-transformations-for-quantitative-finance', icon: Waypoints, description: 'Learn about matrix transformations for quants.', category: 'sub-topic', parent: 'la-module-2', status: 'completed', duration: 20 },
-  { id: 'linear-algebra-solving-systems-of-equations', title: 'Solving Systems of Linear Equations', href: '/linear-algebra/solving-systems-of-equations-for-quantitative-finance', icon: Waypoints, description: 'Learn how to solve systems of linear equations.', category: 'sub-topic', parent: 'la-module-2', status: 'completed', duration: 20 },
-  { id: 'linear-algebra-eigenvalues-and-eigenvectors', title: 'Eigenvalues and Eigenvectors', href: '/linear-algebra/eigenvalues-and-eigenvectors-for-quantitative-finance', icon: Waypoints, description: 'An introduction to eigenvalues and eigenvectors.', category: 'sub-topic', parent: 'la-module-2', status: 'in-progress', duration: 35 },
-  { id: 'linear-algebra-matrix-decompositions', title: 'Key Matrix Decompositions (SVD, Cholesky)', href: '/linear-algebra/matrix-decompositions-for-quantitative-finance', icon: Waypoints, description: 'Learn about key matrix decompositions like SVD and Cholesky.', category: 'sub-topic', parent: 'la-module-2', status: 'not-started', duration: 30 },
-  
-  // Module 3: Applications in ML & Statistics
-  { id: 'linear-algebra-covariance-matrices', title: 'Covariance Matrices', href: '/linear-algebra/covariance-matrices-for-quantitative-finance', icon: Waypoints, description: 'An introduction to covariance matrices.', category: 'sub-topic', parent: 'la-module-3', status: 'not-started', duration: 30 },
-  { id: 'linear-algebra-principal-component-analysis', title: 'Principal Component Analysis (PCA)', href: '/linear-algebra/principal-component-analysis-for-quantitative-finance', icon: Waypoints, description: 'Learn about Principal Component Analysis (PCA).', category: 'sub-topic', parent: 'la-module-3', status: 'not-started', duration: 45 },
-  { id: 'linear-algebra-linear-regression-applications', title: 'Linear Regression applications', href: '/linear-algebra/linear-regression-applications-for-quantitative-finance', icon: Waypoints, description: 'Learn about the applications of linear regression.', category: 'sub-topic', parent: 'la-module-3', status: 'not-started', duration: 30 },
-  
-  // Module 4: Applications in Quantitative Finance
-  { id: 'linear-algebra-portfolio-optimization', title: 'Portfolio Optimization', href: '/linear-algebra/portfolio-optimization-for-quantitative-finance', icon: Waypoints, description: 'Learn about portfolio optimization.', category: 'sub-topic', parent: 'la-module-4', status: 'not-started', duration: 45 },
-  { id: 'linear-algebra-factor-models', title: 'Factor Models (CAPM)', href: '/linear-algebra/factor-models-for-quantitative-finance', icon: Waypoints, description: 'An introduction to Factor Models (CAPM).', category: 'sub-topic', parent: 'la-module-4', status: 'not-started', duration: 30 },
-  { id: 'linear-algebra-risk-management', title: 'Risk Management (VaR, Monte Carlo)', href: '/linear-algebra/risk-management-for-quantitative-finance', icon: Waypoints, description: 'Learn about risk management techniques like VaR and Monte Carlo.', category: 'sub-topic', parent: 'la-module-4', status: 'not-started', duration: 45 },
   
   // --- Statistics Topics ---
 
