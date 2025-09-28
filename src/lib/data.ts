@@ -6,7 +6,7 @@ import {
     CandlestickChart,
     type LucideIcon,
   } from 'lucide-react';
-  import { allTopics, type Topic } from './topics';
+  import { allTopics, type Topic } from './curriculum';
   
   export type Module = {
     id: string;
@@ -72,5 +72,5 @@ import {
     },
   ];
   
-  export * from './topics';
+  export * from './curriculum';
   

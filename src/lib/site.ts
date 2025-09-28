@@ -1,4 +1,4 @@
-import { allTopics } from "./topics";
+import { allTopics } from "./curriculum";
 
 export const taglines = [
   ['From Data to ', 'Insight'],

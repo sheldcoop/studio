@@ -2,6 +2,7 @@
 'use client';
 
 import type { ComponentType } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';

@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
-import { allTopics, type SubTopic } from '@/lib/topics';
+import { allTopics, type SubTopic } from '@/lib/curriculum';
 import { notFound, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 

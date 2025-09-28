@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { allTopics } from '@/lib/topics';
+import { allTopics } from '@/lib/curriculum';
 import Link from 'next/link';
 
 export default function TopicsIndexPage() {

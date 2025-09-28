@@ -8,7 +8,7 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { allTopics } from '@/lib/topics';
+import { allTopics } from '@/lib/curriculum';
 import Link from 'next/link';
 
 export default function HypothesisTestingPage() {

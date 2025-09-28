@@ -2,6 +2,7 @@
 'use client';
 
 import type { ComponentType } from 'react';
+import React from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';

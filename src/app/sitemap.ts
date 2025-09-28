@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { allTopics } from '@/lib/topics';
+import { allTopics } from '@/lib/curriculum';
 
 const URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
 
