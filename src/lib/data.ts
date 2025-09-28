@@ -111,6 +111,7 @@ export const allTopics: Topic[] = [
   // Module 1: Foundations
   { id: 'la-vectors-spaces', title: 'Vectors and Spaces', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-1', status: 'completed', duration: 20 },
   { id: 'la-matrices-ops', title: 'Matrices and Operations', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-1', status: 'completed', duration: 25 },
+  { id: 'la-projection-vectors', title: 'Projection Vectors', href: '/topics/linear-algebra-for-quantitative-finance#module-1', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-1', status: 'not-started', duration: 15 },
   
   // Module 2: Core Concepts
   { id: 'la-matrix-transformations', title: 'Matrix Transformations', href: '/topics/linear-algebra-for-quantitative-finance#module-2', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-module-2', status: 'completed', duration: 20 },
@@ -209,7 +210,7 @@ export const learningPaths: LearningPath[] = [
     icon: Calculator,
     description: 'Master vectors, matrices, and eigenvalues for financial modeling.',
     modules: [
-        { id: 'la-module-1', title: 'Module 1: Foundations of Vectors and Matrices', status: 'completed', duration: 45, lessons: allTopics.filter(t => t.parent === 'la-module-1')},
+        { id: 'la-module-1', title: 'Module 1: Foundations of Vectors and Matrices', status: 'completed', duration: 60, lessons: allTopics.filter(t => t.parent === 'la-module-1')},
         { id: 'la-module-2', title: 'Module 2: Core Concepts & Decompositions', status: 'in-progress', duration: 105, lessons: allTopics.filter(t => t.parent === 'la-module-2') },
         { id: 'la-module-3', title: 'Module 3: Applications in ML & Statistics', status: 'not-started', duration: 105, lessons: allTopics.filter(t => t.parent === 'la-module-3') },
         { id: 'la-module-4', title: 'Module 4: Applications in Quantitative Finance', status: 'not-started', duration: 120, lessons: allTopics.filter(t => t.parent === 'la-module-4') },
