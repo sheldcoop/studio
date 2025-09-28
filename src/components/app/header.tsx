@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -10,6 +11,7 @@ import { Logo } from './logo';
 import { MainNav } from './main-nav';
 import { UserNav } from './user-nav';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from './theme-toggle';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -55,7 +57,8 @@ export function Header() {
            <div className="w-full flex-1 md:w-auto md:flex-none">
              {/* You can add a search bar here if needed */}
            </div>
-          <nav className="flex items-center">
+          <nav className="flex items-center gap-2">
+            <ThemeToggle />
             <UserNav />
           </nav>
         </div>

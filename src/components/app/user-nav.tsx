@@ -18,7 +18,6 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export function UserNav() {
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar');
-  const { setTheme, theme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -55,11 +54,6 @@ export function UserNav() {
           <DropdownMenuItem>Profile</DropdownMenuItem>
           <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-          {theme === 'dark' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
-          <span>{theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>Log out</DropdownMenuItem>
       </DropdownMenuContent>
