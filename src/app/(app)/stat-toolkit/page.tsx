@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { allTopics } from '@/lib/topics';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 const STATS_TIERS = [
@@ -26,12 +26,33 @@ export default function StatToolkitPage() {
     };
   });
   
+  const hypothesisTestingTopic = allTopics.find(t => t.id === 'hypothesis-testing-p-values');
+
   return (
     <>
       <PageHeader
         title="Statistician's Toolkit"
         description="Explore and understand the core concepts of statistics for quantitative analysis."
       />
+
+      {hypothesisTestingTopic && (
+        <Card className="mb-6 bg-primary/5 border-primary/20">
+          <CardHeader>
+            <CardTitle className="font-headline text-xl text-primary">A Quant's Detective Kit</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold">{hypothesisTestingTopic.title}</h3>
+                <p className="text-muted-foreground">{hypothesisTestingTopic.description}</p>
+              </div>
+              <Link href={hypothesisTestingTopic.href} className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+                Explore Tests <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {tiers.map((tier) => (
