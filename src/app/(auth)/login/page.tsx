@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  type AuthError,
 } from 'firebase/auth';
 import { app } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
@@ -29,6 +30,26 @@ import { AlertTriangle } from 'lucide-react';
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
+const getFriendlyErrorMessage = (error: AuthError): string => {
+    switch (error.code) {
+        case 'auth/invalid-email':
+            return 'Please enter a valid email address.';
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+            return 'Invalid credentials. Please check your email and password.';
+        case 'auth/email-already-in-use':
+            return 'An account with this email address already exists.';
+        case 'auth/weak-password':
+            return 'The password must be at least 6 characters long.';
+        case 'auth/popup-closed-by-user':
+            return 'The sign-in popup was closed before completion. Please try again.';
+        default:
+            return 'An unexpected authentication error occurred. Please try again later.';
+    }
+}
+
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,7 +66,7 @@ export default function LoginPage() {
       }
       router.push('/');
     } catch (err: any) {
-      setError(err.message);
+      setError(getFriendlyErrorMessage(err as AuthError));
     }
   };
 
@@ -55,7 +76,7 @@ export default function LoginPage() {
       await signInWithPopup(auth, googleProvider);
       router.push('/');
     } catch (err: any) {
-      setError(err.message);
+      setError(getFriendlyErrorMessage(err as AuthError));
     }
   }
 
