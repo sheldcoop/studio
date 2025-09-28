@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { allTopics } from '@/lib/topics';
 
-const URL = 'https://quantfinancelab.com';
+const URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [

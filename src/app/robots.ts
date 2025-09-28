@@ -1,4 +1,6 @@
 import { MetadataRoute } from 'next'
+
+const URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
  
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://quantprep.com/sitemap.xml',
+    sitemap: `${URL}/sitemap.xml`,
   }
 }
