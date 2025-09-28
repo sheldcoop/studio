@@ -88,12 +88,12 @@ const pageData = {
   description: 'The F-Test is essential for comparing the variance (or volatility) of two or more groups. This guide explains how to use it to assess and compare risk in trading.',
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
-      description: "While a T-Test compares averages, an F-Test compares the spread or volatility. Think of it as a risk-assessment tool: it tells you if the returns of Stock A are significantly more erratic and unpredictable than the returns of Stock B, even if their average returns are the same.",
+      title: 'Purpose & Analogy for Quants',
+      description: "While a T-Test compares averages (first moment), an F-Test compares the spread or volatility (second moment). Think of it as a risk-assessment tool: it tells you if the returns of Stock A are significantly more erratic and unpredictable than the returns of Stock B, even if their average returns are the same.",
     },
     {
       title: 'Key Assumptions',
-      description: 'The F-Test is quite sensitive to its assumptions. The data in both groups must be independent and normally distributed. Violating the normality assumption can lead to inaccurate conclusions about the variances.',
+      description: 'The F-Test is quite sensitive to its assumptions. The data in both groups must be independent and normally distributed. Violating the normality assumption can lead to inaccurate conclusions about the variances, making tests like Levene\'s test a more robust alternative in some cases.',
     },
   ],
   examples: [

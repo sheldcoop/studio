@@ -88,7 +88,7 @@ const TwoSampleZTestChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'An Interactive Guide to the Z-Test for Trading',
+  title: 'An Interactive Guide to the Z-Test for Quants',
   description: 'The Z-test is used for comparing means with large samples when population variance is known. This guide explains its types with interactive trading examples.',
   coreConcepts: [
     {
@@ -96,8 +96,8 @@ const pageData = {
       description: "A Z-test, like a t-test, checks if differences in means are significant. However, it's used for large crowds (samples > 30) where you already have a map of the entire population's variability (known population standard deviation).",
     },
     {
-      title: 'Key Assumptions',
-      description: 'The main requirements are a large sample size (n > 30), approximately normally distributed data, and critically, a known population standard deviation. This last point makes it rarer in practice than the t-test.',
+      title: 'Key Assumptions for Quants',
+      description: 'The main requirements are a large sample size (n > 30), approximately normally distributed data, and critically, a known population standard deviation. This last point makes it rarer in practice than the t-test, often reserved for assets with very long, stable histories.',
     },
   ],
   examples: [

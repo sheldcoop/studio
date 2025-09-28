@@ -75,11 +75,11 @@ const MannWhitneyChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'An Interactive Guide to the Mann-Whitney U Test',
-  description: "The go-to non-parametric test for comparing two independent groups when your data isn't normally distributed.",
+  title: 'Interactive Guide to the Mann-Whitney U Test for Quants',
+  description: "The go-to non-parametric test for comparing two independent groups when your financial data isn't normally distributed.",
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
+      title: 'Purpose & Analogy for Quants',
       description: "The Mann-Whitney U Test is the non-parametric version of the independent T-Test. Instead of comparing means, it compares the ranks of the data from two groups. Think of it as lining up all data points from both groups and checking if one group's values are consistently ranked higher than the other's.",
     },
     {

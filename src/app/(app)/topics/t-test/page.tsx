@@ -148,7 +148,7 @@ const OneSampleTestChart = () => {
 // --- Page Data ---
 const pageData = {
   title: 'An Interactive Guide to the T-Test for Trading',
-  description: 'The t-test is a key tool for comparing average returns and performance. This guide uses interactive trading examples to explain the main types of t-tests and help you understand when to use each one.',
+  description: "The t-test is a key tool for comparing average returns and performance. This guide uses interactive trading examples to explain the main types of t-tests and help you understand when to use each one.",
   coreConcepts: [
     {
       title: 'Purpose & Analogy',

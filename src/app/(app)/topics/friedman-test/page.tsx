@@ -57,7 +57,7 @@ const FriedmanTestChart = () => {
           <LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis reversed domain={[1, 5]} tickCount={5} />
+            <YAxis reversed domain={[1, 5]} tickCount={5} label={{ value: 'Performance Rank', angle: -90, position: 'insideLeft' }}/>
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
             <Legend formatter={(value) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
             <Line type="monotone" dataKey="Algo_A" stroke="var(--color-Algo_A)" />
@@ -77,22 +77,22 @@ const FriedmanTestChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'Interactive Guide to the Friedman Test',
-  description: 'The non-parametric alternative to Repeated Measures ANOVA for comparing three or more related groups.',
+  title: 'Interactive Guide to the Friedman Test for Quants',
+  description: 'The non-parametric alternative to Repeated Measures ANOVA for comparing three or more related groups, often used in backtesting.',
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
-      description: "The Friedman Test is used to determine if there are any statistically significant differences between the distributions of three or more related samples. It's essentially a ranked-based version of a repeated-measures ANOVA, making it suitable for non-normal data.",
+      title: 'Purpose & Analogy for Quants',
+      description: "The Friedman Test is used to determine if there are statistically significant differences between the distributions of three or more related samples. It's a ranked-based version of a repeated-measures ANOVA, making it suitable for non-normal data, such as strategy performance ranks across different market regimes.",
     },
     {
       title: 'When to Use It',
-      description: "Use this test when you have one group that has been measured on three or more different occasions or under three or more different conditions. It's ideal when the assumptions for a repeated measures ANOVA (like normality) are not met.",
+      description: "Use this test when you have one group measured on three or more occasions (e.g. comparing multiple strategy backtests over the same set of assets). It's ideal when the assumptions for a repeated measures ANOVA (like normality) are not met.",
     },
   ],
   examples: [
     {
       id: 'friedman-test',
-      title: 'Comparing Multiple Related Groups',
+      title: 'Comparing Algorithm Performance Across Regimes',
       description: 'This test is ideal for analyzing how the same subjects (e.g., algorithms, portfolios) perform across multiple different, related conditions.',
       exampleText: "A quant team wants to compare the performance of five trading algorithms across three different market volatility regimes (Low, Medium, and High). For each regime, they rank the algorithms from 1 (best) to 5 (worst). The Friedman test is used to determine if there is a significant difference in the algorithms' median ranks across the different volatility conditions.",
       ChartComponent: FriedmanTestChart as ComponentType,

@@ -71,12 +71,12 @@ const pageData = {
   description: "Measure the strength of a monotonic relationship between two variables, even when it's not linear.",
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
-      description: "Spearman's correlation is Pearson's flexible cousin. Instead of checking for a straight-line relationship, it checks for a monotonic one—does one variable consistently increase or decrease as the other does, even if not at a constant rate? It works by converting values to ranks first.",
+      title: 'Purpose & Analogy for Quants',
+      description: "Spearman's correlation is Pearson's flexible cousin. Instead of checking for a straight-line relationship, it checks for a monotonic one—does one variable consistently increase or decrease as the other does, even if not at a constant rate? It works by converting values to ranks first, making it robust to outliers and non-linearities.",
     },
     {
       title: 'When to Use It',
-      description: "Use Spearman's when the relationship between your variables is not linear, or when your data has significant outliers that would skew a Pearson correlation. It's perfect for capturing relationships that 'level off' or accelerate.",
+      description: "Use Spearman's when the relationship between your variables is not linear, or when your data has significant outliers that would skew a Pearson correlation. It's perfect for capturing relationships between, for example, a company's financial health score and its subsequent stock performance, where the effect may not be linear.",
     },
   ],
   examples: [

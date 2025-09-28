@@ -56,7 +56,7 @@ const PearsonCorrelationChart = () => {
       </div>
       <div className="mx-auto max-w-sm flex-shrink-0 text-center">
         <div className="py-4">
-          <Label htmlFor="correlation-slider">Adjust Correlation Coefficient</Label>
+          <Label htmlFor="correlation-slider">Adjust Correlation Coefficient (ρ)</Label>
           <Slider
             id="correlation-slider"
             min={-1}
@@ -75,16 +75,16 @@ const PearsonCorrelationChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'Interactive Guide to Pearson Correlation',
+  title: 'Interactive Guide to Pearson Correlation for Quants',
   description: 'Measure the linear relationship between two continuous variables, a cornerstone of portfolio diversification and pairs trading.',
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
-      description: 'Pearson Correlation measures how well two assets move in relation to each other. It gives a value between -1 (perfectly opposite movement) and +1 (perfectly identical movement). A value of 0 means no linear relationship. Think of it as a "dance partner" score for stocks.',
+      title: 'Purpose & Analogy for Quants',
+      description: 'Pearson Correlation measures how well two assets move in relation to each other. It gives a value between -1 (perfectly opposite movement) and +1 (perfectly identical movement). A value of 0 means no linear relationship. Think of it as a "dance partner" score for stocks, fundamental for pairs trading.',
     },
     {
-      title: 'Interpretation',
-      description: 'Crucial for diversification—combining negatively correlated assets can reduce overall portfolio risk.',
+      title: 'Interpretation in Finance',
+      description: 'Crucial for diversification—combining negatively correlated assets can reduce overall portfolio risk. High positive correlation is the basis for pairs trading strategies, where one asset is bought and the other is shorted.',
     },
   ],
   examples: [

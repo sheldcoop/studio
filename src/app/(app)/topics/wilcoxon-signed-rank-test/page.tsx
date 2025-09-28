@@ -57,16 +57,16 @@ const WilcoxonSignedRankChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'Interactive Guide to the Wilcoxon Signed-Rank Test',
-  description: "The non-parametric alternative to the Paired T-Test, used for 'before and after' analysis on non-normal data.",
+  title: 'Interactive Guide to the Wilcoxon Signed-Rank Test for Quants',
+  description: "The non-parametric alternative to the Paired T-Test, used for 'before and after' analysis on non-normal financial data.",
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
-      description: "This test is the non-parametric version of the Paired T-Test. It's designed for comparing two related measurements from the same subject. Instead of using raw data, it ranks the differences between pairs to see if there's a significant change.",
+      title: 'Purpose & Analogy for Quants',
+      description: "This test is the non-parametric version of the Paired T-Test. It's designed for comparing two related measurements from the same subject (e.g., a portfolio before and after a change). Instead of using raw data, it ranks the differences between pairs to see if there's a significant change.",
     },
     {
       title: 'When to Use It',
-      description: "Use this for 'before and after' scenarios when your data is not normally distributed. It's perfect for measuring the impact of an intervention on the same group of subjects, like testing if a new risk model reduced portfolio drawdown.",
+      description: "Use this for 'before and after' scenarios when your data is not normally distributed. It's perfect for measuring the impact of an intervention on the same group of subjects, like testing if a new risk model reduced portfolio drawdown or if a change to an algorithm improved returns across a set of stocks.",
     },
   ],
   examples: [

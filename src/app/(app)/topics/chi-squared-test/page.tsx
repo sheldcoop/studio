@@ -153,12 +153,12 @@ const TestForHomogeneityChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'Interactive Guide to the Chi-Squared (χ²) Test',
-  description: 'Analyze categorical data to find significant relationships between variables.',
+  title: 'Interactive Guide to the Chi-Squared (χ²) Test for Quants',
+  description: 'Analyze categorical data to find significant relationships between variables in financial markets.',
   coreConcepts: [
     {
-      title: 'Versatile Tool',
-      description: 'The Chi-Squared (χ²) test is a versatile statistical tool for categorical data. It helps determine if the observed data significantly differs from what was expected. It has three primary uses, each answering a different kind of question.',
+      title: 'Versatile Tool for Quants',
+      description: 'The Chi-Squared (χ²) test is a versatile statistical tool for categorical data. It helps determine if the observed data significantly differs from what was expected. It has three primary uses, each answering a different kind of question relevant to finance.',
     },
   ],
   examples: [
@@ -173,7 +173,7 @@ const pageData = {
       id: 'independence',
       title: 'Test for Independence',
       description: 'Use this to determine if there is a significant association between **two categorical variables** within a single population.',
-      exampleText: 'A quant analyst tracks profitable trades for three strategies across different market conditions. They want to know if "Strategy Type" and "Market Condition" are independent. The test compares the observed counts to what we\'d expect if no relationship existed.',
+      exampleText: 'A quant analyst tracks profitable trades for three strategies across different market conditions (e.g., Bullish, Bearish, Sideways). They want to know if "Strategy Type" and "Market Condition" are independent. The test compares the observed counts to what we\'d expect if no relationship existed.',
       ChartComponent: TestForIndependenceChart as ComponentType,
     },
     {

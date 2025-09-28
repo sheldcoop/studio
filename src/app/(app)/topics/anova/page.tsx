@@ -158,16 +158,16 @@ const RepeatedMeasuresAnovaChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'An Interactive Guide to ANOVA for Trading',
+  title: 'An Interactive Guide to ANOVA for Quants',
   description: "ANOVA (Analysis of Variance) lets you compare the average performance of three or more groups. This guide explains its main types using interactive trading examples.",
   coreConcepts: [
     {
       title: 'Purpose & Analogy',
-      description: "ANOVA checks if there's a significant difference somewhere among the means of several groups. Think of it as a 'group chaperone': instead of doing many t-tests, it first tells you if any group is behaving differently from the others overall.",
+      description: "ANOVA checks if there's a significant difference somewhere among the means of several groups. Think of it as a 'group chaperone': instead of doing many t-tests (which increases error rates), it first tells you if any group is behaving differently from the others overall.",
     },
     {
-      title: 'Key Assumptions',
-      description: "The data in each group should be approximately normally distributed, and the groups should have roughly equal variances. Also, the data points should be independent of each other (unless using a Repeated Measures ANOVA).",
+      title: 'Key Assumptions for Quants',
+      description: "The data in each group should be approximately normally distributed, and the groups should have roughly equal variances (homoscedasticity). Also, the data points should be independent of each other (unless using a Repeated Measures ANOVA).",
     },
   ],
   examples: [

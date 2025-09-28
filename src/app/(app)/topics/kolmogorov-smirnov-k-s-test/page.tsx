@@ -74,16 +74,16 @@ const KSTestChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'Interactive Guide to the Kolmogorov-Smirnov (K-S) Test',
-  description: 'A powerful test to determine if your data follows a specific distribution, like the normal distribution.',
+  title: 'Interactive Guide to the Kolmogorov-Smirnov (K-S) Test for Quants',
+  description: 'A powerful test for quants to determine if data (like returns) follows a specific distribution, such as the normal distribution.',
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
-      description: "The K-S test acts like a 'goodness-of-fit' ruler. It measures the maximum distance between the shape of your sample data (the Empirical CDF) and the shape of a theoretical distribution (the Theoretical CDF). If the distance is too large, you conclude your data doesn't fit that theoretical shape.",
+      title: 'Purpose & Analogy for Quants',
+      description: "The K-S test acts like a 'goodness-of-fit' ruler. It measures the maximum distance between the Empirical CDF of your sample data (e.g. asset returns) and the Theoretical CDF of a distribution you are testing against (e.g. a normal distribution). If the distance is too large, you conclude your data doesn't fit that theoretical shape.",
     },
     {
       title: 'When to Use It',
-      description: "The most common use is to test for normality. Before you use a parametric test like a T-Test or ANOVA, you should check if your data is normally distributed. The K-S test is a formal way to do this. It can also be used to check if two different samples come from the same distribution.",
+      description: "A primary use for quants is testing for normality. Before using a parametric model or test like a T-Test or ANOVA, you should check if your data is normally distributed. The K-S test is a formal way to do this. It can also be used to check if two different samples (e.g., returns from two different time periods) come from the same underlying distribution.",
     },
   ],
   examples: [
@@ -91,7 +91,7 @@ const pageData = {
       id: 'ks-test',
       title: 'Visualizing Goodness-of-Fit',
       description: 'This chart plots the cumulative distribution of your sample data against the ideal cumulative distribution of a perfect normal curve. The closer the two lines are, the better the fit.',
-      exampleText: "We generate a sample of data and plot its Empirical Cumulative Distribution Function (ECDF). We then overlay the theoretical Cumulative Distribution Function (CDF) of a normal distribution. Toggle between a normal sample and a uniform sample to see how the ECDF's fit changes.",
+      exampleText: "We generate a sample of data and plot its Empirical Cumulative Distribution Function (ECDF). We then overlay the theoretical Cumulative Distribution Function (CDF) of a normal distribution. Toggle between a normal sample and a uniform sample to see how the ECDF's fit changes, and how the K-S statistic would capture this difference.",
       ChartComponent: KSTestChart as ComponentType,
     },
   ],

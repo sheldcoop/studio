@@ -65,16 +65,16 @@ const KruskalWallisChart = () => {
 
 // --- Page Data ---
 const pageData = {
-  title: 'An Interactive Guide to the Kruskal-Wallis Test',
-  description: 'The non-parametric alternative to ANOVA for comparing three or more independent groups.',
+  title: 'An Interactive Guide to the Kruskal-Wallis Test for Quants',
+  description: 'The non-parametric alternative to ANOVA for comparing three or more independent groups, ideal for skewed financial data.',
   coreConcepts: [
     {
-      title: 'Purpose & Analogy',
-      description: "The Kruskal-Wallis Test is essentially a One-Way ANOVA performed on ranked data. It checks if there's a significant difference in the median distributions of three or more independent groups. Think of it as ANOVA's rugged, all-terrain cousin—it works even when the ground (your data) isn't perfectly smooth (normal).",
+      title: 'Purpose & Analogy for Quants',
+      description: "The Kruskal-Wallis Test is essentially a One-Way ANOVA performed on ranked data. It checks if there's a significant difference in the median distributions of three or more independent groups. Think of it as ANOVA's rugged, all-terrain cousin—it works even when the ground (your data) isn't perfectly smooth (normal), which is common for financial returns.",
     },
     {
       title: 'When to Use It',
-      description: "Use this test when you want to compare three or more groups, but your data is not normally distributed or your sample sizes are very small. It's the perfect tool for situations where ANOVA's assumptions are violated.",
+      description: "Use this test when you want to compare three or more groups, but your data is not normally distributed or your sample sizes are very small. It's the perfect tool for situations where ANOVA's assumptions are violated, such as comparing the skewed profit distributions of several trading strategies.",
     },
   ],
   examples: [
