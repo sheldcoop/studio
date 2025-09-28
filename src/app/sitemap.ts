@@ -1,3 +1,4 @@
+
 import { MetadataRoute } from 'next';
 import { allTopics } from '@/lib/curriculum';
 

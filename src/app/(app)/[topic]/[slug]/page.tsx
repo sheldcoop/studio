@@ -96,6 +96,7 @@ function TableOfContents({ subTopics }: { subTopics: SubTopic[] }) {
 
 export default function TopicPage() {
   const pathname = usePathname();
+  // Find the topic based on the pathname. This also handles nested routes.
   const topicInfo = allTopics.find((t) => t.href === pathname);
   
   if (!topicInfo) {
@@ -104,7 +105,8 @@ export default function TopicPage() {
   
   const { title, description, subTopics } = topicInfo;
 
-  // If there are no sub-topics, just render the simple placeholder.
+  // If there are no sub-topics, just render a simple placeholder.
+  // This is used for pages that are under construction.
   if (!subTopics || subTopics.length === 0) {
       return (
         <div className="mx-auto max-w-4xl">
@@ -116,7 +118,7 @@ export default function TopicPage() {
       );
   }
 
-  // If there ARE sub-topics, render the two-column layout
+  // If there ARE sub-topics, render the two-column layout with a table of contents.
   return (
     <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:gap-16">
