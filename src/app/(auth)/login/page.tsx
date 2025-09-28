@@ -9,6 +9,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signOut,
   type AuthError,
   type User,
@@ -88,6 +89,21 @@ export default function LoginPage() {
     }
   };
 
+  const handlePasswordReset = async () => {
+    setError(null);
+    setInfoMessage(null);
+    if (!email) {
+        setError('Please enter your email address to reset your password.');
+        return;
+    }
+    try {
+        await sendPasswordResetEmail(auth, email);
+        setInfoMessage('A password reset link has been sent to your email address.');
+    } catch (err: any) {
+        setError(getFriendlyErrorMessage(err as AuthError));
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     setError(null);
     setInfoMessage(null);
@@ -139,7 +155,12 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+                <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <Button variant="link" className="h-auto p-0 text-xs" onClick={handlePasswordReset}>
+                        Forgot Password?
+                    </Button>
+                </div>
               <Input
                 id="password"
                 type="password"
