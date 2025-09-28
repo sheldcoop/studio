@@ -8,7 +8,10 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  sendEmailVerification,
+  signOut,
   type AuthError,
+  type User,
 } from 'firebase/auth';
 import { app } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
@@ -25,7 +28,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/app/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -54,17 +57,32 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const router = useRouter();
+
+  const handleSuccessfulLogin = (user: User) => {
+    if (user.emailVerified) {
+      router.push('/');
+    } else {
+      setError("Please verify your email address before logging in. We've sent you another verification link.");
+      sendEmailVerification(user); // Resend verification email
+      signOut(auth); // Sign out the non-verified user
+    }
+  }
 
   const handleAuthAction = async (action: 'signUp' | 'signIn') => {
     setError(null);
+    setInfoMessage(null);
     try {
       if (action === 'signUp') {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(userCredential.user);
+        await signOut(auth); // Sign out user immediately after registration
+        setInfoMessage('Your account has been created. Please check your email to verify your account before logging in.');
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        handleSuccessfulLogin(userCredential.user);
       }
-      router.push('/');
     } catch (err: any) {
       setError(getFriendlyErrorMessage(err as AuthError));
     }
@@ -72,9 +90,11 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     setError(null);
+    setInfoMessage(null);
     try {
-      await signInWithPopup(auth, googleProvider);
-      router.push('/');
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      // Google sign-in automatically verifies the email if it's from Google
+      handleSuccessfulLogin(userCredential.user);
     } catch (err: any) {
       setError(getFriendlyErrorMessage(err as AuthError));
     }
@@ -98,6 +118,13 @@ export default function LoginPage() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Authentication Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {infoMessage && (
+            <Alert variant="default" className="mb-4 border-green-500/50 text-green-700 dark:text-green-400 [&>svg]:text-green-700 dark:[&>svg]:text-green-400">
+               <CheckCircle className="h-4 w-4" />
+               <AlertTitle>Success!</AlertTitle>
+               <AlertDescription>{infoMessage}</AlertDescription>
             </Alert>
           )}
           <div className="space-y-4">

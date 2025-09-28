@@ -15,13 +15,20 @@ export default function AppLayout({
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/login');
+    if (!loading) {
+      if (!user) {
+        // If not logged in, redirect to login
+        router.replace('/login');
+      } else if (!user.emailVerified) {
+        // If logged in but email is not verified, force them back to login.
+        // The login page will show them a message.
+        router.replace('/login');
+      }
     }
   }, [user, loading, router]);
 
-  if (loading || !user) {
-    // You can replace this with a better loading skeleton component
+  // Show a loading state while auth is being checked, or if the user is not verified yet.
+  if (loading || !user || !user.emailVerified) {
     return (
        <div className="flex h-screen w-full items-center justify-center">
         <div className="flex flex-col items-center gap-4">
