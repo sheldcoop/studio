@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,6 @@ import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { generateNormalData, getMean } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
 import {
   ReferenceLine,
   Tooltip,
@@ -23,6 +22,10 @@ import {
   BarChart,
   LineChart,
 } from 'recharts';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Chart Configs ---
 const independentTestChartConfig = {
@@ -42,7 +45,7 @@ const oneSampleTestChartConfig = {
 
 // --- Chart Components ---
 const IndependentTestChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const dataA = generateNormalData(0.08, 0.5, 60);
     const dataB = generateNormalData(0.03, 0.5, 60);
@@ -51,7 +54,7 @@ const IndependentTestChart = () => {
       { name: 'Mean-Reversion', value: getMean(dataB) },
     ]);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -76,7 +79,7 @@ const IndependentTestChart = () => {
 };
 
 const PairedTestChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const numSubjects = 12;
     const beforeData = Array.from({ length: numSubjects }, () => 0.5 + (Math.random() - 0.5) * 2);
@@ -89,7 +92,7 @@ const PairedTestChart = () => {
       }))
     );
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -114,7 +117,7 @@ const PairedTestChart = () => {
 };
 
 const OneSampleTestChart = () => {
-  const [meanValue, setMeanValue] = useState(1.7);
+  const [meanValue, setMeanValue] = React.useState(1.7);
   const target = 1.5;
   const chartData = [{ name: 'Avg. Return', value: meanValue }];
 

@@ -1,14 +1,17 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Line, LineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 import { generateNormalData } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Math Helpers ---
 const standardNormalCdf = (x: number) => {
@@ -30,8 +33,8 @@ const ksTestChartConfig = {
 
 // --- Chart Component ---
 const KSTestChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [dataType, setDataType] = useState<'normal' | 'uniform'>('normal');
+  const [chartData, setChartData] = React.useState<any[]>([]);
+  const [dataType, setDataType] = React.useState<'normal' | 'uniform'>('normal');
 
   const generateAndSetData = (type: 'normal' | 'uniform') => {
     const n = 100;
@@ -46,7 +49,7 @@ const KSTestChart = () => {
     setChartData(mergedData);
   };
 
-  useEffect(() => { generateAndSetData(dataType); }, [dataType]);
+  React.useEffect(() => { generateAndSetData(dataType); }, [dataType]);
 
   return (
     <div className="flex h-[420px] w-full flex-col">

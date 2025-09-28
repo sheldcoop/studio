@@ -1,14 +1,17 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Scatter, ScatterChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Helper Function ---
 const generateMonotonicData = (n: number, strength: number) => {
@@ -29,9 +32,9 @@ const spearmanCorrelationChartConfig = {
 
 // --- Chart Component ---
 const SpearmanCorrelationChart = () => {
-  const [strength, setStrength] = useState(3);
-  const [chartData, setChartData] = useState<any[]>([]);
-  useEffect(() => { setChartData(generateMonotonicData(100, strength)); }, [strength]);
+  const [strength, setStrength] = React.useState(3);
+  const [chartData, setChartData] = React.useState<any[]>([]);
+  React.useEffect(() => { setChartData(generateMonotonicData(100, strength)); }, [strength]);
 
   return (
     <div className="flex h-[420px] w-full flex-col">

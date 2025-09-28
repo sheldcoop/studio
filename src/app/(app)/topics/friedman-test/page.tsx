@@ -1,13 +1,16 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Line, LineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Helper Functions ---
 const generateRankData = (numSubjects: number) => {
@@ -33,7 +36,7 @@ const friedmanTestChartConfig = {
 
 // --- Chart Component ---
 const FriedmanTestChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const numAlgos = 5;
     const algoRanks = generateRankData(numAlgos);
@@ -48,7 +51,7 @@ const FriedmanTestChart = () => {
     }));
     setChartData(processedData);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">

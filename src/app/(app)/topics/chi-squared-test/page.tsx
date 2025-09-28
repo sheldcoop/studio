@@ -1,13 +1,16 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Chart Configs ---
 const goodnessOfFitChartConfig = {
@@ -27,7 +30,7 @@ const testForHomogeneityChartConfig = {
 
 // --- Chart Components ---
 const GoodnessOfFitChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const totalTrades = 250;
 
   const generateData = () => {
@@ -43,7 +46,7 @@ const GoodnessOfFitChart = () => {
       { name: 'Fri', observed: normalized[4], expected: expectedPerDay },
     ]);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -68,7 +71,7 @@ const GoodnessOfFitChart = () => {
 };
 
 const TestForIndependenceChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const observed = {
       momentum: { bullish: 40 + Math.floor(Math.random() * 20), bearish: 15, sideways: 25 },
@@ -95,7 +98,7 @@ const TestForIndependenceChart = () => {
       { name: 'Arbitrage', observed: observed.arbitrage.bullish, expected: expected.arbitrage },
     ]);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -119,7 +122,7 @@ const TestForIndependenceChart = () => {
 };
 
 const TestForHomogeneityChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const ny_traders = { stocks: 60 + Math.floor(Math.random() * 20) - 10, forex: 30 + Math.floor(Math.random() * 10) - 5, crypto: 10 + Math.floor(Math.random() * 10) - 5 };
     const london_traders = { stocks: 40 + Math.floor(Math.random() * 20) - 10, forex: 45 + Math.floor(Math.random() * 10) - 5, crypto: 15 + Math.floor(Math.random() * 10) - 5 };
@@ -129,7 +132,7 @@ const TestForHomogeneityChart = () => {
       { name: 'Crypto', ny: ny_traders.crypto, london: london_traders.crypto },
     ]);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">

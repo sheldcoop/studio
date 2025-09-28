@@ -2,16 +2,16 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import type { ComponentType } from 'react';
+import React, { type ComponentType } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '../ui/skeleton';
 
 // --- Component Props ---
 
@@ -35,6 +35,37 @@ interface InteractiveTestPageProps {
   examples: Example[];
 }
 
+// --- Sub-component for Example Content ---
+
+function ExampleContent({ example }: { example: Example }) {
+    // Dynamically import the chart component only when this component is rendered.
+    // This ensures recharts is only loaded on the client when needed.
+    const DynamicChart = dynamic(() => Promise.resolve(example.ChartComponent), {
+      ssr: false,
+      loading: () => <Skeleton className="h-[420px] w-full" />,
+    });
+  
+    return (
+      <>
+        {example.description && (
+          <div className="mb-4">
+            <p className="mt-2 text-muted-foreground">{example.description}</p>
+          </div>
+        )}
+        {example.exampleText && (
+          <p className="mb-4 text-sm">
+            <span className="font-semibold text-foreground">Example:</span>{' '}
+            {example.exampleText}
+          </p>
+        )}
+        <div className="mt-4 rounded-lg bg-background/50 p-4">
+          <DynamicChart />
+        </div>
+      </>
+    );
+  }
+
+
 // --- Main Page Component ---
 
 export function InteractiveTestPage({
@@ -43,12 +74,6 @@ export function InteractiveTestPage({
   coreConcepts,
   examples,
 }: InteractiveTestPageProps) {
-  // Use next/dynamic to ensure charts are client-side only
-  const DynamicCharts = examples.map(example => ({
-    ...example,
-    DynamicChart: dynamic(() => Promise.resolve(example.ChartComponent), { ssr: false })
-  }));
-
   const hasMultipleExamples = examples.length > 1;
 
   return (
@@ -84,14 +109,14 @@ export function InteractiveTestPage({
                     </TabsTrigger>
                   ))}
                 </TabsList>
-                {DynamicCharts.map((example) => (
+                {examples.map((example) => (
                   <TabsContent key={example.id} value={example.id} className="mt-6">
                     <ExampleContent example={example} />
                   </TabsContent>
                 ))}
               </Tabs>
             ) : (
-                DynamicCharts.map((example) => (
+                examples.map((example) => (
                     <div key={example.id}>
                          <CardHeader className="p-0 pb-4">
                             <CardTitle>{example.title}</CardTitle>
@@ -102,31 +127,6 @@ export function InteractiveTestPage({
             )}
           </CardContent>
         </Card>
-      </div>
-    </>
-  );
-}
-
-
-// --- Sub-component for Example Content ---
-
-function ExampleContent({ example }: { example: Example & { DynamicChart: ComponentType } }) {
-  const { DynamicChart } = example;
-  return (
-    <>
-      {example.title && example.description && (
-        <div className="mb-4">
-             {example.description && <p className="mt-2 text-muted-foreground">{example.description}</p>}
-        </div>
-      )}
-      {example.exampleText && (
-        <p className="mb-4 text-sm">
-          <span className="font-semibold text-foreground">Example:</span>{' '}
-          {example.exampleText}
-        </p>
-      )}
-      <div className="mt-4 rounded-lg bg-background/50 p-4">
-        <DynamicChart />
       </div>
     </>
   );

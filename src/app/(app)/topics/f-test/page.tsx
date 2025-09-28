@@ -1,13 +1,16 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
 import { generateNormalData, getVariance } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Chart Config ---
 const fTestChartConfig = {
@@ -18,8 +21,8 @@ const fTestChartConfig = {
 
 // --- Chart Component ---
 const FTestChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [fStat, setFStat] = useState(0);
+  const [chartData, setChartData] = React.useState<any[]>([]);
+  const [fStat, setFStat] = React.useState(0);
 
   const generateData = () => {
     const dataStable = generateNormalData(0.05, 0.5, 100);
@@ -32,7 +35,7 @@ const FTestChart = () => {
     ]);
     setFStat(varianceGrowth / varianceStable);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {

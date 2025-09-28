@@ -1,14 +1,17 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Scatter, ScatterChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Helper Function ---
 const generateCorrelatedData = (
@@ -37,9 +40,9 @@ const pearsonCorrelationChartConfig = {
 
 // --- Chart Component ---
 const PearsonCorrelationChart = () => {
-  const [correlation, setCorrelation] = useState(0.8);
-  const [chartData, setChartData] = useState<any[]>([]);
-  useEffect(() => { setChartData(generateCorrelatedData(100, correlation)); }, [correlation]);
+  const [correlation, setCorrelation] = React.useState(0.8);
+  const [chartData, setChartData] = React.useState<any[]>([]);
+  React.useEffect(() => { setChartData(generateCorrelatedData(100, correlation)); }, [correlation]);
 
   return (
     <div className="flex h-[420px] w-full flex-col">

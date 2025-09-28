@@ -1,14 +1,17 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 import { generateLogNormalData } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Helper Function ---
 const createHistogram = (data: number[], binSize: number, min: number, max: number) => {
@@ -32,7 +35,7 @@ const mannWhitneyChartConfig = {
 
 // --- Chart Component ---
 const MannWhitneyChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const algoAData = generateLogNormalData(0, 0.5, 500); 
     const algoBData = generateLogNormalData(0.2, 0.7, 500);
@@ -49,7 +52,7 @@ const MannWhitneyChart = () => {
     }));
     setChartData(finalData);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">

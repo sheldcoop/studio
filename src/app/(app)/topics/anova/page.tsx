@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { ChartTooltipContent } from '@/lib/chart-config';
@@ -20,7 +20,10 @@ import {
 } from 'recharts';
 import { generateNormalData, getMean } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
-import type { ComponentType } from 'react';
+
+// This file is being refactored to export data and use the InteractiveTestPage component.
+// All imports from 'recharts' and other heavy libraries should eventually be moved
+// into the dynamically loaded chart components within InteractiveTestPage.
 
 // --- Chart Configs ---
 const oneWayAnovaChartConfig = {
@@ -41,7 +44,7 @@ const repeatedMeasuresAnovaChartConfig = {
 
 // --- Chart Components ---
 const OneWayAnovaChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const dataAlpha = generateNormalData(1.2, 0.8, 50);
     const dataBeta = generateNormalData(1.5, 0.8, 50);
@@ -52,7 +55,7 @@ const OneWayAnovaChart = () => {
       { name: 'Algorithm_Gamma', value: getMean(dataGamma) },
     ]);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -77,7 +80,7 @@ const OneWayAnovaChart = () => {
 };
 
 const TwoWayAnovaChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const interactionEffect = Math.random() * 2;
     const means = {
@@ -91,7 +94,7 @@ const TwoWayAnovaChart = () => {
       { name: 'Afternoon', stocks: means.stocksAfternoon, crypto: means.cryptoAfternoon },
     ]);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -116,7 +119,7 @@ const TwoWayAnovaChart = () => {
 };
 
 const RepeatedMeasuresAnovaChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<any[]>([]);
   const generateData = () => {
     const startRatio = 0.8 + (Math.random() - 0.5) * 0.4;
     const midRatio = startRatio + (0.2 + Math.random() * 0.3);
@@ -127,7 +130,7 @@ const RepeatedMeasuresAnovaChart = () => {
       { name: 'Year 3 (+Hedging)', value: endRatio },
     ]);
   };
-  useEffect(() => { generateData(); }, []);
+  React.useEffect(() => { generateData(); }, []);
 
   return (
     <div className="flex h-[420px] w-full flex-col">
