@@ -34,7 +34,7 @@ export const allTopics: Topic[] = [
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
-    href: '/linear-algebra',
+    href: '/paths/linear-algebra-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -90,7 +90,7 @@ export const allTopics: Topic[] = [
     title: "Statistician's Toolkit",
     description: 'Interactive tools for hands-on statistical analysis.',
     icon: Boxes,
-    href: '/topics/stat-toolkit',
+    href: '/stat-toolkit',
     category: 'main',
   },
 
@@ -120,7 +120,7 @@ export const allTopics: Topic[] = [
   // --- Statistics Topics ---
 
   // Parent "topic" for Hypothesis testing
-  { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/topics/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics-for-quantitative-finance' },
+  { id: 'hypothesis-testing-p-values', title: 'Hypothesis Testing & P-Values', href: '/hypothesis-testing-p-values', icon: FunctionSquare, description: 'The detective work of data science.', category: 'sub-topic', parent: 'statistics-for-quantitative-finance' },
 
   // Parametric Tests (sub-topics of hypothesis testing)
   { id: 't-test', title: 'T-Test', href: '/topics/t-test', icon: FunctionSquare, description: 'Compares the means of two groups, assuming normal distribution.', category: 'parametric', parent: 'hypothesis-testing-p-values' },

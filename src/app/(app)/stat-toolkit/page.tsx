@@ -56,30 +56,32 @@ export default function StatToolkitPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {tiers.map((tier) => (
-          <Card key={tier.id} className="flex flex-col bg-card/70">
-            <CardHeader>
-              <CardTitle className="font-headline text-xl text-primary">
-                {tier.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col">
-              <ul className="flex-1 space-y-2">
-                {tier.concepts.map((concept) => (
-                  <li key={concept.id}>
-                    <Link
-                      href={concept.href}
-                      className="group flex items-center gap-3 rounded-md p-2 text-sm transition-colors hover:bg-secondary"
-                    >
-                      <CheckCircle className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
-                      <span className="font-medium text-foreground/80 group-hover:text-foreground">
-                        {concept.title}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          tier.title && tier.concepts ? (
+            <Card key={tier.id} className="flex flex-col bg-card/70">
+              <CardHeader>
+                <CardTitle className="font-headline text-xl text-primary">
+                  {tier.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-1 flex-col">
+                <ul className="flex-1 space-y-2">
+                  {tier.concepts.map((concept) => (
+                    <li key={concept.id}>
+                      <Link
+                        href={concept.href}
+                        className="group flex items-center gap-3 rounded-md p-2 text-sm transition-colors hover:bg-secondary"
+                      >
+                        <CheckCircle className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
+                        <span className="font-medium text-foreground/80 group-hover:text-foreground">
+                          {concept.title}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ) : null
         ))}
       </div>
     </>
