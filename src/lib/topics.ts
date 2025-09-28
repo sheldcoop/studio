@@ -93,6 +93,14 @@ export const allTopics: Topic[] = [
     href: '/topics/stat-toolkit',
     category: 'main',
   },
+  {
+    id: 'python-api-test',
+    title: "Python API Test",
+    description: 'A test page for Python API integration.',
+    icon: Cpu,
+    href: '/topics/python-api-test',
+    category: 'sub-topic',
+  },
 
   // --- Linear Algebra Path Topics ---
 
