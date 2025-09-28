@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import './globals.css';
-import Script from 'next/script';
+import { ThemeProvider } from '@/components/app/theme-provider';
 
 const fontBody = Inter({
   subsets: ['latin'],
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head />
       <body 
         className={cn(
@@ -45,8 +45,15 @@ export default function RootLayout({
           fontHeadline.variable
         )}
       >
-        {children}
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
