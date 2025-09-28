@@ -3,7 +3,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { getAuth, applyActionCode } from 'firebase/auth';
+import { getAuth, applyActionCode, verifyPasswordResetCode } from 'firebase/auth';
 import { app } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -23,36 +23,43 @@ function ActionHandler() {
 
     if (!mode || !oobCode) {
       setIsProcessing(false);
-      setMessage({ type: 'error', text: 'Invalid link. Please try again.' });
+      setMessage({ type: 'error', text: 'Invalid action link. Please try again.' });
       return;
     }
 
-    switch (mode) {
-      case 'resetPassword':
-        // The link is for a password reset. Redirect to the dedicated reset page,
-        // forwarding the necessary action code.
-        router.push(`/reset-password?oobCode=${oobCode}`);
-        break;
+    const handleAction = async () => {
+      try {
+        switch (mode) {
+          case 'resetPassword':
+            // First, verify the code is valid. This prevents users from even seeing the
+            // reset page if they have a bad link.
+            await verifyPasswordResetCode(auth, oobCode);
+            // If verification is successful, THEN we redirect to the page where they can enter a new password.
+            // We forward the code so the next page can use it to complete the reset.
+            router.push(`/reset-password?oobCode=${oobCode}`);
+            break;
 
-      case 'verifyEmail':
-        // The link is for email verification. Handle it here.
-        applyActionCode(auth, oobCode)
-          .then(() => {
+          case 'verifyEmail':
+            // The link is for email verification. Handle it here directly.
+            await applyActionCode(auth, oobCode);
             setIsProcessing(false);
             setMessage({ type: 'success', text: 'Your email has been verified! You will be redirected to the login page shortly.' });
             setTimeout(() => router.push('/login'), 4000);
-          })
-          .catch(() => {
-            setIsProcessing(false);
-            setMessage({ type: 'error', text: 'The verification link is invalid or has expired. Please try signing up again.' });
-          });
-        break;
+            break;
 
-      default:
+          default:
+            setIsProcessing(false);
+            setMessage({ type: 'error', text: 'Unsupported action. The link is invalid.' });
+            break;
+        }
+      } catch (error) {
         setIsProcessing(false);
-        setMessage({ type: 'error', text: 'Unsupported action. The link is invalid.' });
-        break;
-    }
+        setMessage({ type: 'error', text: 'This link is invalid or has expired. Please request a new one.' });
+      }
+    };
+    
+    handleAction();
+
   }, [searchParams, router]);
 
   return (
@@ -65,7 +72,7 @@ function ActionHandler() {
         <CardContent className="flex items-center justify-center p-8">
           {isProcessing && <Loader2 className="h-12 w-12 animate-spin text-primary" />}
           {message && (
-            <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
+            <Alert variant={message.type === 'error' ? 'destructive' : 'default'} className={message.type === 'success' ? 'border-green-500/50 text-green-700 dark:text-green-400 [&>svg]:text-green-700 dark:[&>svg]:text-green-400' : ''}>
               <AlertTitle>{message.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
               <AlertDescription>{message.text}</AlertDescription>
             </Alert>
