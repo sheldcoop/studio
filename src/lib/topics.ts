@@ -34,7 +34,7 @@ export const allTopics: Topic[] = [
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
-    href: '/paths/linear-algebra-for-quantitative-finance',
+    href: '/linear-algebra',
     category: 'main',
   },
   {
@@ -92,14 +92,6 @@ export const allTopics: Topic[] = [
     icon: Boxes,
     href: '/topics/stat-toolkit',
     category: 'main',
-  },
-  {
-    id: 'python-api-test',
-    title: "Python API Test",
-    description: 'A test page for Python API integration.',
-    icon: Cpu,
-    href: '/topics/python-api-test',
-    category: 'sub-topic',
   },
 
   // --- Linear Algebra Path Topics ---
