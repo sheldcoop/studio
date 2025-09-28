@@ -242,7 +242,7 @@ export default function LoginPage() {
         {renderContent()}
       </Card>
       <Button variant="link" className="mt-4 text-muted-foreground" asChild>
-        <Link href="/">Continue as guest</Link>
+        <Link href="/">Back to homepage</Link>
       </Button>
     </div>
   );
