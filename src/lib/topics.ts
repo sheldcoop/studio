@@ -33,7 +33,7 @@ export const allTopics: Topic[] = [
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
-    href: '/topics/linear-algebra-for-quantitative-finance',
+    href: '/paths/linear-algebra-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -41,7 +41,7 @@ export const allTopics: Topic[] = [
     title: 'Statistics',
     description: 'Quantifying uncertainty and making sense of distributions.',
     icon: Sigma,
-    href: '/topics/hypothesis-testing-p-values',
+    href: '/paths/statistics-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -65,7 +65,7 @@ export const allTopics: Topic[] = [
     title: 'Time Series Analysis',
     description: 'ARIMA, GARCH, and forecasting market movements.',
     icon: LineChart,
-    href: '/topics/time-series-analysis-for-quantitative-finance',
+    href: '/paths/time-series-analysis-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -73,7 +73,7 @@ export const allTopics: Topic[] = [
     title: 'Machine Learning',
     description: 'Building predictive models for financial markets.',
     icon: Cpu,
-    href: '/topics/machine-learning-for-quantitative-finance',
+    href: '/paths/machine-learning-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -81,7 +81,7 @@ export const allTopics: Topic[] = [
     title: 'Algorithmic Trading',
     description: 'From strategy backtesting to live deployment.',
     icon: CandlestickChart,
-    href: '/topics/algo-trading',
+    href: '/paths/algo-trading',
     category: 'main',
   },
   {
