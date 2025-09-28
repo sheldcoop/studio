@@ -24,10 +24,6 @@ import {
   LineChart,
 } from 'recharts';
 
-// This file is being refactored to export data and use the InteractiveTestPage component.
-// All imports from 'recharts' and other heavy libraries should eventually be moved
-// into the dynamically loaded chart components within InteractiveTestPage.
-
 // --- Chart Configs ---
 const independentTestChartConfig = {
   value: { label: 'Value' },

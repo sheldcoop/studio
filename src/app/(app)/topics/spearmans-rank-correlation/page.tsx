@@ -10,10 +10,6 @@ import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Scatter, ScatterChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
 
-// This file is being refactored to export data and use the InteractiveTestPage component.
-// All imports from 'recharts' and other heavy libraries should eventually be moved
-// into the dynamically loaded chart components within InteractiveTestPage.
-
 // --- Helper Function ---
 const generateMonotonicData = (n: number, strength: number) => {
   const data = [];

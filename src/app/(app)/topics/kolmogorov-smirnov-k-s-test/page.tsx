@@ -10,10 +10,6 @@ import { Line, LineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'r
 import { generateNormalData } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
 
-// This file is being refactored to export data and use the InteractiveTestPage component.
-// All imports from 'recharts' and other heavy libraries should eventually be moved
-// into the dynamically loaded chart components within InteractiveTestPage.
-
 // --- Math Helpers ---
 const standardNormalCdf = (x: number) => {
   const t = 1 / (1 + 0.2316419 * Math.abs(x));

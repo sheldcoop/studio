@@ -10,10 +10,6 @@ import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recha
 import { generateLogNormalData } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
 
-// This file is being refactored to export data and use the InteractiveTestPage component.
-// All imports from 'recharts' and other heavy libraries should eventually be moved
-// into the dynamically loaded chart components within InteractiveTestPage.
-
 // --- Helper Functions ---
 const getMedian = (data: number[]) => {
   if (data.length === 0) return 0;

@@ -10,10 +10,6 @@ import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'rec
 import { generateLogNormalData } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
 
-// This file is being refactored to export data and use the InteractiveTestPage component.
-// All imports from 'recharts' and other heavy libraries should eventually be moved
-// into the dynamically loaded chart components within InteractiveTestPage.
-
 // --- Helper Function ---
 const createHistogram = (data: number[], binSize: number, min: number, max: number) => {
   const bins = Math.ceil((max - min) / binSize);

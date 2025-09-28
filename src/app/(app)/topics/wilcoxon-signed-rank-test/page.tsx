@@ -10,10 +10,6 @@ import { Line, LineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'r
 import { generateLogNormalData } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
 
-// This file is being refactored to export data and use the InteractiveTestPage component.
-// All imports from 'recharts' and other heavy libraries should eventually be moved
-// into the dynamically loaded chart components within InteractiveTestPage.
-
 // --- Chart Config ---
 const wilcoxonChartConfig = {
   'Before_Risk_Model': { label: 'Before', color: 'hsl(var(--chart-2))' },

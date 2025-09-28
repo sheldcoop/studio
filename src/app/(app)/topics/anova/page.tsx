@@ -22,10 +22,6 @@ import { generateNormalData, getMean } from '@/lib/math';
 import { InteractiveTestPage } from '@/components/app/interactive-test-page';
 import React from 'react';
 
-// This file is being refactored to export data and use the InteractiveTestPage component.
-// All imports from 'recharts' and other heavy libraries should eventually be moved
-// into the dynamically loaded chart components within InteractiveTestPage.
-
 // --- Chart Configs ---
 const oneWayAnovaChartConfig = {
   value: { label: 'Value' },
