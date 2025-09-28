@@ -148,7 +148,7 @@ export default function LoginPage() {
           </div>
            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
             {/* You can add a Google Icon here */}
-            Sign In with Google
+            Continue with Google
            </Button>
         </CardFooter>
       </Card>
