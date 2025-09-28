@@ -31,30 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <head>
-        <Script
-          id="mathjax-config"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.MathJax = {
-                tex: {
-                  inlineMath: [['$', '$'], ['\\(', '\\)']],
-                  displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                },
-                svg: {
-                  fontCache: 'global'
-                }
-              };
-            `,
-          }}
-        />
-        <Script
-          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-          strategy="afterInteractive"
-          id="mathjax-script"
-        />
-      </head>
+      <head />
       <body 
         className={cn(
           'font-body antialiased',

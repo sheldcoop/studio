@@ -14,10 +14,33 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import Script from 'next/script';
 
 export default function LinearAlgebraPage() {
   return (
     <>
+      <Script
+        id="mathjax-config"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+              },
+              svg: {
+                fontCache: 'global'
+              }
+            };
+          `,
+        }}
+      />
+      <Script
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        strategy="afterInteractive"
+        id="mathjax-script"
+      />
       <PageHeader
         title="Linear Algebra for Quants"
         description="The language of data and the backbone of modern quantitative finance."
