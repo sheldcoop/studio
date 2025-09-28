@@ -16,7 +16,7 @@ const fontHeadline = Space_Grotesk({
   variable: '--font-headline',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantprep.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
