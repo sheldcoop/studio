@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import { Header } from '@/components/app/header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimatedJourneyCard, StaticJourneyCard } from '@/components/app/animated-journey-card';
+import { Footer } from '@/components/app/footer';
 
 const AnimationLoader = () => <Skeleton className="h-full w-full" />;
 
@@ -48,6 +49,7 @@ export default function RootPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
