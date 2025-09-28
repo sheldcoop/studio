@@ -14,6 +14,11 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
+export type SubTopic = {
+  id: string;
+  title: string;
+};
+
 export type Topic = {
   id: string;
   title: string;
@@ -24,6 +29,7 @@ export type Topic = {
   parent?: string; // id of parent topic
   status?: 'completed' | 'in-progress' | 'not-started';
   duration?: number; // in minutes
+  subTopics?: SubTopic[];
 };
 
 
@@ -95,7 +101,22 @@ export const allTopics: Topic[] = [
   },
 
   // --- Linear Algebra Path Topics ---
-  { id: 'linear-equation-systems', title: 'Chapter 1: Linear Equation Systems', href: '/linear-algebra/linear-equation-systems', icon: Waypoints, description: 'What is a Linear System?, Geometric Interpretation in 2D and 3D, Solving Systems with Gaussian Elimination, Row Echelon Form (REF) and Reduced Row Echelon Form (RREF), Existence and Uniqueness of Solutions', category: 'sub-topic', parent: 'la-main-chapters'},
+  { 
+    id: 'linear-equation-systems', 
+    title: 'Chapter 1: Linear Equation Systems', 
+    href: '/linear-algebra/linear-equation-systems', 
+    icon: Waypoints, 
+    description: 'What is a Linear System?, Geometric Interpretation in 2D and 3D, Solving Systems with Gaussian Elimination, Row Echelon Form (REF) and Reduced Row Echelon Form (RREF), Existence and Uniqueness of Solutions', 
+    category: 'sub-topic', 
+    parent: 'la-main-chapters',
+    subTopics: [
+        { id: 'what-is-a-linear-system', title: 'What is a Linear System?' },
+        { id: 'geometric-interpretation', title: 'Geometric Interpretation in 2D & 3D' },
+        { id: 'gaussian-elimination', title: 'Solving with Gaussian Elimination' },
+        { id: 'echelon-forms', title: 'Row Echelon Form (REF & RREF)' },
+        { id: 'existence-uniqueness', title: 'Existence and Uniqueness of Solutions' },
+    ]
+  },
   { id: 'basic-matrix-algebra', title: 'Chapter 2: Basic Matrix Algebra', href: '/linear-algebra/basic-matrix-algebra', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
   { id: 'determinants-and-lu-factorization', title: 'Chapter 3: Determinants and LU Factorization', href: '/linear-algebra/determinants-and-lu-factorization', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
   { id: 'vector-operations-and-linear-combinations', title: 'Chapter 4: Vector Operations and Linear Combinations', href: '/linear-algebra/vector-operations-and-linear-combinations', icon: Waypoints, description: '', category: 'sub-topic', parent: 'la-main-chapters'},
