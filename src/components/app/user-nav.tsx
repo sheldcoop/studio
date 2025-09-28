@@ -1,8 +1,12 @@
 
 'use client';
 
-import { useTheme } from 'next-themes';
-import { Moon, Sun } from 'lucide-react';
+import {
+  getAuth,
+  signOut,
+} from 'firebase/auth';
+import { app } from '@/lib/firebase';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,37 +19,62 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useAuth } from '@/app/auth-provider';
+import Link from 'next/link';
+
+const auth = getAuth(app);
 
 export function UserNav() {
+  const { user } = useAuth();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar');
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
+  if (!user) {
+    return (
+      <Button asChild>
+        <Link href="/login">Login</Link>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="relative h-10 w-10 rounded-full"
-        >
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
-            {userAvatar && (
+            {user.photoURL ? (
               <AvatarImage
-                src={userAvatar.imageUrl}
-                alt="User Avatar"
-                width={40}
-                height={40}
-                data-ai-hint={userAvatar.imageHint}
+                src={user.photoURL}
+                alt={user.displayName || 'User Avatar'}
               />
+            ) : (
+              userAvatar && (
+                <AvatarImage
+                  src={userAvatar.imageUrl}
+                  alt="User Avatar"
+                  width={40}
+                  height={40}
+                  data-ai-hint={userAvatar.imageHint}
+                />
+              )
             )}
-            <AvatarFallback>QP</AvatarFallback>
+            <AvatarFallback>
+              {user.email ? user.email.charAt(0).toUpperCase() : 'A'}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Quant Aspirant</p>
+            <p className="text-sm font-medium leading-none">
+              {user.displayName || 'Quant Aspirant'}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
-              aspirant@quantprep.com
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -55,7 +84,7 @@ export function UserNav() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

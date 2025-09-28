@@ -1,10 +1,7 @@
-'use client';
 
-import Link from 'next/link';
 import { quantJourney } from '@/lib/site';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
 import dynamic from 'next/dynamic';
-import { Header } from '@/components/app/header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimatedJourneyCard, StaticJourneyCard } from '@/components/app/animated-journey-card';
 
