@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
 export const useAuth = () => useContext(AuthContext);
 
 // These routes are publicly accessible and don't require authentication.
-const PUBLIC_ROUTES = ['/login', '/reset-password'];
+const PUBLIC_ROUTES = ['/login', '/reset-password', '/actions'];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -31,9 +31,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      // The homepage is always public, serving as the entry for guests.
+      const isPublic = PUBLIC_ROUTES.includes(pathname) || pathname === '/';
+
       // If the user is not logged in and is trying to access a protected page,
       // redirect them to the login page.
-      if (!user && !PUBLIC_ROUTES.includes(pathname) && pathname !== '/') {
+      if (!user && !isPublic) {
         router.push('/login');
       }
       

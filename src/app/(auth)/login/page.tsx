@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -29,6 +30,7 @@ import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/app/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, CheckCircle, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -239,6 +241,9 @@ export default function LoginPage() {
           )}
         {renderContent()}
       </Card>
+      <Button variant="link" className="mt-4 text-muted-foreground" asChild>
+        <Link href="/">Continue as guest</Link>
+      </Button>
     </div>
   );
 }
