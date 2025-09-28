@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -8,7 +9,6 @@ import {
   BotMessageSquare,
   Users,
   FolderKanban,
-  Route,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -51,7 +51,8 @@ export function MainNav({ onLinkClick }: MainNavProps) {
     <>
       {links.map((link) => {
         const isActive =
-          pathname === link.href || (pathname.startsWith(link.href) && link.href !== '/');
+          (pathname === '/' && link.href === '/') ||
+          (link.href !== '/' && pathname.startsWith(link.href));
         return (
           <Link
             key={link.label}

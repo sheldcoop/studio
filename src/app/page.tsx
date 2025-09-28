@@ -1,6 +1,6 @@
+
 'use client';
 
-import Link from 'next/link';
 import { quantJourney } from '@/lib/site';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
 import dynamic from 'next/dynamic';
@@ -26,7 +26,7 @@ export default function RootPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 p-4 md:p-8">
+      <main className="flex-1">
         <div className="flex flex-col items-center justify-center p-4 md:p-8">
           <div className="mb-12 max-w-3xl text-center">
             <AnimatedTagline />

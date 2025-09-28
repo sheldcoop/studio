@@ -1,4 +1,6 @@
 
+'use client';
+
 import { quantJourney } from '@/lib/site';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
 import dynamic from 'next/dynamic';
