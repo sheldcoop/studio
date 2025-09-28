@@ -5,7 +5,6 @@ import { Inter, Space_Grotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import './globals.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
-import { AuthProvider } from './auth-provider';
 
 const fontBody = Inter({
   subsets: ['latin'],
@@ -52,9 +51,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            {children}
-          </AuthProvider>
+          {children}
           <Toaster />
         </ThemeProvider>
       </body>
