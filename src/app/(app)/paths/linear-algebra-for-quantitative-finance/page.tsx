@@ -2,7 +2,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PageHeader } from '@/components/app/page-header';
-import { Diamond, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Linear Algebra for Quants: A Complete Roadmap',
@@ -19,18 +19,12 @@ const Unit = ({ title, description, children }: { title: string; description: st
     </section>
 );
 
-const Chapter = ({ title, href, children, isClickable = false }: { title: string; href: string, children: React.ReactNode, isClickable?: boolean }) => (
+const Chapter = ({ title, href, children }: { title: string; href: string, children: React.ReactNode }) => (
     <article>
         <h3 className="mb-4">
-            {isClickable ? (
-                <Link href={href} className="text-xl font-semibold border-b border-border/50 pb-2 block hover:text-primary hover:border-primary transition-colors">
-                    {title}
-                </Link>
-            ) : (
-                <span className="text-xl font-semibold border-b border-border/50 pb-2 block">
-                    {title}
-                </span>
-            )}
+            <Link href={href} className="text-xl font-semibold border-b border-border/50 pb-2 block hover:text-primary hover:border-primary transition-colors">
+                {title}
+            </Link>
         </h3>
         <ul className="list-none pl-4 mt-3 border-l border-dashed border-border/50 space-y-3">
             {children}
@@ -48,7 +42,7 @@ const Subtopic = ({ children }: { children: React.ReactNode }) => (
 const QuantFocusItem = ({ children }: { children: React.ReactNode }) => (
     <li className="flex items-start gap-3 p-3 rounded-md bg-primary/10 border border-primary/20">
         <Star className="h-4 w-4 text-amber-400 mt-1 shrink-0" />
-        <span className="text-amber-300/90"><strong className="font-semibold text-amber-300">Application:</strong> {children}</span>
+        <span className="text-amber-200/90"><strong className="font-semibold text-amber-200">Application:</strong> {children}</span>
     </li>
 );
 
@@ -61,7 +55,7 @@ export default function LinearAlgebraRoadmapPage() {
       />
       <main className="max-w-5xl">
         <Unit title="Unit 1: Foundations - Matrices & Equations" description="We start with the basics: representing and solving the systems that form the bedrock of financial models.">
-          <Chapter title="Chapter 1: Linear Equation Systems" href="/linear-algebra/linear-equation-systems" isClickable={true}>
+          <Chapter title="Chapter 1: Linear Equation Systems" href="/linear-algebra/linear-equation-systems">
             <Subtopic>What is a Linear System?</Subtopic>
             <Subtopic>Geometric Interpretation in 2D and 3D</Subtopic>
             <Subtopic>Solving Systems with Gaussian Elimination</Subtopic>
@@ -170,3 +164,5 @@ export default function LinearAlgebraRoadmapPage() {
     </>
   );
 }
+
+    
