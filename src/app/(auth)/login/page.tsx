@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -29,7 +28,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/app/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ArrowLeft } from 'lucide-react';
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -59,6 +58,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [isResetMode, setIsResetMode] = useState(false);
   const router = useRouter();
 
   const handleSuccessfulLogin = (user: User) => {
@@ -99,6 +99,7 @@ export default function LoginPage() {
     try {
         await sendPasswordResetEmail(auth, email);
         setInfoMessage('A password reset link has been sent to your email address.');
+        // Don't switch back immediately, let the user see the success message
     } catch (err: any) {
         setError(getFriendlyErrorMessage(err as AuthError));
     }
@@ -109,11 +110,111 @@ export default function LoginPage() {
     setInfoMessage(null);
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
-      // Google sign-in automatically verifies the email if it's from Google
       handleSuccessfulLogin(userCredential.user);
     } catch (err: any) {
       setError(getFriendlyErrorMessage(err as AuthError));
     }
+  }
+
+  const renderContent = () => {
+    if (isResetMode) {
+      return (
+        <>
+            <CardHeader className="text-center">
+              <CardTitle className="font-headline">Reset Your Password</CardTitle>
+              <CardDescription>
+                Enter your email to receive a reset link.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+            </CardContent>
+            <CardFooter className="flex-col gap-4">
+                <Button className="w-full" onClick={handlePasswordReset}>Send Reset Link</Button>
+                <Button variant="link" className="text-sm" onClick={() => { setIsResetMode(false); setError(null); setInfoMessage(null); }}>
+                    <ArrowLeft className="mr-2" />
+                    Back to Login
+                </Button>
+            </CardFooter>
+        </>
+      )
+    }
+
+    return (
+        <>
+            <CardHeader className="text-center">
+                <CardTitle className="font-headline">Welcome to QuantPrep</CardTitle>
+                <CardDescription>
+                    Sign in or create an account to continue
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="password">Password</Label>
+                            <Button variant="link" className="h-auto p-0 text-xs" onClick={() => setIsResetMode(true)}>
+                                Forgot Password?
+                            </Button>
+                        </div>
+                    <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter className="flex-col gap-4">
+                <div className="flex w-full gap-2">
+                    <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => handleAuthAction('signIn')}
+                    >
+                    Sign In
+                    </Button>
+                    <Button
+                    className="w-full"
+                    onClick={() => handleAuthAction('signUp')}
+                    >
+                    Sign Up
+                    </Button>
+                </div>
+                <div className="relative w-full">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    </div>
+                </div>
+                <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+                    Continue with Google
+                </Button>
+            </CardFooter>
+        </>
+    )
   }
 
   return (
@@ -122,83 +223,21 @@ export default function LoginPage() {
         <Logo />
       </div>
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="font-headline">Welcome to QuantPrep</CardTitle>
-          <CardDescription>
-            Sign in or create an account to continue
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
+        {error && (
+            <Alert variant="destructive" className="m-4 mb-0">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Authentication Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
           {infoMessage && (
-            <Alert variant="default" className="mb-4 border-green-500/50 text-green-700 dark:text-green-400 [&>svg]:text-green-700 dark:[&>svg]:text-green-400">
+            <Alert variant="default" className="m-4 mb-0 border-green-500/50 text-green-700 dark:text-green-400 [&>svg]:text-green-700 dark:[&>svg]:text-green-400">
                <CheckCircle className="h-4 w-4" />
                <AlertTitle>Success!</AlertTitle>
                <AlertDescription>{infoMessage}</AlertDescription>
             </Alert>
           )}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Button variant="link" className="h-auto p-0 text-xs" onClick={handlePasswordReset}>
-                        Forgot Password?
-                    </Button>
-                </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex-col gap-4">
-          <div className="flex w-full gap-2">
-            <Button
-              variant="secondary"
-              className="w-full"
-              onClick={() => handleAuthAction('signIn')}
-            >
-              Sign In
-            </Button>
-            <Button
-              className="w-full"
-              onClick={() => handleAuthAction('signUp')}
-            >
-              Sign Up
-            </Button>
-          </div>
-          <div className="relative w-full">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-            </div>
-          </div>
-           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
-            {/* You can add a Google Icon here */}
-            Continue with Google
-           </Button>
-        </CardFooter>
+        {renderContent()}
       </Card>
     </div>
   );
