@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import { Inter, Space_Grotesk } from 'next/font/google';
@@ -15,13 +16,18 @@ const fontHeadline = Space_Grotesk({
   variable: '--font-headline',
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantprep.com';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     template: '%s | QuantPrep',
     default: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
   },
   description: 'Master the core concepts of quantitative finance with AI-powered tools, interactive guides, and a community of learners.',
+  alternates: {
+    canonical: '/',
+  }
 };
 
 export default function RootLayout({
