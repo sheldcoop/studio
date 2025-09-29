@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // --- Config ---
 const TOTAL_PARTS = 1000;
@@ -57,11 +58,58 @@ const FormulaPart = ({ id, visible, highlight, children }: { id: string, visible
     <span id={id} className={cn(
         "formula-part transition-all duration-500 ease-in-out px-2 py-1 rounded-md opacity-30",
         visible && "opacity-100",
-        highlight && "bg-yellow-100 dark:bg-yellow-800 scale-110"
+        highlight && "bg-primary/10 scale-110"
     )}>
         {children}
     </span>
 );
+
+const CalculationStep = ({ title, calculation, result, isVisible }: { title: string; calculation: React.ReactNode; result: string; isVisible: boolean }) => (
+  <div className={cn("transition-opacity duration-700 ease-in-out", isVisible ? "opacity-100" : "opacity-0")}>
+    <p className="font-semibold text-primary">{title}</p>
+    <div className="mt-1 flex items-center justify-between rounded-lg bg-muted/70 p-2 font-mono text-sm">
+      <span>{calculation}</span>
+      <span className="font-bold text-foreground">{result}</span>
+    </div>
+  </div>
+);
+
+const CalculationBreakdown = ({ currentState }: { currentState: number }) => {
+    const p_d_m1 = M1_DEFECT_RATE;
+    const p_m1 = M1_RATIO;
+    const p_d_m2 = M2_DEFECT_RATE;
+    const p_m2 = M2_RATIO;
+    const p_d = (p_d_m1 * p_m1) + (p_d_m2 * p_m2);
+    const p_m1_d = (p_d_m1 * p_m1) / p_d;
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Calculation Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <CalculationStep
+                    title="1. Prior & Likelihood (Given)"
+                    calculation={<>P(M1) & P(D|M1)</>}
+                    result={`${p_m1.toFixed(2)} & ${p_d_m1.toFixed(2)}`}
+                    isVisible={currentState >= 0}
+                />
+                <CalculationStep
+                    title="2. Total Probability of Defect P(D)"
+                    calculation={<>(P(D|M1) * P(M1)) + (P(D|M2) * P(M2))</>}
+                    result={`= ${p_d.toFixed(4)}`}
+                    isVisible={currentState >= 2}
+                />
+                 <CalculationStep
+                    title="3. Posterior Probability P(M1|D)"
+                    calculation={<>(P(D|M1) * P(M1)) / P(D)</>}
+                    result={`= ${p_m1_d.toFixed(4)}`}
+                    isVisible={currentState >= 3}
+                />
+            </CardContent>
+        </Card>
+    );
+};
 
 
 export default function BayesTheoremPage() {
@@ -206,6 +254,9 @@ export default function BayesTheoremPage() {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="w-full max-w-6xl mx-auto mt-8">
+                <CalculationBreakdown currentState={currentState} />
             </div>
         </>
     );
