@@ -68,7 +68,6 @@ export default function BayesTheoremPage() {
     const [parts, setParts] = useState<Part[]>([]);
     const [defectiveParts, setDefectiveParts] = useState<Part[]>([]);
     const [currentState, setCurrentState] = useState(0);
-    const [isIsolating, setIsIsolating] = useState(false);
 
     const step = steps[currentState];
 
@@ -99,13 +98,10 @@ export default function BayesTheoremPage() {
     }, []);
 
     const handleNext = () => {
-        setCurrentState((prev) => (prev + 1) % steps.length);
-        if (currentState === steps.length - 1) { // Restarting
+        const nextState = (currentState + 1) % steps.length;
+        setCurrentState(nextState);
+        if (nextState === 0) { // Restarting
             createFactoryFloor();
-            setIsIsolating(false);
-        }
-         if (currentState === 1) { // After 'Run Quality Control'
-            setTimeout(() => setIsIsolating(true), 800);
         }
     };
 
@@ -138,8 +134,8 @@ export default function BayesTheoremPage() {
                     
                     {/* Left Side: Visuals */}
                     <div className="space-y-6">
-                         <div className={cn("w-full bg-muted/30 dark:bg-muted/50 rounded-lg shadow-inner aspect-[4/3] relative transition-opacity duration-1000", currentState >= 2 && 'opacity-30')}>
-                            <div className="grid grid-cols-40 gap-px p-1">
+                         <div className="w-full bg-muted/30 dark:bg-muted/50 rounded-lg shadow-inner aspect-[4/3] p-1">
+                            <div className="grid grid-cols-40 gap-px">
                                 {parts.map(part => (
                                     <div key={part.id} className={cn(
                                         "aspect-square rounded-sm transition-all duration-500",
