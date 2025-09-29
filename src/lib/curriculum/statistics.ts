@@ -1,4 +1,5 @@
 
+
 import { FunctionSquare, FolderKanban } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -209,7 +210,7 @@ export const statisticsTopics: Topic[] = [
     title: 'Type I & Type II Errors',
     href: '/topics/type-i-and-type-ii-errors',
     icon: FunctionSquare,
-    description: '',
+    description: 'The trade-off between false alarms and missed signals.',
     category: 'sub-topic',
     parent: 'stats-foundations',
   },
@@ -218,7 +219,7 @@ export const statisticsTopics: Topic[] = [
     title: 'Correlation vs. Causation',
     href: '/topics/correlation-vs-causation',
     icon: FunctionSquare,
-    description: '',
+    description: "Don't confuse association with influence.",
     category: 'sub-topic',
     parent: 'stats-foundations',
   },
@@ -227,7 +228,7 @@ export const statisticsTopics: Topic[] = [
     title: 'Linear Regression',
     href: '/topics/linear-regression',
     icon: FunctionSquare,
-    description: '',
+    description: 'Modeling the relationship between variables.',
     category: 'sub-topic',
     parent: 'stats-foundations',
   },
@@ -380,5 +381,3 @@ export const statisticsTopics: Topic[] = [
     parent: 'stats-advanced',
   },
 ];
-
-    
