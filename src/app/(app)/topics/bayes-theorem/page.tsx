@@ -1,196 +1,216 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/app/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
-type HighlightState = 'A' | 'B' | 'AnB' | 'A_given_B' | 'B_given_A' | 'none';
+// --- Config ---
+const TOTAL_PARTS = 1000;
+const M1_RATIO = 0.3; // Machine 1 produces 30% of parts
+const M2_RATIO = 0.7; // Machine 2 produces 70% of parts
+const M1_DEFECT_RATE = 0.05; // 5%
+const M2_DEFECT_RATE = 0.01; // 1%
 
-const VennDiagram = ({
-  highlight,
-  labelA = 'A',
-  labelB = 'B',
-}: {
-  highlight: HighlightState;
-  labelA?: string;
-  labelB?: string;
-}) => {
-  const getCircleOpacity = (circle: 'A' | 'B') => {
-    if (highlight === 'A_given_B' && circle === 'A') return 0.2;
-    if (highlight === 'B_given_A' && circle === 'B') return 0.2;
-    return 1;
-  };
-
-  const getUniverseOpacity = () => {
-    if (highlight === 'A_given_B' || highlight === 'B_given_A') return 0.1;
-    return 1;
-  };
-  
-  const isIntersectionHighlighted = highlight === 'AnB' || highlight === 'A_given_B' || highlight === 'B_given_A';
-
-  return (
-    <svg viewBox="0 0 400 200" className="w-full h-auto transition-all duration-500">
-      {/* Universe */}
-      <rect
-        width="400"
-        height="200"
-        fill="hsl(var(--muted))"
-        opacity={getUniverseOpacity()}
-        className="transition-opacity duration-500"
-      />
-
-      {/* Clip path for intersection */}
-      <defs>
-        <clipPath id="clip-b">
-          <circle cx="250" cy="100" r="80" />
-        </clipPath>
-      </defs>
-
-      {/* Circle A */}
-      <circle
-        cx="150"
-        cy="100"
-        r="80"
-        fill="hsl(var(--chart-1))"
-        opacity={getCircleOpacity('A')}
-        className="transition-all duration-500"
-      />
-      <text x="100" y="100" className="font-bold fill-primary-foreground" fontSize="24">{labelA}</text>
-      
-      {/* Circle B */}
-      <circle
-        cx="250"
-        cy="100"
-        r="80"
-        fill="hsl(var(--chart-2))"
-        opacity={getCircleOpacity('B')}
-        className="transition-all duration-500"
-      />
-       <text x="300" y="100" className="font-bold fill-primary-foreground" fontSize="24">{labelB}</text>
-
-      {/* Intersection Highlight */}
-      <circle
-          cx="150"
-          cy="100"
-          r="80"
-          fill="hsl(var(--primary))"
-          clipPath="url(#clip-b)"
-          className="transition-opacity duration-300"
-          opacity={isIntersectionHighlighted ? 1 : 0}
-        />
-       <text x="195" y="105" className="font-bold fill-primary-foreground transition-opacity duration-300" opacity={isIntersectionHighlighted ? 1 : 0} fontSize="16">A ∩ B</text>
-    </svg>
-  );
+type Part = {
+  id: number;
+  machine: '1' | '2';
+  isDefective: boolean;
 };
+
+type Step = {
+  title: string;
+  description: string;
+  buttonText: string;
+};
+
+const steps: Step[] = [
+  {
+    title: "The Initial State: The Full Batch",
+    description: "Our factory has two machines. The old Machine 1 produces 30% of our parts, and the new Machine 2 produces 70%. This initial breakdown is our 'prior' belief. If we pick a part at random, we can be 30% sure it came from Machine 1. Let's find P(M1).",
+    buttonText: "Run Quality Control",
+  },
+  {
+    title: "Applying The Evidence: Finding Defects",
+    description: "Now, let's introduce new evidence. We know the defect rate for each machine: Machine 1 has a 5% defect rate, and Machine 2 has a 1% rate. We'll now highlight all the defective parts from the full batch.",
+    buttonText: "Isolate Defective Parts",
+  },
+  {
+    title: "Restricting The Universe: The Defect Box",
+    description: "A-ha! A defective part is found. Our world is no longer all 1000 parts. It's ONLY the defective ones. We can ignore everything else. This is the core of Bayes' theorem: new evidence shrinks our world of possibilities.",
+    buttonText: "Calculate The Posterior",
+  },
+  {
+    title: "The Visual Answer: The Posterior Probability",
+    description: "Now for the key question: given that we have a defective part, what's the probability it came from the old Machine 1? Inside our new universe (the defect box), we can just count. The proportion of blue parts in the box is our new, updated belief: P(M1|Defective).",
+    buttonText: "See The Formula",
+  },
+  {
+    title: "The Formula is Just The Story",
+    description: "The formula is simply a mathematical way of telling the story we just watched. It calculates the proportion of 'defects from M1' relative to the 'total pool of all defects', giving us our final, updated probability.",
+    buttonText: "Restart Simulation",
+  },
+];
+
+const FormulaPart = ({ id, visible, highlight, children }: { id: string, visible: boolean, highlight: boolean, children: React.ReactNode }) => (
+    <span id={id} className={cn(
+        "formula-part transition-all duration-500 ease-in-out px-2 py-1 rounded-md opacity-30",
+        visible && "opacity-100",
+        highlight && "bg-yellow-100 dark:bg-yellow-800 scale-110"
+    )}>
+        {children}
+    </span>
+);
 
 
 export default function BayesTheoremPage() {
-  const [highlight, setHighlight] = useState<HighlightState>('none');
+    const [parts, setParts] = useState<Part[]>([]);
+    const [defectiveParts, setDefectiveParts] = useState<Part[]>([]);
+    const [currentState, setCurrentState] = useState(0);
+    const [isIsolating, setIsIsolating] = useState(false);
 
-  return (
-    <>
-      <PageHeader
-        title="Bayes' Theorem: A Visual Derivation"
-        description="Understanding where the famous formula comes from, one step at a time."
-        variant="aligned-left"
-      />
-      <div className="mx-auto max-w-4xl space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">The Goal: Updating Our Beliefs</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
-            <p>
-              Bayes' Theorem is a formal way to do something we all do intuitively: **update our beliefs in light of new evidence**. The formula itself can look intimidating, but it's built from a few simple, visual ideas. Our goal here is not just to see the formula, but to understand why it *must* be true.
-            </p>
-            <p>
-                Let's use a common financial scenario:
-            </p>
-            <ul className="list-disc pl-5 space-y-2">
-                <li><strong className="text-primary">Event A:</strong> A stock's price goes up.</li>
-                <li><strong className="text-primary">Event B:</strong> A positive news article about the company is released.</li>
-            </ul>
-             <p>The question we want to answer is: "If we see a positive news article, what is the new probability that the stock's price will go up?" This is written as **P(A|B)**.</p>
-          </CardContent>
-        </Card>
-        
-        <div onMouseLeave={() => setHighlight('none')}>
-            <VennDiagram highlight={highlight} labelA="Stock Up" labelB="Positive News" />
-        </div>
+    const step = steps[currentState];
 
-        {/* Step 1 */}
-        <Card onMouseEnter={() => setHighlight('AnB')}>
-            <CardHeader>
-                <Badge variant="outline" className="w-fit">Step 1 of 4</Badge>
-                <CardTitle className="mt-2">Joint Probability: The Overlap</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                 <p className="text-muted-foreground">The probability of two events happening at the same time is their **joint probability**. Visually, it's the area where their circles overlap. In our example, this represents all the days where the stock went up *and* a positive news article was released. Hover over the formula below to see this area highlight in the diagram.</p>
-                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('AnB')}>
-                    P(A ∩ B) = Probability(Stock Goes Up AND Positive News is Released)
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Step 2 */}
-        <Card onMouseEnter={() => setHighlight('A_given_B')}>
-            <CardHeader>
-                <Badge variant="outline" className="w-fit">Step 2 of 4</Badge>
-                <CardTitle className="mt-2">Conditional Probability: The World Shrinks</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Now, let's ask: "What is the probability the stock goes up, **given that we know** there was positive news?" This is the conditional probability **P(A|B)**. The word "given" is a powerful constraint. It means we are no longer looking at all possible days; we are only considering the days where we *know* there was positive news.</p>
-                <p className="text-muted-foreground">As you hover over the formula, watch the diagram. Everything outside the "Positive News" circle fades away. **Our universe of possibilities visually shrinks to just Circle B.**</p>
-                <p className="text-muted-foreground">Within this new, smaller world, the only way for "Stock Up" (Event A) to also happen is in the intersection area. Therefore, the conditional probability is simply the size of the intersection relative to the size of our new world (Circle B).</p>
-                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('A_given_B')}>
-                    P(A|B) = P(A ∩ B) / P(B)
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Step 3 */}
-        <Card onMouseEnter={() => setHighlight('B_given_A')}>
-            <CardHeader>
-                 <Badge variant="outline" className="w-fit">Step 3 of 4</Badge>
-                <CardTitle className="mt-2">Symmetry: The Other Side of the Coin</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <p className="text-muted-foreground">The logic is perfectly symmetrical. We can also ask the reverse question: "What is the probability there was positive news, **given that we know** the stock went up?" This is **P(B|A)**. Now, our universe of possibilities shrinks to only the days the stock went up. Hover over the formula to see it.</p>
-                <p className="text-muted-foreground">The formula is identical in concept, just with the roles of A and B swapped. The probability is the intersection area relative to the new, smaller world (this time, Circle A).</p>
-                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('B_given_A')}>
-                    P(B|A) = P(A ∩ B) / P(A)
-                </div>
-            </CardContent>
-        </Card>
-        
-        {/* Step 4 */}
-        <Card>
-            <CardHeader>
-                <Badge variant="outline" className="w-fit">Step 4 of 4</Badge>
-                <CardTitle className="mt-2">The Final Derivation: Putting It All Together</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                 <p className="text-muted-foreground">Notice that our formulas from Step 2 and Step 3 both contain the same term: the intersection **P(A ∩ B)**. This shared term is our bridge. We can rearrange both equations to solve for the intersection:</p>
-                 <ul className="list-none space-y-2 font-mono text-center text-base">
-                    <li className="p-2 bg-background rounded-md border">1. From Step 2, we get: &nbsp; P(A ∩ B) = P(A|B) * P(B)</li>
-                    <li className="p-2 bg-background rounded-md border">2. From Step 3, we get: &nbsp; P(A ∩ B) = P(B|A) * P(A)</li>
-                 </ul>
-                <p className="text-muted-foreground">Since both right-hand sides are equal to the same intersection area, they must be equal to each other. This gives us the crucial link:</p>
-                <div className="text-center font-mono text-lg p-2 bg-background rounded-md border">
-                    P(A|B) * P(B) = P(B|A) * P(A)
-                </div>
-                <p className="text-muted-foreground">This relationship is powerful on its own. But we usually want to find **P(A|B)** (our updated belief). With one final step of simple algebra—dividing both sides by P(B)—we arrive at the famous Bayes' Theorem:</p>
-                 <div className="text-center font-mono text-xl p-4 bg-primary/10 text-primary-foreground rounded-lg border-2 border-primary">
-                    P(A|B) = (P(B|A) * P(A)) / P(B)
-                </div>
-            </CardContent>
-        </Card>
-
-      </div>
-    </>
-  );
-}
-
+    const createFactoryFloor = () => {
+        const newParts: Part[] = [];
+        for (let i = 0; i < TOTAL_PARTS; i++) {
+            const isM1 = i < (TOTAL_PARTS * M1_RATIO);
+            const machine = isM1 ? '1' : '2';
+            const defectRate = isM1 ? M1_DEFECT_RATE : M2_DEFECT_RATE;
+            newParts.push({
+                id: i,
+                machine,
+                isDefective: Math.random() < defectRate,
+            });
+        }
+        setParts(newParts);
+        const defects = newParts.filter(p => p.isDefective);
+        // Ensure a reasonable number of defects for a good visual
+        if (defects.length < 5 || defects.length > 50) {
+           setTimeout(createFactoryFloor, 0);
+        } else {
+           setDefectiveParts(defects);
+        }
+    };
     
+    useEffect(() => {
+        createFactoryFloor();
+    }, []);
+
+    const handleNext = () => {
+        setCurrentState((prev) => (prev + 1) % steps.length);
+        if (currentState === steps.length - 1) { // Restarting
+            createFactoryFloor();
+            setIsIsolating(false);
+        }
+         if (currentState === 1) { // After 'Run Quality Control'
+            setTimeout(() => setIsIsolating(true), 800);
+        }
+    };
+
+    const getFormulaHighlight = (part: string) => {
+        switch (currentState) {
+            case 0: return part === 'p_h';
+            case 1: return ['p_h', 'p_e_given_h'].includes(part);
+            case 2: return ['p_h', 'p_e_given_h', 'p_e'].includes(part);
+            case 3:
+            case 4: return true;
+            default: return false;
+        }
+    }
+
+    const defectiveM1Count = defectiveParts.filter(p => p.machine === '1').length;
+    const defectiveM2Count = defectiveParts.length - defectiveM1Count;
+    const totalDefects = defectiveParts.length;
+    const posteriorM1 = totalDefects > 0 ? defectiveM1Count / totalDefects : 0;
+    const posteriorM2 = totalDefects > 0 ? defectiveM2Count / totalDefects : 0;
+
+    return (
+        <>
+            <PageHeader
+                title="The Factory Inspector: A Visual Guide to Bayes' Theorem"
+                description="Build an intuition for how beliefs are updated with new evidence."
+                variant="aligned-left"
+            />
+             <div className="w-full max-w-7xl mx-auto bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    
+                    {/* Left Side: Visuals */}
+                    <div className="space-y-6">
+                         <div className={cn("w-full bg-muted/30 dark:bg-muted/50 rounded-lg shadow-inner aspect-[4/3] relative transition-opacity duration-1000", currentState >= 2 && 'opacity-30')}>
+                            <div className="grid grid-cols-40 gap-px p-1">
+                                {parts.map(part => (
+                                    <div key={part.id} className={cn(
+                                        "aspect-square rounded-sm transition-all duration-500",
+                                        part.machine === '1' ? 'bg-blue-300' : 'bg-red-300',
+                                        currentState >= 1 && part.isDefective && (part.machine === '1' ? 'bg-blue-700 scale-125 z-10 border border-white' : 'bg-red-700 scale-125 z-10 border border-white'),
+                                        currentState >= 2 && !part.isDefective && "opacity-10 scale-90"
+                                    )} />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="mt-6 space-y-3">
+                            <h3 className="text-xl font-bold text-center text-foreground/80">{currentState < 3 ? "Full Production Batch" : "Origin of Defective Part"}</h3>
+                            <div>
+                                <div className="flex justify-between font-medium mb-1 text-sm">
+                                    <span>Machine 1 (Old)</span>
+                                    <span>{currentState < 3 ? `${M1_RATIO*100}%` : `${(posteriorM1 * 100).toFixed(0)}%`}</span>
+                                </div>
+                                <div className="w-full rounded-full h-6 bg-muted overflow-hidden">
+                                    <div className="bg-blue-500 h-full rounded-full flex items-center justify-center text-white text-xs font-semibold transition-all duration-700" style={{ width: `${currentState < 3 ? M1_RATIO*100 : posteriorM1 * 100}%`}}>
+                                        {currentState < 3 ? `${TOTAL_PARTS * M1_RATIO} parts` : `${defectiveM1Count} defects`}
+                                    </div>
+                                </div>
+                            </div>
+                             <div>
+                                <div className="flex justify-between font-medium mb-1 text-sm">
+                                    <span>Machine 2 (New)</span>
+                                    <span>{currentState < 3 ? `${M2_RATIO*100}%` : `${(posteriorM2 * 100).toFixed(0)}%`}</span>
+                                </div>
+                                <div className="w-full rounded-full h-6 bg-muted overflow-hidden">
+                                    <div className="bg-red-500 h-full rounded-full flex items-center justify-center text-white text-xs font-semibold transition-all duration-700" style={{ width: `${currentState < 3 ? M2_RATIO*100 : posteriorM2 * 100}%`}}>
+                                       {currentState < 3 ? `${TOTAL_PARTS * M2_RATIO} parts` : `${defectiveM2Count} defects`}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Side: The Story & Controls */}
+                    <div className="flex flex-col h-full bg-muted/30 dark:bg-muted/50 p-6 rounded-lg">
+                        <div className="flex-grow space-y-4">
+                            <h2 className="text-2xl font-bold text-foreground font-headline">{step.title}</h2>
+                            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">{step.description}</p>
+                            {currentState === 3 && (
+                                 <div className="text-center font-medium text-lg p-3 bg-primary/10 text-primary-foreground rounded-md border border-primary/20">
+                                     New Universe: <span className="font-bold text-blue-400">{defectiveM1Count} from M1</span> + <span className="font-bold text-red-400">{defectiveM2Count} from M2</span> = {totalDefects} total defects.
+                                 </div>
+                            )}
+                        </div>
+                        
+                        <div className="font-serif text-center bg-background/70 p-3 rounded-lg mt-6 text-xl md:text-2xl text-foreground/80">
+                            <FormulaPart id="p_h_given_e" visible={getFormulaHighlight('p_h_given_e')} highlight={currentState === 3}>P(M₁|D)</FormulaPart>
+                            <span className="font-bold mx-1">=</span>
+                            <span className="inline-block">
+                                <span className="block border-b-2 border-current pb-1">
+                                    <FormulaPart id="p_e_given_h" visible={getFormulaHighlight('p_e_given_h')} highlight={currentState === 1}>P(D|M₁)</FormulaPart>
+                                    <span className="mx-1 font-bold">⋅</span>
+                                    <FormulaPart id="p_h" visible={getFormulaHighlight('p_h')} highlight={currentState === 0}>P(M₁)</FormulaPart>
+                                </span>
+                                <FormulaPart id="p_e" visible={getFormulaHighlight('p_e')} highlight={currentState === 2}>P(D)</FormulaPart>
+                            </span>
+                        </div>
+
+                        <div className="text-center mt-8">
+                            <Button onClick={handleNext} size="lg" className="w-full max-w-xs shadow-lg transform hover:scale-105">
+                                {step.buttonText}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
