@@ -166,12 +166,17 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
           <Tooltip wrapperClassName="text-xs" />
           <Bar dataKey="count" fill="hsl(var(--primary))" />
           {sampleMeans.length > 1 && (
-              <ReferenceLine x={meanOfMeansValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means: ${overallMean.toFixed(2)}`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+              <ReferenceLine x={meanOfMeansValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
           )}
         </BarChart>
       </ResponsiveContainer>
-      <div className="text-center text-xs text-muted-foreground mt-2">
-        Std. Dev. of Sample Means (Std. Error): <span className="font-semibold text-foreground">{stdErr.toFixed(3)}</span>
+      <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-2">
+        <div>
+            Mean of Sample Means (x̄): <span className="font-semibold text-foreground block">{overallMean.toFixed(3)}</span>
+        </div>
+        <div>
+            Std. Dev. of Sample Means (Std. Error): <span className="font-semibold text-foreground block">{stdErr.toFixed(3)}</span>
+        </div>
       </div>
     </>
   );
@@ -384,7 +389,3 @@ export default function CentralLimitTheoremPage() {
     </>
   );
 }
-
-    
-
-    
