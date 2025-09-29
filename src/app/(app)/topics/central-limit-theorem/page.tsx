@@ -27,9 +27,9 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
 
     switch (distribution) {
       case 'poisson':
-        rawData = generatePoissonData(3, numPoints);
-        calculatedMean = 3;
-        calculatedStdDev = Math.sqrt(3);
+        rawData = generatePoissonData(2, numPoints);
+        calculatedMean = 2;
+        calculatedStdDev = Math.sqrt(2);
         break;
       case 'uniform':
         rawData = Array.from({ length: numPoints }, () => Math.random() * 10);
@@ -214,7 +214,7 @@ export default function CentralLimitTheoremPage() {
         let sample;
         switch (distribution) {
           case 'poisson':
-            sample = generatePoissonData(3, sampleSize);
+            sample = generatePoissonData(2, sampleSize);
             break;
           case 'uniform':
             sample = Array.from({ length: sampleSize }, () => Math.random() * 10);
@@ -378,5 +378,7 @@ export default function CentralLimitTheoremPage() {
     </>
   );
 }
+
+    
 
     
