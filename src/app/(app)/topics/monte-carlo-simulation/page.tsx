@@ -98,6 +98,7 @@ const MonteCarloPiSimulation = () => {
     
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+    
     return () => window.removeEventListener('resize', resizeCanvas);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -183,26 +184,26 @@ export default function MonteCarloSimulationPage() {
         strategy="afterInteractive"
         id="mathjax-script"
       />
-      <PageHeader
-        title="Monte Carlo Simulation"
-        description="Using randomness to solve problems that are difficult or impossible to solve analytically."
-        variant="aligned-left"
-      />
       <div className="mx-auto max-w-5xl space-y-8">
+          <PageHeader
+            title="Monte Carlo Simulation"
+            description="Using randomness to solve problems that are difficult or impossible to solve analytically."
+            variant="aligned-left"
+          />
           <Card>
             <CardHeader>
                 <CardTitle className="font-headline">Why It Works: The Area Argument</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-base">
-               <p>This simulation works because of a simple ratio. The area of the square is $(2r)^2 = 4r^2$ and the area of the circle is $\\pi r^2$.</p>
+               <p>This simulation works because of a simple ratio. The area of the square is $(2r)^2 = 4r^2$ and the area of the circle is $\pi r^2$.</p>
                <p>The ratio of the area of the circle to the area of the square is:</p>
-               <p className="font-mono text-center text-lg bg-muted p-3 rounded-md">
-                    (Area of Circle) / (Area of Square) = ($\\pi r^2$) / ($4r^2$) = $\\pi / 4$
-               </p>
-               <p>If we throw darts randomly, the ratio of (darts inside the circle) to (total darts thrown) should approximate this same value. Therefore, we can estimate $\\pi$ by rearranging the formula:</p>
-                <p className="font-mono text-center text-lg bg-muted p-3 rounded-md">
-                    $\\pi \\approx 4 \\times$ (Darts in Circle / Total Darts)
-               </p>
+               <div className="font-mono text-center text-lg bg-muted p-3 rounded-md">
+                    $$ \\frac{\\text{Area of Circle}}{\\text{Area of Square}} = \\frac{\\pi r^2}{4r^2} = \\frac{\\pi}{4} $$
+               </div>
+               <p>If we throw darts randomly, the ratio of (darts inside the circle) to (total darts thrown) should approximate this same value. Therefore, we can estimate $\pi$ by rearranging the formula:</p>
+                <div className="font-mono text-center text-lg bg-muted p-3 rounded-md">
+                    $$ \\pi \\approx 4 \\times \\frac{\\text{Darts in Circle}}{\\text{Total Darts}} $$
+               </div>
             </CardContent>
         </Card>
 
@@ -223,7 +224,6 @@ export default function MonteCarloSimulationPage() {
                 </div>
             </CardContent>
         </Card>
-
       </div>
     </>
   );
