@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
@@ -19,41 +19,40 @@ import { ChartContainer } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, Label as RechartsLabel } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Lightbulb, TrendingDown, ShieldCheck } from 'lucide-react';
+import { Lightbulb, TrendingDown, ShieldCheck, Play, Pause, Plus, RefreshCw } from 'lucide-react';
 import { ChartTooltipContent } from '@/lib/chart-config';
 
 
 // --- Math & Simulation Logic ---
-const runMonteCarloSimulation = (
+const runMonteCarloStep = (
   initialValue: number,
   mu: number, // Annual return
   sigma: number, // Annual volatility
-  simulations: number
+  simulationsToAdd: number
 ) => {
-  const finalValues = [];
-  const dt = 1 / 252; // Time step for one trading day
-
-  for (let i = 0; i < simulations; i++) {
-    let value = initialValue;
-    // We only need the final value after 1 year, so we can simplify the path simulation
+  const newFinalValues = [];
+  for (let i = 0; i < simulationsToAdd; i++) {
     // This uses a simplified approximation of a standard normal variable for browser performance
     const z = (Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random() - 3) / Math.sqrt(0.5);
     const drift = (mu - (sigma * sigma) / 2) * 1;
     const diffusion = sigma * z * Math.sqrt(1);
-    const finalValue = value * Math.exp(drift + diffusion);
-    finalValues.push(finalValue);
+    const finalValue = initialValue * Math.exp(drift + diffusion);
+    newFinalValues.push(finalValue);
   }
-  return finalValues;
+  return newFinalValues;
 };
 
 // --- Chart Component ---
 const VaRChart = ({ data, initialValue, varValue }: { data: number[], initialValue: number, varValue: number | null }) => {
     const histogramData = useMemo(() => {
-        if (!data || data.length === 0) return [];
+        if (!data || data.length < 20) return []; // Don't render chart until enough data exists
         const min = Math.min(...data);
         const max = Math.max(...data);
         const bins = 50;
         const binWidth = (max - min) / bins;
+
+        if (binWidth === 0) return [];
+
         const histogram = Array(bins).fill(0).map((_, i) => ({
             x: min + i * binWidth,
             count: 0,
@@ -67,6 +66,14 @@ const VaRChart = ({ data, initialValue, varValue }: { data: number[], initialVal
         });
         return histogram;
     }, [data]);
+    
+    if (data.length < 20) {
+        return (
+            <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+                Run more simulations to build the distribution.
+            </div>
+        );
+    }
 
     return (
         <ChartContainer config={{}} className="h-[350px] w-full">
@@ -110,27 +117,60 @@ export default function MonteCarloSimulationPage() {
   const [initialValue, setInitialValue] = useState(1_000_000);
   const [mu, setMu] = useState(0.08); // 8% annual return
   const [sigma, setSigma] = useState(0.20); // 20% annual volatility
-  const [numSimulations, setNumSimulations] = useState(10000);
+  
   const [simulationResults, setSimulationResults] = useState<number[]>([]);
   const [varResult, setVarResult] = useState<{ value: number; loss: number } | null>(null);
 
-  const handleRunSimulation = () => {
-    const results = runMonteCarloSimulation(initialValue, mu, sigma, numSimulations);
-    setSimulationResults(results);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const simulationRef = useRef<NodeJS.Timeout | null>(null);
+  const SIMULATION_CAP = 50000;
 
-    const sortedResults = [...results].sort((a, b) => a - b);
-    const varIndex = Math.floor(sortedResults.length * 0.05); // 5th percentile
-    const varValue = sortedResults[varIndex];
-    setVarResult({
-        value: varValue,
-        loss: initialValue - varValue
-    });
+  const addSimulations = (count: number) => {
+    const newResults = runMonteCarloStep(initialValue, mu, sigma, count);
+    setSimulationResults(prev => [...prev, ...newResults]);
   };
 
+  const resetSimulation = () => {
+    if (simulationRef.current) {
+        clearInterval(simulationRef.current);
+    }
+    setIsSimulating(false);
+    setSimulationResults([]);
+    setVarResult(null);
+  };
+
+  // Live simulation effect
   useEffect(() => {
-    handleRunSimulation();
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (isSimulating && simulationResults.length < SIMULATION_CAP) {
+        simulationRef.current = setInterval(() => {
+            addSimulations(250);
+        }, 50);
+    } else if (simulationRef.current) {
+        clearInterval(simulationRef.current);
+        if (isSimulating) setIsSimulating(false);
+    }
+    return () => {
+        if (simulationRef.current) clearInterval(simulationRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSimulating, simulationResults.length, initialValue, mu, sigma]);
+
+
+  // Recalculate VaR when results change
+  useEffect(() => {
+    if (simulationResults.length > 20) {
+        const sortedResults = [...simulationResults].sort((a, b) => a - b);
+        const varIndex = Math.floor(sortedResults.length * 0.05); // 5th percentile
+        const varValue = sortedResults[varIndex];
+        setVarResult({
+            value: varValue,
+            loss: initialValue - varValue
+        });
+    } else {
+        setVarResult(null);
+    }
+  }, [simulationResults, initialValue]);
+
 
   return (
     <>
@@ -163,27 +203,38 @@ export default function MonteCarloSimulationPage() {
                 <CardDescription>You are the risk manager. Adjust the portfolio's expected return and volatility to see how it impacts potential losses.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     <div className="space-y-2">
-                        <Label htmlFor="initial-value">Initial Portfolio Value ($)</Label>
-                        <Input id="initial-value" type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} />
+                        <Label>Initial Portfolio Value ($)</Label>
+                        <Input type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
                         <Label>Expected Annual Return (μ): {(mu * 100).toFixed(1)}%</Label>
-                        <Slider value={[mu]} onValueChange={v => setMu(v[0])} min={-0.10} max={0.25} step={0.005} />
+                        <Slider value={[mu]} onValueChange={v => setMu(v[0])} min={-0.10} max={0.25} step={0.005} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
                         <Label>Expected Annual Volatility (σ): {(sigma * 100).toFixed(1)}%</Label>
-                        <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="num-simulations">Number of Simulations</Label>
-                        <Input id="num-simulations" type="number" value={numSimulations} max={50000} step={1000} onChange={e => setNumSimulations(Number(e.target.value))} />
+                        <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} disabled={isSimulating}/>
                     </div>
                 </div>
-                <Button onClick={handleRunSimulation} className="w-full mb-6">Run {numSimulations.toLocaleString()} Simulations</Button>
+                
+                <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center mb-6">
+                    <div className="flex gap-2">
+                        <Button onClick={() => addSimulations(1000)} disabled={isSimulating || simulationResults.length >= SIMULATION_CAP}><Plus className="h-4 w-4 mr-2" /> 1k</Button>
+                        <Button onClick={() => addSimulations(5000)} disabled={isSimulating || simulationResults.length >= SIMULATION_CAP}><Plus className="h-4 w-4 mr-2" /> 5k</Button>
+                    </div>
+                    <Button onClick={() => setIsSimulating(prev => !prev)} variant={isSimulating ? "destructive" : "default"} disabled={simulationResults.length >= SIMULATION_CAP}>
+                        {isSimulating ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                        {isSimulating ? 'Pause Simulation' : 'Run Simulation'}
+                    </Button>
+                    <Button onClick={resetSimulation} variant="outline"><RefreshCw className="h-4 w-4 mr-2" /> Reset</Button>
+                </div>
                 
                 <DynamicVaRChart data={simulationResults} initialValue={initialValue} varValue={varResult?.value || null} />
+                
+                 <div className="mt-4 text-center text-sm text-muted-foreground">
+                    <p>Total Simulations: <span className="font-bold text-lg text-foreground">{simulationResults.length.toLocaleString()}</span> / {SIMULATION_CAP.toLocaleString()}</p>
+                </div>
 
                 {varResult && (
                      <Alert variant="destructive" className="mt-6 bg-destructive/5">
@@ -194,7 +245,7 @@ export default function MonteCarloSimulationPage() {
                                 **Value at Risk (VaR)** is a statistical measure of the risk of loss for an investment or portfolio. It estimates how much a set of investments might lose, given normal market conditions, in a set time period.
                             </p>
                             <p className="mt-2">
-                                Based on your {numSimulations.toLocaleString()} simulations, you can report to the CEO: "We are 95% confident that our Blue Chip Tech portfolio will not lose more than <strong>${varResult.loss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> over the next year."
+                                Based on your {simulationResults.length.toLocaleString()} simulations, you can report to the CEO: "We are 95% confident that our Blue Chip Tech portfolio will not lose more than <strong>${varResult.loss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> over the next year."
                             </p>
                             <p className="mt-2 text-sm">This corresponds to a worst-case portfolio value of ${varResult.value.toLocaleString(undefined, { maximumFractionDigits: 0 })} at the 5th percentile.</p>
                         </AlertDescription>
