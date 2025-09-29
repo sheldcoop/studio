@@ -1,36 +1,37 @@
 
 'use client';
 
+import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+
+type HighlightState = 'A' | 'B' | 'AnB' | 'A_given_B' | 'B_given_A' | 'none';
 
 const VennDiagram = ({
   highlight,
   labelA = 'A',
   labelB = 'B',
 }: {
-  highlight: 'A' | 'B' | 'AnB' | 'A_given_B' | 'B_given_A' | 'none';
+  highlight: HighlightState;
   labelA?: string;
   labelB?: string;
 }) => {
-  const isCircleAHighlighted = highlight === 'A' || highlight === 'AnB' || highlight === 'B_given_A';
-  const isCircleBHighlighted = highlight === 'B' || highlight === 'AnB' || highlight === 'A_given_B';
-  const isIntersectionHighlighted = highlight === 'AnB';
-
   const getCircleOpacity = (circle: 'A' | 'B') => {
     if (highlight === 'A_given_B' && circle === 'A') return 0.2;
     if (highlight === 'B_given_A' && circle === 'B') return 0.2;
     return 1;
-  }
+  };
 
   const getUniverseOpacity = () => {
     if (highlight === 'A_given_B' || highlight === 'B_given_A') return 0.1;
     return 1;
-  }
+  };
+  
+  const isIntersectionHighlighted = highlight === 'AnB' || highlight === 'A_given_B' || highlight === 'B_given_A';
 
   return (
-    <svg viewBox="0 0 400 200" className="w-full h-auto">
+    <svg viewBox="0 0 400 200" className="w-full h-auto transition-all duration-500">
       {/* Universe */}
       <rect
         width="400"
@@ -54,7 +55,7 @@ const VennDiagram = ({
         r="80"
         fill="hsl(var(--chart-1))"
         opacity={getCircleOpacity('A')}
-        className="transition-opacity duration-500"
+        className="transition-all duration-500"
       />
       <text x="100" y="100" className="font-bold fill-primary-foreground" fontSize="24">{labelA}</text>
       
@@ -65,27 +66,29 @@ const VennDiagram = ({
         r="80"
         fill="hsl(var(--chart-2))"
         opacity={getCircleOpacity('B')}
-        className="transition-opacity duration-500"
+        className="transition-all duration-500"
       />
        <text x="300" y="100" className="font-bold fill-primary-foreground" fontSize="24">{labelB}</text>
 
       {/* Intersection Highlight */}
-      {(highlight === 'AnB' || highlight === 'A_given_B' || highlight === 'B_given_A') && (
-        <circle
+      <circle
           cx="150"
           cy="100"
           r="80"
           fill="hsl(var(--primary))"
           clipPath="url(#clip-b)"
+          className="transition-opacity duration-300"
+          opacity={isIntersectionHighlighted ? 1 : 0}
         />
-      )}
-       <text x="195" y="105" className="font-bold fill-primary-foreground" fontSize="16">{highlight === 'AnB' || highlight === 'A_given_B' || highlight === 'B_given_A' ? 'A ∩ B' : ''}</text>
+       <text x="195" y="105" className="font-bold fill-primary-foreground transition-opacity duration-300" opacity={isIntersectionHighlighted ? 1 : 0} fontSize="16">A ∩ B</text>
     </svg>
   );
 };
 
 
 export default function BayesTheoremPage() {
+  const [highlight, setHighlight] = useState<HighlightState>('none');
+
   return (
     <>
       <PageHeader
@@ -112,55 +115,50 @@ export default function BayesTheoremPage() {
              <p>The question we want to answer is: "If we see a positive news article, what is the new probability that the stock's price will go up?" This is written as **P(A|B)**.</p>
           </CardContent>
         </Card>
+        
+        <div onMouseLeave={() => setHighlight('none')}>
+            <VennDiagram highlight={highlight} labelA="Stock Up" labelB="Positive News" />
+        </div>
 
         {/* Step 1 */}
-        <Card>
+        <Card onMouseEnter={() => setHighlight('AnB')}>
             <CardHeader>
                 <Badge variant="outline" className="w-fit">Step 1 of 4</Badge>
                 <CardTitle className="mt-2">Joint Probability: The Overlap</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                 <p className="text-muted-foreground">The probability of two events happening at the same time is their **joint probability**. Visually, it's the area where their circles overlap. This is the foundation for everything that follows.</p>
-                <div className="p-4 rounded-lg bg-muted/50 border">
-                    <VennDiagram highlight="AnB" labelA="Stock Up" labelB="Positive News" />
-                </div>
-                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border">
+                 <p className="text-muted-foreground">The probability of two events happening at the same time is their **joint probability**. Visually, it's the area where their circles overlap. Hover over the formula to see it highlighted.</p>
+                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('AnB')}>
                     P(A ∩ B) = Probability(Stock Goes Up AND Positive News is Released)
                 </div>
             </CardContent>
         </Card>
 
         {/* Step 2 */}
-        <Card>
+        <Card onMouseEnter={() => setHighlight('A_given_B')}>
             <CardHeader>
                 <Badge variant="outline" className="w-fit">Step 2 of 4</Badge>
                 <CardTitle className="mt-2">Conditional Probability: The World Shrinks</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Now, let's ask: "What is the probability the stock goes up, **given that we know** there was positive news?" This is the conditional probability **P(A|B)**. When we are 'given' that Event B happened, our entire universe of possibilities shrinks to just the 'Positive News' circle.</p>
-                <div className="p-4 rounded-lg bg-muted/50 border">
-                    <VennDiagram highlight="A_given_B" labelA="Stock Up" labelB="Positive News" />
-                </div>
+                <p className="text-muted-foreground">Now, let's ask: "What is the probability the stock goes up, **given that we know** there was positive news?" This is the conditional probability **P(A|B)**. When we are 'given' that Event B happened, our entire universe of possibilities shrinks to just the 'Positive News' circle. Hover to see this effect.</p>
                 <p className="text-muted-foreground">Within this new, smaller world (Circle B), the only way for Event A to also happen is in the intersection area. Therefore, the conditional probability is the size of the intersection relative to the size of our new world.</p>
-                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border">
+                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('A_given_B')}>
                     P(A|B) = P(A ∩ B) / P(B)
                 </div>
             </CardContent>
         </Card>
 
         {/* Step 3 */}
-        <Card>
+        <Card onMouseEnter={() => setHighlight('B_given_A')}>
             <CardHeader>
                  <Badge variant="outline" className="w-fit">Step 3 of 4</Badge>
                 <CardTitle className="mt-2">Symmetry: The Other Side of the Coin</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-muted-foreground">The logic is perfectly symmetrical. We can also ask: "What is the probability there was positive news, **given that we know** the stock went up?" This is **P(B|A)**. Now, our universe shrinks to the 'Stock Up' circle.</p>
-                 <div className="p-4 rounded-lg bg-muted/50 border">
-                    <VennDiagram highlight="B_given_A" labelA="Stock Up" labelB="Positive News" />
-                </div>
+                <p className="text-muted-foreground">The logic is perfectly symmetrical. We can also ask: "What is the probability there was positive news, **given that we know** the stock went up?" This is **P(B|A)**. Now, our universe shrinks to the 'Stock Up' circle. Hover to see it.</p>
                 <p className="text-muted-foreground">The formula is the same, just with the roles of A and B swapped. The probability is the intersection relative to the new, smaller world (Circle A).</p>
-                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border">
+                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('B_given_A')}>
                     P(B|A) = P(A ∩ B) / P(A)
                 </div>
             </CardContent>
@@ -193,4 +191,3 @@ export default function BayesTheoremPage() {
     </>
   );
 }
-
