@@ -204,13 +204,7 @@ export default function ConfidenceIntervalsPage() {
     
     // Prevent calculation if inputs are invalid to avoid unnecessary re-renders
     if (isNaN(n) || isNaN(M) || isNaN(s) || n <= 0 || s < 0 || n % 1 !== 0) {
-      if (n <= 0 || n % 1 !== 0) {
-        setError('Sample size must be a positive integer.');
-      } else if (s < 0) {
-        setError('Standard deviation cannot be negative.');
-      } else {
-        setError('Please enter valid numerical inputs.');
-      }
+       setError('Sample size must be a positive integer and standard deviation cannot be negative.');
       setResult(null);
       return;
     }
@@ -230,7 +224,11 @@ export default function ConfidenceIntervalsPage() {
   useEffect(() => {
     calculateInterval();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mean, stdDev, sampleSize, confidenceLevel]);
+  }, []);
+
+  const handleCalculate = () => {
+    calculateInterval();
+  };
 
   return (
     <>
@@ -267,15 +265,15 @@ export default function ConfidenceIntervalsPage() {
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4 mb-6">
                   <div className="space-y-2">
                     <Label htmlFor="mean">Sample Mean (x̄)</Label>
-                    <Input id="mean" type="number" value={mean} onChange={(e) => setMean(parseFloat(e.target.value))}/>
+                    <Input id="mean" type="number" value={mean} onChange={(e) => setMean(parseFloat(e.target.value) || 0)}/>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="stddev">Std. Dev (σ)</Label>
-                    <Input id="stddev" type="number" value={stdDev} min="0" onChange={(e) => setStdDev(parseFloat(e.target.value))}/>
+                    <Input id="stddev" type="number" value={stdDev} min="0" onChange={(e) => setStdDev(parseFloat(e.target.value) || 0)}/>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="sample-size">Sample Size (n)</Label>
-                    <Input id="sample-size" type="number" value={sampleSize} min="1" step="1" onChange={(e) => setSampleSize(parseInt(e.target.value, 10))}/>
+                    <Input id="sample-size" type="number" value={sampleSize} min="1" step="1" onChange={(e) => setSampleSize(parseInt(e.target.value, 10) || 0)}/>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confidence">Confidence</Label>
@@ -289,6 +287,7 @@ export default function ConfidenceIntervalsPage() {
                     </Select>
                   </div>
                 </div>
+                 <Button onClick={handleCalculate} className="w-full mb-6">Calculate</Button>
                 {result && !error ? (
                   <div className="rounded-lg bg-muted/50 p-4">
                      <DynamicInteractiveChart mean={mean} stdErr={stdErr} result={result} zScore={zScores[confidenceLevel]} />
@@ -363,3 +362,5 @@ export default function ConfidenceIntervalsPage() {
     </>
   );
 }
+
+    
