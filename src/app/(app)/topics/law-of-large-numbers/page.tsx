@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -80,6 +81,7 @@ export default function LawOfLargeNumbersPage() {
     const [chartData, setChartData] = useState<RollData[]>([]);
     const [isSimulating, setIsSimulating] = useState(false);
     const simulationRef = useRef<NodeJS.Timeout | null>(null);
+    const SIMULATION_CAP = 10000;
 
     const addRolls = (count: number) => {
         const newRolls = Array.from({ length: count }, () => Math.floor(Math.random() * 6) + 1);
@@ -112,10 +114,15 @@ export default function LawOfLargeNumbersPage() {
             }
             setChartData(newChartData);
         }
-    }, [rolls]);
+
+        if (rolls.length >= SIMULATION_CAP && isSimulating) {
+            setIsSimulating(false);
+        }
+
+    }, [rolls, isSimulating]);
 
     useEffect(() => {
-        if (isSimulating) {
+        if (isSimulating && rolls.length < SIMULATION_CAP) {
             simulationRef.current = setInterval(() => {
                 addRolls(100);
             }, 100);
@@ -127,7 +134,7 @@ export default function LawOfLargeNumbersPage() {
         return () => {
             if (simulationRef.current) clearInterval(simulationRef.current);
         }
-    }, [isSimulating]);
+    }, [isSimulating, rolls.length]);
 
 
     return (
@@ -167,14 +174,14 @@ export default function LawOfLargeNumbersPage() {
                          <Button onClick={() => addRolls(100)} disabled={isSimulating}><Plus className="h-4 w-4 mr-2" /> 100</Button>
                          <Button onClick={() => addRolls(1000)} disabled={isSimulating}><Plus className="h-4 w-4 mr-2" /> 1000</Button>
                     </div>
-                     <Button onClick={() => setIsSimulating(prev => !prev)} variant={isSimulating ? "destructive" : "default"}>
+                     <Button onClick={() => setIsSimulating(prev => !prev)} variant={isSimulating ? "destructive" : "default"} disabled={rolls.length >= SIMULATION_CAP}>
                         {isSimulating ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
                         {isSimulating ? 'Pause Simulation' : 'Run Simulation'}
                      </Button>
                      <Button onClick={resetSimulation} variant="outline">Reset</Button>
                 </div>
                  <div className="mt-6 text-center text-sm text-muted-foreground">
-                    <p>Total Rolls: <span className="font-bold text-lg text-foreground">{rolls.length.toLocaleString()}</span></p>
+                    <p>Total Rolls: <span className="font-bold text-lg text-foreground">{rolls.length.toLocaleString()}</span> / {SIMULATION_CAP.toLocaleString()}</p>
                     <p>Current Sample Average: <span className="font-bold text-lg text-primary">{chartData.length > 0 ? chartData[chartData.length-1].average.toFixed(4) : 'N/A'}</span></p>
                 </div>
             </CardContent>
