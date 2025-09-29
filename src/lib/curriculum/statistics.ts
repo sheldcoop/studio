@@ -241,6 +241,15 @@ export const statisticsTopics: Topic[] = [
     category: 'sub-topic',
     parent: 'stats-foundations',
   },
+    {
+    id: 'gaussian-elimination',
+    title: 'Solving with Gaussian Elimination',
+    href: '/topics/gaussian-elimination',
+    icon: FunctionSquare,
+    description: 'A step-by-step method for solving systems of linear equations.',
+    category: 'sub-topic',
+    parent: 'stats-foundations',
+  },
   {
     id: 'standard-deviation-variance',
     title: 'Standard Deviation & Variance',
