@@ -176,9 +176,9 @@ const FactoryInspectorVisualization = () => {
 
     return (
       <div className="w-full bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
               {/* Left Side: Visuals */}
-              <div className="space-y-6">
+              <div className="space-y-6 lg:col-span-2">
                    <div className="w-full bg-muted/30 dark:bg-muted/50 rounded-lg shadow-inner aspect-[4/3] p-2">
                       <div className="grid grid-cols-[repeat(40,minmax(0,1fr))] gap-px">
                           {parts.map(part => (
@@ -220,7 +220,7 @@ const FactoryInspectorVisualization = () => {
               </div>
 
               {/* Right Side: The Story & Controls */}
-              <div className="flex flex-col h-full bg-muted/30 dark:bg-muted/50 p-6 rounded-lg">
+              <div className="flex flex-col h-full bg-muted/30 dark:bg-muted/50 p-6 rounded-lg lg:col-span-3">
                   <div className="flex-grow space-y-4">
                       <h2 className="text-2xl font-bold text-foreground font-headline">{step.title}</h2>
                       <p className="text-base md:text-lg leading-relaxed text-muted-foreground">{step.description}</p>
@@ -367,9 +367,9 @@ const GeometricBayesVisualization = () => {
 
   return (
       <div className="w-full bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
             {/* Left Side: Visuals */}
-            <div className="w-full rounded-lg aspect-square bg-muted/20 border-2 border-muted/50 overflow-hidden">
+            <div className="w-full rounded-lg aspect-square bg-muted/20 border-2 border-muted/50 overflow-hidden lg:col-span-2">
                 <svg viewBox="0 0 100 100" className="w-full h-full">
                     <defs>
                         <mask id="mask-e">
@@ -405,7 +405,7 @@ const GeometricBayesVisualization = () => {
             </div>
 
             {/* Right Side: The Story & Controls */}
-            <div className="flex flex-col h-full bg-muted/30 p-6 rounded-lg">
+            <div className="flex flex-col h-full bg-muted/30 p-6 rounded-lg lg:col-span-3">
                 <div className="flex-grow space-y-4">
                     <h2 className="text-2xl font-bold text-foreground font-headline">{step.title}</h2>
                     <p className="text-base md:text-lg leading-relaxed text-muted-foreground">{step.description}</p>
