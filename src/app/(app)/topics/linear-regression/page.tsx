@@ -13,8 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { Slider } from '@/components/ui/slider';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Line as RechartsLine } from 'recharts';
 
