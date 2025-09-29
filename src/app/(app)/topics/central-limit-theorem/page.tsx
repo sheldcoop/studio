@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
@@ -8,23 +9,24 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { generateUniformData, generateExponentialData, getMean, standardNormalCdf } from '@/lib/math';
+import { generateUniformData, generateExponentialData, getMean } from '@/lib/math';
 import { Loader2 } from 'lucide-react';
 
 type DistributionType = 'uniform' | 'exponential';
 
-// 1. Population Visualization Component
+// --- Chart Components ---
+
 const PopulationChart = ({ distribution }: { distribution: DistributionType }) => {
   const data = useMemo(() => {
     let rawData;
     if (distribution === 'uniform') {
       rawData = Array.from({ length: 500 }, () => Math.random() * 10);
-    } else { // exponential
+    } else { 
       rawData = generateExponentialData(1, 500);
     }
 
     const min = 0;
-    const max = distribution === 'uniform' ? 10 : Math.max(...rawData, 5); // Ensure a minimum max value for skewed data
+    const max = distribution === 'uniform' ? 10 : Math.max(...rawData, 5);
     const bins = 20;
     const binWidth = max / bins;
     const histogram = Array(bins).fill(0);
@@ -55,7 +57,42 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
   );
 };
 
-// 2. Sampling Distribution Visualization Component
+const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: number | null }) => {
+    const data = useMemo(() => {
+        if (!sample || sample.length === 0) return [];
+        const min = 0;
+        const max = Math.max(...sample, 1);
+        const bins = 15;
+        const binWidth = max / bins;
+        const histogram = Array(bins).fill(0);
+        sample.forEach(d => {
+            const binIndex = Math.floor(d / binWidth);
+            if (binIndex >= 0 && binIndex < bins) {
+                histogram[binIndex]++;
+            }
+        });
+        return histogram.map((count, i) => ({
+            name: (i * binWidth).toFixed(1),
+            count,
+        }));
+    }, [sample]);
+
+    return (
+        <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <Tooltip wrapperClassName="text-xs" />
+                <Bar dataKey="count" fill="hsl(var(--chart-2))" />
+                {sampleMean !== null && (
+                    <ReferenceLine x={sampleMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean: ${sampleMean.toFixed(2)}`, position: 'insideTop', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+                )}
+            </BarChart>
+        </ResponsiveContainer>
+    );
+}
+
 const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) => {
   const data = useMemo(() => {
     if (sampleMeans.length === 0) return [];
@@ -93,18 +130,26 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
         <Tooltip wrapperClassName="text-xs" />
         <Bar dataKey="count" fill="hsl(var(--primary))" />
         {sampleMeans.length > 1 && (
-            <ReferenceLine x={overallMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: 'Mean', position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+            <ReferenceLine x={overallMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means: ${overallMean.toFixed(2)}`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
         )}
       </BarChart>
     </ResponsiveContainer>
   );
 };
 
+
+// --- Main Page ---
+
 export default function CentralLimitTheoremPage() {
   const [distribution, setDistribution] = useState<DistributionType>('uniform');
   const [sampleSize, setSampleSize] = useState(30);
   const [numSamples, setNumSamples] = useState(1000);
+  const [simulationSpeed, setSimulationSpeed] = useState(50);
+
   const [sampleMeans, setSampleMeans] = useState<number[]>([]);
+  const [currentSample, setCurrentSample] = useState<number[]>([]);
+  const [currentSampleMean, setCurrentSampleMean] = useState<number | null>(null);
+
   const [isSampling, setIsSampling] = useState(false);
   const simulationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -117,32 +162,43 @@ export default function CentralLimitTheoremPage() {
 
     setIsSampling(true);
     setSampleMeans([]);
+    setCurrentSample([]);
+    setCurrentSampleMean(null);
 
-    const means: number[] = [];
-    const samplesToDrawPerTick = 50;
+    const allMeans: number[] = [];
     let samplesDrawn = 0;
 
-    simulationIntervalRef.current = setInterval(() => {
+    const tick = () => {
         if (samplesDrawn >= numSamples) {
             if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
             setIsSampling(false);
+            setCurrentSample([]);
+            setCurrentSampleMean(null);
             return;
         }
 
-        const batchSize = Math.min(samplesToDrawPerTick, numSamples - samplesDrawn);
-        for (let i = 0; i < batchSize; i++) {
-            let sample;
-            if (distribution === 'uniform') {
+        let sample;
+        if (distribution === 'uniform') {
             sample = Array.from({ length: sampleSize }, () => Math.random() * 10);
-            } else {
+        } else {
             sample = generateExponentialData(1, sampleSize);
-            }
-            means.push(getMean(sample));
         }
-        setSampleMeans([...means]);
-        samplesDrawn += batchSize;
+        const mean = getMean(sample);
+        
+        setCurrentSample(sample);
+        setCurrentSampleMean(mean);
 
-    }, 50); // Draw a batch every 50ms
+        allMeans.push(mean);
+        setSampleMeans([...allMeans]);
+        
+        samplesDrawn++;
+        
+        // Schedule next tick
+        const delay = 200 - simulationSpeed * 1.9;
+        simulationIntervalRef.current = setTimeout(tick, delay);
+    };
+
+    tick(); // Start the first tick
   };
   
   // Clean up interval on unmount
@@ -176,7 +232,7 @@ export default function CentralLimitTheoremPage() {
               Imagine you have a giant barrel filled with numbered tickets. The numbers could follow any pattern—maybe there's an equal number of 1s, 2s, and 3s (a <span className="font-semibold text-primary">Uniform</span> distribution), or maybe there are tons of small numbers and very few large ones (a skewed <span className="font-semibold text-primary">Exponential</span> distribution).
             </p>
             <p>
-              The Central Limit Theorem makes a magical promise: if you repeatedly reach in, pull out a <span className="font-semibold text-foreground">handful of tickets</span> (a sample), and write down their <span className="font-semibold text-foreground">average</span>, the list of averages you collect will almost always form a perfect <span className="font-semibold text-foreground">bell curve (a Normal Distribution)</span>.
+              The Central Limit Theorem makes a magical promise: if you repeatedly reach in, pull out a <span className="font-semibold text-foreground">handful of tickets</span> (a sample), calculate its <span className="font-semibold text-foreground">average</span>, and plot that average on a histogram, the histogram will almost always form a perfect <span className="font-semibold text-foreground">bell curve (a Normal Distribution)</span>.
             </p>
             <p>
                 This is true no matter how weirdly the numbers in the barrel were distributed to begin with. This powerful idea allows us to use normal distribution statistics for many problems, even when we don't know the original population's shape.
@@ -219,6 +275,13 @@ export default function CentralLimitTheoremPage() {
                             <span className="font-mono text-lg w-12 text-center">{numSamples}</span>
                         </div>
                     </div>
+                    <div className="space-y-3">
+                        <Label htmlFor="speed-slider">4. Simulation Speed</Label>
+                         <div className="flex items-center gap-4">
+                            <Slider id="speed-slider" min={1} max={100} step={1} value={[simulationSpeed]} onValueChange={(val) => setSimulationSpeed(val[0])} disabled={isSampling} />
+                            <span className="font-mono text-lg w-12 text-center">{simulationSpeed}</span>
+                        </div>
+                    </div>
                 </CardContent>
                  <div className="p-6 pt-0">
                     <Button onClick={runSimulation} className="w-full">
@@ -236,21 +299,30 @@ export default function CentralLimitTheoremPage() {
             <div className="lg:col-span-2 space-y-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Population Distribution</CardTitle>
-                        <CardDescription>This is the shape of the original barrel of tickets.</CardDescription>
+                        <CardTitle>1. Population Distribution</CardTitle>
+                        <CardDescription>This is the shape of the original barrel of tickets. We'll draw samples from here.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <PopulationChart distribution={distribution} />
                     </CardContent>
                 </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>2. Current Sample</CardTitle>
+                        <CardDescription>This is the histogram of a single handful of tickets drawn from the population, and its calculated mean.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <SampleChart sample={currentSample} sampleMean={currentSampleMean} />
+                    </CardContent>
+                </Card>
                  <Card>
                     <CardHeader>
-                        <CardTitle>Distribution of Sample Means</CardTitle>
-                        <CardDescription>This is the histogram of the averages from each handful drawn.</CardDescription>
+                        <CardTitle>3. Distribution of Sample Means</CardTitle>
+                        <CardDescription>This is the histogram of the *averages* from each handful drawn. Watch as it forms a bell curve!</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <SamplingDistributionChart sampleMeans={sampleMeans} />
-                         <p className="text-center text-sm text-muted-foreground mt-2">Total Averages Collected: {sampleMeans.length}</p>
+                         <p className="text-center text-sm text-muted-foreground mt-2">Total Averages Collected: {sampleMeans.length} / {numSamples}</p>
                     </CardContent>
                 </Card>
             </div>
