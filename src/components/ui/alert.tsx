@@ -11,7 +11,7 @@ const alertVariants = cva(
       variant: {
         default: "bg-background text-foreground",
         destructive:
-          "border-destructive/50 text-destructive dark:text-destructive-foreground [&>svg]:text-destructive dark:[&>svg]:text-destructive-foreground",
+          "border-destructive/50 text-destructive-foreground [&>svg]:text-destructive-foreground",
       },
     },
     defaultVariants: {
@@ -58,5 +58,3 @@ const AlertDescription = React.forwardRef<
 AlertDescription.displayName = "AlertDescription"
 
 export { Alert, AlertTitle, AlertDescription }
-
-    
