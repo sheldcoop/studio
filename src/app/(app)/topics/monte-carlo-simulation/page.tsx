@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
-import { ChartContainer } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, Label as RechartsLabel } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -256,14 +256,14 @@ export default function MonteCarloSimulationPage() {
                         <h4 className="font-semibold text-primary">1. The Predictable Part (Drift)</h4>
                         <p className="text-sm mt-1">This is the general trend. It's based on the portfolio's expected average return ($\mu$). It nudges the portfolio's value up or down in the direction it's expected to go.</p>
                         <div className="font-mono text-xs p-2 mt-2 bg-background rounded">
-                            {`(\\mu - \\sigma^2/2)T`}
+                            {'$$ (\\mu - \\sigma^2/2)T $$'}
                         </div>
                     </div>
                      <div>
                         <h4 className="font-semibold text-primary">2. The Random Part (Shock)</h4>
                         <p className="text-sm mt-1">This is the unpredictable market noise. It's driven by the portfolio's volatility ($\sigma$) and a random number ($Z$). This part adds the random, up-and-down "wiggles" we see in the market every day.</p>
                         <div className="font-mono text-xs p-2 mt-2 bg-background rounded">
-                            {`\\sigma Z \\sqrt{T}`}
+                            {'$$ \\sigma Z \\sqrt{T} $$'}
                         </div>
                     </div>
                  </div>
