@@ -9,8 +9,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
-import { Label as RechartsLabel } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, Label as RechartsLabel } from 'recharts';
 import {
   generateNormalData,
   generateLogNormalData,
@@ -21,7 +20,7 @@ import {
   getVariance,
   getSkewness,
   getKurtosis,
-  generateUniformData,
+  generateBetaData,
 } from '@/lib/math';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -123,7 +122,7 @@ export default function DescriptiveStatisticsPage() {
         newData = [...baseData, ...outlierData];
         break;
       case 'thin-tailed':
-        newData = generateUniformData(0, 10, n);
+        newData = generateBetaData(5, 5, n).map(d => d * 10);
         break;
       case 'normal':
       default:
