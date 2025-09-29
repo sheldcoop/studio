@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, Label as RechartsLabel } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
+import { Label as RechartsLabel } from 'recharts';
 import {
   generateNormalData,
   generateLogNormalData,
@@ -20,10 +21,11 @@ import {
   getVariance,
   getSkewness,
   getKurtosis,
+  generateUniformData,
 } from '@/lib/math';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-type DistributionType = 'normal' | 'right-skewed' | 'left-skewed' | 'fat-tailed';
+type DistributionType = 'normal' | 'right-skewed' | 'left-skewed' | 'fat-tailed' | 'thin-tailed';
 
 const StatCard = ({ title, value, description }: { title: string; value: string | number, description?: string }) => (
   <Card className="text-center">
@@ -116,10 +118,12 @@ export default function DescriptiveStatisticsPage() {
         newData = generateLogNormalData(0, 0.6, n).map(d => 10 - d);
         break;
       case 'fat-tailed':
-        // Generate a 'peaky' base distribution and mix in wide outliers
         const baseData = generateNormalData(5, 0.5, Math.floor(n * 0.9));
         const outlierData = generateNormalData(5, 4, Math.ceil(n * 0.1));
         newData = [...baseData, ...outlierData];
+        break;
+      case 'thin-tailed':
+        newData = generateUniformData(0, 10, n);
         break;
       case 'normal':
       default:
@@ -159,8 +163,10 @@ export default function DescriptiveStatisticsPage() {
         return 'For a right-skewed distribution, a few high-value outliers pull the Mean to the right. The Median, being less sensitive to outliers, stays closer to the "body" of the data. The Mode remains at the highest peak.';
       case 'left-skewed':
         return 'For a left-skewed distribution, a few low-value outliers pull the Mean to the left of the Median. The Mode remains at the peak, representing the most common value.';
-      default:
-        return 'Observe how extreme values in the tails affect the Mean, while the Median and Mode are more stable and remain near the central peak.';
+      case 'fat-tailed':
+         return 'Observe how extreme values in the tails affect the Mean, while the Median and Mode are more stable and remain near the central peak.';
+      case 'thin-tailed':
+        return 'In a uniform (thin-tailed) distribution, there is no single peak, so the concept of a Mode is less meaningful. The Mean and Median are typically very close to each other in the center.';
     }
   }
 
@@ -172,50 +178,6 @@ export default function DescriptiveStatisticsPage() {
         variant="aligned-left"
       />
       <div className="mx-auto max-w-7xl space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">The Explorer's Lab</CardTitle>
-            <CardDescription>
-                Choose a data distribution and see how its shape affects the key statistics in real-time.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-                <div className="space-y-6">
-                    <RadioGroup value={distribution} onValueChange={(val: DistributionType) => setDistribution(val)}>
-                        <h4 className="font-medium">1. Choose Distribution</h4>
-                        <div className="space-y-2">
-                           <div className="flex items-center space-x-2"><RadioGroupItem value="normal" id="normal" /><Label htmlFor="normal">Normal (Bell Curve)</Label></div>
-                           <div className="flex items-center space-x-2"><RadioGroupItem value="right-skewed" id="right-skewed" /><Label htmlFor="right-skewed">Right Skewed (e.g. Stock Returns)</Label></div>
-                           <div className="flex items-center space-x-2"><RadioGroupItem value="left-skewed" id="left-skewed" /><Label htmlFor="left-skewed">Left Skewed (e.g. Exam Scores)</Label></div>
-                           <div className="flex items-center space-x-2"><RadioGroupItem value="fat-tailed" id="fat-tailed" /><Label htmlFor="fat-tailed">Fat-Tailed (High Kurtosis)</Label></div>
-                        </div>
-                    </RadioGroup>
-                    <Button onClick={() => generateData(distribution)} className="w-full">
-                        2. Generate New Sample
-                    </Button>
-                </div>
-                <div className="lg:col-span-2">
-                    <DynamicDistributionChart data={data} stats={stats} />
-                </div>
-            </div>
-             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-                {stats && (
-                    <>
-                        <StatCard title="Mean" value={stats.mean} />
-                        <StatCard title="Median" value={stats.median} />
-                        <StatCard title="Mode" value={stats.mode} />
-                        <StatCard title="Std. Deviation (σ)" value={stats.stdDev} />
-                        <StatCard title="Variance (σ²)" value={stats.variance} />
-                        <StatCard title="Skewness" value={stats.skewness} description={stats.skewness > 0.5 ? 'Right Skew' : stats.skewness < -0.5 ? 'Left Skew' : 'Symmetric'} />
-                        <StatCard title="Ex. Kurtosis" value={stats.kurtosis} description={stats.kurtosis > 1 ? 'Fat Tails' : stats.kurtosis < -1 ? 'Thin Tails' : 'Normal Tails'} />
-                        <StatCard title="Range" value={stats.range} />
-                    </>
-                )}
-            </div>
-          </CardContent>
-        </Card>
-        
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline">Understanding the Stats</CardTitle>
@@ -285,9 +247,53 @@ export default function DescriptiveStatisticsPage() {
                 </Accordion>
             </CardContent>
         </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">The Explorer's Lab</CardTitle>
+            <CardDescription>
+                Choose a data distribution and see how its shape affects the key statistics in real-time.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                <div className="space-y-6">
+                    <RadioGroup value={distribution} onValueChange={(val: DistributionType) => setDistribution(val)}>
+                        <h4 className="font-medium">1. Choose Distribution</h4>
+                        <div className="space-y-2">
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="normal" id="normal" /><Label htmlFor="normal">Normal (Bell Curve)</Label></div>
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="right-skewed" id="right-skewed" /><Label htmlFor="right-skewed">Right Skewed (e.g. Stock Returns)</Label></div>
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="left-skewed" id="left-skewed" /><Label htmlFor="left-skewed">Left Skewed (e.g. Exam Scores)</Label></div>
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="fat-tailed" id="fat-tailed" /><Label htmlFor="fat-tailed">Fat-Tailed (High Kurtosis)</Label></div>
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="thin-tailed" id="thin-tailed" /><Label htmlFor="thin-tailed">Thin-Tailed (Low Kurtosis)</Label></div>
+                        </div>
+                    </RadioGroup>
+                    <Button onClick={() => generateData(distribution)} className="w-full">
+                        2. Generate New Sample
+                    </Button>
+                </div>
+                <div className="lg:col-span-2">
+                    <DynamicDistributionChart data={data} stats={stats} />
+                </div>
+            </div>
+             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                {stats && (
+                    <>
+                        <StatCard title="Mean" value={stats.mean} />
+                        <StatCard title="Median" value={stats.median} />
+                        <StatCard title="Mode" value={stats.mode} />
+                        <StatCard title="Std. Deviation (σ)" value={stats.stdDev} />
+                        <StatCard title="Variance (σ²)" value={stats.variance} />
+                        <StatCard title="Skewness" value={stats.skewness} description={stats.skewness > 0.5 ? 'Right Skew' : stats.skewness < -0.5 ? 'Left Skew' : 'Symmetric'} />
+                        <StatCard title="Ex. Kurtosis" value={stats.kurtosis} description={stats.kurtosis > 1 ? 'Fat Tails' : stats.kurtosis < -1 ? 'Thin Tails' : 'Normal Tails'} />
+                        <StatCard title="Range" value={stats.range} />
+                    </>
+                )}
+            </div>
+          </CardContent>
+        </Card>
+
       </div>
     </>
   );
 }
-
-    
