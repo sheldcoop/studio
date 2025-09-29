@@ -126,6 +126,84 @@ export const getStdDev = (data: number[]): number => {
 
 
 /**
+ * Calculates the median of a set of numbers.
+ * @param data An array of numbers.
+ * @returns The median.
+ */
+export const getMedian = (data: number[]): number => {
+    if (data.length === 0) return 0;
+    const sorted = [...data].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+/**
+ * Calculates the mode of a set of numbers based on histogram bins.
+ * This is an approximation for continuous data.
+ * @param data An array of numbers.
+ * @param bins The number of bins to use for the histogram.
+ * @returns The midpoint of the most frequent bin.
+ */
+export const getMode = (data: number[], bins = 30): number => {
+    if (data.length === 0) return 0;
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const binWidth = (max - min) / bins;
+    const histogram = new Map<number, number>();
+
+    for (const val of data) {
+        const bin = Math.floor((val - min) / binWidth);
+        histogram.set(bin, (histogram.get(bin) || 0) + 1);
+    }
+
+    let maxFreq = 0;
+    let modeBin = -1;
+    for (const [bin, freq] of histogram.entries()) {
+        if (freq > maxFreq) {
+            maxFreq = freq;
+            modeBin = bin;
+        }
+    }
+    
+    return min + (modeBin + 0.5) * binWidth;
+}
+
+/**
+ * Calculates the skewness of a set of numbers.
+ * @param data An array of numbers.
+ * @returns The sample skewness.
+ */
+export const getSkewness = (data: number[]): number => {
+    if (data.length < 3) return 0;
+    const n = data.length;
+    const mean = getMean(data);
+    const stdDev = getStdDev(data);
+    if (stdDev === 0) return 0;
+    
+    const m3 = data.reduce((acc, val) => acc + Math.pow(val - mean, 3), 0) / n;
+    return (m3 / Math.pow(stdDev, 3)) * (n * n) / ((n-1) * (n-2)); // Adjusted Fisher-Pearson coefficient
+}
+
+/**
+ * Calculates the excess kurtosis of a set of numbers.
+ * @param data An array of numbers.
+ * @returns The sample excess kurtosis.
+ */
+export const getKurtosis = (data: number[]): number => {
+    if (data.length < 4) return 0;
+    const n = data.length;
+    const mean = getMean(data);
+    const stdDev = getStdDev(data);
+    if (stdDev === 0) return 0;
+
+    const m4 = data.reduce((acc, val) => acc + Math.pow(val - mean, 4), 0) / n;
+    const numerator = (n + 1) * (n - 1) * ((m4 / Math.pow(stdDev, 4)) - 3 + (6 / (n + 1)));
+    const denominator = (n - 2) * (n - 3);
+
+    return numerator / denominator;
+}
+
+/**
  * Calculates the standard normal cumulative distribution function (CDF).
  * @param x The value to calculate the CDF for.
  * @returns The probability P(Z <= x) for a standard normal variable Z.

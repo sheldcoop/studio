@@ -183,7 +183,7 @@ export const statisticsTopics: Topic[] = [
     title: 'Descriptive Statistics Explorer',
     href: '/topics/descriptive-statistics-explorer',
     icon: FunctionSquare,
-    description: '',
+    description: 'Interactive guide to mean, median, mode, variance, skewness, and kurtosis.',
     category: 'sub-topic',
     parent: 'stats-foundations',
   },

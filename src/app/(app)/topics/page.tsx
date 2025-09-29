@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -13,9 +14,10 @@ export default function TopicsIndexPage() {
 
   const filteredTopics = allTopics.filter(
     (topic) =>
-      topic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      !topic.parent && // Only show top-level topics or topics without a parent
+      (topic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (topic.description &&
-        topic.description.toLowerCase().includes(searchTerm.toLowerCase()))
+        topic.description.toLowerCase().includes(searchTerm.toLowerCase())))
   );
 
   return (
