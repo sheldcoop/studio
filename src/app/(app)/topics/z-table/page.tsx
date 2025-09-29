@@ -22,6 +22,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { ArrowDown } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type ZToPType = "left" | "right" | "two-tailed";
 
@@ -260,16 +261,51 @@ export default function ZTablePage() {
             <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
                 <p>Knowing a Z-score is great, but its real power comes from using it to find probabilities. Once we have a Z-score, we can determine the probability of observing a value that low, that high, or even more extreme.</p>
                 <p>This probability is called a **p-value**, and it is the absolute foundation of hypothesis testing. It's the p-value that tells us if an observation (like a stock's return) is statistically significant or just random noise.</p>
-                <p className="text-sm border-l-4 border-primary pl-4 text-muted-foreground">
-                    Remember Alice's Z-score was +1.0. If we wanted to find the percentage of students who scored worse than Alice, we would use her Z-score of 1.0 and select the 'Left Tail'. **Try it now in the calculator below!**
-                </p>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">What Are You Calculating? A Quick Guide</CardTitle>
+                <CardDescription>Let's use a number line analogy to make this crystal clear.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Test Type</TableHead>
+                            <TableHead>The Question It Asks</TableHead>
+                            <TableHead>Visually on the Curve</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell className="font-semibold text-primary">Right Tail</TableCell>
+                            <TableCell>"What is the chance of being greater than this?" (&gt; Z)</TableCell>
+                            <TableCell>The area of the far right tail.</TableCell>
+                        </TableRow>
+                         <TableRow>
+                            <TableCell className="font-semibold text-primary">Left Tail</TableCell>
+                            <TableCell>"What is the chance of being less than this?" (&lt; Z)</TableCell>
+                            <TableCell>The area of the far left tail.</TableCell>
+                        </TableRow>
+                         <TableRow>
+                            <TableCell className="font-semibold text-primary">Two-Tailed</TableCell>
+                            <TableCell>"What is the chance of being this extreme or more, in either direction?"</TableCell>
+                            <TableCell>The area of BOTH tails combined.</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+                <p className="mt-4 text-sm text-muted-foreground">The area "in between" (what you use for confidence intervals) is the opposite of the two-tailed test. It represents the probability of a result being "normal" or "not extreme."</p>
             </CardContent>
         </Card>
 
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline">The Interactive Sandbox: Z-Score Calculator</CardTitle>
-                <CardDescription>Immediately apply what you've just learned. Calculate probabilities and Z-scores with interactive visualizations.</CardDescription>
+                <CardDescription>
+                    Remember Alice's Z-score was +1.0? To find the percentage of students who scored worse than her, use a Z-score of 1.0 and select 'Left Tail'. Try it now!
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="z-to-p" onValueChange={setActiveTab}>
