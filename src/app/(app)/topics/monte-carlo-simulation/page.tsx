@@ -20,10 +20,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, Lab
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Lightbulb, TrendingDown, ShieldCheck, Play, Pause, Plus, RefreshCw } from 'lucide-react';
-import { ChartTooltipContent } from '@/lib/chart-config';
 import Script from 'next/script';
 import Link from 'next/link';
-
 
 // --- Math & Simulation Logic ---
 const runMonteCarloStep = (
@@ -36,8 +34,9 @@ const runMonteCarloStep = (
   for (let i = 0; i < simulationsToAdd; i++) {
     // This uses a simplified approximation of a standard normal variable for browser performance
     const z = (Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random() - 3) / Math.sqrt(0.5);
-    const drift = (mu - (sigma * sigma) / 2) * 1;
-    const diffusion = sigma * z * Math.sqrt(1);
+    const T = 1; // Time period is 1 year
+    const drift = (mu - (sigma * sigma) / 2) * T;
+    const diffusion = sigma * z * Math.sqrt(T);
     const finalValue = initialValue * Math.exp(drift + diffusion);
     newFinalValues.push(finalValue);
   }
@@ -77,6 +76,34 @@ const VaRChart = ({ data, initialValue, varValue }: { data: number[], initialVal
         );
     }
 
+    const CustomTooltip = ({ active, payload, label }: { active?: boolean, payload?: any[], label?: number }) => {
+      if (active && payload && payload.length) {
+        return (
+          <div className="rounded-lg border bg-background p-2 text-sm shadow-sm">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col">
+                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                  Value
+                </span>
+                <span className="font-bold text-muted-foreground">
+                  ${Number(label).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                  Frequency
+                </span>
+                <span className="font-bold">
+                  {payload[0].value}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return null;
+    };
+
     return (
         <ChartContainer config={{}} className="h-[350px] w-full">
             <BarChart data={histogramData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
@@ -85,10 +112,7 @@ const VaRChart = ({ data, initialValue, varValue }: { data: number[], initialVal
                 <YAxis name="Frequency" />
                 <Tooltip
                     cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
-                    content={<ChartTooltipContent
-                        labelFormatter={(value) => `Value: $${Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-                        formatter={(value, name) => [value, 'Frequency']}
-                    />}
+                    content={<CustomTooltip />}
                 />
                 <Bar dataKey="count" fill="hsl(var(--primary))" opacity={0.7} />
                 {varValue !== null && (
@@ -228,7 +252,7 @@ export default function MonteCarloSimulationPage() {
             <CardContent className="space-y-4">
                  <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion, a standard way to model stock prices. The formula for the portfolio's value at the end of the period is:</p>
                 <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                    $$S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right)$$
+                    {`$$ S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right) $$`}
                 </div>
                  <p className="text-muted-foreground">Once we have thousands of simulated final values ($S_T$), we can calculate the 95% VaR by finding the 5th percentile of our results. This is the value that separates the worst 5% of outcomes from the best 95%.</p>
             </CardContent>
