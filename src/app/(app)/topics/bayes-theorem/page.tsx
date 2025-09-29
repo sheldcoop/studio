@@ -284,7 +284,7 @@ const GeometricBayesVisualization = () => {
       e_given_h: intersection / h,
       h_given_e: intersection / e,
     };
-  }, [GEOMETRY]);
+  }, []);
 
   const steps = [
       {
@@ -327,14 +327,17 @@ const GeometricBayesVisualization = () => {
   let currentHRect = GEOMETRY.h;
   let universeTransform = 'scale(1,1) translate(0,0)';
   let fadeOpacity = 0;
+  let dimsToShow: string[] = [];
 
   switch (currentState) {
       case 0:
           formulaHighlights = highlightFormula(['p_h']);
+          dimsToShow = ['h'];
           break;
       case 1:
           formulaHighlights = highlightFormula(['p_e_given_h', 'p_h']);
           currentHRect = GEOMETRY.intersection;
+          dimsToShow = ['h', 'e'];
           break;
       case 2:
           formulaHighlights = highlightFormula(['p_e_given_h', 'p_h', 'p_e']);
@@ -342,6 +345,7 @@ const GeometricBayesVisualization = () => {
           const { x, y, width, height } = GEOMETRY.e;
           universeTransform = `scale(${100/width}, ${100/height}) translate(${-x}, ${-y})`;
           fadeOpacity = 0.8;
+          dimsToShow = ['e'];
           break;
       case 3:
           formulaHighlights = highlightFormula(['p_h_given_e', 'p_e_given_h', 'p_h', 'p_e']);
@@ -349,14 +353,15 @@ const GeometricBayesVisualization = () => {
           const { x: ex, y: ey, width: ew, height: eh } = GEOMETRY.e;
           universeTransform = `scale(${100/ew}, ${100/eh}) translate(${-ex}, ${-ey})`;
           fadeOpacity = 0.8;
+          dimsToShow = [];
           break;
       default:
           formulaHighlights = highlightFormula([]);
   }
 
-  const ValueDisplay = ({ title, value }: { title: string, value: React.ReactNode }) => (
+  const ValueDisplay = ({ title, value, detail }: { title: string, value: React.ReactNode, detail?: string }) => (
     <div className="mt-3 rounded-md border-l-4 border-muted-foreground/50 bg-muted/30 p-3 font-mono text-sm">
-      <strong className="text-foreground">{title}:</strong> {value}
+      <strong className="text-foreground">{title}:</strong> {value} {detail && <span className="text-muted-foreground">({detail})</span>}
     </div>
   );
 
@@ -380,6 +385,20 @@ const GeometricBayesVisualization = () => {
                         
                         <text x="50" y="7.5" textAnchor="middle" fontSize="5" fontWeight="bold" fill="hsl(var(--foreground))">Rain</text>
                         <text x="6" y="50" textAnchor="middle" fontSize="5" fontWeight="bold" transform="rotate(-90 6 50)" fill="hsl(var(--foreground))">Cloudy</text>
+                    
+                        {/* Dimension Lines */}
+                        <g className={cn("transition-opacity duration-700", dimsToShow.includes('h') ? "opacity-100" : "opacity-0")}>
+                           <line x1="10" y1="38" x2="90" y2="38" stroke="hsl(var(--foreground))" strokeWidth="0.5" strokeDasharray="2,2" />
+                           <text x="50" y="42" textAnchor="middle" fontSize="4" fontFamily="monospace" fill="hsl(var(--foreground))">80</text>
+                           <line x1="93" y1="10" x2="93" y2="35" stroke="hsl(var(--foreground))" strokeWidth="0.5" strokeDasharray="2,2" />
+                           <text x="96" y="22.5" textAnchor="middle" fontSize="4" fontFamily="monospace" fill="hsl(var(--foreground))">25</text>
+                        </g>
+                         <g className={cn("transition-opacity duration-700", dimsToShow.includes('e') ? "opacity-100" : "opacity-0")}>
+                           <line x1="53" y1="20" x2="53" y2="80" stroke="hsl(var(--foreground))" strokeWidth="0.5" strokeDasharray="2,2" />
+                           <text x="56" y="50" textAnchor="middle" fontSize="4" fontFamily="monospace" fill="hsl(var(--foreground))">60</text>
+                           <line x1="10" y1="83" x2="50" y2="83" stroke="hsl(var(--foreground))" strokeWidth="0.5" strokeDasharray="2,2" />
+                           <text x="30" y="87" textAnchor="middle" fontSize="4" fontFamily="monospace" fill="hsl(var(--foreground))">40</text>
+                        </g>
                     </g>
                     <rect x="0" y="0" width="100" height="100" fill="hsl(var(--muted))" mask="url(#mask-e)" style={{ transition: 'opacity 1.2s ease-in-out', opacity: fadeOpacity }}/>
                 </svg>
@@ -391,15 +410,15 @@ const GeometricBayesVisualization = () => {
                     <h2 className="text-2xl font-bold text-foreground font-headline">{step.title}</h2>
                     <p className="text-base md:text-lg leading-relaxed text-muted-foreground">{step.description}</p>
                     <div>
-                        {currentState === 0 && <ValueDisplay title="P(Rain)" value={PROBS.h.toFixed(2)} />}
+                        {currentState === 0 && <ValueDisplay title="P(Rain)" value={PROBS.h.toFixed(2)} detail="Area = 80x25" />}
                         {currentState === 1 && <>
-                          <ValueDisplay title="P(Rain)" value={PROBS.h.toFixed(2)} />
-                          <ValueDisplay title="P(Cloudy|Rain)" value={`${PROBS.e_given_h.toFixed(2)} (proportion of rainy days that are cloudy)`} />
+                          <ValueDisplay title="P(Rain)" value={PROBS.h.toFixed(2)} detail="Area = 80x25" />
+                          <ValueDisplay title="P(Cloudy|Rain)" value={PROBS.e_given_h.toFixed(2)} detail="proportion of rainy days that are cloudy" />
                           <ValueDisplay title="Numerator Area" value={`P(Cloudy|Rain)⋅P(Rain) = ${PROBS.intersection.toFixed(2)}`} />
                         </>}
                          {currentState === 2 && <>
                           <ValueDisplay title="Numerator Area" value={PROBS.intersection.toFixed(2)} />
-                          <ValueDisplay title="Evidence Area P(Cloudy)" value={PROBS.e.toFixed(2)} />
+                          <ValueDisplay title="Evidence Area P(Cloudy)" value={PROBS.e.toFixed(2)} detail="Area = 40x60" />
                         </>}
                         {currentState === 3 && <ValueDisplay title="Posterior P(Rain|Cloudy)" value={`Area_Intersection / Area_Cloudy = ${PROBS.intersection.toFixed(2)} / ${PROBS.e.toFixed(2)} = ${PROBS.h_given_e.toFixed(2)}`} />}
                     </div>
@@ -410,7 +429,7 @@ const GeometricBayesVisualization = () => {
                     <React.Fragment key={part.name}>
                       {i === 1 && <span className="font-bold mx-2">=</span>}
                       {i === 1 && <span className="inline-block"><span className="block border-b-2 border-current pb-1"></span></span>}
-                      <span className={cn('formula-part px-2', part.highlight && 'bg-primary text-primary-foreground')}>
+                      <span className={cn('formula-part px-2 transition-colors duration-300', part.highlight && 'bg-primary text-primary-foreground')}>
                           {part.name === 'p_h_given_e' && 'P(Rain|Cloudy)'}
                           {part.name === 'p_e_given_h' && 'P(Cloudy|Rain)'}
                           {part.name === 'p_h' && 'P(Rain)'}
