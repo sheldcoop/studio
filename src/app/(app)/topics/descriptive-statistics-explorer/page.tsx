@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -8,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, Label as RechartsLabel } from 'recharts';
 import {
   generateNormalData,
   generateLogNormalData,
@@ -65,9 +66,9 @@ const DistributionChart = ({ data, stats }: { data: number[], stats: Stats | nul
         <YAxis />
         <Tooltip wrapperClassName="text-xs" />
         <Bar dataKey="count" fill="hsl(var(--primary))" barSize={20} />
-        {stats?.mean !== undefined && <ReferenceLine x={stats.mean} stroke="hsl(var(--chart-2))" strokeWidth={2}><Label value="Mean" position="top" fill="hsl(var(--chart-2))" fontSize={12} /></ReferenceLine>}
-        {stats?.median !== undefined && <ReferenceLine x={stats.median} stroke="hsl(var(--chart-3))" strokeWidth={2}><Label value="Median" position="top" dy={-15} fill="hsl(var(--chart-3))" fontSize={12} /></ReferenceLine>}
-        {stats?.mode !== undefined && <ReferenceLine x={stats.mode} stroke="hsl(var(--chart-5))" strokeWidth={2}><Label value="Mode" position="top" dy={-30} fill="hsl(var(--chart-5))" fontSize={12} /></ReferenceLine>}
+        {stats?.mean !== undefined && <ReferenceLine x={stats.mean} stroke="hsl(var(--chart-2))" strokeWidth={2}><RechartsLabel value="Mean" position="top" fill="hsl(var(--chart-2))" fontSize={12} /></ReferenceLine>}
+        {stats?.median !== undefined && <ReferenceLine x={stats.median} stroke="hsl(var(--chart-3))" strokeWidth={2}><RechartsLabel value="Median" position="top" dy={-15} fill="hsl(var(--chart-3))" fontSize={12} /></ReferenceLine>}
+        {stats?.mode !== undefined && <ReferenceLine x={stats.mode} stroke="hsl(var(--chart-5))" strokeWidth={2}><RechartsLabel value="Mode" position="top" dy={-30} fill="hsl(var(--chart-5))" fontSize={12} /></ReferenceLine>}
       </BarChart>
     </ResponsiveContainer>
   );
@@ -217,7 +218,7 @@ export default function DescriptiveStatisticsPage() {
                         <AccordionTrigger>Measures of Shape</AccordionTrigger>
                         <AccordionContent className="space-y-4">
                              <div><strong className="text-foreground">Skewness:</strong> Measures the asymmetry of the distribution. A positive value indicates a long tail to the right (right-skewed), a negative value a long tail to the left (left-skewed), and a value near zero indicates a symmetric distribution.</div>
-                             <div><strong className="text-foreground">Kurtosis:</strong> Measures the "tailedness" of the distribution. High kurtosis (leptokurtic, >0) means "fat tails," indicating a higher probability of extreme outlier events. This is critical in risk management, as normal distributions often underestimate the frequency of market crashes. Low kurtosis (platykurtic, <0) means "thin tails."</div>
+                             <div><strong className="text-foreground">Kurtosis:</strong> Measures the "tailedness" of the distribution. High kurtosis (leptokurtic, or a value greater than 0 for excess kurtosis) means "fat tails," indicating a higher probability of extreme outlier events. This is critical in risk management, as normal distributions often underestimate the frequency of market crashes. Low kurtosis (platykurtic, or a value less than 0) means "thin tails."</div>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
