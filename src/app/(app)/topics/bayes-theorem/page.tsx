@@ -127,7 +127,7 @@ export default function BayesTheoremPage() {
                 <CardTitle className="mt-2">Joint Probability: The Overlap</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                 <p className="text-muted-foreground">The probability of two events happening at the same time is their **joint probability**. Visually, it's the area where their circles overlap. Hover over the formula to see it highlighted.</p>
+                 <p className="text-muted-foreground">The probability of two events happening at the same time is their **joint probability**. Visually, it's the area where their circles overlap. In our example, this represents all the days where the stock went up *and* a positive news article was released. Hover over the formula below to see this area highlight in the diagram.</p>
                  <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('AnB')}>
                     P(A ∩ B) = Probability(Stock Goes Up AND Positive News is Released)
                 </div>
@@ -141,8 +141,9 @@ export default function BayesTheoremPage() {
                 <CardTitle className="mt-2">Conditional Probability: The World Shrinks</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Now, let's ask: "What is the probability the stock goes up, **given that we know** there was positive news?" This is the conditional probability **P(A|B)**. When we are 'given' that Event B happened, our entire universe of possibilities shrinks to just the 'Positive News' circle. Hover to see this effect.</p>
-                <p className="text-muted-foreground">Within this new, smaller world (Circle B), the only way for Event A to also happen is in the intersection area. Therefore, the conditional probability is the size of the intersection relative to the size of our new world.</p>
+                <p className="text-muted-foreground">Now, let's ask: "What is the probability the stock goes up, **given that we know** there was positive news?" This is the conditional probability **P(A|B)**. The word "given" is a powerful constraint. It means we are no longer looking at all possible days; we are only considering the days where we *know* there was positive news.</p>
+                <p className="text-muted-foreground">As you hover over the formula, watch the diagram. Everything outside the "Positive News" circle fades away. **Our universe of possibilities visually shrinks to just Circle B.**</p>
+                <p className="text-muted-foreground">Within this new, smaller world, the only way for "Stock Up" (Event A) to also happen is in the intersection area. Therefore, the conditional probability is simply the size of the intersection relative to the size of our new world (Circle B).</p>
                  <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('A_given_B')}>
                     P(A|B) = P(A ∩ B) / P(B)
                 </div>
@@ -156,8 +157,8 @@ export default function BayesTheoremPage() {
                 <CardTitle className="mt-2">Symmetry: The Other Side of the Coin</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-muted-foreground">The logic is perfectly symmetrical. We can also ask: "What is the probability there was positive news, **given that we know** the stock went up?" This is **P(B|A)**. Now, our universe shrinks to the 'Stock Up' circle. Hover to see it.</p>
-                <p className="text-muted-foreground">The formula is the same, just with the roles of A and B swapped. The probability is the intersection relative to the new, smaller world (Circle A).</p>
+                <p className="text-muted-foreground">The logic is perfectly symmetrical. We can also ask the reverse question: "What is the probability there was positive news, **given that we know** the stock went up?" This is **P(B|A)**. Now, our universe of possibilities shrinks to only the days the stock went up. Hover over the formula to see it.</p>
+                <p className="text-muted-foreground">The formula is identical in concept, just with the roles of A and B swapped. The probability is the intersection area relative to the new, smaller world (this time, Circle A).</p>
                  <div className="text-center font-mono text-lg p-2 bg-background rounded-md border" onMouseEnter={() => setHighlight('B_given_A')}>
                     P(B|A) = P(A ∩ B) / P(A)
                 </div>
@@ -171,16 +172,16 @@ export default function BayesTheoremPage() {
                 <CardTitle className="mt-2">The Final Derivation: Putting It All Together</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                 <p className="text-muted-foreground">We have two different ways to express the same thing: the intersection **P(A ∩ B)**. By rearranging our two conditional probability formulas, we get:</p>
+                 <p className="text-muted-foreground">Notice that our formulas from Step 2 and Step 3 both contain the same term: the intersection **P(A ∩ B)**. This shared term is our bridge. We can rearrange both equations to solve for the intersection:</p>
                  <ul className="list-none space-y-2 font-mono text-center text-base">
-                    <li className="p-2 bg-background rounded-md border">1. P(A ∩ B) = P(A|B) * P(B)</li>
-                    <li className="p-2 bg-background rounded-md border">2. P(A ∩ B) = P(B|A) * P(A)</li>
+                    <li className="p-2 bg-background rounded-md border">1. From Step 2, we get: &nbsp; P(A ∩ B) = P(A|B) * P(B)</li>
+                    <li className="p-2 bg-background rounded-md border">2. From Step 3, we get: &nbsp; P(A ∩ B) = P(B|A) * P(A)</li>
                  </ul>
-                <p className="text-muted-foreground">Since both right-hand sides are equal to the intersection, they must be equal to each other:</p>
+                <p className="text-muted-foreground">Since both right-hand sides are equal to the same intersection area, they must be equal to each other. This gives us the crucial link:</p>
                 <div className="text-center font-mono text-lg p-2 bg-background rounded-md border">
                     P(A|B) * P(B) = P(B|A) * P(A)
                 </div>
-                <p className="text-muted-foreground">With one final step of algebra (dividing both sides by P(B)), we arrive at the famous Bayes' Theorem:</p>
+                <p className="text-muted-foreground">This relationship is powerful on its own. But we usually want to find **P(A|B)** (our updated belief). With one final step of simple algebra—dividing both sides by P(B)—we arrive at the famous Bayes' Theorem:</p>
                  <div className="text-center font-mono text-xl p-4 bg-primary/10 text-primary-foreground rounded-lg border-2 border-primary">
                     P(A|B) = (P(B|A) * P(A)) / P(B)
                 </div>
@@ -191,3 +192,5 @@ export default function BayesTheoremPage() {
     </>
   );
 }
+
+    
