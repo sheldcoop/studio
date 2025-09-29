@@ -105,7 +105,7 @@ export default function ConfidenceIntervalsPage() {
           <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-4 rounded-lg border p-6">
               <div>
-                <Label htmlFor="mean">Sample Mean (x̄)</Label>
+                <Label htmlFor="mean">Sample Mean (μ)</Label>
                 <Input
                   id="mean"
                   type="number"
@@ -114,7 +114,7 @@ export default function ConfidenceIntervalsPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="stddev">Population Standard Deviation (σ)</Label>
+                <Label htmlFor="stddev">Standard Deviation (σ)</Label>
                 <Input
                   id="stddev"
                   type="number"
