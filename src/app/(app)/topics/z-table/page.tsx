@@ -77,7 +77,7 @@ const DynamicZScoreChart = dynamic(() => Promise.resolve(ZScoreChart), {
 const ZTable = () => {
     const header = Array.from({length: 10}, (_, i) => (i/100).toFixed(2));
     const rows = [];
-    for(let z = 0.0; z <= 3.9; z += 0.1) {
+    for(let z = -3.9; z <= 3.9; z += 0.1) {
         const rowData = header.map(h => standardNormalCdf(z + parseFloat(h)).toFixed(4));
         rows.push({ z: z.toFixed(1), values: rowData });
     }
