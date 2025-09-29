@@ -71,10 +71,12 @@ const generateDistributionData = (
       (1 / (stdErr * Math.sqrt(2 * Math.PI))) *
       Math.exp(-0.5 * Math.pow((x - mean) / stdErr, 2));
 
-    const point: { x: number; y: number; ci?: number } = { x, y };
+    const point: { x: number; y: number; ci?: number, tail?: number } = { x, y };
 
     if (x >= lowerBound && x <= upperBound) {
       point.ci = y;
+    } else {
+      point.tail = y;
     }
     data.push(point);
   }
@@ -103,8 +105,8 @@ const InteractiveChart = ({
   }
 
   return (
-    <ChartContainer config={{}} className="h-[300px] w-full">
-      <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+    <ChartContainer config={{}} className="h-[350px] w-full">
+      <AreaChart data={chartData} margin={{ top: 40, right: 30, left: 0, bottom: 20 }}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis
           type="number"
@@ -123,6 +125,10 @@ const InteractiveChart = ({
                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
                 <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
             </linearGradient>
+            <linearGradient id="fillTail" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.6}/>
+                <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.1}/>
+            </linearGradient>
         </defs>
         <Area
           type="monotone"
@@ -130,8 +136,9 @@ const InteractiveChart = ({
           stroke="hsl(var(--muted-foreground))"
           fill="hsl(var(--muted-foreground))"
           fillOpacity={0.2}
-          strokeWidth={2}
+          strokeWidth={1}
           dot={false}
+          name="Sampling Distribution"
         />
         <Area
           type="monotone"
@@ -142,21 +149,32 @@ const InteractiveChart = ({
           dot={false}
           name="Confidence Interval"
         />
+         <Area
+          type="monotone"
+          dataKey="tail"
+          stroke="hsl(var(--destructive))"
+          fill="url(#fillTail)"
+          strokeWidth={1.5}
+          dot={false}
+          name="Alpha (α) Region"
+        />
         <ReferenceLine
           x={mean}
           stroke="hsl(var(--foreground))"
           strokeDasharray="3 3"
-          label={{ value: 'Mean', position: 'insideTop', fill: 'hsl(var(--foreground))' }}
         />
+         <ReferenceLine x={mean} label={{ value: 'Sample Mean', position: 'top', fill: 'hsl(var(--foreground))', dy: -20 }} />
         <ReferenceLine
           x={result.lower}
           stroke="hsl(var(--primary))"
           strokeDasharray="4 4"
+           label={{ value: `Lower: ${result.lower}`, position: 'top', fill: 'hsl(var(--primary))', dy: -5 }}
         />
         <ReferenceLine
           x={result.upper}
           stroke="hsl(var(--primary))"
           strokeDasharray="4 4"
+          label={{ value: `Upper: ${result.upper}`, position: 'top', fill: 'hsl(var(--primary))', dy: -5 }}
         />
       </AreaChart>
     </ChartContainer>
@@ -165,7 +183,7 @@ const InteractiveChart = ({
 
 const DynamicInteractiveChart = dynamic(
   () => Promise.resolve(InteractiveChart),
-  { ssr: false, loading: () => <Skeleton className="h-[300px] w-full" /> }
+  { ssr: false, loading: () => <Skeleton className="h-[350px] w-full" /> }
 );
 
 export default function ConfidenceIntervalsPage() {
@@ -183,28 +201,30 @@ export default function ConfidenceIntervalsPage() {
     const n = Number(sampleSize);
     const M = Number(mean);
     const s = Number(stdDev);
-    const z = zScores[confidenceLevel];
-
-    if (n > 0 && s >= 0 && n % 1 === 0) {
-      setError(null);
-      const marginOfError = z * (s / Math.sqrt(n));
-      const lowerBound = M - marginOfError;
-      const upperBound = M + marginOfError;
-      setResult({
-        lower: parseFloat(lowerBound.toFixed(3)),
-        upper: parseFloat(upperBound.toFixed(3)),
-        marginOfError: parseFloat(marginOfError.toFixed(3)),
-      });
-    } else {
-      setResult(null);
+    
+    // Prevent calculation if inputs are invalid to avoid unnecessary re-renders
+    if (isNaN(n) || isNaN(M) || isNaN(s) || n <= 0 || s < 0 || n % 1 !== 0) {
       if (n <= 0 || n % 1 !== 0) {
         setError('Sample size must be a positive integer.');
       } else if (s < 0) {
         setError('Standard deviation cannot be negative.');
       } else {
-        setError('Please enter valid inputs.')
+        setError('Please enter valid numerical inputs.');
       }
+      setResult(null);
+      return;
     }
+    
+    const z = zScores[confidenceLevel];
+    setError(null);
+    const marginOfError = z * (s / Math.sqrt(n));
+    const lowerBound = M - marginOfError;
+    const upperBound = M + marginOfError;
+    setResult({
+      lower: parseFloat(lowerBound.toFixed(3)),
+      upper: parseFloat(upperBound.toFixed(3)),
+      marginOfError: parseFloat(marginOfError.toFixed(3)),
+    });
   };
 
   useEffect(() => {
@@ -247,15 +267,15 @@ export default function ConfidenceIntervalsPage() {
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4 mb-6">
                   <div className="space-y-2">
                     <Label htmlFor="mean">Sample Mean (x̄)</Label>
-                    <Input id="mean" type="number" value={mean} onChange={(e) => setMean(Number(e.target.value))}/>
+                    <Input id="mean" type="number" value={mean} onChange={(e) => setMean(parseFloat(e.target.value))}/>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="stddev">Std. Dev (σ)</Label>
-                    <Input id="stddev" type="number" value={stdDev} min="0" onChange={(e) => setStdDev(Number(e.target.value))}/>
+                    <Input id="stddev" type="number" value={stdDev} min="0" onChange={(e) => setStdDev(parseFloat(e.target.value))}/>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="sample-size">Sample Size (n)</Label>
-                    <Input id="sample-size" type="number" value={sampleSize} min="1" step="1" onChange={(e) => setSampleSize(Number(e.target.value))}/>
+                    <Input id="sample-size" type="number" value={sampleSize} min="1" step="1" onChange={(e) => setSampleSize(parseInt(e.target.value, 10))}/>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confidence">Confidence</Label>
@@ -275,15 +295,16 @@ export default function ConfidenceIntervalsPage() {
                      <div className="mt-4 text-center">
                         <p className="text-sm text-muted-foreground">{confidenceLevel}% Confidence Interval</p>
                         <p className="font-headline text-3xl font-bold tracking-tight text-primary">[{result.lower}, {result.upper}]</p>
+                        <p className="text-sm text-muted-foreground mt-1">Margin of Error: ±{result.marginOfError}</p>
                      </div>
                   </div>
                 ) : (
-                   <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed text-center text-destructive">
+                   <div className="flex h-[350px] items-center justify-center rounded-lg border border-dashed text-center">
                        {error ? (
-                         <>
+                         <div className="text-destructive">
                           <AlertTriangle className="mx-auto h-8 w-8" />
                           <p className="mt-2 font-semibold">{error}</p>
-                         </>
+                         </div>
                        ) : (
                         <p className="text-muted-foreground">Enter valid data to see the visualization.</p>
                        )}
@@ -301,7 +322,7 @@ export default function ConfidenceIntervalsPage() {
                      <Accordion type="single" collapsible defaultValue="item-1">
                         <AccordionItem value="item-1">
                             <AccordionTrigger>Confidence Level (1-α)</AccordionTrigger>
-                            <AccordionContent>The probability that the interval estimation procedure will produce a confidence interval that contains the true population parameter. A 95% confidence level means that if we took 100 different samples and built 100 intervals, about 95 of them would contain the true mean. Alpha (α) is the complement (e.g., α = 0.05 for 95% confidence), representing the probability of error.</AccordionContent>
+                            <AccordionContent>The probability that the interval estimation procedure will produce a confidence interval that contains the true population parameter. A 95% confidence level means that if we took 100 different samples and built 100 intervals, about 95 of them would contain the true mean. Alpha (α) is the complement (e.g., α = 0.05 for 95% confidence), representing the probability of error. It's the red-shaded area in the chart's tails.</AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-2">
                             <AccordionTrigger>Z-score</AccordionTrigger>
@@ -342,5 +363,3 @@ export default function ConfidenceIntervalsPage() {
     </>
   );
 }
-
-    
