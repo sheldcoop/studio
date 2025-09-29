@@ -19,6 +19,7 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts';
 import { standardNormalCdf, standardNormalPdf, inverseStandardNormalCdf } from '@/lib/math';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { cn } from '@/lib/utils';
 
 type ZToPType = "left" | "right" | "two-tailed";
 
@@ -78,10 +79,10 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore }: { shadeFrom: numb
             </>
         ) : (
             <>
-                {shadeFrom !== null && shadeTo !== null && shadeFrom !== -4 && shadeFrom !== 4 && (
+                {shadeFrom !== null && shadeTo !== null && shadeFrom !== -4 && (
                     <ReferenceLine x={shadeFrom} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${shadeFrom.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 )}
-                {shadeTo !== null && shadeFrom !== null && shadeTo !== 4 && shadeTo !== -4 && (
+                {shadeTo !== null && shadeFrom !== null && shadeTo !== 4 && (
                   <ReferenceLine x={shadeTo} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${shadeTo.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 )}
             </>
@@ -97,7 +98,7 @@ const DynamicZScoreChart = dynamic(() => Promise.resolve(ZScoreChart), {
 });
 
 // Z-Table Component
-const ZTable = () => {
+const ZTable = ({ highlightedZ }: { highlightedZ: number | null }) => {
     const header = Array.from({length: 10}, (_, i) => (i/100).toFixed(2));
     const rows = [];
     for(let z = -3.9; z <= 3.9; z += 0.1) {
@@ -105,11 +106,14 @@ const ZTable = () => {
         rows.push({ z: z.toFixed(1), values: rowData });
     }
 
+    const highlightedRow = highlightedZ !== null ? (Math.round(highlightedZ * 10) / 10).toFixed(1) : null;
+    const highlightedCol = highlightedZ !== null ? Math.abs(Math.round((highlightedZ - parseFloat(highlightedRow!)) * 100) / 100).toFixed(2) : null;
+
     return (
       <Card>
         <CardHeader>
           <CardTitle>Standard Normal (Z) Table</CardTitle>
-          <CardDescription>Area under the curve to the left of Z.</CardDescription>
+          <CardDescription>Area under the curve to the left of Z. The table highlights the value closest to your calculated Z-score.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-auto max-h-[400px]">
@@ -117,14 +121,14 @@ const ZTable = () => {
               <thead>
                 <tr className="bg-muted">
                   <th className="sticky top-0 p-2 bg-muted z-10">Z</th>
-                  {header.map(h => <th key={h} className="sticky top-0 p-2 bg-muted">{h}</th>)}
+                  {header.map(h => <th key={h} className={cn("sticky top-0 p-2 bg-muted transition-colors", highlightedCol === h && "bg-primary/30")}>{h}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {rows.map(row => (
-                  <tr key={row.z} className="border-b">
-                    <td className="font-bold p-2 bg-muted sticky left-0">{row.z}</td>
-                    {row.values.map((val, i) => <td key={i} className="p-2 tabular-nums">{val}</td>)}
+                  <tr key={row.z} className={cn("border-b transition-colors", highlightedRow === row.z && "bg-primary/20")}>
+                    <td className={cn("font-bold p-2 bg-muted sticky left-0 transition-colors", highlightedRow === row.z && "bg-primary/30 text-primary-foreground")}>{row.z}</td>
+                    {row.values.map((val, i) => <td key={i} className={cn("p-2 tabular-nums transition-colors", highlightedRow === row.z && highlightedCol === header[i] && "bg-primary/40 font-bold")}>{val}</td>)}
                   </tr>
                 ))}
               </tbody>
@@ -140,7 +144,7 @@ export default function ZTablePage() {
   // State for Z -> P
   const [zScore, setZScore] = useState<number | null>(1.96);
   const [pValue, setPValue] = useState<number | null>(null);
-  const [zToPType, setZToPType] = useState<ZToPType>("left");
+  const [zToPType, setZToPType] = useState<ZToPType>("two-tailed");
   const [chartShade, setChartShade] = useState<{from: number | null, to: number | null}>({from: -4, to: 1.96});
 
   // State for P -> Z
@@ -295,7 +299,7 @@ export default function ZTablePage() {
                    <p className="text-sm text-muted-foreground">This is the Z-score such that the area to its left under the standard normal curve is equal to the specified probability.</p>
                 </div>
                 <div>
-                   <DynamicZScoreChart shadeFrom={-4} shadeTo={calculatedZ} />
+                   <DynamicZScoreChart shadeFrom={-4} shadeTo={calculatedZ} zToPType="left" zScore={calculatedZ}/>
                 </div>
               </CardContent>
             </Card>
@@ -326,15 +330,20 @@ export default function ZTablePage() {
                    <p className="text-sm text-muted-foreground">This is the area under the curve between Z-Score 1 and Z-Score 2. This is what you calculate for a confidence interval.</p>
                 </div>
                 <div>
-                   <DynamicZScoreChart shadeFrom={zScore1} shadeTo={zScore2} />
+                   <DynamicZScoreChart shadeFrom={zScore1} shadeTo={zScore2} zScore={zScore2}/>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
         
-        <ZTable />
+        <ZTable highlightedZ={
+            zToPType === 'two-tailed' ? Math.abs(zScore ?? 0) : 
+            (zScore ?? (calculatedZ ?? zScore2 ?? null))
+        } />
       </div>
     </>
   );
 }
+
+    
