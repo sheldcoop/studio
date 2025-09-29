@@ -129,13 +129,13 @@ export default function BayesTheoremPage() {
                 description="Build an intuition for how beliefs are updated with new evidence."
                 variant="aligned-left"
             />
-             <div className="w-full max-w-7xl mx-auto bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
+             <div className="w-full max-w-6xl mx-auto bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     
                     {/* Left Side: Visuals */}
                     <div className="space-y-6">
-                         <div className="w-full bg-muted/30 dark:bg-muted/50 rounded-lg shadow-inner aspect-[4/3] p-1">
-                            <div className="grid grid-cols-40 gap-px">
+                         <div className="w-full bg-muted/30 dark:bg-muted/50 rounded-lg shadow-inner aspect-[4/3] p-2">
+                            <div className="grid grid-cols-[repeat(40,minmax(0,1fr))] gap-px">
                                 {parts.map(part => (
                                     <div key={part.id} className={cn(
                                         "aspect-square rounded-sm transition-all duration-500",
