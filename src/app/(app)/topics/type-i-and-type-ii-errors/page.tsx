@@ -15,7 +15,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartContainer } from '@/components/ui/chart';
 import { Area, AreaChart, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts';
-import { standardNormalPdf, inverseStandardNormalCdf } from '@/lib/math';
+import { standardNormalPdf, standardNormalCdf, inverseStandardNormalCdf } from '@/lib/math';
 
 // Generate data for two overlapping normal curves
 const generateDistributionData = (mean1: number, mean2: number, stdDev: number) => {
