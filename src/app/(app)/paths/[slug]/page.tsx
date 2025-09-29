@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -33,6 +34,23 @@ export default function PathPage({ params }: PathPageProps) {
   if (!path) {
     notFound();
   }
+  
+  // Check if there are any modules or lessons. If not, show a placeholder.
+  if (!path.modules || path.modules.length === 0 || !path.modules[0] || path.modules[0].lessons.length === 0) {
+    return (
+       <>
+        <PageHeader
+          title={path.title}
+          description={path.description}
+          variant="aligned-left"
+        />
+        <div className="flex h-96 items-center justify-center rounded-lg border border-dashed mt-8">
+            <p className="text-muted-foreground">This learning path is under construction. Content will be added here soon.</p>
+        </div>
+      </>
+    )
+  }
+
 
   return (
     <>
