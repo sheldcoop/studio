@@ -10,7 +10,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Siren, ArrowRight, Lightbulb } from 'lucide-react';
+import { Siren, ArrowRight, Lightbulb, BrainCircuit, CandlestickChart } from 'lucide-react';
 
 
 export default function CorrelationVsCausationPage() {
@@ -60,20 +60,29 @@ export default function CorrelationVsCausationPage() {
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline">Why This Matters in Finance</CardTitle>
-                <CardDescription>Mistaking correlation for causation in finance can be an expensive lesson.</CardDescription>
+                <CardDescription>Mistaking correlation for causation in finance can be an expensive lesson. Here are common traps.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-8">
+                <div>
+                    <h4 className="font-semibold flex items-center"><BrainCircuit className="w-5 h-5 mr-2 text-primary" /> Machine Learning: The Data Leakage Trap</h4>
+                    <p className="text-muted-foreground mt-1 text-sm">A data scientist is building a model to predict next-day returns. They find a feature called `data_update_timestamp` that has incredible predictive power. The model learns that if this timestamp is present, the next day's return will likely be negative. The correlation is extremely strong.</p>
+                    <p className="mt-2 text-sm"><strong>The Hidden Cause:</strong> The `data_update_timestamp` was only added to the database system in 2008. The model has simply learned that "data from after 2008" correlates with returns. What really happened in 2008? The Global Financial Crisis. The model hasn't learned a predictive relationship; it has learned to identify a specific historical period of high volatility and negative returns. It will fail completely on data outside this context.</p>
+                </div>
+
+                 <div>
+                    <h4 className="font-semibold flex items-center"><CandlestickChart className="w-5 h-5 mr-2 text-primary" /> Finance: The Super Bowl Indicator</h4>
+                    <p className="text-muted-foreground mt-1 text-sm">For decades, a surprisingly accurate "indicator" stated that if a team from the original National Football League (NFC) won the Super Bowl, the S&P 500 would have a positive return for the year. If a team from the American Football Conference (AFC) won, the market would be down.</p>
+                    <p className="mt-2 text-sm">This is a textbook <strong className="text-foreground/90">spurious correlation</strong>. There is no plausible economic link between the winner of a football game and the complex global factors that drive stock market returns. It's a classic case of data mining—if you look at enough unrelated variables, you're bound to find some that correlate by pure chance. A strategy based on this would be no better than a coin flip over the long run.</p>
+                </div>
+                
                 <div>
                     <h4 className="font-semibold flex items-center"><ArrowRight className="w-4 h-4 mr-2 text-primary" /> The Hidden Variable (Lurking Variable)</h4>
-                    <p className="text-muted-foreground mt-1 pl-6">Just like "warm weather" in our example, a hidden economic factor often drives two seemingly related assets. For example, the prices of luxury cars and high-end watches might be correlated. The lurking variable is <strong className="text-foreground/90">global wealth concentration</strong>. One doesn't cause the other; they are both driven by the same underlying factor.</p>
+                    <p className="text-muted-foreground mt-1 text-sm">Just like "warm weather" in our example, a hidden economic factor often drives two seemingly related assets. For example, the prices of luxury cars and high-end watches might be correlated. The lurking variable is <strong className="text-foreground/90">global wealth concentration</strong>. One doesn't cause the other; they are both driven by the same underlying factor.</p>
                 </div>
-                 <div>
-                    <h4 className="font-semibold flex items-center"><ArrowRight className="w-4 h-4 mr-2 text-primary" /> Coincidence (Spurious Correlation)</h4>
-                    <p className="text-muted-foreground mt-1 pl-6">With millions of financial time series in the world, some will correlate purely by random chance. A famous example found a strong correlation between the butter production in Bangladesh and the performance of the S&P 500. This is meaningless. Building a trading strategy on this would be financial suicide.</p>
-                </div>
+                
                 <div>
                     <h4 className="font-semibold flex items-center"><ArrowRight className="w-4 h-4 mr-2 text-primary" /> Reverse Causality</h4>
-                    <p className="text-muted-foreground mt-1 pl-6">Sometimes you have the relationship backward. For instance, you might observe that companies that spend more on advertising have higher sales. Does advertising cause higher sales, or do companies with high sales have more money to spend on advertising? The causal link might be the reverse of what you assume.</p>
+                    <p className="text-muted-foreground mt-1 text-sm">Sometimes you have the relationship backward. For instance, you might observe that companies that spend more on advertising have higher sales. Does advertising cause higher sales, or do companies with high sales have more money to spend on advertising? The causal link might be the reverse of what you assume.</p>
                 </div>
             </CardContent>
         </Card>
