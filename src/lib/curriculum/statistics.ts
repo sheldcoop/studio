@@ -161,6 +161,15 @@ export const statisticsTopics: Topic[] = [
     
   // Stat Toolkit Tier 1
   {
+    id: 'demystifying-hypothesis-testing',
+    title: "Demystifying Hypothesis Testing: A Beginner's Guide",
+    href: '/topics/demystifying-hypothesis-testing',
+    icon: FunctionSquare,
+    description: 'A step-by-step guide to making decisions from data.',
+    category: 'sub-topic',
+    parent: 'stats-foundations',
+  },
+  {
     id: 'confidence-intervals',
     title: 'Confidence Intervals',
     href: '/topics/confidence-intervals',
