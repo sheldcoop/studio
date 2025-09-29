@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { allTopics } from '@/lib/curriculum';
 import Link from 'next/link';
+import { Folder } from 'lucide-react';
 
 export default function TopicsIndexPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,23 +40,26 @@ export default function TopicsIndexPage() {
       <Card>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredTopics.map((topic) => (
-              <Link
-                key={topic.id}
-                href={topic.href}
-                className="group rounded-lg border p-4 transition-colors hover:bg-secondary"
-              >
-                <topic.icon className="h-6 w-6 text-primary" />
-                <h3 className="mt-2 font-semibold text-foreground/90 group-hover:text-foreground">
-                  {topic.title}
-                </h3>
-                {topic.description && (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {topic.description}
-                  </p>
-                )}
-              </Link>
-            ))}
+            {filteredTopics.map((topic) => {
+              const Icon = topic.icon || Folder;
+              return (
+                <Link
+                  key={topic.id}
+                  href={topic.href}
+                  className="group rounded-lg border p-4 transition-colors hover:bg-secondary"
+                >
+                  <Icon className="h-6 w-6 text-primary" />
+                  <h3 className="mt-2 font-semibold text-foreground/90 group-hover:text-foreground">
+                    {topic.title}
+                  </h3>
+                  {topic.description && (
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {topic.description}
+                    </p>
+                  )}
+                </Link>
+              );
+            })}
           </div>
           {filteredTopics.length === 0 && (
             <div className="flex h-40 items-center justify-center text-center">
