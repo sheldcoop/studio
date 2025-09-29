@@ -1,6 +1,8 @@
 
 'use client';
 
+import { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -10,8 +12,67 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Siren, ArrowRight, Lightbulb } from 'lucide-react';
-import Image from 'next/image';
+import { Siren, ArrowRight, Lightbulb, Thermometer } from 'lucide-react';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend as RechartsLegend } from 'recharts';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+
+// --- Interactive Chart Component ---
+
+const CorrelationChart = () => {
+    const [temperature, setTemperature] = useState(20); // Average temperature in Celsius
+    const [chartData, setChartData] = useState<{ x: number; y: number }[]>([]);
+
+    useEffect(() => {
+        const generateData = (temp: number) => {
+            const n = 50;
+            const baseIceCreamSales = 50;
+            const baseSharkAttacks = 5;
+            const tempEffectOnSales = (temp - 15) * 10;
+            const tempEffectOnAttacks = (temp - 15) * 0.5;
+
+            return Array.from({ length: n }, () => {
+                const salesNoise = (Math.random() - 0.5) * 40;
+                const attackNoise = (Math.random() - 0.5) * 4;
+
+                const iceCreamSales = Math.max(0, baseIceCreamSales + tempEffectOnSales + salesNoise);
+                const sharkAttacks = Math.max(0, baseSharkAttacks + tempEffectOnAttacks + attackNoise);
+                
+                return { x: iceCreamSales, y: sharkAttacks };
+            });
+        };
+        setChartData(generateData(temperature));
+    }, [temperature]);
+
+    return (
+        <div className="w-full">
+            <ChartContainer config={{}} className="h-[350px] w-full">
+                <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" dataKey="x" name="Ice Cream Sales" unit=" units" />
+                    <YAxis type="number" dataKey="y" name="Shark Attacks" unit=" incidents" />
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<ChartTooltipContent indicator="dot" />} />
+                    <RechartsLegend />
+                    <Scatter name="Observations" data={chartData} fill="hsl(var(--primary))" opacity={0.7} />
+                </ScatterChart>
+            </ChartContainer>
+            <div className="mx-auto mt-6 max-w-sm space-y-4">
+                 <Label htmlFor="temp-slider" className="flex items-center justify-center">
+                    <Thermometer className="mr-2 h-5 w-5 text-primary" />
+                    Adjust the Lurking Variable (Temperature)
+                 </Label>
+                 <div className="flex items-center gap-4">
+                    <Slider id="temp-slider" min={10} max={35} step={1} value={[temperature]} onValueChange={(val) => setTemperature(val[0])} />
+                    <span className="font-mono text-lg w-16 text-center">{temperature}°C</span>
+                 </div>
+            </div>
+        </div>
+    )
+}
+
+const DynamicCorrelationChart = dynamic(() => Promise.resolve(CorrelationChart), { ssr: false });
+
 
 export default function CorrelationVsCausationPage() {
   return (
@@ -38,27 +99,11 @@ export default function CorrelationVsCausationPage() {
         
         <Alert variant="destructive" className="bg-destructive/5">
             <Siren className="h-4 w-4" />
-            <AlertTitle className="font-headline text-lg">A Classic (and Silly) Example</AlertTitle>
-            <AlertDescription>
-                <div className="mt-2 flex flex-col md:flex-row md:items-center gap-6">
-                    <div className="flex-1 space-y-2">
-                        <p>For years, a strong positive correlation was observed between ice cream sales and the number of shark attacks. As ice cream sales went up, so did shark attacks.</p>
-                        <p className="font-semibold">Does eating ice cream cause shark attacks?</p>
-                        <p>Of course not. The real cause is a third, hidden variable: <strong className="text-foreground">warm weather</strong>. When it's hot, more people go to the beach (increasing potential shark encounters) AND more people buy ice cream. The two are correlated, but one does not cause the other.</p>
-                    </div>
-                     <div className="flex-1">
-                        <div className="relative aspect-video overflow-hidden rounded-lg border">
-                             <Image 
-                                src="https://picsum.photos/seed/icecream/600/400"
-                                alt="Ice cream and shark"
-                                fill
-                                style={{ objectFit: 'cover' }}
-                                data-ai-hint="ice cream"
-                             />
-                        </div>
-                        <p className="text-center text-xs text-muted-foreground mt-1">Both ice cream sales and beach visits are driven by summer heat.</p>
-                    </div>
-                </div>
+            <AlertTitle className="font-headline text-lg">An Interactive Example</AlertTitle>
+            <AlertDescription className="mt-2">
+                <p className="mb-4">For years, a strong positive correlation was observed between ice cream sales and the number of shark attacks. As one goes up, so does the other. But does eating ice cream cause shark attacks? Of course not.</p>
+                <p className="mb-4">Use the slider below to adjust the temperature. Notice how both variables increase as it gets hotter. The temperature is the <strong className="text-foreground">lurking variable</strong> that causes both to rise independently.</p>
+                <DynamicCorrelationChart />
             </AlertDescription>
         </Alert>
 
