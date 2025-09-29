@@ -9,12 +9,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { BarChart, Bar, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { generateUniformData, generateExponentialData, getMean, generatePoissonData } from '@/lib/math';
+import { generateUniformData, generateExponentialData, getMean, getStdDev, generateLogNormalData } from '@/lib/math';
 import { Loader2 } from 'lucide-react';
 import { ChartContainer } from '@/components/ui/chart';
 import { XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
-type DistributionType = 'uniform' | 'exponential' | 'poisson';
+type DistributionType = 'uniform' | 'exponential' | 'lognormal';
 
 // --- Chart Components ---
 
@@ -26,10 +26,10 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
     const numPoints = 2000;
 
     switch (distribution) {
-      case 'poisson':
-        rawData = generatePoissonData(2, numPoints);
-        calculatedMean = 2;
-        calculatedStdDev = Math.sqrt(2);
+      case 'lognormal':
+        rawData = generateLogNormalData(0, 0.5, numPoints);
+        calculatedMean = Math.exp(0 + (0.5**2)/2);
+        calculatedStdDev = Math.sqrt((Math.exp(0.5**2) - 1) * Math.exp(2*0 + 0.5**2));
         break;
       case 'uniform':
         rawData = Array.from({ length: numPoints }, () => Math.random() * 10);
@@ -45,8 +45,8 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
     }
 
     const maxVal = Math.max(...rawData, 5);
-    const bins = distribution === 'poisson' ? Math.ceil(maxVal) + 1 : 20;
-    const binWidth = distribution === 'poisson' ? 1 : maxVal / bins;
+    const bins = 20;
+    const binWidth = maxVal / bins;
     const histogram = Array(bins).fill(0);
 
     rawData.forEach(d => {
@@ -124,8 +124,8 @@ const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: num
 }
 
 const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) => {
-  const { data, overallMean } = useMemo(() => {
-    if (sampleMeans.length === 0) return { data: [], overallMean: 0 };
+  const { data, overallMean, stdErr } = useMemo(() => {
+    if (sampleMeans.length === 0) return { data: [], overallMean: 0, stdErr: 0 };
     const min = Math.min(...sampleMeans);
     const max = Math.max(...sampleMeans);
     const bins = Math.max(20, Math.floor(Math.sqrt(sampleMeans.length) * 1.5));
@@ -149,25 +149,31 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
       })();
     
     const meanOfMeans = getMean(sampleMeans);
+    const stdDevOfMeans = getStdDev(sampleMeans);
 
-    return { data: histData, overallMean: meanOfMeans };
+    return { data: histData, overallMean: meanOfMeans, stdErr: stdDevOfMeans };
   }, [sampleMeans]);
   
   const meanOfMeansValue = parseFloat(data.find(d => parseFloat(d.name) >= overallMean)?.name || "0");
   
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false}/>
-        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-        <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-        <Tooltip wrapperClassName="text-xs" />
-        <Bar dataKey="count" fill="hsl(var(--primary))" />
-        {sampleMeans.length > 1 && (
-            <ReferenceLine x={meanOfMeansValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means: ${overallMean.toFixed(2)}`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
-        )}
-      </BarChart>
-    </ResponsiveContainer>
+    <>
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+          <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+          <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+          <Tooltip wrapperClassName="text-xs" />
+          <Bar dataKey="count" fill="hsl(var(--primary))" />
+          {sampleMeans.length > 1 && (
+              <ReferenceLine x={meanOfMeansValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means: ${overallMean.toFixed(2)}`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+          )}
+        </BarChart>
+      </ResponsiveContainer>
+      <div className="text-center text-xs text-muted-foreground mt-2">
+        Std. Dev. of Sample Means (Std. Error): <span className="font-semibold text-foreground">{stdErr.toFixed(3)}</span>
+      </div>
+    </>
   );
 };
 
@@ -213,8 +219,8 @@ export default function CentralLimitTheoremPage() {
 
         let sample;
         switch (distribution) {
-          case 'poisson':
-            sample = generatePoissonData(2, sampleSize);
+          case 'lognormal':
+            sample = generateLogNormalData(0, 0.5, sampleSize);
             break;
           case 'uniform':
             sample = Array.from({ length: sampleSize }, () => Math.random() * 10);
@@ -271,7 +277,7 @@ export default function CentralLimitTheoremPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              Imagine you have a giant barrel filled with numbered tickets. The numbers could follow any pattern—maybe there's an equal number of 1s, 2s, and 3s (a <span className="font-semibold text-primary">Uniform</span> distribution), maybe lots of small numbers and few large ones (an <span className="font-semibold text-primary">Exponential</span> distribution), or maybe counts of events (a <span className="font-semibold text-primary">Poisson</span> distribution).
+              Imagine you have a giant barrel filled with numbered tickets. The numbers could follow any pattern—maybe there's an equal number of 1s, 2s, and 3s (a <span className="font-semibold text-primary">Uniform</span> distribution), or many small numbers and few large ones (an <span className="font-semibold text-primary">Exponential</span> or <span className="font-semibold text-primary">Log-Normal</span> distribution).
             </p>
             <p>
               The Central Limit Theorem makes a magical promise: if you repeatedly reach in, pull out a <span className="font-semibold text-foreground">handful of tickets</span> (a sample), calculate its <span className="font-semibold text-foreground">average</span>, and plot that average on a histogram, the histogram will almost always form a perfect <span className="font-semibold text-foreground">bell curve (a Normal Distribution)</span>.
@@ -303,8 +309,8 @@ export default function CentralLimitTheoremPage() {
                                   <Label htmlFor="exponential">Exponential (Skewed)</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="poisson" id="poisson" />
-                                  <Label htmlFor="poisson">Poisson (Discrete)</Label>
+                                  <RadioGroupItem value="lognormal" id="lognormal" />
+                                  <Label htmlFor="lognormal">Log-Normal (Skewed)</Label>
                               </div>
                           </RadioGroup>
                       </div>

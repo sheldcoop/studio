@@ -1,4 +1,5 @@
 
+
 /**
  * Generates normally distributed random data.
  * @param mean - The desired mean.
@@ -20,6 +21,8 @@ export const generateNormalData = (mean: number, stdDev: number, n: number) =>
 
 /**
  * Generates skewed data using a log-normal distribution.
+ * This is a standard method for creating skewed data, often used to model
+ * variables that cannot be negative, like stock prices.
  * @param mu - The mean of the underlying normal distribution.
  * @param sigma - The standard deviation of the underlying normal distribution.
  * @param n - The number of data points.
@@ -30,11 +33,14 @@ export const generateLogNormalData = (mu: number, sigma: number, n: number) => {
   for (let i = 0; i < n; i++) {
     const u1 = Math.random();
     const u2 = Math.random();
+    // Use the Box-Muller transform to get a standard normal random number
     const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    // Exponentiate the normal random number to get a log-normal one
     data.push(Math.exp(mu + sigma * z));
   }
   return data;
 };
+
 
 /**
  * Generates uniformly distributed random data.
@@ -99,6 +105,18 @@ export const getVariance = (data: number[]) => {
     (data.length - 1)
   );
 };
+
+/**
+ * Calculates the standard deviation of a set of numbers.
+ * @param data An array of numbers.
+ * @returns The standard deviation.
+ */
+export const getStdDev = (data: number[]): number => {
+    if (data.length < 2) return 0;
+    const mean = getMean(data);
+    const variance = data.reduce((acc, val) => acc + (val - mean) ** 2, 0) / (data.length - 1);
+    return Math.sqrt(variance);
+}
 
 
 /**
