@@ -147,6 +147,19 @@ export default function DescriptiveStatisticsPage() {
     }
   }, [data]);
 
+  const getCentralTendencyNote = () => {
+    switch (distribution) {
+      case 'normal':
+        return 'For a symmetric distribution, the Mean, Median, and Mode are all equal.';
+      case 'right-skewed':
+        return 'For a right-skewed distribution, the Mean is pulled to the right (greater than) the Median.';
+      case 'left-skewed':
+        return 'For a left-skewed distribution, the Mean is pulled to the left (less than) the Median.';
+      default:
+        return 'Observe how outliers affect these central measures.';
+    }
+  }
+
   return (
     <>
       <PageHeader
@@ -211,6 +224,10 @@ export default function DescriptiveStatisticsPage() {
                             <div><strong className="text-foreground">Mean:</strong> The average value. Prone to being skewed by outliers.</div>
                             <div><strong className="text-foreground">Median:</strong> The middle value of a dataset. More robust to outliers than the mean.</div>
                             <div><strong className="text-foreground">Mode:</strong> The most frequently occurring value.</div>
+                             <div className="border-l-4 border-primary pl-4 text-sm text-muted-foreground">
+                                <p className="font-semibold text-foreground/90">Key Insight:</p>
+                                <p>{getCentralTendencyNote()}</p>
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-2">
