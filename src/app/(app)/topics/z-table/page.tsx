@@ -80,18 +80,15 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
                 <ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${-absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 <ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
             </>
-        ) : (
-            <>
-                {shadeFrom !== null && shadeTo !== null && shadeFrom !== -4 && zScore !== null && (
-                    <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
-                )}
-                 {zScore1 !== null && shadeFrom !== zScore1 && (
-                  <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
-                )}
-                 {zScore2 !== null && shadeTo !== zScore2 && (
-                  <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
-                )}
-            </>
+        ) : zScore !== null ? (
+            <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+        ) : null}
+
+        {zScore1 !== null && (
+            <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+        )}
+        {zScore2 !== null && (
+            <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
 
       </AreaChart>
@@ -165,22 +162,22 @@ export default function ZTablePage() {
   // Track active tab for highlighting
   const [activeTab, setActiveTab] = useState('z-to-p');
 
-  const chartShade = useMemo(() => {
+  const chartParams = useMemo(() => {
     switch (activeTab) {
       case 'z-to-p':
-        if (zScore === null) return { from: null, to: null };
+        if (zScore === null) return { shadeFrom: null, shadeTo: null, zScore: null, zScore1: null, zScore2: null, zToPType };
         switch (zToPType) {
-          case 'left': return { from: -4, to: zScore };
-          case 'right': return { from: zScore, to: 4 };
-          case 'two-tailed': return { from: null, to: null }; // Special handling in chart
-          default: return { from: null, to: null };
+          case 'left': return { shadeFrom: -4, shadeTo: zScore, zScore, zScore1: null, zScore2: null, zToPType };
+          case 'right': return { shadeFrom: zScore, shadeTo: 4, zScore, zScore1: null, zScore2: null, zToPType };
+          case 'two-tailed': return { shadeFrom: null, shadeTo: null, zScore, zScore1: null, zScore2: null, zToPType }; // Special handling in chart
+          default: return { shadeFrom: null, shadeTo: null, zScore: null, zScore1: null, zScore2: null, zToPType };
         }
       case 'p-to-z':
-        return { from: -4, to: calculatedZ };
+        return { shadeFrom: -4, shadeTo: calculatedZ, zScore: calculatedZ, zScore1: null, zScore2: null, zToPType };
       case 'between':
-        return { from: zScore1, to: zScore2 };
+        return { shadeFrom: zScore1, shadeTo: zScore2, zScore: null, zScore1, zScore2, zToPType };
       default:
-        return { from: null, to: null };
+        return { shadeFrom: null, shadeTo: null, zScore: null, zScore1: null, zScore2: null, zToPType };
     }
   }, [activeTab, zScore, zToPType, calculatedZ, zScore1, zScore2]);
   
@@ -365,7 +362,7 @@ export default function ZTablePage() {
                             </div>
                         </div>
                         <div>
-                            <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zToPType={zToPType} zScore={zScore} />
+                            <DynamicZScoreChart {...chartParams} />
                         </div>
                         </div>
                     </TabsContent>
@@ -384,7 +381,7 @@ export default function ZTablePage() {
                             <p className="text-sm text-muted-foreground">This is the Z-score such that the area to its left under the standard normal curve is equal to the specified probability.</p>
                         </div>
                         <div>
-                            <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zToPType={zToPType} zScore={calculatedZ}/>
+                           <DynamicZScoreChart {...chartParams} />
                         </div>
                         </div>
                     </TabsContent>
@@ -409,7 +406,7 @@ export default function ZTablePage() {
                             <p className="text-sm text-muted-foreground">This is the area under the curve between Z-Score 1 and Z-Score 2. This is what you calculate for a confidence interval.</p>
                         </div>
                         <div>
-                            <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zScore={zScore2} zScore1={zScore1} zScore2={zScore2}/>
+                            <DynamicZScoreChart {...chartParams} />
                         </div>
                         </div>
                     </TabsContent>
@@ -440,7 +437,7 @@ export default function ZTablePage() {
                             <p><strong className="text-primary">The Question:</strong> After a week of intense social media hype, the stock is trading $9.50 above its 50-day moving average. Is the stock now "overbought" and due for a fall back to its average?</p>
                            <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
                            <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, the rubber band is stretched very tight.</p>
-                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z &gt; +2.0, consider short-selling; if Z &lt; -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
+                           <p>This Z-score can be a direct, automated trading signal. A mean-reversion trading algorithm could be programmed with a simple rule: If Z &gt; +2.0, consider short-selling the stock (betting its price will fall). If Z &lt; -2.0, consider buying the stock (betting its price will rise). The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory and may be a good candidate for a short-selling strategy.</p>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
@@ -452,4 +449,3 @@ export default function ZTablePage() {
     </>
   );
 }
-
