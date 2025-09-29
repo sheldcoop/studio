@@ -20,7 +20,7 @@ import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis, Tooltip } 
 import { standardNormalCdf, standardNormalPdf, inverseStandardNormalCdf } from '@/lib/math';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, AlertCircle } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -77,7 +77,7 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
         
         {zToPType === 'two-tailed' && absZScore !== null ? (
             <>
-                <ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${-absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                <ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${(-absZScore).toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 <ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
             </>
         ) : zScore !== null ? (
@@ -85,10 +85,10 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
         ) : null}
 
         {zScore1 !== null && (
-            <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
         {zScore2 !== null && (
-            <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
 
       </AreaChart>
@@ -248,8 +248,15 @@ export default function ZTablePage() {
                 <p>
                     This is where the Z-score comes in. It's a tool that lets us compare apples and oranges by translating any data point from any normal distribution onto a single, universal scale called the <strong>Standard Normal Distribution</strong> (which has a mean of 0 and a standard deviation of 1).
                 </p>
+            </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                 <CardTitle className="font-headline">How It Works: The Formula</CardTitle>
+            </CardHeader>
+            <CardContent>
                 <div className="rounded-lg border bg-muted/50 p-4">
-                    <h4 className="font-semibold mb-2">How It Works: The Formula</h4>
                     <p className="font-mono text-center text-lg bg-background p-2 rounded-md mb-4">Z = (X - μ) / σ</p>
                     <ul className="list-disc pl-6 space-y-1">
                         <li><code className="font-mono bg-background px-1 rounded">X</code> is the data point you're interested in (e.g., Alice's score of 85).</li>
@@ -257,15 +264,43 @@ export default function ZTablePage() {
                         <li><code className="font-mono bg-background px-1 rounded">σ</code> (sigma) is the standard deviation of the distribution (her class's deviation of 5).</li>
                     </ul>
                 </div>
-                 <p>
+                 <p className="mt-4">
                     Alice's Z-score is (85 - 80) / 5 = <strong>+1.0</strong>. She is exactly one standard deviation above her class average. Bob's Z-score is (75 - 65) / 10 = <strong>+1.0</strong>. He is also exactly one standard deviation above his class average.
                 </p>
-                <p className="font-semibold text-primary">
+                <p className="font-semibold text-primary mt-2">
                     Suddenly, we see they performed identically relative to their peers! The Z-score tells us <strong>how many standard deviations</strong> a point is from the mean.
                 </p>
             </CardContent>
         </Card>
-        
+
+        <Card>
+            <CardHeader>
+                 <CardTitle className="font-headline">When Can You Use a Z-Score? (The Assumptions)</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 rounded-lg border border-amber-500/50 bg-amber-500/10 p-4 text-amber-700 dark:text-amber-300">
+                        <div className="flex items-start gap-3">
+                            <AlertCircle className="h-5 w-5 mt-1 flex-shrink-0" />
+                            <div>
+                                <h4 className="font-semibold">Known Population Standard Deviation (σ)</h4>
+                                <p className="text-sm mt-1">A Z-test assumes you know the true standard deviation of the entire population. This is rare in practice, but is often a given in academic problems or with very large, stable historical datasets. If σ is unknown, you should use a T-Test instead, which estimates σ from your sample.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex-1 rounded-lg border border-amber-500/50 bg-amber-500/10 p-4 text-amber-700 dark:text-amber-300">
+                         <div className="flex items-start gap-3">
+                            <AlertCircle className="h-5 w-5 mt-1 flex-shrink-0" />
+                            <div>
+                                <h4 className="font-semibold">Normality or Large Sample Size</h4>
+                                <p className="text-sm mt-1">The data should either be drawn from a normally distributed population or the sample size must be large enough (typically n &gt; 30) for the Central Limit Theorem to apply. This theorem guarantees that the distribution of sample means will be approximately normal, even if the original population is not.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
         <div className="text-center">
             <ArrowDown className="h-8 w-8 mx-auto text-muted-foreground animate-bounce" />
         </div>
@@ -424,7 +459,7 @@ export default function ZTablePage() {
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Example 1: Spotting a Truly Unusual Trading Day</AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2">
-                           <p><strong className="text-primary">The Scenario:</strong> You analyze the stock's history and find that its average daily return (μ) is +0.1%, with a standard deviation (σ) of 1.5%. This is the stock's "normal" behavior. Today, the company announces a surprise product launch, and the stock shoots up, closing with a return (X) of +5.35%.</p>
+                           <p><strong className="text-primary">The Scenario:</strong> You analyze a stock's history and find its average daily return (μ) is +0.1%, with a standard deviation (σ) of 1.5%. This is the stock's "normal" behavior. Today, the company announces a surprise product launch, and the stock shoots up, closing with a return (X) of +5.35%.</p>
                            <p><strong className="text-primary">The Z-Score Solution:</strong> You use the Z-score to measure the "unusualness" of today's return: <code className="font-mono bg-muted p-1 rounded-md">Z = (5.35% - 0.1%) / 1.5% = +3.5</code></p>
                            <p><strong className="text-primary">The Trading Insight:</strong> Today's return was a +3.5 standard deviation event. Enter 3.5 into the calculator above and check the "Right Tail." The probability of a day this strong (or stronger) is minuscule—less than 0.03%!</p>
                            <p>A Z-score of +3.5 is a powerful alert. It tells the trader: "Stop and investigate now." This isn't random noise. It's a signal to dig into the news, re-evaluate financial models, and decide if this event fundamentally changes the stock's value.</p>
@@ -435,9 +470,9 @@ export default function ZTablePage() {
                         <AccordionContent className="space-y-4 pt-2">
                             <p><strong className="text-primary">The Scenario:</strong> You track the price of "Momentum Corp." relative to its 50-day moving average. The average spread (μ) is, by definition, $0, and the standard deviation (σ) of this spread is $3.00. This means the stock normally wiggles within a $3 range of its average.</p>
                             <p><strong className="text-primary">The Question:</strong> After a week of intense social media hype, the stock is trading $9.50 above its 50-day moving average. Is the stock now "overbought" and due for a fall back to its average?</p>
-                           <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
-                           <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, the rubber band is stretched very tight.</p>
-                           <p>This Z-score can be a direct, automated trading signal. A mean-reversion trading algorithm could be programmed with a simple rule: If Z &gt; +2.0, consider short-selling the stock (betting its price will fall). If Z &lt; -2.0, consider buying the stock (betting its price will rise). The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory and may be a good candidate for a short-selling strategy.</p>
+                            <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
+                            <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, the rubber band is stretched very tight.</p>
+                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z &gt; +2.0, consider short-selling; if Z &lt; -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
@@ -449,3 +484,5 @@ export default function ZTablePage() {
     </>
   );
 }
+
+    
