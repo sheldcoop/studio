@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Line as RechartsLine } from 'recharts';
+import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Line as RechartsLine, Legend } from 'recharts';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 // Helper function to generate data for regression
@@ -109,6 +109,7 @@ const RegressionChart = () => {
                 <XAxis type="number" dataKey="x" name="Market Return" unit="%" />
                 <YAxis type="number" dataKey="y" name="Stock Return" unit="%" />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
+                <Legend />
                 <Scatter name="Data Points" data={residuals} fill="hsl(var(--chart-1))" opacity={0.6}/>
                 <RechartsLine
                     type="monotone"
@@ -117,7 +118,7 @@ const RegressionChart = () => {
                     stroke="hsl(var(--destructive))"
                     strokeWidth={2}
                     dot={false}
-                    legendType="none"
+                    name="Fitted Line"
                 />
             </ScatterChart>
         </ChartContainer>
@@ -224,5 +225,3 @@ export default function LinearRegressionPage() {
     </>
   );
 }
-
-    
