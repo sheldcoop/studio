@@ -25,6 +25,33 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 type DistributionType = 'normal' | 'right-skewed' | 'left-skewed' | 'fat-tailed';
 
+// Function to generate data from a Student's t-distribution
+// This is a standard way to produce a fat-tailed distribution.
+const generateStudentTData = (df: number, n: number) => {
+  const data = [];
+  for (let i = 0; i < n; i++) {
+    // We use the Box-Muller transform to get a standard normal variable
+    const u1 = Math.random();
+    const u2 = Math.random();
+    const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    
+    // Now we generate a chi-squared variable
+    let chi2 = 0;
+    for (let j = 0; j < df; j++) {
+        const u3 = Math.random();
+        const u4 = Math.random();
+        const z_chi = Math.sqrt(-2.0 * Math.log(u3)) * Math.cos(2.0 * Math.PI * u4);
+        chi2 += z_chi * z_chi;
+    }
+    
+    // The t-distributed variable is z / sqrt(chi2 / df)
+    const t_val = z / Math.sqrt(chi2 / df);
+    data.push(t_val * 2); // Scale for better visualization
+  }
+  return data;
+};
+
+
 const StatCard = ({ title, value, description }: { title: string; value: string | number, description?: string }) => (
   <Card className="text-center">
     <CardHeader className="pb-2">
@@ -106,10 +133,9 @@ export default function DescriptiveStatisticsPage() {
         newData = generateLogNormalData(0, 0.6, n).map(d => 10 - d);
         break;
       case 'fat-tailed':
-         // Mix two normal distributions, one with a very high std dev
-        const coreData = generateNormalData(5, 1, n * 0.95);
-        const outlierData = generateNormalData(5, 5, n * 0.05);
-        newData = [...coreData, ...outlierData];
+        // A Student's t-distribution with low degrees of freedom (e.g., 3) is a classic way
+        // to generate a distribution with "fat tails" (high kurtosis).
+        newData = generateStudentTData(3, n);
         break;
       case 'normal':
       default:
@@ -121,6 +147,7 @@ export default function DescriptiveStatisticsPage() {
   
   useEffect(() => {
     generateData(distribution);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [distribution]);
 
   useEffect(() => {
