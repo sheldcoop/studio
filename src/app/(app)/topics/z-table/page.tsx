@@ -82,11 +82,14 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore }: { shadeFrom: numb
             </>
         ) : (
             <>
-                {shadeFrom !== null && shadeTo !== null && shadeFrom !== -4 && (
-                    <ReferenceLine x={shadeFrom} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${shadeFrom.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                {shadeFrom !== null && shadeTo !== null && shadeFrom !== -4 && zScore !== null && (
+                    <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 )}
-                {shadeTo !== null && shadeFrom !== null && shadeTo !== 4 && (
-                  <ReferenceLine x={shadeTo} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${shadeTo.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                 {zScore1 !== null && shadeFrom !== zScore1 && (
+                  <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                )}
+                 {zScore2 !== null && shadeTo !== zScore2 && (
+                  <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 )}
             </>
         )}
@@ -145,10 +148,10 @@ const ZTable = ({ highlightedZ }: { highlightedZ: number | null }) => {
 // Main Page Component
 export default function ZTablePage() {
   // State for Z -> P
-  const [zScore, setZScore] = useState<number | null>(1.0);
+  const [zScore, setZScore] = useState<number | null>(1.96);
   const [pValue, setPValue] = useState<number | null>(null);
-  const [zToPType, setZToPType] = useState<ZToPType>("left");
-  const [chartShade, setChartShade] = useState<{from: number | null, to: number | null}>({from: -4, to: 1.0});
+  const [zToPType, setZToPType] = useState<ZToPType>("two-tailed");
+  
 
   // State for P -> Z
   const [inputPValue, setInputPValue] = useState<number | null>(0.975);
@@ -161,6 +164,25 @@ export default function ZTablePage() {
   
   // Track active tab for highlighting
   const [activeTab, setActiveTab] = useState('z-to-p');
+
+  const chartShade = useMemo(() => {
+    switch (activeTab) {
+      case 'z-to-p':
+        if (zScore === null) return { from: null, to: null };
+        switch (zToPType) {
+          case 'left': return { from: -4, to: zScore };
+          case 'right': return { from: zScore, to: 4 };
+          case 'two-tailed': return { from: null, to: null }; // Special handling in chart
+          default: return { from: null, to: null };
+        }
+      case 'p-to-z':
+        return { from: -4, to: calculatedZ };
+      case 'between':
+        return { from: zScore1, to: zScore2 };
+      default:
+        return { from: null, to: null };
+    }
+  }, [activeTab, zScore, zToPType, calculatedZ, zScore1, zScore2]);
   
   useEffect(() => {
     if (zScore !== null && !isNaN(zScore)) {
@@ -168,17 +190,14 @@ export default function ZTablePage() {
       switch(zToPType) {
         case 'left':
             setPValue(leftP);
-            setChartShade({from: -4, to: zScore});
             break;
         case 'right':
             setPValue(1 - leftP);
-            setChartShade({from: zScore, to: 4});
             break;
         case 'two-tailed':
             const absZ = Math.abs(zScore);
             const p = standardNormalCdf(-absZ);
             setPValue(2 * p);
-            setChartShade({from: null, to: null});
             break;
       }
     } else {
@@ -230,7 +249,7 @@ export default function ZTablePage() {
                     Imagine you have two friends, Alice and Bob. Alice scored an 85 on her finance exam, and Bob scored a 75 on his. Who did better? It seems obvious, but what if Alice's class average was 80 with a standard deviation of 5, while Bob's class average was only 65 with a standard deviation of 10?
                 </p>
                 <p>
-                    This is where the Z-score comes in. It's a tool that lets us compare apples and oranges by translating any data point from any normal distribution onto a single, universal scale called the **Standard Normal Distribution** (which has a mean of 0 and a standard deviation of 1).
+                    This is where the Z-score comes in. It's a tool that lets us compare apples and oranges by translating any data point from any normal distribution onto a single, universal scale called the <strong>Standard Normal Distribution</strong> (which has a mean of 0 and a standard deviation of 1).
                 </p>
                 <div className="rounded-lg border bg-muted/50 p-4">
                     <h4 className="font-semibold mb-2">How It Works: The Formula</h4>
@@ -241,11 +260,11 @@ export default function ZTablePage() {
                         <li><code className="font-mono bg-background px-1 rounded">σ</code> (sigma) is the standard deviation of the distribution (her class's deviation of 5).</li>
                     </ul>
                 </div>
-                <p>
-                    Alice's Z-score is (85 - 80) / 5 = **+1.0**. She is exactly one standard deviation above her class average. Bob's Z-score is (75 - 65) / 10 = **+1.0**. He is also exactly one standard deviation above his class average.
+                 <p>
+                    Alice's Z-score is (85 - 80) / 5 = <strong>+1.0</strong>. She is exactly one standard deviation above her class average. Bob's Z-score is (75 - 65) / 10 = <strong>+1.0</strong>. He is also exactly one standard deviation above his class average.
                 </p>
                 <p className="font-semibold text-primary">
-                    Suddenly, we see they performed identically relative to their peers! The Z-score tells us **how many standard deviations** a point is from the mean.
+                    Suddenly, we see they performed identically relative to their peers! The Z-score tells us <strong>how many standard deviations</strong> a point is from the mean.
                 </p>
             </CardContent>
         </Card>
@@ -260,10 +279,10 @@ export default function ZTablePage() {
             </CardHeader>
             <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
                 <p>Knowing a Z-score is great, but its real power comes from using it to find probabilities. Once we have a Z-score, we can determine the probability of observing a value that low, that high, or even more extreme.</p>
-                <p>This probability is called a **p-value**, and it is the absolute foundation of hypothesis testing. It's the p-value that tells us if an observation (like a stock's return) is statistically significant or just random noise.</p>
+                <p>This probability is called a <strong>p-value</strong>, and it is the absolute foundation of hypothesis testing. It's the p-value that tells us if an observation (like a stock's return) is statistically significant or just random noise.</p>
             </CardContent>
         </Card>
-
+        
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline">What Are You Calculating? A Quick Guide</CardTitle>
@@ -299,6 +318,7 @@ export default function ZTablePage() {
                 <p className="mt-4 text-sm text-muted-foreground">The area "in between" (what you use for confidence intervals) is the opposite of the two-tailed test. It represents the probability of a result being "normal" or "not extreme."</p>
             </CardContent>
         </Card>
+
 
         <Card>
             <CardHeader>
@@ -364,7 +384,7 @@ export default function ZTablePage() {
                             <p className="text-sm text-muted-foreground">This is the Z-score such that the area to its left under the standard normal curve is equal to the specified probability.</p>
                         </div>
                         <div>
-                            <DynamicZScoreChart shadeFrom={-4} shadeTo={calculatedZ} zToPType="left" zScore={calculatedZ}/>
+                            <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zToPType={zToPType} zScore={calculatedZ}/>
                         </div>
                         </div>
                     </TabsContent>
@@ -375,7 +395,7 @@ export default function ZTablePage() {
                             <div className="flex gap-4">
                                 <div className="space-y-2 w-full">
                                     <Label htmlFor="z-score-1">Z-Score 1</Label>
-                                    <Input id="z-score-1" type="number" value={zScore1 ?? ''} onChange={(e) => setZScore1(parseFloat(e.target.value))} placeholder="e.g., -1.96" />
+                                    <Input id="z-score-1" type="text" value={zScore1 ?? ''} onChange={(e) => setZScore1(parseFloat(e.target.value))} placeholder="e.g., -1.96" />
                                 </div>
                                 <div className="space-y-2 w-full">
                                     <Label htmlFor="z-score-2">Z-Score 2</Label>
@@ -389,7 +409,7 @@ export default function ZTablePage() {
                             <p className="text-sm text-muted-foreground">This is the area under the curve between Z-Score 1 and Z-Score 2. This is what you calculate for a confidence interval.</p>
                         </div>
                         <div>
-                            <DynamicZScoreChart shadeFrom={zScore1} shadeTo={zScore2} zScore={zScore2}/>
+                            <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zScore={zScore2}/>
                         </div>
                         </div>
                     </TabsContent>
@@ -407,7 +427,6 @@ export default function ZTablePage() {
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Example 1: Spotting a Truly Unusual Trading Day</AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2">
-                           <p>Imagine you are a trader who closely watches "Innovate Inc.," a popular tech stock. You know that on most days, the stock's price wiggles up and down a bit. You want a way to be alerted only when a price move is exceptionally large and might signal a major change.</p>
                            <p><strong className="text-primary">The Scenario:</strong> You analyze the stock's history and find that its average daily return (μ) is +0.1%, with a standard deviation (σ) of 1.5%. This is the stock's "normal" behavior. Today, the company announces a surprise product launch, and the stock shoots up, closing with a return (X) of +5.35%.</p>
                            <p><strong className="text-primary">The Z-Score Solution:</strong> You use the Z-score to measure the "unusualness" of today's return: <code className="font-mono bg-muted p-1 rounded-md">Z = (5.35% - 0.1%) / 1.5% = +3.5</code></p>
                            <p><strong className="text-primary">The Trading Insight:</strong> Today's return was a +3.5 standard deviation event. Enter 3.5 into the calculator above and check the "Right Tail." The probability of a day this strong (or stronger) is minuscule—less than 0.03%!</p>
@@ -417,12 +436,11 @@ export default function ZTablePage() {
                     <AccordionItem value="item-2">
                         <AccordionTrigger>Example 2: Finding "Overstretched" Stocks for Mean Reversion</AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2">
-                            <p>Many trading strategies are based on "mean reversion"—the idea that a stock's price might wander away from its recent average but will eventually tend to return to it. A Z-score is the perfect way to measure how far the price has wandered.</p>
-                            <p><strong className="text-primary">The Scenario:</strong> You track the price of "Momentum Corp." relative to its 50-day moving average. The average spread (μ) is $0, and the standard deviation (σ) of this spread is $3.00. This means the stock normally wiggles within a $3 range of its average.</p>
+                            <p><strong className="text-primary">The Scenario:</strong> You track the price of "Momentum Corp." relative to its 50-day moving average. The average spread (μ) is, by definition, $0, and the standard deviation (σ) of this spread is $3.00. This means the stock normally wiggles within a $3 range of its average.</p>
                             <p><strong className="text-primary">The Question:</strong> After a week of intense social media hype, the stock is trading $9.50 above its 50-day moving average. Is the stock now "overbought" and due for a fall back to its average?</p>
-                            <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
-                            <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, a rubber band is stretched very tight.</p>
-                            <p>This Z-score can be a direct, automated trading signal. A mean-reversion trading algorithm could be programmed with a simple rule: If Z &gt; +2.0, consider short-selling; if Z &lt; -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory and may be a good candidate for a short-selling strategy.</p>
+                           <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
+                           <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, the rubber band is stretched very tight.</p>
+                           <p>This Z-score can be a direct, automated trading signal. A mean-reversion trading algorithm could be programmed with a simple rule: If Z &gt; +2.0, consider short-selling; if Z &lt; -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
