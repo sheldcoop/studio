@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
@@ -108,7 +108,7 @@ const VaRChart = ({ data, initialValue, varValue }: { data: number[], initialVal
         <ChartContainer config={{}} className="h-[350px] w-full">
             <BarChart data={histogramData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="x" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} name="Portfolio Value" />
+                <XAxis dataKey="x" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(val) => `$${(Number(val) / 1000).toFixed(0)}k`} name="Portfolio Value" />
                 <YAxis name="Frequency" />
                 <Tooltip
                     cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
@@ -247,14 +247,27 @@ export default function MonteCarloSimulationPage() {
         
         <Card>
             <CardHeader>
-                <CardTitle className="font-headline">The Math Behind the Magic</CardTitle>
+                <CardTitle className="font-headline">An Intuitive Look at the Math</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                 <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion, a standard way to model stock prices. The formula for the portfolio's value at the end of the period is:</p>
-                <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                    {`$$ S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right) $$`}
-                </div>
-                 <p className="text-muted-foreground">Once we have thousands of simulated final values ($S_T$), we can calculate the 95% VaR by finding the 5th percentile of our results. This is the value that separates the worst 5% of outcomes from the best 95%.</p>
+                 <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion. Instead of a scary formula, think of it as just two simple parts added together:</p>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-lg border bg-muted/50 p-4">
+                    <div>
+                        <h4 className="font-semibold text-primary">1. The Predictable Part (Drift)</h4>
+                        <p className="text-sm mt-1">This is the general trend. It's based on the portfolio's expected average return ($\mu$). It nudges the portfolio's value up or down in the direction it's expected to go.</p>
+                        <div className="font-mono text-xs p-2 mt-2 bg-background rounded">
+                            {`(\\mu - \\sigma^2/2)T`}
+                        </div>
+                    </div>
+                     <div>
+                        <h4 className="font-semibold text-primary">2. The Random Part (Shock)</h4>
+                        <p className="text-sm mt-1">This is the unpredictable market noise. It's driven by the portfolio's volatility ($\sigma$) and a random number ($Z$). This part adds the random, up-and-down "wiggles" we see in the market every day.</p>
+                        <div className="font-mono text-xs p-2 mt-2 bg-background rounded">
+                            {`\\sigma Z \\sqrt{T}`}
+                        </div>
+                    </div>
+                 </div>
+                 <p className="text-muted-foreground">For each of the thousands of simulations, we generate a new random shock and add it to the drift. This gives us one possible future price. By doing this thousands of times, we build a picture of all the likely future outcomes.</p>
             </CardContent>
         </Card>
 
