@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Script from 'next/script';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -92,7 +93,6 @@ const MonteCarloPiSimulation = () => {
           canvas.width = size;
           canvas.height = size;
           drawBoard();
-          handleReset();
       }
     };
     
@@ -161,6 +161,28 @@ const MonteCarloPiSimulation = () => {
 export default function MonteCarloSimulationPage() {
   return (
     <>
+      <Script
+        id="mathjax-config"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+              },
+              svg: {
+                fontCache: 'global'
+              }
+            };
+          `,
+        }}
+      />
+      <Script
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        strategy="afterInteractive"
+        id="mathjax-script"
+      />
       <PageHeader
         title="Monte Carlo Simulation"
         description="Using randomness to solve problems that are difficult or impossible to solve analytically."
@@ -172,14 +194,14 @@ export default function MonteCarloSimulationPage() {
                 <CardTitle className="font-headline">Why It Works: The Area Argument</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-base">
-               <p>This simulation works because of a simple ratio. The area of the square is $(2r)^2 = 4r^2$ and the area of the circle is $\pi r^2$.</p>
+               <p>This simulation works because of a simple ratio. The area of the square is $(2r)^2 = 4r^2$ and the area of the circle is $\\pi r^2$.</p>
                <p>The ratio of the area of the circle to the area of the square is:</p>
                <p className="font-mono text-center text-lg bg-muted p-3 rounded-md">
-                    (Area of Circle) / (Area of Square) = ($\pi r^2$) / ($4r^2$) = $\pi / 4$
+                    (Area of Circle) / (Area of Square) = ($\\pi r^2$) / ($4r^2$) = $\\pi / 4$
                </p>
-               <p>If we throw darts randomly, the ratio of (darts inside the circle) to (total darts thrown) should approximate this same value. Therefore, we can estimate $\pi$ by rearranging the formula:</p>
+               <p>If we throw darts randomly, the ratio of (darts inside the circle) to (total darts thrown) should approximate this same value. Therefore, we can estimate $\\pi$ by rearranging the formula:</p>
                 <p className="font-mono text-center text-lg bg-muted p-3 rounded-md">
-                    $\pi \approx 4 \times$ (Darts in Circle / Total Darts)
+                    $\\pi \\approx 4 \\times$ (Darts in Circle / Total Darts)
                </p>
             </CardContent>
         </Card>
