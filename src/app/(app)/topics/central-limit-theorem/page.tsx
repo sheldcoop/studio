@@ -106,8 +106,6 @@ const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: num
         }));
     }, [sample]);
 
-    const sampleMeanValue = sampleMean !== null ? parseFloat(data.find(d => parseFloat(d.name) >= sampleMean)?.name || "0") : null;
-
     return (
         <ResponsiveContainer width="100%" height={200}>
             <BarChart data={data}>
@@ -116,8 +114,8 @@ const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: num
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip wrapperClassName="text-xs" />
                 <Bar dataKey="count" fill="hsl(var(--chart-2))" />
-                {sampleMean !== null && sampleMeanValue !== null && (
-                     <ReferenceLine x={sampleMeanValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean: ${sampleMean.toFixed(2)}`, position: 'insideTop', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+                {sampleMean !== null && (
+                     <ReferenceLine x={sampleMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean: ${sampleMean.toFixed(2)}`, position: 'insideTop', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
                 )}
             </BarChart>
         </ResponsiveContainer>
@@ -129,7 +127,7 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
     if (sampleMeans.length === 0) return { data: [], overallMean: 0, stdErr: 0 };
     const min = Math.min(...sampleMeans);
     const max = Math.max(...sampleMeans);
-    const bins = Math.max(20, Math.floor(Math.sqrt(sampleMeans.length) * 1.5));
+    const bins = 30; // Increased bin size for a smoother look
     const binWidth = (max - min) / bins;
 
     const histData = (binWidth === 0 && sampleMeans.length > 0) 
@@ -155,8 +153,6 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
     return { data: histData, overallMean: meanOfMeans, stdErr: stdDevOfMeans };
   }, [sampleMeans]);
   
-  const meanOfMeansValue = parseFloat(data.find(d => parseFloat(d.name) >= overallMean)?.name || "0");
-  
   return (
     <>
       <ResponsiveContainer width="100%" height={300}>
@@ -167,7 +163,7 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
           <Tooltip wrapperClassName="text-xs" />
           <Bar dataKey="count" fill="hsl(var(--primary))" fillOpacity={0.7} />
           {sampleMeans.length > 1 && (
-              <ReferenceLine x={meanOfMeansValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+              <ReferenceLine x={overallMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
           )}
           {data.length > 1 &&
             <Line
@@ -212,15 +208,14 @@ export default function CentralLimitTheoremPage() {
 
   const stopSimulation = () => {
       if (simulationIntervalRef.current) {
-          clearInterval(simulationIntervalRef.current);
-          clearTimeout(simulationIntervalRef.current); // Also clear timeouts
+          clearTimeout(simulationIntervalRef.current);
       }
       setIsSampling(false);
       simulationIntervalRef.current = null;
   }
 
   const runSimulation = () => {
-    stopSimulation(); // Stop any existing simulation
+    stopSimulation();
 
     setIsSampling(true);
     setSampleMeans([]);
@@ -283,9 +278,7 @@ export default function CentralLimitTheoremPage() {
   }, []);
 
   const handleDistributionChange = (val: DistributionType) => {
-    if (isSampling) {
-      stopSimulation();
-    }
+    stopSimulation();
     setDistribution(val);
     setSampleMeans([]);
     setCurrentSample([]);
@@ -308,13 +301,13 @@ export default function CentralLimitTheoremPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              In the real world, we rarely know the true distribution of a population. Are stock returns normally distributed? Is trade volume exponentially distributed? We often don't know.
+              In the real world, we rarely know the true distribution of a population. Are stock returns normally distributed? Is trade volume exponentially distributed? We often don't know, and the data is usually messy.
             </p>
             <p>
-              The Central Limit Theorem provides a powerful solution. It guarantees that if we take a large enough number of samples and calculate their means, the distribution of those means will be approximately normal, <span className="font-semibold text-primary">regardless of the original population's shape</span>.
+              The Central Limit Theorem provides a powerful, almost magical solution. It guarantees that if we take a large enough number of samples from <span className="font-semibold text-primary">any population</span> and calculate the mean of each sample, the distribution of those sample means will be approximately normal (a bell curve).
             </p>
             <p>
-                This allows us to use the predictable properties of the normal distribution to perform hypothesis tests and construct confidence intervals about a population's mean, even when we know nothing about the population itself. It's the bridge from messy, unknown real-world data to reliable statistical inference.
+                This is the bridge from messy, unknown real-world data to the predictable world of statistical inference. It allows us to use the properties of the normal distribution to perform hypothesis tests and construct confidence intervals for a population's mean, even when we know nothing about the population itself.
             </p>
           </CardContent>
         </Card>
@@ -415,5 +408,3 @@ export default function CentralLimitTheoremPage() {
     </>
   );
 }
-
-    
