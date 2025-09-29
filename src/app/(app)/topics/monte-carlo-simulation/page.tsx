@@ -36,7 +36,8 @@ const runMonteCarloSimulation = (
   for (let i = 0; i < simulations; i++) {
     let value = initialValue;
     // We only need the final value after 1 year, so we can simplify the path simulation
-    const z = Math.random() * 2 - 1 + (Math.random() * 2 - 1) + (Math.random() * 2 - 1); // Approximation of a standard normal variable
+    // This uses a simplified approximation of a standard normal variable for browser performance
+    const z = (Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random() - 3) / Math.sqrt(0.5);
     const drift = (mu - (sigma * sigma) / 2) * 1;
     const diffusion = sigma * z * Math.sqrt(1);
     const finalValue = value * Math.exp(drift + diffusion);
@@ -141,14 +142,17 @@ export default function MonteCarloSimulationPage() {
       <div className="mx-auto max-w-5xl space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><Lightbulb className="text-primary"/> The Core Idea: Future as a Dice Roll</CardTitle>
+            <CardTitle className="font-headline flex items-center gap-2"><Lightbulb className="text-primary"/> The Risk Manager's Story</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              The future is uncertain. We can't know for sure what a portfolio's value will be tomorrow or next year. But we can model its underlying dynamics—its expected return (drift) and its volatility (randomness).
+                Imagine you are a risk manager at a hedge fund. Your team manages a $1,000,000 "Blue Chip Tech" portfolio, holding stocks like Apple, Microsoft, Google, Amazon, NVIDIA, Meta, Tesla, etc. The CEO asks you a simple but crucial question: "How much money could this portfolio lose over the next year in a bad-case scenario?"
             </p>
             <p>
-              A Monte Carlo simulation runs this model thousands of times, like rolling a weighted die over and over. Each simulation generates one possible future path for the portfolio. By looking at the thousands of potential outcomes, we can build a clear picture of the **distribution of possibilities** and quantify the risk of extreme negative events.
+                The future is uncertain. You can't give a single, definitive answer. This is where Monte Carlo simulation comes in. Instead of predicting one future, you simulate thousands of possible futures.
+            </p>
+            <p>
+                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift') and its annual volatility (the 'randomness'). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
             </p>
           </CardContent>
         </Card>
@@ -156,7 +160,7 @@ export default function MonteCarloSimulationPage() {
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2"><ShieldCheck className="text-primary" /> Interactive Value at Risk (VaR) Simulator</CardTitle>
-                <CardDescription>Adjust the portfolio parameters and run the simulation to see how expected return and volatility affect potential losses.</CardDescription>
+                <CardDescription>You are the risk manager. Adjust the portfolio's expected return and volatility to see how it impacts potential losses.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -182,8 +186,8 @@ export default function MonteCarloSimulationPage() {
                         <TrendingDown className="h-4 w-4" />
                         <AlertTitle className="font-headline text-lg">95% Value at Risk (1-Year)</AlertTitle>
                         <AlertDescription className="mt-2 text-base">
-                            <p>Based on {numSimulations.toLocaleString()} simulations, there is a <strong>5% chance</strong> that this portfolio will lose <strong>${varResult.loss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> or more over the next year.</p>
-                            <p className="mt-2 text-sm">This corresponds to a portfolio value of ${varResult.value.toLocaleString(undefined, { maximumFractionDigits: 0 })} or less.</p>
+                            <p>Based on your {numSimulations.toLocaleString()} simulations, you can report to the CEO: "We are 95% confident that our Blue Chip Tech portfolio will not lose more than <strong>${varResult.loss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> over the next year."</p>
+                            <p className="mt-2 text-sm">This corresponds to a worst-case portfolio value of ${varResult.value.toLocaleString(undefined, { maximumFractionDigits: 0 })} at the 5th percentile.</p>
                         </AlertDescription>
                     </Alert>
                 )}
@@ -193,4 +197,3 @@ export default function MonteCarloSimulationPage() {
     </>
   );
 }
-
