@@ -21,6 +21,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Lightbulb, TrendingDown, ShieldCheck, Play, Pause, Plus, RefreshCw } from 'lucide-react';
 import { ChartTooltipContent } from '@/lib/chart-config';
+import Script from 'next/script';
+import Link from 'next/link';
 
 
 // --- Math & Simulation Logic ---
@@ -127,7 +129,7 @@ export default function MonteCarloSimulationPage() {
 
   const addSimulations = (count: number) => {
     const newResults = runMonteCarloStep(initialValue, mu, sigma, count);
-    setSimulationResults(prev => [...prev, ...newResults]);
+    setSimulationResults(prev => [...prev, ...newResults].slice(0, SIMULATION_CAP));
   };
 
   const resetSimulation = () => {
@@ -174,12 +176,34 @@ export default function MonteCarloSimulationPage() {
 
   return (
     <>
-      <PageHeader
-        title="Monte Carlo Simulation for Risk Management"
-        description="Using randomness to quantify the potential losses of a trading portfolio."
-        variant="aligned-left"
+      <Script
+        id="mathjax-config"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+              },
+              svg: {
+                fontCache: 'global'
+              }
+            };
+          `,
+        }}
+      />
+      <Script
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        strategy="afterInteractive"
+        id="mathjax-script"
       />
       <div className="mx-auto max-w-5xl space-y-8">
+        <PageHeader
+          title="Monte Carlo Simulation for Risk Management"
+          description="Using randomness to quantify the potential losses of a trading portfolio."
+          variant="aligned-left"
+        />
         <Card>
           <CardHeader>
             <CardTitle className="font-headline flex items-center gap-2"><Lightbulb className="text-primary"/> The Risk Manager's Story</CardTitle>
@@ -192,9 +216,22 @@ export default function MonteCarloSimulationPage() {
                 The future is uncertain. You can't give a single, definitive answer. This is where Monte Carlo simulation comes in. Instead of predicting one future, you simulate thousands of possible futures.
             </p>
             <p>
-                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift') and its annual volatility (the 'randomness'). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
+                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or $\mu$) and its annual volatility (the 'randomness' or $\sigma$). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
             </p>
           </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">The Math Behind the Magic</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion, a standard way to model stock prices. The formula for the portfolio's value at the end of the period is:</p>
+                <div className="rounded-lg border bg-muted/50 p-4 text-center">
+                    $$S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right)$$
+                </div>
+                 <p className="text-muted-foreground">Once we have thousands of simulated final values ($S_T$), we can calculate the 95% VaR by finding the 5th percentile of our results. This is the value that separates the worst 5% of outcomes from the best 95%.</p>
+            </CardContent>
         </Card>
 
         <Card>
@@ -209,11 +246,11 @@ export default function MonteCarloSimulationPage() {
                         <Input type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Expected Annual Return (μ): {(mu * 100).toFixed(1)}%</Label>
+                        <Label>Expected Annual Return ($\mu$): {(mu * 100).toFixed(1)}%</Label>
                         <Slider value={[mu]} onValueChange={v => setMu(v[0])} min={-0.10} max={0.25} step={0.005} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Expected Annual Volatility (σ): {(sigma * 100).toFixed(1)}%</Label>
+                        <Label>Expected Annual Volatility ($\sigma$): {(sigma * 100).toFixed(1)}%</Label>
                         <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} disabled={isSimulating}/>
                     </div>
                 </div>
@@ -237,7 +274,7 @@ export default function MonteCarloSimulationPage() {
                 </div>
 
                 {varResult && (
-                     <Alert variant="destructive" className="mt-6 bg-destructive/5">
+                     <Alert variant="destructive" className="mt-6">
                         <TrendingDown className="h-4 w-4" />
                         <AlertTitle className="font-headline text-lg">95% Value at Risk (1-Year)</AlertTitle>
                         <AlertDescription className="mt-2 text-base">
@@ -251,6 +288,15 @@ export default function MonteCarloSimulationPage() {
                         </AlertDescription>
                     </Alert>
                 )}
+            </CardContent>
+        </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Convergence and the Law of Large Numbers</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <p className="text-muted-foreground">This simulation is a direct application of the <Link href="/topics/law-of-large-numbers" className="text-primary hover:underline">Law of Large Numbers</Link>. Notice how when you run the simulation, the calculated VaR value might jump around a lot at first. As the number of simulations increases, the distribution becomes smoother and the VaR estimate converges towards a stable value.</p>
+                <p className="text-muted-foreground">This is why a high number of simulations is crucial. A simulation with only 100 paths is unreliable, but a simulation with 50,000 paths gives a much more robust and trustworthy estimate of the true risk.</p>
             </CardContent>
         </Card>
       </div>
