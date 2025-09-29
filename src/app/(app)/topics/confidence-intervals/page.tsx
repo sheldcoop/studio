@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -26,7 +27,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Calculator, AlertTriangle, HelpCircle } from 'lucide-react';
+import { Calculator, AlertTriangle, HelpCircle, Table } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -316,6 +317,17 @@ export default function ConfidenceIntervalsPage() {
             </Card>
           </div>
           <div className="lg:col-span-1 space-y-6">
+            <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 font-headline"><Table className="h-6 w-6 text-primary" /> Z-Table</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">The Z-score is a critical value that defines the boundaries of our interval. Explore how Z-scores relate to probabilities with an interactive Z-table.</p>
+                    <Button asChild className="mt-4 w-full">
+                        <Link href="/topics/z-table">Open Z-Table Calculator</Link>
+                    </Button>
+                </CardContent>
+            </Card>
              <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 font-headline"><HelpCircle className="h-6 w-6 text-primary" /> Key Concepts</CardTitle>
@@ -327,8 +339,8 @@ export default function ConfidenceIntervalsPage() {
                             <AccordionContent>The probability that the interval estimation procedure will produce a confidence interval that contains the true population parameter. A 95% confidence level means that if we took 100 different samples and built 100 intervals, about 95 of them would contain the true mean. Alpha (α) is the complement (e.g., α = 0.05 for 95% confidence), representing the probability of error. It's the red-shaded area in the chart's tails.</AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-2">
-                            <AccordionTrigger>Z-score</AccordionTrigger>
-                            <AccordionContent>A z-score measures how many standard deviations a data point is from the mean. For confidence intervals, the z-score (or t-score for small samples) is the critical value that defines the boundaries of our interval. A 95% confidence level corresponds to a z-score of 1.96 because 95% of the area of a normal distribution lies within ±1.96 standard deviations of the mean.</AccordionContent>
+                            <AccordionTrigger>Z-score vs. T-score</AccordionTrigger>
+                            <AccordionContent>A z-score is used when the population standard deviation (σ) is known or the sample size is large (n > 30). A t-score (from the t-distribution) is used when σ is unknown and the sample size is small. The t-distribution has "fatter tails" to account for the extra uncertainty, resulting in a wider interval.</AccordionContent>
                         </AccordionItem>
                          <AccordionItem value="item-3">
                             <AccordionTrigger>Margin of Error</AccordionTrigger>
@@ -365,3 +377,5 @@ export default function ConfidenceIntervalsPage() {
     </>
   );
 }
+
+    

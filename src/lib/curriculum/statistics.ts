@@ -168,6 +168,15 @@ export const statisticsTopics: Topic[] = [
     category: 'sub-topic',
     parent: 'stats-foundations',
   },
+   {
+    id: 'z-table',
+    title: 'Z-Table Calculator',
+    href: '/topics/z-table',
+    icon: FunctionSquare,
+    description: 'Interactive Z-Table for Z-scores and probabilities.',
+    category: 'sub-topic',
+    parent: 'stats-foundations',
+  },
   {
     id: 'descriptive-statistics-explorer',
     title: 'Descriptive Statistics Explorer',
@@ -371,3 +380,5 @@ export const statisticsTopics: Topic[] = [
     parent: 'stats-advanced',
   },
 ];
+
+    
