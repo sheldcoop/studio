@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Line as RechartsLine, ZAxis } from 'recharts';
+import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Line as RechartsLine } from 'recharts';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 // Helper function to generate data for regression
@@ -71,11 +71,12 @@ const RegressionChart = () => {
   const [noise, setNoise] = useState(30);
 
   const generateData = () => {
-    setData(generateRegressionData(50, 2.5, 10, noise));
+    setData(generateRegressionData(50, 1.5, 10, noise));
   };
 
   useEffect(() => {
     generateData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noise]);
 
   const { slope, intercept, rSquared, residuals } = useMemo(() => calculateRegression(data), [data]);
@@ -107,7 +108,6 @@ const RegressionChart = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" dataKey="x" name="Market Return" unit="%" />
                 <YAxis type="number" dataKey="y" name="Stock Return" unit="%" />
-                <ZAxis dataKey="residual" type="number" range={[0,0]} />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
                 <Scatter name="Data Points" data={residuals} fill="hsl(var(--chart-1))" opacity={0.6}/>
                 <RechartsLine
@@ -224,3 +224,5 @@ export default function LinearRegressionPage() {
     </>
   );
 }
+
+    
