@@ -1,8 +1,23 @@
 import { type LucideIcon } from 'lucide-react';
+import { type ComponentType } from 'react';
 
 export type SubTopic = {
   id: string;
   title: string;
+};
+
+export type InteractiveExample = {
+  id: string;
+  title: string;
+  description: string;
+  exampleText: string;
+  ChartComponent: ComponentType<{ generateData: () => void }>;
+  buttonText: string;
+};
+
+export type CoreConcept = {
+  title: string;
+  description: string;
 };
 
 export type Topic = {
@@ -16,4 +31,8 @@ export type Topic = {
   status?: 'completed' | 'in-progress' | 'not-started';
   duration?: number; // in minutes
   subTopics?: SubTopic[];
+  interactiveExamples?: {
+    coreConcepts: CoreConcept[];
+    examples: InteractiveExample[];
+  }
 };

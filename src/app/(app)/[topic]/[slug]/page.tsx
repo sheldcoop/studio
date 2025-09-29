@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { allTopics, type SubTopic } from '@/lib/curriculum';
 import { notFound } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { InteractiveTestWrapper } from '@/components/app/interactive-test-wrapper';
 
 
 function TableOfContents({ subTopics }: { subTopics: SubTopic[] }) {
@@ -76,7 +77,12 @@ export default function TopicPage({ params }: { params: { topic: string, slug: s
     notFound();
   }
   
-  const { title, description, subTopics } = topicInfo;
+  const { id, title, description, subTopics, interactiveExamples } = topicInfo;
+
+    // Render interactive test page if examples are available
+    if (interactiveExamples) {
+        return <InteractiveTestWrapper topic={topicInfo} />;
+    }
 
   // If there are no sub-topics, just render a simple placeholder.
   // This is used for pages that are under construction.
