@@ -1,4 +1,6 @@
 
+'use client';
+
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -7,12 +9,13 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function DemystifyingHypothesisTestingPage() {
   return (
     <>
       <PageHeader
-        title="Demystifying Hypothesis Testing: A Beginner's Guide"
+        title="Demystifying Hypothesis Testing"
         description="Is it a real effect or just random chance? Let's find out."
         variant="aligned-left"
       />
@@ -82,11 +85,12 @@ export default function DemystifyingHypothesisTestingPage() {
             </CardTitle>
             <CardDescription>
               Now, we formalize our question into two competing statements. Think
-              of this as a statistical courtroom drama.
+              of this as a statistical courtroom drama. From here, you can dive into a range of specific tests in our{' '}
+              <Link href="/hypothesis-testing-p-values" className="text-primary hover:underline">Quant's Detective Kit</Link>.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="rounded-lg border p-4">
+            <div className="rounded-lg border bg-secondary/30 p-4">
               <h4 className="font-semibold text-lg">
                 On Trial: The Null Hypothesis (H₀)
               </h4>
@@ -107,7 +111,7 @@ export default function DemystifyingHypothesisTestingPage() {
                 </li>
               </ul>
             </div>
-            <div className="rounded-lg border p-4">
+            <div className="rounded-lg border bg-secondary/30 p-4">
               <h4 className="font-semibold text-lg">
                 The Challenger: The Alternative Hypothesis (Hₐ)
               </h4>
@@ -142,8 +146,9 @@ export default function DemystifyingHypothesisTestingPage() {
               Step 3: Set the Rules (Confidence & Significance)
             </CardTitle>
             <CardDescription>
-              Before we analyze the data, we must define what counts as
-              "strong enough" evidence.
+             Before we analyze the data, we must define what counts as
+              "strong enough" evidence. This is deeply related to{' '}
+               <Link href="/topics/confidence-intervals" className="text-primary hover:underline">Confidence Intervals</Link>.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -179,9 +184,10 @@ export default function DemystifyingHypothesisTestingPage() {
               Step 4: The Verdict (The P-Value)
             </CardTitle>
             <CardDescription>
-              The p-value is the probability of seeing your data, or something
+             The p-value is the probability of seeing your data, or something
               even more extreme, *assuming the null hypothesis (the skeptic's
-              view) is true*.
+              view) is true*. Learn more about how this range is constructed on our{' '}
+              <Link href="/topics/confidence-intervals" className="text-primary hover:underline">Confidence Intervals</Link> page.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -241,7 +247,10 @@ export default function DemystifyingHypothesisTestingPage() {
         <Card>
             <CardHeader>
                  <CardTitle className="font-headline">Step 5: Know the Risks (When Your Conclusion is Wrong)</CardTitle>
-                 <CardDescription>Even with this process, we can still make an error. It's crucial to understand the two types.</CardDescription>
+                 <CardDescription>
+                    Even with this process, we can still make an error. It's crucial to understand the two types. For an interactive visualization, see our guide on {' '}
+                    <Link href="/topics/type-i-and-type-ii-errors" className="text-primary hover:underline">Type I & Type II Errors</Link>.
+                </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
