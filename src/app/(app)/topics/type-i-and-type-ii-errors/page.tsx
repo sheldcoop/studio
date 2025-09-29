@@ -16,6 +16,8 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer } from '@/components/ui/chart';
 import { Area, AreaChart, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts';
 import { standardNormalPdf, standardNormalCdf, inverseStandardNormalCdf } from '@/lib/math';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle } from 'lucide-react';
 
 // Generate data for two overlapping normal curves
 const generateDistributionData = (mean1: number, mean2: number, stdDev: number) => {
@@ -144,7 +146,7 @@ export default function TypeIAndIIErrorsPage() {
             </p>
              <div className="border-l-4 border-primary pl-4 text-muted-foreground">
                 <p>Let's use a running example: A company develops a new drug to lower cholesterol.</p>
-                <ul className="mt-2 space-y-1">
+                <ul className="mt-2 list-disc pl-5 space-y-1">
                     <li><strong>Null Hypothesis (H₀):</strong> The drug has no effect.</li>
                     <li><strong>Alternative Hypothesis (H₁):</strong> The drug works.</li>
                 </ul>
