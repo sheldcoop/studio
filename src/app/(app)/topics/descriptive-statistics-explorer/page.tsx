@@ -66,9 +66,19 @@ const DistributionChart = ({ data, stats }: { data: number[], stats: Stats | nul
         <YAxis />
         <Tooltip wrapperClassName="text-xs" />
         <Bar dataKey="count" fill="hsl(var(--primary))" barSize={20} />
-        {stats && <ReferenceLine x={stats.mean} stroke="hsl(var(--chart-2))" strokeWidth={2}><RechartsLabel value="Mean" position="top" fill="hsl(var(--chart-2))" fontSize={12} /></ReferenceLine>}
-        {stats && <ReferenceLine x={stats.median} stroke="hsl(var(--chart-3))" strokeWidth={2}><RechartsLabel value="Median" position="top" dy={-15} fill="hsl(var(--chart-3))" fontSize={12} /></ReferenceLine>}
-        {stats && <ReferenceLine x={stats.mode} stroke="hsl(var(--chart-5))" strokeWidth={2}><RechartsLabel value="Mode" position="top" dy={-30} fill="hsl(var(--chart-5))" fontSize={12} /></ReferenceLine>}
+        {stats && (
+          <>
+            <ReferenceLine x={stats.mean} stroke="hsl(var(--chart-2))" strokeWidth={2}>
+              <RechartsLabel value="Mean" position="top" fill="hsl(var(--chart-2))" fontSize={12} />
+            </ReferenceLine>
+            <ReferenceLine x={stats.median} stroke="hsl(var(--chart-3))" strokeWidth={2}>
+              <RechartsLabel value="Median" position="top" dy={-15} fill="hsl(var(--chart-3))" fontSize={12} />
+            </ReferenceLine>
+            <ReferenceLine x={stats.mode} stroke="hsl(var(--chart-5))" strokeWidth={2}>
+              <RechartsLabel value="Mode" position="top" dy={-30} fill="hsl(var(--chart-5))" fontSize={12} />
+            </ReferenceLine>
+          </>
+        )}
       </BarChart>
     </ResponsiveContainer>
   );
@@ -106,9 +116,10 @@ export default function DescriptiveStatisticsPage() {
         newData = generateLogNormalData(0, 0.6, n).map(d => 10 - d);
         break;
       case 'fat-tailed':
-        const primaryData = generateNormalData(5, 0.5, Math.floor(n * 0.9));
+        // Generate a 'peaky' base distribution and mix in wide outliers
+        const baseData = generateNormalData(5, 0.5, Math.floor(n * 0.9));
         const outlierData = generateNormalData(5, 4, Math.ceil(n * 0.1));
-        newData = [...primaryData, ...outlierData];
+        newData = [...baseData, ...outlierData];
         break;
       case 'normal':
       default:
@@ -143,13 +154,13 @@ export default function DescriptiveStatisticsPage() {
   const getCentralTendencyNote = () => {
     switch (distribution) {
       case 'normal':
-        return 'For a symmetric distribution, the Mean, Median, and Mode are all equal.';
+        return 'For a perfectly symmetric distribution like the normal curve, the Mean, Median, and Mode are all identical. They pinpoint the exact center of the data.';
       case 'right-skewed':
-        return 'For a right-skewed distribution, the Mean is pulled to the right (greater than) the Median.';
+        return 'For a right-skewed distribution, a few high-value outliers pull the Mean to the right. The Median, being less sensitive to outliers, stays closer to the "body" of the data. The Mode remains at the highest peak.';
       case 'left-skewed':
-        return 'For a left-skewed distribution, the Mean is pulled to the left (less than) the Median.';
+        return 'For a left-skewed distribution, a few low-value outliers pull the Mean to the left of the Median. The Mode remains at the peak, representing the most common value.';
       default:
-        return 'Observe how outliers affect these central measures.';
+        return 'Observe how extreme values in the tails affect the Mean, while the Median and Mode are more stable and remain near the central peak.';
     }
   }
 
@@ -175,8 +186,8 @@ export default function DescriptiveStatisticsPage() {
                         <h4 className="font-medium">1. Choose Distribution</h4>
                         <div className="space-y-2">
                            <div className="flex items-center space-x-2"><RadioGroupItem value="normal" id="normal" /><Label htmlFor="normal">Normal (Bell Curve)</Label></div>
-                           <div className="flex items-center space-x-2"><RadioGroupItem value="right-skewed" id="right-skewed" /><Label htmlFor="right-skewed">Right Skewed (e.g. Income)</Label></div>
-                           <div className="flex items-center space-x-2"><RadioGroupItem value="left-skewed" id="left-skewed" /><Label htmlFor="left-skewed">Left Skewed (e.g. Grades)</Label></div>
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="right-skewed" id="right-skewed" /><Label htmlFor="right-skewed">Right Skewed (e.g. Stock Returns)</Label></div>
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="left-skewed" id="left-skewed" /><Label htmlFor="left-skewed">Left Skewed (e.g. Exam Scores)</Label></div>
                            <div className="flex items-center space-x-2"><RadioGroupItem value="fat-tailed" id="fat-tailed" /><Label htmlFor="fat-tailed">Fat-Tailed (High Kurtosis)</Label></div>
                         </div>
                     </RadioGroup>
@@ -208,15 +219,25 @@ export default function DescriptiveStatisticsPage() {
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline">Understanding the Stats</CardTitle>
+                 <CardDescription>A deeper look at what these numbers mean and why they are critical in finance.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Measures of Central Tendency</AccordionTrigger>
-                        <AccordionContent className="space-y-4">
-                            <div><strong className="text-foreground">Mean:</strong> The average value. Prone to being skewed by outliers.</div>
-                            <div><strong className="text-foreground">Median:</strong> The middle value of a dataset. More robust to outliers than the mean.</div>
-                            <div><strong className="text-foreground">Mode:</strong> The most frequently occurring value.</div>
+                        <AccordionContent className="space-y-4 pt-4">
+                            <div>
+                                <strong className="text-foreground">Mean:</strong> The simple arithmetic average. It represents the "expected value" of a distribution.
+                                <p className="text-sm text-muted-foreground mt-1"><strong className="text-primary">Why it matters:</strong> While fundamental, the mean can be highly misleading. A single million-dollar winning trade can make the average profit of a strategy look amazing, even if most trades were small losses. It's the starting point, but never the whole story.</p>
+                            </div>
+                            <div>
+                                <strong className="text-foreground">Median:</strong> The middle value when all data points are sorted. 50% of the data is above the median, and 50% is below.
+                                <p className="text-sm text-muted-foreground mt-1"><strong className="text-primary">Why it matters:</strong> The median is robust to outliers. It gives you a much better sense of the "typical" trade or return, unaffected by rare, extreme events. If the median return is much lower than the mean return, it's a red flag that your profitability is dependent on a few lucky shots.</p>
+                            </div>
+                            <div>
+                                <strong className="text-foreground">Mode:</strong> The most frequently occurring value in the dataset.
+                                 <p className="text-sm text-muted-foreground mt-1"><strong className="text-primary">Why it matters:</strong> The mode tells you what outcome happens most often. For a stock, if the mode of daily returns is 0.1%, it tells you the most common daily behavior is a small gain, even if the average (mean) is different due to a few large swings.</p>
+                            </div>
                              <div className="border-l-4 border-primary pl-4 text-sm text-muted-foreground">
                                 <p className="font-semibold text-foreground/90">Key Insight:</p>
                                 <p>{getCentralTendencyNote()}</p>
@@ -225,17 +246,40 @@ export default function DescriptiveStatisticsPage() {
                     </AccordionItem>
                     <AccordionItem value="item-2">
                         <AccordionTrigger>Measures of Variability (Dispersion)</AccordionTrigger>
-                        <AccordionContent className="space-y-4">
-                             <div><strong className="text-foreground">Range:</strong> The difference between the maximum and minimum values. Simple but sensitive to outliers.</div>
-                             <div><strong className="text-foreground">Variance (σ²):</strong> The average of the squared differences from the Mean. Measures how spread out the data is.</div>
-                             <div><strong className="text-foreground">Standard Deviation (σ):</strong> The square root of the variance. Provides a measure of dispersion in the original units of the data, making it more interpretable. A low value indicates data points are close to the mean.</div>
+                        <AccordionContent className="space-y-4 pt-4">
+                             <div>
+                                 <strong className="text-foreground">Range:</strong> The difference between the maximum and minimum values.
+                                 <p className="text-sm text-muted-foreground mt-1"><strong className="text-primary">Why it matters:</strong> It gives a quick sense of the extremes but is a very crude measure of risk as it's defined by only two data points and can be misleading.</p>
+                             </div>
+                             <div>
+                                 <strong className="text-foreground">Variance (σ²):</strong> The average of the squared differences from the Mean. It measures how spread out the data is.
+                                 <p className="text-sm text-muted-foreground mt-1"><strong className="text-primary">Why it matters:</strong> Variance is the mathematical foundation for measuring risk. It quantifies the magnitude of price swings, forming the core of portfolio theory (e.g., Markowitz mean-variance optimization).</p>
+                             </div>
+                             <div>
+                                 <strong className="text-foreground">Standard Deviation (σ):</strong> The square root of the variance. It is the most common measure of volatility in finance.
+                                 <p className="text-sm text-muted-foreground mt-1"><strong className="text-primary">Why it matters:</strong> This is arguably the most important number in risk management. It tells you how much a stock's return typically deviates from its average. A high standard deviation means high volatility and high risk. It's used to calculate Sharpe ratios, Bollinger Bands, and Value at Risk (VaR).</p>
+                             </div>
                         </AccordionContent>
                     </AccordionItem>
                      <AccordionItem value="item-3">
                         <AccordionTrigger>Measures of Shape</AccordionTrigger>
-                        <AccordionContent className="space-y-4">
-                             <div><strong className="text-foreground">Skewness:</strong> Measures the asymmetry of the distribution. A positive value indicates a long tail to the right (right-skewed), a negative value a long tail to the left (left-skewed), and a value near zero indicates a symmetric distribution.</div>
-                             <div><strong className="text-foreground">Kurtosis:</strong> Measures the "tailedness" of the distribution. High kurtosis (leptokurtic, or a value greater than 0 for excess kurtosis) means "fat tails," indicating a higher probability of extreme outlier events. This is critical in risk management, as normal distributions often underestimate the frequency of market crashes. Low kurtosis (platykurtic, or a value less than 0) means "thin tails."</div>
+                        <AccordionContent className="space-y-4 pt-4">
+                             <div>
+                                 <strong className="text-foreground">Skewness:</strong> Measures the asymmetry of the distribution.
+                                 <ul className="list-disc pl-5 mt-1 text-sm text-muted-foreground">
+                                     <li><strong className="text-foreground/90">Positive Skew (Right Tail):</strong> Many small losses and a few extreme gains. Lottery-ticket style payoffs.</li>
+                                     <li><strong className="text-foreground/90">Negative Skew (Left Tail):</strong> Many small gains and a few extreme losses. This is the profile of strategies like selling options and is considered very dangerous.</li>
+                                 </ul>
+                                 <p className="text-sm text-muted-foreground mt-1"><strong className="text-primary">Why it matters:</strong> Skewness is a crucial risk metric. A strategy with negative skew might look great for years (collecting small premiums) and then be wiped out in a single "black swan" event. Investors generally prefer positive skew.</p>
+                             </div>
+                             <div>
+                                 <strong className="text-foreground">Kurtosis:</strong> Measures the "tailedness" of the distribution—how prone it is to producing extreme outliers compared to a normal distribution.
+                                  <ul className="list-disc pl-5 mt-1 text-sm text-muted-foreground">
+                                     <li><strong className="text-foreground/90">High Kurtosis (Fat Tails):</strong> Indicates that extreme events (both positive and negative) are much more likely than a bell-curve would predict.</li>
+                                     <li><strong className="text-foreground/90">Low Kurtosis (Thin Tails):</strong> Indicates that extreme events are very unlikely.</li>
+                                 </ul>
+                                 <p className="text-sm text-muted-foreground mt-1"><strong className="text-primary">Why it matters:</strong> Financial returns are almost always "fat-tailed" (leptokurtic). Ignoring high kurtosis is one of the biggest mistakes in risk management. It leads to a massive underestimation of the probability of a market crash. This is why models that assume a normal distribution are often dangerously naive.</p>
+                             </div>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
@@ -245,3 +289,5 @@ export default function DescriptiveStatisticsPage() {
     </>
   );
 }
+
+    
