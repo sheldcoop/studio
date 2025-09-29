@@ -18,7 +18,7 @@ import Script from 'next/script';
 
 export default function MLEPage() {
   return (
-    <>
+    <div>
       <PageHeader
         title="Maximum Likelihood Estimation (MLE)"
         description="A foundational method for finding the best model parameters to fit your data."
@@ -112,6 +112,6 @@ export default function MLEPage() {
         </Card>
 
       </div>
-    </>
+    </div>
   );
 }

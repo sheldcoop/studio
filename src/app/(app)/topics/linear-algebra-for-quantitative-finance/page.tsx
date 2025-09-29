@@ -18,7 +18,7 @@ import Script from 'next/script';
 
 export default function LinearAlgebraPage() {
   return (
-    <>
+    <div>
       <PageHeader
         title="Linear Algebra for Quants"
         description="The language of data and the backbone of modern quantitative finance."
@@ -226,6 +226,6 @@ export default function LinearAlgebraPage() {
           </AccordionItem>
         </Accordion>
       </div>
-    </>
+    </div>
   );
 }
