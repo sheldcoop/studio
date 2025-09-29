@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { generateUniformData, generateExponentialData, getMean, standardNormalCdf } from '@/lib/math';
+import { Loader2 } from 'lucide-react';
 
 type DistributionType = 'uniform' | 'exponential';
 
@@ -23,7 +24,7 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
     }
 
     const min = 0;
-    const max = distribution === 'uniform' ? 10 : Math.max(...rawData);
+    const max = distribution === 'uniform' ? 10 : Math.max(...rawData, 5); // Ensure a minimum max value for skewed data
     const bins = 20;
     const binWidth = max / bins;
     const histogram = Array(bins).fill(0);
@@ -46,7 +47,7 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-        <YAxis tick={{ fontSize: 12 }} />
+        <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
         <Tooltip wrapperClassName="text-xs" />
         <Bar dataKey="count" fill="hsl(var(--primary))" barSize={20} />
       </BarChart>
@@ -60,10 +61,10 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
     if (sampleMeans.length === 0) return [];
     const min = Math.min(...sampleMeans);
     const max = Math.max(...sampleMeans);
-    const bins = Math.max(10, Math.floor(Math.sqrt(sampleMeans.length)));
+    const bins = Math.max(20, Math.floor(Math.sqrt(sampleMeans.length) * 1.5));
     const binWidth = (max - min) / bins;
 
-    if (binWidth === 0) return [{ name: min.toFixed(2), count: sampleMeans.length }];
+    if (binWidth === 0 && sampleMeans.length > 0) return [{ name: min.toFixed(2), count: sampleMeans.length }];
 
     const histogram = Array(bins).fill(0);
     sampleMeans.forEach(mean => {
@@ -88,7 +89,7 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" vertical={false}/>
         <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-        <YAxis tick={{ fontSize: 12 }} />
+        <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
         <Tooltip wrapperClassName="text-xs" />
         <Bar dataKey="count" fill="hsl(var(--primary))" />
         {sampleMeans.length > 1 && (
@@ -105,39 +106,52 @@ export default function CentralLimitTheoremPage() {
   const [numSamples, setNumSamples] = useState(1000);
   const [sampleMeans, setSampleMeans] = useState<number[]>([]);
   const [isSampling, setIsSampling] = useState(false);
+  const simulationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const runSimulation = () => {
+    if (isSampling) {
+        if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
+        setIsSampling(false);
+        return;
+    }
+
     setIsSampling(true);
     setSampleMeans([]);
 
     const means: number[] = [];
-    const drawSamples = (count: number) => {
-      for (let i = 0; i < count; i++) {
-        let sample;
-        if (distribution === 'uniform') {
-          sample = Array.from({ length: sampleSize }, () => Math.random() * 10);
-        } else {
-          sample = generateExponentialData(1, sampleSize);
-        }
-        means.push(getMean(sample));
-      }
-      setSampleMeans([...means]);
-    };
-    
-    // Animate the drawing
-    let drawn = 0;
-    const interval = setInterval(() => {
-        const toDraw = Math.min(50, numSamples - drawn);
-        if (toDraw <= 0) {
-            clearInterval(interval);
+    const samplesToDrawPerTick = 50;
+    let samplesDrawn = 0;
+
+    simulationIntervalRef.current = setInterval(() => {
+        if (samplesDrawn >= numSamples) {
+            if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
             setIsSampling(false);
             return;
         }
-        drawSamples(toDraw);
-        drawn += toDraw;
-    }, 50);
+
+        const batchSize = Math.min(samplesToDrawPerTick, numSamples - samplesDrawn);
+        for (let i = 0; i < batchSize; i++) {
+            let sample;
+            if (distribution === 'uniform') {
+            sample = Array.from({ length: sampleSize }, () => Math.random() * 10);
+            } else {
+            sample = generateExponentialData(1, sampleSize);
+            }
+            means.push(getMean(sample));
+        }
+        setSampleMeans([...means]);
+        samplesDrawn += batchSize;
+
+    }, 50); // Draw a batch every 50ms
   };
   
+  // Clean up interval on unmount
+  useEffect(() => {
+    return () => {
+        if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
+    }
+  }, []);
+
   // Run simulation on initial load
   useEffect(() => {
     runSimulation();
@@ -169,70 +183,77 @@ export default function CentralLimitTheoremPage() {
             </p>
           </CardContent>
         </Card>
-
-        {/* --- Controls --- */}
-        <Card>
-            <CardHeader>
-                <CardTitle>The Laboratory</CardTitle>
-                <CardDescription>Adjust the parameters and run the simulation to see the CLT in action.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="space-y-4">
-                    <Label>1. Choose the Population Distribution</Label>
-                    <RadioGroup value={distribution} onValueChange={(val: any) => setDistribution(val)}>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="uniform" id="uniform" />
-                            <Label htmlFor="uniform">Uniform</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="exponential" id="exponential" />
-                            <Label htmlFor="exponential">Exponential (Skewed)</Label>
-                        </div>
-                    </RadioGroup>
-                </div>
-                 <div className="space-y-4">
-                    <Label htmlFor="sample-size-slider">2. Set the Sample Size (n)</Label>
-                    <div className="flex items-center gap-4">
-                        <Slider id="sample-size-slider" min={2} max={100} step={1} value={[sampleSize]} onValueChange={(val) => setSampleSize(val[0])} />
-                        <span className="font-mono text-lg">{sampleSize}</span>
-                    </div>
-                </div>
-                 <div className="space-y-4">
-                    <Label htmlFor="num-samples-slider">3. Set Number of Samples to Draw</Label>
-                     <div className="flex items-center gap-4">
-                        <Slider id="num-samples-slider" min={100} max={5000} step={100} value={[numSamples]} onValueChange={(val) => setNumSamples(val[0])} />
-                        <span className="font-mono text-lg">{numSamples}</span>
-                    </div>
-                </div>
-            </CardContent>
-             <div className="p-6 pt-0">
-                <Button onClick={runSimulation} disabled={isSampling} className="w-full">
-                    {isSampling ? 'Sampling...' : `Run Simulation and Draw ${numSamples} Samples`}
-                </Button>
-            </div>
-        </Card>
         
-        {/* --- Visualization --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* --- Left Column: Controls --- */}
+            <Card className="lg:col-span-1 h-fit">
                 <CardHeader>
-                    <CardTitle>Population Distribution</CardTitle>
-                    <CardDescription>This is the shape of the original barrel of tickets.</CardDescription>
+                    <CardTitle>The Laboratory</CardTitle>
+                    <CardDescription>Adjust the parameters and run the simulation to see the CLT in action.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <PopulationChart distribution={distribution} />
+                <CardContent className="space-y-6">
+                    <div className="space-y-3">
+                        <Label>1. Choose the Population Distribution</Label>
+                        <RadioGroup value={distribution} onValueChange={(val: any) => setDistribution(val)} disabled={isSampling}>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="uniform" id="uniform" />
+                                <Label htmlFor="uniform">Uniform</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="exponential" id="exponential" />
+                                <Label htmlFor="exponential">Exponential (Skewed)</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                     <div className="space-y-3">
+                        <Label htmlFor="sample-size-slider">2. Set the Sample Size (n)</Label>
+                        <div className="flex items-center gap-4">
+                            <Slider id="sample-size-slider" min={2} max={100} step={1} value={[sampleSize]} onValueChange={(val) => setSampleSize(val[0])} disabled={isSampling} />
+                            <span className="font-mono text-lg w-12 text-center">{sampleSize}</span>
+                        </div>
+                    </div>
+                     <div className="space-y-3">
+                        <Label htmlFor="num-samples-slider">3. Set Number of Samples to Draw</Label>
+                         <div className="flex items-center gap-4">
+                            <Slider id="num-samples-slider" min={100} max={5000} step={100} value={[numSamples]} onValueChange={(val) => setNumSamples(val[0])} disabled={isSampling} />
+                            <span className="font-mono text-lg w-12 text-center">{numSamples}</span>
+                        </div>
+                    </div>
                 </CardContent>
+                 <div className="p-6 pt-0">
+                    <Button onClick={runSimulation} className="w-full">
+                        {isSampling ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Stop Simulation
+                            </>
+                        ) : `Run Simulation`}
+                    </Button>
+                </div>
             </Card>
-             <Card>
-                <CardHeader>
-                    <CardTitle>Distribution of Sample Means</CardTitle>
-                    <CardDescription>This is the histogram of the averages from each handful drawn.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <SamplingDistributionChart sampleMeans={sampleMeans} />
-                     <p className="text-center text-sm text-muted-foreground mt-2">Total Averages Collected: {sampleMeans.length}</p>
-                </CardContent>
-            </Card>
+
+            {/* --- Right Column: Visualizations --- */}
+            <div className="lg:col-span-2 space-y-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Population Distribution</CardTitle>
+                        <CardDescription>This is the shape of the original barrel of tickets.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <PopulationChart distribution={distribution} />
+                    </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Distribution of Sample Means</CardTitle>
+                        <CardDescription>This is the histogram of the averages from each handful drawn.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <SamplingDistributionChart sampleMeans={sampleMeans} />
+                         <p className="text-center text-sm text-muted-foreground mt-2">Total Averages Collected: {sampleMeans.length}</p>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
       </div>
     </>
