@@ -289,11 +289,11 @@ export default function MonteCarloSimulationPage() {
                         <Input type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Expected Annual Return ({`$\\mu$`}): {(mu * 100).toFixed(1)}%</Label>
+                        <Label>Expected Annual Return (${\mu}$): {(mu * 100).toFixed(1)}%</Label>
                         <Slider value={[mu]} onValueChange={v => setMu(v[0])} min={-0.10} max={0.25} step={0.005} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Expected Annual Volatility ({`$\\sigma$`}): {(sigma * 100).toFixed(1)}%</Label>
+                        <Label>Expected Annual Volatility (${\sigma}$): {(sigma * 100).toFixed(1)}%</Label>
                         <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} disabled={isSimulating}/>
                     </div>
                 </div>
