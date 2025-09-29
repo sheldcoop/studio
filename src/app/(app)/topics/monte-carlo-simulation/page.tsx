@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -240,7 +239,7 @@ export default function MonteCarloSimulationPage() {
                 The future is uncertain. You can't give a single, definitive answer. This is where Monte Carlo simulation comes in. Instead of predicting one future, you simulate thousands of possible futures.
             </p>
             <p>
-                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or $(\mu)$) and its annual volatility (the 'randomness' or $(\sigma)$). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
+                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or $\mu$) and its annual volatility (the 'randomness' or $\sigma$). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
             </p>
           </CardContent>
         </Card>
@@ -257,17 +256,17 @@ export default function MonteCarloSimulationPage() {
                         <h4 className="font-semibold text-center text-primary">1. The Predictable "Drift"</h4>
                         <p className="text-sm text-center text-muted-foreground mb-2">The expected return over time.</p>
                         <div className="font-mono text-center text-lg p-2 bg-background rounded-md">
-                           $$ (\mu - \frac{\sigma^2}{2})T $$
+                           {"$$ (\\mu - \\frac{\\sigma^2}{2})T $$"}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-2">This term represents the portfolio's expected growth based on its average return $(\mu)$, adjusted downwards by half its variance $(\sigma^2)$—a mathematical quirk of this model—over the time period $T$.</p>
+                        <p className="text-xs text-muted-foreground mt-2">This term represents the portfolio's expected growth based on its average return ($\mu$), adjusted downwards by half its variance ($\sigma^2$)—a mathematical quirk of this model—over the time period T.</p>
                     </div>
                     <div className="rounded-lg bg-muted/50 p-4">
                         <h4 className="font-semibold text-center text-primary">2. The Random "Shock"</h4>
                         <p className="text-sm text-center text-muted-foreground mb-2">The unpredictable market volatility.</p>
                         <div className="font-mono text-center text-lg p-2 bg-background rounded-md">
-                           $$ \sigma Z \sqrt{T} $$
+                           {"$$ \\sigma Z \\sqrt{T} $$"}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-2">This term introduces randomness. It's the portfolio's volatility $(\sigma)$ multiplied by a random number from a normal distribution $(Z)$ and scaled by the square root of the time period $T$.</p>
+                        <p className="text-xs text-muted-foreground mt-2">This term introduces randomness. It's the portfolio's volatility ($\sigma$) multiplied by a random number from a normal distribution ($Z$) and scaled by the square root of the time period $T$.</p>
                     </div>
                  </div>
 
@@ -289,11 +288,11 @@ export default function MonteCarloSimulationPage() {
                         <Input type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Expected Annual Return (${\mu}$): {(mu * 100).toFixed(1)}%</Label>
+                        <Label>Expected Annual Return ($\mu$): {(mu * 100).toFixed(1)}%</Label>
                         <Slider value={[mu]} onValueChange={v => setMu(v[0])} min={-0.10} max={0.25} step={0.005} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Expected Annual Volatility (${\sigma}$): {(sigma * 100).toFixed(1)}%</Label>
+                        <Label>Expected Annual Volatility ($\sigma$): {(sigma * 100).toFixed(1)}%</Label>
                         <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} disabled={isSimulating}/>
                     </div>
                 </div>
