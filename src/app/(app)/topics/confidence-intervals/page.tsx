@@ -103,6 +103,8 @@ const InteractiveChart = ({
   if (!result || stdErr <= 0) {
     return <Skeleton className="h-[300px] w-full" />;
   }
+  
+  const customTicks = [result.lower, mean, result.upper];
 
   return (
     <ChartContainer config={{}} className="h-[350px] w-full">
@@ -112,7 +114,8 @@ const InteractiveChart = ({
           type="number"
           dataKey="x"
           domain={['dataMin', 'dataMax']}
-          tickFormatter={(val) => val.toFixed(1)}
+          ticks={customTicks}
+          tickFormatter={(val) => val.toFixed(2)}
           name="Value"
         />
         <YAxis tick={false} axisLine={false} />
@@ -362,5 +365,3 @@ export default function ConfidenceIntervalsPage() {
     </>
   );
 }
-
-    
