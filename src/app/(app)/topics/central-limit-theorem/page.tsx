@@ -8,25 +8,34 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { generateUniformData, generateExponentialData, getMean } from '@/lib/math';
 import { Loader2 } from 'lucide-react';
+import { ChartContainer } from '@/components/ui/chart';
+import { XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 type DistributionType = 'uniform' | 'exponential';
 
 // --- Chart Components ---
 
 const PopulationChart = ({ distribution }: { distribution: DistributionType }) => {
-  const data = useMemo(() => {
+  const { data, mean, stdDev } = useMemo(() => {
     let rawData;
+    let calculatedMean: number;
+    let calculatedStdDev: number;
+
     if (distribution === 'uniform') {
       rawData = Array.from({ length: 500 }, () => Math.random() * 10);
+      calculatedMean = 5;
+      calculatedStdDev = Math.sqrt(((10-0)**2)/12);
     } else { 
       rawData = generateExponentialData(1, 500);
+      calculatedMean = 1;
+      calculatedStdDev = 1;
     }
 
     const min = 0;
-    const max = distribution === 'uniform' ? 10 : Math.max(...rawData, 5);
+    const max = Math.max(...rawData, 5);
     const bins = 20;
     const binWidth = max / bins;
     const histogram = Array(bins).fill(0);
@@ -38,22 +47,32 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
       }
     });
 
-    return histogram.map((count, i) => ({
-      name: (i * binWidth).toFixed(1),
-      count,
-    }));
+    return {
+      data: histogram.map((count, i) => ({
+        name: (i * binWidth).toFixed(1),
+        count,
+      })),
+      mean: calculatedMean,
+      stdDev: calculatedStdDev,
+    };
   }, [distribution]);
 
   return (
-    <ResponsiveContainer width="100%" height={200}>
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-        <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-        <Tooltip wrapperClassName="text-xs" />
-        <Bar dataKey="count" fill="hsl(var(--primary))" barSize={20} />
-      </BarChart>
-    </ResponsiveContainer>
+    <>
+        <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+            <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+            <Tooltip wrapperClassName="text-xs" />
+            <Bar dataKey="count" fill="hsl(var(--primary))" barSize={20} />
+            <ReferenceLine x={mean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `μ=${mean.toFixed(2)}`, position: 'top', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+        </BarChart>
+        </ResponsiveContainer>
+        <div className="text-center text-xs text-muted-foreground mt-2">
+            Population Mean (μ): {mean.toFixed(2)}, Population Std Dev (σ): {stdDev.toFixed(2)}
+        </div>
+    </>
   );
 };
 
@@ -77,6 +96,8 @@ const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: num
         }));
     }, [sample]);
 
+    const sampleMeanValue = sampleMean !== null ? parseFloat(data.find(d => parseFloat(d.name) >= sampleMean)?.name || "0") : null;
+
     return (
         <ResponsiveContainer width="100%" height={200}>
             <BarChart data={data}>
@@ -85,8 +106,8 @@ const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: num
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip wrapperClassName="text-xs" />
                 <Bar dataKey="count" fill="hsl(var(--chart-2))" />
-                {sampleMean !== null && (
-                    <ReferenceLine x={sampleMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean: ${sampleMean.toFixed(2)}`, position: 'insideTop', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+                {sampleMean !== null && sampleMeanValue !== null && (
+                     <ReferenceLine x={sampleMeanValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean: ${sampleMean.toFixed(2)}`, position: 'insideTop', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
                 )}
             </BarChart>
         </ResponsiveContainer>
@@ -94,33 +115,37 @@ const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: num
 }
 
 const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) => {
-  const data = useMemo(() => {
-    if (sampleMeans.length === 0) return [];
+  const { data, overallMean } = useMemo(() => {
+    if (sampleMeans.length === 0) return { data: [], overallMean: 0 };
     const min = Math.min(...sampleMeans);
     const max = Math.max(...sampleMeans);
     const bins = Math.max(20, Math.floor(Math.sqrt(sampleMeans.length) * 1.5));
     const binWidth = (max - min) / bins;
 
-    if (binWidth === 0 && sampleMeans.length > 0) return [{ name: min.toFixed(2), count: sampleMeans.length }];
+    const histData = (binWidth === 0 && sampleMeans.length > 0) 
+      ? [{ name: min.toFixed(2), count: sampleMeans.length }]
+      : (() => {
+          const histogram = Array(bins).fill(0);
+          sampleMeans.forEach(mean => {
+            const binIndex = Math.floor((mean - min) / binWidth);
+            const index = binIndex === bins ? bins - 1 : binIndex;
+            if (index >= 0 && index < bins) {
+                histogram[index]++;
+            }
+          });
+          return histogram.map((count, i) => ({
+            name: (min + i * binWidth).toFixed(2),
+            count,
+          }));
+      })();
+    
+    const meanOfMeans = getMean(sampleMeans);
 
-    const histogram = Array(bins).fill(0);
-    sampleMeans.forEach(mean => {
-      const binIndex = Math.floor((mean - min) / binWidth);
-      if (binIndex >= 0 && binIndex < bins) {
-        histogram[binIndex]++;
-      } else if (binIndex === bins) {
-        histogram[bins-1]++;
-      }
-    });
-
-    return histogram.map((count, i) => ({
-      name: (min + i * binWidth).toFixed(2),
-      count,
-    }));
+    return { data: histData, overallMean: meanOfMeans };
   }, [sampleMeans]);
-
-  const overallMean = useMemo(() => getMean(sampleMeans), [sampleMeans]);
-
+  
+  const meanOfMeansValue = parseFloat(data.find(d => parseFloat(d.name) >= overallMean)?.name || "0");
+  
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data}>
@@ -130,7 +155,7 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
         <Tooltip wrapperClassName="text-xs" />
         <Bar dataKey="count" fill="hsl(var(--primary))" />
         {sampleMeans.length > 1 && (
-            <ReferenceLine x={overallMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means: ${overallMean.toFixed(2)}`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+            <ReferenceLine x={meanOfMeansValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means: ${overallMean.toFixed(2)}`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
         )}
       </BarChart>
     </ResponsiveContainer>
@@ -241,71 +266,72 @@ export default function CentralLimitTheoremPage() {
         </Card>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* --- Left Column: Controls --- */}
-            <Card className="lg:col-span-1 h-fit">
-                <CardHeader>
-                    <CardTitle>The Laboratory</CardTitle>
-                    <CardDescription>Adjust the parameters and run the simulation to see the CLT in action.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="space-y-3">
-                        <Label>1. Choose the Population Distribution</Label>
-                        <RadioGroup value={distribution} onValueChange={(val: any) => setDistribution(val)} disabled={isSampling}>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="uniform" id="uniform" />
-                                <Label htmlFor="uniform">Uniform</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="exponential" id="exponential" />
-                                <Label htmlFor="exponential">Exponential (Skewed)</Label>
-                            </div>
-                        </RadioGroup>
-                    </div>
-                     <div className="space-y-3">
-                        <Label htmlFor="sample-size-slider">2. Set the Sample Size (n)</Label>
-                        <div className="flex items-center gap-4">
-                            <Slider id="sample-size-slider" min={2} max={100} step={1} value={[sampleSize]} onValueChange={(val) => setSampleSize(val[0])} disabled={isSampling} />
-                            <span className="font-mono text-lg w-12 text-center">{sampleSize}</span>
-                        </div>
-                    </div>
-                     <div className="space-y-3">
-                        <Label htmlFor="num-samples-slider">3. Set Number of Samples to Draw</Label>
-                         <div className="flex items-center gap-4">
-                            <Slider id="num-samples-slider" min={100} max={5000} step={100} value={[numSamples]} onValueChange={(val) => setNumSamples(val[0])} disabled={isSampling} />
-                            <span className="font-mono text-lg w-12 text-center">{numSamples}</span>
-                        </div>
-                    </div>
-                    <div className="space-y-3">
-                        <Label htmlFor="speed-slider">4. Simulation Speed</Label>
-                         <div className="flex items-center gap-4">
-                            <Slider id="speed-slider" min={1} max={100} step={1} value={[simulationSpeed]} onValueChange={(val) => setSimulationSpeed(val[0])} disabled={isSampling} />
-                            <span className="font-mono text-lg w-12 text-center">{simulationSpeed}</span>
-                        </div>
-                    </div>
-                </CardContent>
-                 <div className="p-6 pt-0">
-                    <Button onClick={runSimulation} className="w-full">
-                        {isSampling ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Stop Simulation
-                            </>
-                        ) : `Run Simulation`}
-                    </Button>
-                </div>
-            </Card>
+            {/* --- Left Column: Controls & Population --- */}
+            <div className="lg:col-span-1 space-y-8">
+              <Card>
+                  <CardHeader>
+                      <CardTitle>The Laboratory</CardTitle>
+                      <CardDescription>Adjust the parameters and run the simulation to see the CLT in action.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                      <div className="space-y-3">
+                          <Label>1. Choose the Population Distribution</Label>
+                          <RadioGroup value={distribution} onValueChange={(val: any) => setDistribution(val)} disabled={isSampling}>
+                              <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="uniform" id="uniform" />
+                                  <Label htmlFor="uniform">Uniform</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="exponential" id="exponential" />
+                                  <Label htmlFor="exponential">Exponential (Skewed)</Label>
+                              </div>
+                          </RadioGroup>
+                      </div>
+                      <div className="space-y-3">
+                          <Label htmlFor="sample-size-slider">2. Set the Sample Size (n)</Label>
+                          <div className="flex items-center gap-4">
+                              <Slider id="sample-size-slider" min={2} max={100} step={1} value={[sampleSize]} onValueChange={(val) => setSampleSize(val[0])} disabled={isSampling} />
+                              <span className="font-mono text-lg w-12 text-center">{sampleSize}</span>
+                          </div>
+                      </div>
+                      <div className="space-y-3">
+                          <Label htmlFor="num-samples-slider">3. Set Number of Samples to Draw</Label>
+                          <div className="flex items-center gap-4">
+                              <Slider id="num-samples-slider" min={100} max={5000} step={100} value={[numSamples]} onValueChange={(val) => setNumSamples(val[0])} disabled={isSampling} />
+                              <span className="font-mono text-lg w-12 text-center">{numSamples}</span>
+                          </div>
+                      </div>
+                      <div className="space-y-3">
+                          <Label htmlFor="speed-slider">4. Simulation Speed</Label>
+                          <div className="flex items-center gap-4">
+                              <Slider id="speed-slider" min={1} max={100} step={1} value={[simulationSpeed]} onValueChange={(val) => setSimulationSpeed(val[0])} disabled={isSampling} />
+                              <span className="font-mono text-lg w-12 text-center">{simulationSpeed}</span>
+                          </div>
+                      </div>
+                      <Button onClick={runSimulation} className="w-full !mt-8">
+                          {isSampling ? (
+                              <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Stop Simulation
+                              </>
+                          ) : `Run Simulation`}
+                      </Button>
+                  </CardContent>
+              </Card>
+               <Card>
+                  <CardHeader>
+                      <CardTitle>1. Population Distribution</CardTitle>
+                      <CardDescription>This is the shape of the original barrel of tickets. We'll draw samples from here.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <PopulationChart distribution={distribution} />
+                  </CardContent>
+              </Card>
+            </div>
+
 
             {/* --- Right Column: Visualizations --- */}
             <div className="lg:col-span-2 space-y-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>1. Population Distribution</CardTitle>
-                        <CardDescription>This is the shape of the original barrel of tickets. We'll draw samples from here.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <PopulationChart distribution={distribution} />
-                    </CardContent>
-                </Card>
                 <Card>
                     <CardHeader>
                         <CardTitle>2. Current Sample</CardTitle>
