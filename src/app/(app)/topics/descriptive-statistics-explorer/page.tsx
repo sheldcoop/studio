@@ -25,32 +25,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 type DistributionType = 'normal' | 'right-skewed' | 'left-skewed' | 'fat-tailed';
 
-// Function to generate data from a Student's t-distribution
-// This is a standard way to produce a fat-tailed distribution.
-const generateStudentTData = (df: number, n: number) => {
-  const data = [];
-  for (let i = 0; i < n; i++) {
-    // We use the Box-Muller transform to get a standard normal variable
-    const u1 = Math.random();
-    const u2 = Math.random();
-    const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-    
-    // Now we generate a chi-squared variable
-    let chi2 = 0;
-    for (let j = 0; j < df; j++) {
-        const u3 = Math.random();
-        const u4 = Math.random();
-        const z_chi = Math.sqrt(-2.0 * Math.log(u3)) * Math.cos(2.0 * Math.PI * u4);
-        chi2 += z_chi * z_chi;
-    }
-    
-    // The t-distributed variable is z / sqrt(chi2 / df)
-    const t_val = z / Math.sqrt(chi2 / df);
-    data.push(t_val * 2); // Scale for better visualization
-  }
-  return data;
-};
-
+// Function to generate data with high kurtosis (fat tails)
+// This method mixes a primary distribution with an outlier distribution
+// to create a visually distinct "peaky and fat-tailed" shape.
+const generateFatTailedData = (n: number) => {
+    const primaryData = generateNormalData(5, 0.5, Math.floor(n * 0.9)); // 90% of data is tightly clustered
+    const outlierData = generateNormalData(5, 4, Math.ceil(n * 0.1)); // 10% of data is widely spread
+    return [...primaryData, ...outlierData];
+}
 
 const StatCard = ({ title, value, description }: { title: string; value: string | number, description?: string }) => (
   <Card className="text-center">
@@ -133,9 +115,7 @@ export default function DescriptiveStatisticsPage() {
         newData = generateLogNormalData(0, 0.6, n).map(d => 10 - d);
         break;
       case 'fat-tailed':
-        // A Student's t-distribution with low degrees of freedom (e.g., 3) is a classic way
-        // to generate a distribution with "fat tails" (high kurtosis).
-        newData = generateStudentTData(3, n);
+        newData = generateFatTailedData(n);
         break;
       case 'normal':
       default:
