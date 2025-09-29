@@ -304,17 +304,17 @@ export default function CentralLimitTheoremPage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">The Story of the CLT</CardTitle>
+            <CardTitle className="font-headline">Why is the CLT so Powerful?</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              Imagine you have a giant barrel filled with numbered tickets. The numbers could follow any pattern—maybe there's an equal number of 1s, 2s, and 3s (a <span className="font-semibold text-primary">Uniform</span> distribution), or many small numbers and few large ones (an <span className="font-semibold text-primary">Exponential</span> or <span className="font-semibold text-primary">Log-Normal</span> distribution).
+              In the real world, we rarely know the true distribution of a population. Are stock returns normally distributed? Is trade volume exponentially distributed? We often don't know.
             </p>
             <p>
-              The Central Limit Theorem makes a magical promise: if you repeatedly reach in, pull out a <span className="font-semibold text-foreground">handful of tickets</span> (a sample), calculate its <span className="font-semibold text-foreground">average</span>, and plot that average on a histogram, the histogram will almost always form a perfect <span className="font-semibold text-foreground">bell curve (a Normal Distribution)</span>.
+              The Central Limit Theorem provides a powerful solution. It guarantees that if we take a large enough number of samples and calculate their means, the distribution of those means will be approximately normal, <span className="font-semibold text-primary">regardless of the original population's shape</span>.
             </p>
             <p>
-                This is true no matter how weirdly the numbers in the barrel were distributed to begin with. This powerful idea allows us to use normal distribution statistics for many problems, even when we don't know the original population's shape.
+                This allows us to use the predictable properties of the normal distribution to perform hypothesis tests and construct confidence intervals about a population's mean, even when we know nothing about the population itself. It's the bridge from messy, unknown real-world data to reliable statistical inference.
             </p>
           </CardContent>
         </Card>
@@ -415,3 +415,5 @@ export default function CentralLimitTheoremPage() {
     </>
   );
 }
+
+    
