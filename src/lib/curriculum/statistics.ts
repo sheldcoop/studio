@@ -1,3 +1,4 @@
+
 import { FunctionSquare, FolderKanban } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -48,15 +49,6 @@ export const statisticsTopics: Topic[] = [
     href: '/topics/f-test',
     icon: FunctionSquare,
     description: 'Compares the variances (spread) of two or more groups.',
-    category: 'parametric',
-    parent: 'hypothesis-testing-p-values',
-  },
-  {
-    id: 'confidence-intervals',
-    title: 'Confidence Intervals',
-    href: '/topics/confidence-intervals',
-    icon: FunctionSquare,
-    description: 'Understanding the range where a true value likely lies.',
     category: 'parametric',
     parent: 'hypothesis-testing-p-values',
   },
@@ -165,8 +157,17 @@ export const statisticsTopics: Topic[] = [
     description: '',
     category: 'parent',
   },
-
+    
   // Stat Toolkit Tier 1
+  {
+    id: 'confidence-intervals',
+    title: 'Confidence Intervals',
+    href: '/topics/confidence-intervals',
+    icon: FunctionSquare,
+    description: 'Understanding the range where a true value likely lies.',
+    category: 'sub-topic',
+    parent: 'stats-foundations',
+  },
   {
     id: 'descriptive-statistics-explorer',
     title: 'Descriptive Statistics Explorer',
