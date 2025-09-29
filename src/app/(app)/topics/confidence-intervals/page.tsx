@@ -47,7 +47,7 @@ export default function ConfidenceIntervalsPage() {
     const s = Number(stdDev);
     const z = zScores[confidenceLevel];
 
-    if (n > 0 && s >= 0) {
+    if (n > 0 && s >= 0 && n % 1 === 0) {
       setError(null);
       const marginOfError = z * (s / Math.sqrt(n));
       const lowerBound = M - marginOfError;
@@ -58,7 +58,11 @@ export default function ConfidenceIntervalsPage() {
       });
     } else {
       setResult(null);
-      setError('Sample size must be positive and standard deviation cannot be negative.');
+      if (n <= 0 || n % 1 !== 0) {
+        setError('Sample size must be a positive integer.');
+      } else if (s < 0) {
+        setError('Standard deviation cannot be negative.');
+      }
     }
   };
   
@@ -76,20 +80,17 @@ export default function ConfidenceIntervalsPage() {
       <div className="mx-auto max-w-4xl space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">What Are They?</CardTitle>
+            <CardTitle className="font-headline">Why Do We Need Them?</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              A confidence interval is a range of values, derived from sample
-              data, that is likely to contain the value of an unknown population
-              parameter. It's a fundamental concept in inferential statistics.
+              In statistics, we rarely know the true parameters (like the mean or standard deviation) of an entire population. It's often impossible to survey every single person or analyze every single stock trade. So, we take a sample.
             </p>
             <p>
-              Instead of giving a single number as an estimate (a "point
-              estimate"), which is almost certainly not exactly correct, we provide a plausible range. For example, instead of saying
-              "the average IQ is 100," we might say "we are 95% confident that
-              the true average IQ of the population is between 97 and 103." This range is the
-              confidence interval. The "95% confidence" means that if we were to take many samples and build a confidence interval from each one, 95% of those intervals would contain the true population mean.
+              A single number calculated from that sample, like the sample mean, is called a <strong>point estimate</strong>. While it's our best guess, it's almost certainly not the exact true population mean. A confidence interval tackles this uncertainty head-on. Instead of a single number, it gives us a plausible range of values for the true population parameter.
+            </p>
+             <p>
+              For example, instead of just saying "the average stock return was 0.05% today," we might say "we are 95% confident that the true average return for all stocks today was between 0.03% and 0.07%." This is far more informative and honest about our uncertainty.
             </p>
           </CardContent>
         </Card>
@@ -98,13 +99,13 @@ export default function ConfidenceIntervalsPage() {
           <CardHeader>
             <CardTitle className="font-headline">Interactive Calculator</CardTitle>
             <CardDescription>
-              Calculate a confidence interval for a population mean. Adjust the values to see how they affect the interval width.
+              Calculate a confidence interval for a population mean. Adjust the values to see how they affect the interval width. Notice how a larger sample size or lower confidence level leads to a narrower, more precise interval.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-4 rounded-lg border p-6">
               <div>
-                <Label htmlFor="mean">Sample Mean (μ)</Label>
+                <Label htmlFor="mean">Sample Mean (x̄)</Label>
                 <Input
                   id="mean"
                   type="number"
@@ -113,11 +114,12 @@ export default function ConfidenceIntervalsPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="stddev">Standard Deviation (σ)</Label>
+                <Label htmlFor="stddev">Population Standard Deviation (σ)</Label>
                 <Input
                   id="stddev"
                   type="number"
                   value={stdDev}
+                   min="0"
                   onChange={(e) => setStdDev(Number(e.target.value))}
                 />
               </div>
@@ -128,6 +130,7 @@ export default function ConfidenceIntervalsPage() {
                   type="number"
                   value={sampleSize}
                   min="1"
+                  step="1"
                   onChange={(e) => setSampleSize(Number(e.target.value))}
                 />
               </div>
@@ -163,9 +166,7 @@ export default function ConfidenceIntervalsPage() {
                     [{result.lower}, {result.upper}]
                   </p>
                   <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-                    This means we are {confidenceLevel}% confident that the true
-                    population mean lies between {result.lower} and{' '}
-                    {result.upper}.
+                    This means if we were to repeat this sampling process many times, {confidenceLevel}% of the intervals we construct would contain the true, unknown population mean.
                   </p>
                 </div>
               ) : (
