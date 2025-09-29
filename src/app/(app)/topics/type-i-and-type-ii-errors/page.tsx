@@ -22,11 +22,11 @@ const generateDistributionData = (mean1: number, mean2: number, stdDev: number) 
   const data = [];
   const points = 200;
   const range = stdDev * 8;
-  const step = range / (points);
   const start = Math.min(mean1, mean2) - range / 2;
+  const end = Math.max(mean1, mean2) + range / 2;
 
   for (let i = 0; i <= points; i++) {
-    const x = start + i * step;
+    const x = start + (i * (end-start)) / points;
     data.push({
       x,
       nullHypothesis: standardNormalPdf((x - mean1) / stdDev),
@@ -59,6 +59,9 @@ const ErrorChart = () => {
         }
         return { ...d, alphaArea, betaArea };
     });
+    
+    const domainMin = Math.min(meanH0 - 3.5 * stdDev, meanH1 - 3.5 * stdDev);
+    const domainMax = Math.max(meanH0 + 3.5 * stdDev, meanH1 + 3.5 * stdDev);
 
     return (
         <div className="w-full">
@@ -74,7 +77,7 @@ const ErrorChart = () => {
                             <stop offset="95%" stopColor="hsl(var(--chart-4))" stopOpacity={0.1}/>
                         </linearGradient>
                     </defs>
-                    <XAxis dataKey="x" type="number" domain={[-4, 8]} tickFormatter={(val) => val.toFixed(1)} />
+                    <XAxis dataKey="x" type="number" domain={[domainMin, domainMax]} tickFormatter={(val) => val.toFixed(1)} />
                     <YAxis tick={false} axisLine={false} />
                     <Tooltip 
                         labelFormatter={(value) => `Value: ${Number(value).toFixed(2)}`}
@@ -139,9 +142,13 @@ export default function TypeIAndIIErrorsPage() {
             <p>
               There's always a risk of making the wrong call. These potential mistakes are categorized into two types, and understanding them is critical for anyone who works with data.
             </p>
-             <p className="border-l-4 border-primary pl-4 text-muted-foreground">
-              Let's use a running example: A company develops a new drug to lower cholesterol. The **Null Hypothesis (H₀)** is that the drug has no effect. The **Alternative Hypothesis (H₁)** is that the drug works.
-            </p>
+             <div className="border-l-4 border-primary pl-4 text-muted-foreground">
+                <p>Let's use a running example: A company develops a new drug to lower cholesterol.</p>
+                <ul className="mt-2 space-y-1">
+                    <li><strong>Null Hypothesis (H₀):</strong> The drug has no effect.</li>
+                    <li><strong>Alternative Hypothesis (H₁):</strong> The drug works.</li>
+                </ul>
+            </div>
           </CardContent>
         </Card>
 
@@ -153,7 +160,7 @@ export default function TypeIAndIIErrorsPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="mb-4">This is when you <strong className="text-destructive-foreground/90">incorrectly reject the null hypothesis</strong>. You conclude there is an effect when, in reality, there isn't one.</p>
-                    <p><strong className="font-semibold text-foreground">Drug Example:</strong> The clinical trial results are statistically significant (e.g., p-value &lt; 0.05). The company rejects the null hypothesis and concludes the drug works. They spend millions launching and marketing it, only to find out later that the initial results were a statistical fluke. The drug is useless. This is a costly false alarm.</p>
+                    <p><strong className="font-semibold text-foreground">Drug Example:</strong> The clinical trial results are statistically significant (e.g., p-value < 0.05). The company rejects the null hypothesis and concludes the drug works. They spend millions launching and marketing it, only to find out later that the initial results were a statistical fluke. The drug is useless. This is a costly false alarm.</p>
                 </CardContent>
             </Card>
              <Card className="border-yellow-500/50 bg-yellow-500/5">
@@ -174,7 +181,7 @@ export default function TypeIAndIIErrorsPage() {
                  <CardDescription>Adjust the sliders to see how α and β are inversely related.</CardDescription>
             </CardHeader>
             <CardContent>
-                <p className="mb-6 text-muted-foreground">The chart below visualizes two possible realities. The gray curve (H₀) represents a world where the drug has **no effect**. The green curve (H₁) represents a world where it has a **real, positive effect**. The vertical line is your decision boundary based on your test results. If a result falls to the right of the line, you conclude the drug works. But notice how the curves overlap—this is where errors happen.</p>
+                <p className="mb-6 text-muted-foreground">The chart below visualizes two possible realities. The gray curve (H₀) represents a world where the drug has <strong>no effect</strong>. The green curve (H₁) represents a world where it has a <strong>real, positive effect</strong>. The vertical line is your decision boundary based on your test results. If a result falls to the right of the line, you conclude the drug works. But notice how the curves overlap—this is where errors happen.</p>
                 <DynamicErrorChart />
             </CardContent>
         </Card>
