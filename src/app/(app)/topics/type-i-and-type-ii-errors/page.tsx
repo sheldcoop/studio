@@ -12,9 +12,9 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
+import { Label as ShadcnLabel } from '@/components/ui/label';
 import { ChartContainer } from '@/components/ui/chart';
-import { Area, AreaChart, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts';
+import { Area, AreaChart, ReferenceLine, XAxis, YAxis, Tooltip, Label } from 'recharts';
 import { standardNormalPdf, standardNormalCdf, inverseStandardNormalCdf } from '@/lib/math';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
@@ -91,19 +91,19 @@ const ErrorChart = () => {
                     <Area type="monotone" dataKey="betaArea" stroke="hsl(var(--chart-4))" fill="url(#fillBeta)" name="β (Type II Error)" dot={false} />
 
                     <ReferenceLine x={criticalValue} stroke="hsl(var(--foreground))" strokeDasharray="3 3" strokeWidth={2}>
-                        <Label value="Decision Boundary" position="top" fill="hsl(var(--foreground))" dy={-10} />
+                        <Label position="top" fill="hsl(var(--foreground))" dy={-10}>Decision Boundary</Label>
                     </ReferenceLine>
                 </AreaChart>
             </ChartContainer>
 
             <div className="mx-auto mt-6 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-3">
-                    <Label htmlFor="alpha-slider">Significance Level (α): {alpha.toFixed(2)}</Label>
+                    <ShadcnLabel htmlFor="alpha-slider">Significance Level (α): {alpha.toFixed(2)}</ShadcnLabel>
                     <Slider id="alpha-slider" min={0.01} max={0.20} step={0.01} value={[alpha]} onValueChange={(val) => setAlpha(val[0])} />
                     <p className="text-xs text-muted-foreground">Lowering α (moving the boundary right) makes it harder to reject H₀, which decreases Type I errors but increases Type II errors.</p>
                 </div>
                  <div className="space-y-3">
-                    <Label htmlFor="separation-slider">Effect Size (Separation): {separation.toFixed(1)}</Label>
+                    <ShadcnLabel htmlFor="separation-slider">Effect Size (Separation): {separation.toFixed(1)}</ShadcnLabel>
                     <Slider id="separation-slider" min={0.5} max={5} step={0.1} value={[separation]} onValueChange={(val) => setSeparation(val[0])} />
                      <p className="text-xs text-muted-foreground">A larger effect size (more separation) makes the distributions easier to distinguish, reducing Type II errors.</p>
                 </div>
@@ -162,7 +162,7 @@ export default function TypeIAndIIErrorsPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="mb-4">This is when you <strong className="text-destructive-foreground/90">incorrectly reject the null hypothesis</strong>. You conclude there is an effect when, in reality, there isn't one.</p>
-                    <p><strong className="font-semibold text-foreground">Drug Example:</strong> The clinical trial results are statistically significant (e.g., p-value < 0.05). The company rejects the null hypothesis and concludes the drug works. They spend millions launching and marketing it, only to find out later that the initial results were a statistical fluke. The drug is useless. This is a costly false alarm.</p>
+                    <p><strong className="font-semibold text-foreground">Drug Example:</strong> The clinical trial results are statistically significant (e.g., p-value &lt; 0.05). The company rejects the null hypothesis and concludes the drug works. They spend millions launching and marketing it, only to find out later that the initial results were a statistical fluke. The drug is useless. This is a costly false alarm.</p>
                 </CardContent>
             </Card>
              <Card className="border-yellow-500/50 bg-yellow-500/5">
