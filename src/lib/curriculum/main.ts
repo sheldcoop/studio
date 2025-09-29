@@ -21,6 +21,14 @@ export const mainTopics: Topic[] = [
     category: 'main',
   },
   {
+    id: 'stat-toolkit',
+    title: "Statistician's Toolkit",
+    description: 'From p-values to confidence intervals, master the core tools of data analysis.',
+    icon: Sigma,
+    href: '/stat-toolkit',
+    category: 'main',
+  },
+  {
     id: 'probability',
     title: 'Probability',
     description: 'Understanding chance and modeling random events.',
