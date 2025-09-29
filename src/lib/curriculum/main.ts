@@ -1,3 +1,4 @@
+
 import {
   Pi,
   Sigma,
@@ -17,14 +18,6 @@ export const mainTopics: Topic[] = [
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
     href: '/paths/linear-algebra-for-quantitative-finance',
-    category: 'main',
-  },
-  {
-    id: 'statistics-for-quantitative-finance',
-    title: 'Statistics',
-    description: 'Quantifying uncertainty and making sense of distributions.',
-    icon: Sigma,
-    href: '/paths/statistics-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -65,14 +58,6 @@ export const mainTopics: Topic[] = [
     description: 'From strategy backtesting to live deployment.',
     icon: CandlestickChart,
     href: '/paths/algo-trading',
-    category: 'main',
-  },
-  {
-    id: 'stat-toolkit',
-    title: "Statistician's Toolkit",
-    description: 'Interactive tools for hands-on statistical analysis.',
-    icon: Boxes,
-    href: '/stat-toolkit',
     category: 'main',
   },
 ];
