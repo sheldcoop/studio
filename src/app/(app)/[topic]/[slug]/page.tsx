@@ -2,37 +2,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
 import { allTopics, type SubTopic } from '@/lib/curriculum';
-import { notFound, usePathname } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-
-// Note: generateMetadata is a server-side function and cannot use hooks.
-// We are keeping this simple for now. For dynamic metadata based on the client-side
-// determined topic, you would typically fetch metadata in a client component
-// and update the document head using a library like 'react-helmet' or Next.js's 'Head'.
-// export async function generateMetadata({
-//   params,
-// }: {
-//   params: { slug: string, topic: string };
-// }): Promise<Metadata> {
-//   const { slug, topic: topicSlug } = params;
-//   const path = `/${topicSlug}/${slug}`;
-//   const topicInfo = allTopics.find((t) => t.href === path);
-
-//   if (!topicInfo) {
-//     return {
-//       title: 'Topic Not Found',
-//     };
-//   }
-
-//   return {
-//     title: topicInfo.title,
-//     description: topicInfo.description,
-//   };
-// }
 
 function TableOfContents({ subTopics }: { subTopics: SubTopic[] }) {
     const [activeId, setActiveId] = useState<string | null>(null);
@@ -94,10 +68,9 @@ function TableOfContents({ subTopics }: { subTopics: SubTopic[] }) {
     )
 }
 
-export default function TopicPage() {
-  const pathname = usePathname();
-  // Find the topic based on the pathname. This also handles nested routes.
-  const topicInfo = allTopics.find((t) => t.href === pathname);
+export default function TopicPage({ params }: { params: { topic: string, slug: string } }) {
+  const path = `/${params.topic}/${params.slug}`;
+  const topicInfo = allTopics.find((t) => t.href === path);
   
   if (!topicInfo) {
     notFound();
