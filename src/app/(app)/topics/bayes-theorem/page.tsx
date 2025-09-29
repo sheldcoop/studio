@@ -410,7 +410,7 @@ const GeometricBayesVisualization = () => {
                     <React.Fragment key={part.name}>
                       {i === 1 && <span className="font-bold mx-2">=</span>}
                       {i === 1 && <span className="inline-block"><span className="block border-b-2 border-current pb-1"></span></span>}
-                      <span className={cn('formula-part', part.highlight && 'bg-primary text-primary-foreground')}>
+                      <span className={cn('formula-part px-2', part.highlight && 'bg-primary text-primary-foreground')}>
                           {part.name === 'p_h_given_e' && 'P(Rain|Cloudy)'}
                           {part.name === 'p_e_given_h' && 'P(Cloudy|Rain)'}
                           {part.name === 'p_h' && 'P(Rain)'}
