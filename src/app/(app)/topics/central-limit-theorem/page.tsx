@@ -39,9 +39,9 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
         break;
       case 'exponential': 
       default:
-        rawData = generateExponentialData(1, numPoints);
-        calculatedMean = 1;
-        calculatedStdDev = 1;
+        rawData = generateExponentialData(2, numPoints);
+        calculatedMean = 1/2;
+        calculatedStdDev = 1/2;
         break;
     }
 
@@ -282,21 +282,14 @@ export default function CentralLimitTheoremPage() {
     return () => stopSimulation();
   }, []);
 
-  // Run simulation on parameter change
-  useEffect(() => {
-    if (quizState === 'active') {
-      runSimulation();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [distribution, sampleSize, numSamples]);
-  
-  const [quizState, setQuizState] = useState<'not-started' | 'active'>('active');
-
   const handleDistributionChange = (val: DistributionType) => {
-    setDistribution(val);
-    if(quizState === 'active') {
-      runSimulation();
+    if (isSampling) {
+      stopSimulation();
     }
+    setDistribution(val);
+    setSampleMeans([]);
+    setCurrentSample([]);
+    setCurrentSampleMean(null);
   }
 
 
