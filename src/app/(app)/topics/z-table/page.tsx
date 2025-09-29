@@ -162,6 +162,11 @@ export default function ZTablePage() {
   // Track active tab for highlighting
   const [activeTab, setActiveTab] = useState('z-to-p');
 
+  const handleNumericInput = (setter: React.Dispatch<React.SetStateAction<number | null>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    setter(isNaN(value) ? null : value);
+  };
+
   const chartParams = useMemo(() => {
     switch (activeTab) {
       case 'z-to-p':
@@ -389,7 +394,7 @@ export default function ZTablePage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="z-score">Enter Z-Score</Label>
-                                <Input id="z-score" type="number" value={zScore ?? ''} onChange={(e) => setZScore(parseFloat(e.target.value))} placeholder="e.g., 1.96" />
+                                <Input id="z-score" type="number" value={zScore ?? ''} onChange={handleNumericInput(setZScore)} placeholder="e.g., 1.96" />
                             </div>
                             <div className="rounded-lg bg-muted p-4 text-center">
                                 <p className="text-sm text-muted-foreground">Calculated Probability (P-Value)</p>
@@ -407,7 +412,7 @@ export default function ZTablePage() {
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="p-value">Enter Cumulative Probability (0 to 1)</Label>
-                                <Input id="p-value" type="number" value={inputPValue ?? ''} onChange={(e) => setInputPValue(parseFloat(e.target.value))} placeholder="e.g., 0.975" step="0.0001" min="0.0001" max="0.9999"/>
+                                <Input id="p-value" type="number" value={inputPValue ?? ''} onChange={handleNumericInput(setInputPValue)} placeholder="e.g., 0.975" step="0.0001" min="0.0001" max="0.9999"/>
                             </div>
                             <div className="rounded-lg bg-muted p-4 text-center">
                                 <p className="text-sm text-muted-foreground">Calculated Z-Score</p>
@@ -427,11 +432,11 @@ export default function ZTablePage() {
                             <div className="flex gap-4">
                                 <div className="space-y-2 w-full">
                                     <Label htmlFor="z-score-1">Z-Score 1</Label>
-                                    <Input id="z-score-1" type="text" value={zScore1 ?? ''} onChange={(e) => setZScore1(parseFloat(e.target.value))} placeholder="e.g., -1.96" />
+                                    <Input id="z-score-1" type="text" value={zScore1 ?? ''} onChange={handleNumericInput(setZScore1)} placeholder="e.g., -1.96" />
                                 </div>
                                 <div className="space-y-2 w-full">
                                     <Label htmlFor="z-score-2">Z-Score 2</Label>
-                                    <Input id="z-score-2" type="number" value={zScore2 ?? ''} onChange={(e) => setZScore2(parseFloat(e.target.value))} placeholder="e.g., 1.96" />
+                                    <Input id="z-score-2" type="number" value={zScore2 ?? ''} onChange={handleNumericInput(setZScore2)} placeholder="e.g., 1.96" />
                                 </div>
                             </div>
                             <div className="rounded-lg bg-muted p-4 text-center">
@@ -484,5 +489,3 @@ export default function ZTablePage() {
     </>
   );
 }
-
-    
