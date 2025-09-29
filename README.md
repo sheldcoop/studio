@@ -2,8 +2,7 @@
 
 QuantPrep is an AI-powered learning platform designed to help quantitative finance aspirants master core concepts, from statistical analysis to algorithmic trading.
 
-## Getting Started
-
+## Getting Star
 This project uses `npm` as the package manager.
 
 ### Prerequisites

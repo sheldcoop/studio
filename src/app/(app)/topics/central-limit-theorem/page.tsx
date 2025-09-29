@@ -8,11 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
-import { BarChart, Bar, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, ReferenceLine, Line } from 'recharts';
 import { generateUniformData, generateExponentialData, getMean, getStdDev, generateLogNormalData } from '@/lib/math';
 import { Loader2 } from 'lucide-react';
 import { ChartContainer } from '@/components/ui/chart';
 import { XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+
 
 type DistributionType = 'uniform' | 'exponential' | 'lognormal';
 
@@ -150,7 +151,7 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
     
     const meanOfMeans = getMean(sampleMeans);
     const stdDevOfMeans = getStdDev(sampleMeans);
-
+    
     return { data: histData, overallMean: meanOfMeans, stdErr: stdDevOfMeans };
   }, [sampleMeans]);
   
@@ -164,10 +165,21 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
           <XAxis dataKey="name" tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
           <Tooltip wrapperClassName="text-xs" />
-          <Bar dataKey="count" fill="hsl(var(--primary))" />
+          <Bar dataKey="count" fill="hsl(var(--primary))" fillOpacity={0.7} />
           {sampleMeans.length > 1 && (
               <ReferenceLine x={meanOfMeansValue} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
           )}
+          {data.length > 1 &&
+            <Line
+                data={data}
+                dataKey="count"
+                type="monotone"
+                stroke="hsl(var(--chart-2))"
+                strokeWidth={2}
+                dot={false}
+                yAxisId={0}
+            />
+           }
         </BarChart>
       </ResponsiveContainer>
       <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-2">
@@ -198,12 +210,17 @@ export default function CentralLimitTheoremPage() {
   const [isSampling, setIsSampling] = useState(false);
   const simulationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const stopSimulation = () => {
+      if (simulationIntervalRef.current) {
+          clearInterval(simulationIntervalRef.current);
+          clearTimeout(simulationIntervalRef.current); // Also clear timeouts
+      }
+      setIsSampling(false);
+      simulationIntervalRef.current = null;
+  }
+
   const runSimulation = () => {
-    if (isSampling) {
-        if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
-        setIsSampling(false);
-        return;
-    }
+    stopSimulation(); // Stop any existing simulation
 
     setIsSampling(true);
     setSampleMeans([]);
@@ -215,8 +232,7 @@ export default function CentralLimitTheoremPage() {
 
     const tick = () => {
         if (samplesDrawn >= numSamples) {
-            if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
-            setIsSampling(false);
+            stopSimulation();
             setCurrentSample([]);
             setCurrentSampleMean(null);
             return;
@@ -232,7 +248,7 @@ export default function CentralLimitTheoremPage() {
             break;
           case 'exponential':
           default:
-            sample = generateExponentialData(1, sampleSize);
+            sample = generateExponentialData(2, sampleSize);
             break;
         }
         
@@ -246,26 +262,43 @@ export default function CentralLimitTheoremPage() {
         
         samplesDrawn++;
         
-        // Schedule next tick
         const delay = 200 - simulationSpeed * 1.9;
         simulationIntervalRef.current = setTimeout(tick, delay);
     };
 
-    tick(); // Start the first tick
+    tick();
   };
+
+  const handleStartStop = () => {
+      if (isSampling) {
+          stopSimulation();
+      } else {
+          runSimulation();
+      }
+  }
   
-  // Clean up interval on unmount
+  // Clean up on unmount
   useEffect(() => {
-    return () => {
-        if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
-    }
+    return () => stopSimulation();
   }, []);
 
-  // Run simulation on initial load
+  // Run simulation on parameter change
   useEffect(() => {
-    runSimulation();
+    if (quizState === 'active') {
+      runSimulation();
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [distribution, sampleSize, numSamples]);
+  
+  const [quizState, setQuizState] = useState<'not-started' | 'active'>('active');
+
+  const handleDistributionChange = (val: DistributionType) => {
+    setDistribution(val);
+    if(quizState === 'active') {
+      runSimulation();
+    }
+  }
+
 
   return (
     <>
@@ -304,7 +337,7 @@ export default function CentralLimitTheoremPage() {
                   <CardContent className="space-y-6">
                       <div className="space-y-3">
                           <Label>1. Choose the Population Distribution</Label>
-                          <RadioGroup value={distribution} onValueChange={(val: any) => setDistribution(val)} disabled={isSampling}>
+                          <RadioGroup value={distribution} onValueChange={(val: any) => handleDistributionChange(val)}>
                               <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="uniform" id="uniform" />
                                   <Label htmlFor="uniform">Uniform</Label>
@@ -336,11 +369,11 @@ export default function CentralLimitTheoremPage() {
                       <div className="space-y-3">
                           <Label htmlFor="speed-slider">4. Simulation Speed</Label>
                           <div className="flex items-center gap-4">
-                              <Slider id="speed-slider" min={1} max={100} step={1} value={[simulationSpeed]} onValueChange={(val) => setSimulationSpeed(val[0])} disabled={isSampling} />
+                              <Slider id="speed-slider" min={1} max={100} step={1} value={[simulationSpeed]} onValueChange={(val) => setSimulationSpeed(val[0])} />
                               <span className="font-mono text-lg w-12 text-center">{simulationSpeed}</span>
                           </div>
                       </div>
-                      <Button onClick={runSimulation} className="w-full !mt-8">
+                      <Button onClick={handleStartStop} className="w-full !mt-8">
                           {isSampling ? (
                               <>
                                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
