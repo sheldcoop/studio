@@ -21,6 +21,7 @@ import { standardNormalCdf, standardNormalPdf, inverseStandardNormalCdf } from '
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { ArrowDown } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 type ZToPType = "left" | "right" | "two-tailed";
 
@@ -157,6 +158,9 @@ export default function ZTablePage() {
   const [zScore2, setZScore2] = useState<number | null>(1.96);
   const [betweenPValue, setBetweenPValue] = useState<number | null>(null);
   
+  // Track active tab for highlighting
+  const [activeTab, setActiveTab] = useState('z-to-p');
+  
   useEffect(() => {
     if (zScore !== null && !isNaN(zScore)) {
       const leftP = standardNormalCdf(zScore);
@@ -200,14 +204,13 @@ export default function ZTablePage() {
   }, [zScore1, zScore2]);
 
   const activeZForTable = useMemo(() => {
-    const activeTab = document.querySelector('[data-state="active"]')?.getAttribute('data-value');
     switch (activeTab) {
         case 'z-to-p': return zScore;
         case 'p-to-z': return calculatedZ;
         case 'between': return zScore2;
         default: return zScore;
     }
-  }, [zScore, calculatedZ, zScore2, pValue, betweenPValue, zToPType]);
+  }, [zScore, calculatedZ, zScore2, activeTab]);
 
   return (
     <>
@@ -269,7 +272,7 @@ export default function ZTablePage() {
                 <CardDescription>Immediately apply what you've just learned. Calculate probabilities and Z-scores with interactive visualizations.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Tabs defaultValue="z-to-p">
+                <Tabs defaultValue="z-to-p" onValueChange={setActiveTab}>
                     <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="z-to-p">Z-Score to P-Value</TabsTrigger>
                         <TabsTrigger value="p-to-z">P-Value to Z-Score</TabsTrigger>
@@ -358,6 +361,38 @@ export default function ZTablePage() {
             </CardContent>
         </Card>
         
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Z-Scores in Finance: From Noise to Signal</CardTitle>
+                <CardDescription>For a trader, the biggest challenge is separating random market "noise" from a meaningful event. The Z-score is a perfect tool for this, acting like a filter that highlights only the most statistically important moments.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>Example 1: Spotting a Truly Unusual Trading Day</AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                           <p>Imagine you are a trader who closely watches "Innovate Inc.," a popular tech stock. You know that on most days, the stock's price wiggles up and down a bit. You want a way to be alerted only when a price move is exceptionally large and might signal a major change.</p>
+                           <p><strong className="text-primary">The Scenario:</strong> You analyze the stock's history and find that its average daily return (μ) is +0.1%, with a standard deviation (σ) of 1.5%. This is the stock's "normal" behavior. Today, the company announces a surprise product launch, and the stock shoots up, closing with a return (X) of +5.35%.</p>
+                           <p><strong className="text-primary">The Z-Score Solution:</strong> You use the Z-score to measure the "unusualness" of today's return: <code className="font-mono bg-muted p-1 rounded-md">Z = (5.35% - 0.1%) / 1.5% = +3.5</code></p>
+                           <p><strong className="text-primary">The Trading Insight:</strong> Today's return was a +3.5 standard deviation event. Enter 3.5 into the calculator above and check the "Right Tail." The probability of a day this strong (or stronger) is minuscule—less than 0.03%!</p>
+                           <p>A Z-score of +3.5 is a powerful alert. It tells the trader: "Stop and investigate now." This isn't random noise. It's a signal to dig into the news, re-evaluate financial models, and decide if this event fundamentally changes the stock's value.</p>
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-2">
+                        <AccordionTrigger>Example 2: Finding "Overstretched" Stocks for Mean Reversion</AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                            <p>Many trading strategies are based on "mean reversion"—the idea that a stock's price might wander away from its recent average but will eventually tend to return to it. A Z-score is the perfect way to measure how far the price has wandered.</p>
+                            <p><strong className="text-primary">The Scenario:</strong> You track the price of "Momentum Corp." relative to its 50-day moving average. The average spread (μ) is $0, and the standard deviation (σ) of this spread is $3.00. This means the stock normally wiggles within a $3 range of its average.</p>
+                            <p><strong className="text-primary">The Question:</strong> After a week of intense social media hype, the stock is trading $9.50 above its 50-day moving average. Is the stock now "overbought" and due for a fall back to its average?</p>
+                            <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
+                            <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, a rubber band is stretched very tight.</p>
+                            <p>This Z-score can be a direct, automated trading signal. A mean-reversion trading algorithm could be programmed with a simple rule: If Z &gt; +2.0, consider short-selling; if Z &lt; -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory and may be a good candidate for a short-selling strategy.</p>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </CardContent>
+        </Card>
+
         <ZTable highlightedZ={activeZForTable} />
       </div>
     </>
