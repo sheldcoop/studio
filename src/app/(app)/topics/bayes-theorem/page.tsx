@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 // --- Config ---
 const TOTAL_PARTS = 1000;
@@ -29,22 +29,22 @@ type Step = {
 const steps: Step[] = [
   {
     title: "The Initial State: The Full Batch",
-    description: "Our factory has two machines. The old Machine 1 produces 30% of our parts, and the new Machine 2 produces 70%. This initial breakdown is our 'prior' belief. If we pick a part at random, we can be 30% sure it came from Machine 1. Let's find P(M1).",
+    description: "The factory floor shows our 'prior' belief. Before inspecting any parts, we know that if we pick one at random, there's a 30% chance it's from Machine 1.",
     buttonText: "Run Quality Control",
   },
   {
     title: "Applying The Evidence: Finding Defects",
-    description: "Now, let's introduce new evidence. We know the defect rate for each machine: Machine 1 has a 5% defect rate, and Machine 2 has a 1% rate. We'll now highlight all the defective parts from the full batch.",
+    description: "Now, let's introduce new evidence. We run a quality control check based on the known defect rates for each machine and highlight all the defective parts from the full batch.",
     buttonText: "Isolate Defective Parts",
   },
   {
     title: "Restricting The Universe: The Defect Box",
-    description: "A-ha! A defective part is found. Our world is no longer all 1000 parts. It's ONLY the defective ones. We can ignore everything else. This is the core of Bayes' theorem: new evidence shrinks our world of possibilities.",
+    description: "The moment a defective part is found, our world shrinks. We are no longer concerned with all 1000 parts; our focus shifts ONLY to the defective ones. This is the core of Bayes' theorem: new evidence shrinks the world of possibilities.",
     buttonText: "Calculate The Posterior",
   },
   {
     title: "The Visual Answer: The Posterior Probability",
-    description: "Now for the key question: given that we have a defective part, what's the probability it came from the old Machine 1? Inside our new universe (the defect box), we can just count. The proportion of blue parts in the box is our new, updated belief: P(M1|Defective).",
+    description: "Now we can answer our key question. Inside our new, smaller universe (the defect box), we can just count. The proportion of blue parts (from Machine 1) inside the box is our new, updated belief: P(M1|Defective).",
     buttonText: "See The Formula",
   },
   {
@@ -171,13 +171,31 @@ export default function BayesTheoremPage() {
     const posteriorM2 = totalDefects > 0 ? defectiveM2Count / totalDefects : 0;
 
     return (
-        <>
+        <div className="max-w-7xl mx-auto">
             <PageHeader
                 title="The Factory Inspector: A Visual Guide to Bayes' Theorem"
                 description="Build an intuition for how beliefs are updated with new evidence."
                 variant="aligned-left"
             />
-             <div className="w-full max-w-7xl mx-auto bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
+            <Card className="mb-8 border-primary/20 bg-primary/5">
+                <CardHeader>
+                    <CardTitle className="font-headline text-xl text-primary">The Inspector's Question</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <p className="text-lg">
+                        A factory has two machines. The old Machine 1 is error-prone, while the new Machine 2 is more reliable. You find a defective part on the factory floor.
+                    </p>
+                    <p className="font-bold text-xl">
+                        Given that the part is defective, what is the probability it came from the old, error-prone Machine 1?
+                    </p>
+                    <div className="pt-2 text-sm text-muted-foreground grid grid-cols-2 gap-x-4">
+                        <div><strong className="text-foreground">Production Share (Prior):</strong><br/>- Machine 1: 30%<br/>- Machine 2: 70%</div>
+                        <div><strong className="text-foreground">Defect Rate (Likelihood):</strong><br/>- Machine 1: 5%<br/>- Machine 2: 1%</div>
+                    </div>
+                </CardContent>
+            </Card>
+
+             <div className="w-full bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
                     
                     {/* Left Side: Visuals */}
@@ -257,8 +275,6 @@ export default function BayesTheoremPage() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
-
-    
