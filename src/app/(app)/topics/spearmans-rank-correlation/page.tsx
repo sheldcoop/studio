@@ -89,16 +89,12 @@ const pageData = {
       description: "A scatter plot can reveal relationships that aren't linear. Spearman's can detect a strong relationship even if the points form a curve.",
       exampleText: "Let's say we're analyzing the relationship between a custom 'Market Sentiment Score' and a stock's daily return. The return might increase faster as sentiment gets very high. A linear model (Pearson) would miss this, but Spearman's would capture the strong monotonic trend.",
       ChartComponent: SpearmanCorrelationChart as ComponentType<{ generateData: () => void }>,
-      buttonText: 'This button is not used',
+      buttonText: '',
     },
   ],
 };
 
 // --- Page Component ---
 export default function SpearmansRankCorrelationPage() {
-   const pageDataForRender = {
-    ...pageData,
-    examples: pageData.examples.map(ex => ({ ...ex, buttonText: '' }))
-  };
-  return <InteractiveTestPage {...pageDataForRender} />;
+  return <InteractiveTestPage {...pageData} />;
 }

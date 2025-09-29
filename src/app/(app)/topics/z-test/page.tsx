@@ -102,7 +102,7 @@ const pageData = {
       description: "This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It's useful for seeing if a recent change has had a statistically significant effect.",
       exampleText: "After a major platform update, you analyze the daily returns of 'Stock A' for the last 100 trading days. You want to know if its average daily return is now different from its known historical average of 0.05% over the past 10 years (with a population standard deviation of 1.2%).",
       ChartComponent: OneSampleZTestChart as ComponentType<{ generateData: () => void }>,
-      buttonText: 'This button is not used',
+      buttonText: '',
     },
     {
       id: 'two-sample',
@@ -117,14 +117,5 @@ const pageData = {
 
 // --- Page Component ---
 export default function ZTestPage() {
-    const pageDataForRender = {
-    ...pageData,
-    examples: pageData.examples.map(ex => {
-      if (ex.id === 'one-sample') {
-        return { ...ex, buttonText: '' };
-      }
-      return ex;
-    })
-  };
-  return <InteractiveTestPage {...pageDataForRender} />;
+  return <InteractiveTestPage {...pageData} />;
 }

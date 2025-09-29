@@ -93,24 +93,12 @@ const pageData = {
       description: 'This chart plots the cumulative distribution of your sample data against the ideal cumulative distribution of a perfect normal curve. The closer the two lines are, the better the fit.',
       exampleText: "We generate a sample of data and plot its Empirical Cumulative Distribution Function (ECDF). We then overlay the theoretical Cumulative Distribution Function (CDF) of a normal distribution. Toggle between a normal sample and a uniform sample to see how the ECDF's fit changes, and how the K-S statistic would capture this difference.",
       ChartComponent: KSTestChart as ComponentType<{ generateData: () => void }>,
-      buttonText: 'This button is not used', // Placeholder, functionality is in the component
+      buttonText: '', 
     },
   ],
 };
 
 // --- Page Component ---
 export default function KolmogorovSmirnovTestPage() {
-  // This component has its own buttons, so we hide the InteractiveTestPage button
-  // by passing an empty buttonText, but this is a hack.
-  // A better solution might involve conditional rendering in InteractiveTestPage
-  const pageDataForRender = {
-    ...pageData,
-    examples: pageData.examples.map(ex => ({ ...ex, buttonText: '' }))
-  };
-
-  return (
-    <>
-      <InteractiveTestPage {...pageDataForRender} />
-    </>
-  );
+  return <InteractiveTestPage {...pageData} />;
 }

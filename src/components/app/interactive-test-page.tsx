@@ -65,9 +65,11 @@ function ExampleContent({ example }: { example: Example }) {
           <div className="flex-grow">
             <DynamicChart key={key} generateData={generateData} />
           </div>
-          <div className="mt-4 flex-shrink-0 text-center">
-            <Button onClick={generateData}>{example.buttonText}</Button>
-          </div>
+          {example.buttonText && (
+            <div className="mt-4 flex-shrink-0 text-center">
+              <Button onClick={generateData}>{example.buttonText}</Button>
+            </div>
+          )}
         </div>
       </div>
     );

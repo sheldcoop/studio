@@ -7,8 +7,9 @@
  * @param n - The number of data points.
  * @returns An array of normally distributed numbers.
  */
-export const generateNormalData = (mean: number, stdDev: number, n: number) =>
-  Array.from(
+export const generateNormalData = (mean: number, stdDev: number, n: number) => {
+  if (stdDev < 0 || n <= 0) return [];
+  return Array.from(
     { length: n },
     () =>
       mean +
@@ -18,6 +19,7 @@ export const generateNormalData = (mean: number, stdDev: number, n: number) =>
           (Math.random() * 2 - 1) +
           (Math.random() * 2 - 1))
   );
+}
 
 /**
  * Generates skewed data using a log-normal distribution.
@@ -29,6 +31,7 @@ export const generateNormalData = (mean: number, stdDev: number, n: number) =>
  * @returns An array of log-normally distributed numbers.
  */
 export const generateLogNormalData = (mu: number, sigma: number, n: number) => {
+  if (sigma < 0 || n <= 0) return [];
   const data = [];
   for (let i = 0; i < n; i++) {
     const u1 = Math.random();
@@ -50,6 +53,7 @@ export const generateLogNormalData = (mu: number, sigma: number, n: number) => {
  * @returns An array of uniformly distributed numbers.
  */
 export const generateUniformData = (min: number, max: number, n: number) => {
+    if (n <= 0) return [];
     return Array.from({ length: n }, () => min + Math.random() * (max - min));
 }
 
@@ -60,6 +64,7 @@ export const generateUniformData = (min: number, max: number, n: number) => {
  * @returns An array of exponentially distributed numbers.
  */
 export const generateExponentialData = (rate: number, n: number) => {
+    if (rate <= 0 || n <= 0) return [];
     return Array.from({ length: n }, () => -Math.log(Math.random()) / rate);
 }
 
@@ -70,6 +75,7 @@ export const generateExponentialData = (rate: number, n: number) => {
  * @returns An array of Poisson-distributed numbers.
  */
 export const generatePoissonData = (lambda: number, n: number) => {
+    if (lambda < 0 || n <= 0) return [];
     const data = [];
     for (let i = 0; i < n; i++) {
         let L = Math.exp(-lambda);
@@ -174,5 +180,3 @@ export const inverseStandardNormalCdf = (p: number): number => {
         return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / ((((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1));
     }
 }
-
-    

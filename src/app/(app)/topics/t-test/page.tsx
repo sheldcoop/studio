@@ -254,22 +254,12 @@ const pageData = {
       description: 'This test compares the mean of a single group to a known, fixed number. In finance, you can use this to check if a fund\'s actual performance matches its advertised claims or a specific benchmark.',
       exampleText: "A hedge fund claims its average monthly return is 1.5%. You test a sample of its returns from the last 24 months to see if the average is statistically different from their 1.5% claim.",
       ChartComponent: OneSampleTestChart as ComponentType<{ generateData: () => void }>,
-      buttonText: "This button is not used",
+      buttonText: "",
     },
   ],
 };
 
 // --- Page Component ---
 export default function TTestPage() {
-  const pageDataForRender = {
-    ...pageData,
-    examples: pageData.examples.map(ex => {
-      if (ex.id === 'one-sample') {
-        return { ...ex, buttonText: '' };
-      }
-      return ex;
-    })
-  };
-
-  return <InteractiveTestPage {...pageDataForRender} />;
+  return <InteractiveTestPage {...pageData} />;
 }

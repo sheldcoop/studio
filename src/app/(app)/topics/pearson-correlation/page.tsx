@@ -97,16 +97,12 @@ const pageData = {
       description: 'A scatter plot is the best way to visualize the relationship between two variables. The tighter the points are to forming a straight line, the stronger the linear correlation.',
       exampleText: "We plot the daily returns of two assets. By adjusting the slider, you can change the underlying correlation between their returns and see how it affects the scatter plot. This is fundamental to pairs trading, where you look for highly correlated assets whose prices have temporarily diverged.",
       ChartComponent: PearsonCorrelationChart as ComponentType<{ generateData: () => void }>,
-      buttonText: 'This button is not used', // This chart has its own controls
+      buttonText: '', 
     },
   ],
 };
 
 // --- Page Component ---
 export default function PearsonCorrelationPage() {
-   const pageDataForRender = {
-    ...pageData,
-    examples: pageData.examples.map(ex => ({ ...ex, buttonText: '' }))
-  };
-  return <InteractiveTestPage {...pageDataForRender} />;
+  return <InteractiveTestPage {...pageData} />;
 }
