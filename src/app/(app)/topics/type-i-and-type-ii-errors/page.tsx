@@ -130,14 +130,17 @@ export default function TypeIAndIIErrorsPage() {
       <div className="mx-auto max-w-5xl space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">The Trader's Dilemma: Noise or Signal?</CardTitle>
+            <CardTitle className="font-headline">The Scientist's Dilemma: Signal or Noise?</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              In trading and quantitative finance, every decision is a judgment call under uncertainty. When you test a new trading strategy, you're asking a fundamental question: "Does this strategy actually have an edge, or did it just get lucky?" Hypothesis testing gives us a framework to answer this, but it's never foolproof. There's always a risk of making the wrong call.
+              In science, finance, and everyday life, we constantly have to make decisions based on limited information. When a pharmaceutical company tests a new drug, they're asking a fundamental question: "Does this drug actually work, or were the trial results just a fluke?" Hypothesis testing gives us a framework to answer this, but it's never foolproof.
             </p>
             <p>
-              These potential mistakes are categorized into two types, and understanding them is critical for risk management and strategy evaluation.
+              There's always a risk of making the wrong call. These potential mistakes are categorized into two types, and understanding them is critical for anyone who works with data.
+            </p>
+             <p className="border-l-4 border-primary pl-4 text-muted-foreground">
+              Let's use a running example: A company develops a new drug to lower cholesterol. The **Null Hypothesis (H₀)** is that the drug has no effect. The **Alternative Hypothesis (H₁)** is that the drug works.
             </p>
           </CardContent>
         </Card>
@@ -150,7 +153,7 @@ export default function TypeIAndIIErrorsPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="mb-4">This is when you <strong className="text-destructive-foreground/90">incorrectly reject the null hypothesis</strong>. You conclude there is an effect when, in reality, there isn't one.</p>
-                    <p><strong className="font-semibold text-foreground">Trading Analogy:</strong> You test a new trading strategy and your results are statistically significant (e.g., p-value &lt; 0.05). You conclude the strategy has a real profitable edge (rejecting the null hypothesis that it has no edge). You deploy it with real capital, but it proceeds to lose money. You mistook random market noise for a genuine signal. You had a false alarm.</p>
+                    <p><strong className="font-semibold text-foreground">Drug Example:</strong> The clinical trial results are statistically significant (e.g., p-value &lt; 0.05). The company rejects the null hypothesis and concludes the drug works. They spend millions launching and marketing it, only to find out later that the initial results were a statistical fluke. The drug is useless. This is a costly false alarm.</p>
                 </CardContent>
             </Card>
              <Card className="border-yellow-500/50 bg-yellow-500/5">
@@ -160,7 +163,7 @@ export default function TypeIAndIIErrorsPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="mb-4">This is when you <strong className="text-yellow-700 dark:text-yellow-300">incorrectly fail to reject the null hypothesis</strong>. You conclude there is no effect when, in reality, there is one.</p>
-                     <p><strong className="font-semibold text-foreground">Trading Analogy:</strong> You backtest a new strategy, and the results are not statistically significant. You conclude the strategy has no edge (failing to reject the null). You shelve the idea. In reality, the strategy did have a small but consistent edge, but your test wasn't powerful enough to detect it. You missed a real opportunity.</p>
+                     <p><strong className="font-semibold text-foreground">Drug Example:</strong> The trial results are not statistically significant. The company fails to reject the null hypothesis and concludes the drug has no effect. They abandon the project. In reality, the drug had a small but consistent positive effect, but the test wasn't powerful enough to detect it. A potentially life-saving medicine was missed.</p>
                 </CardContent>
             </Card>
         </div>
@@ -171,7 +174,7 @@ export default function TypeIAndIIErrorsPage() {
                  <CardDescription>Adjust the sliders to see how α and β are inversely related.</CardDescription>
             </CardHeader>
             <CardContent>
-                <p className="mb-6 text-muted-foreground">The chart below visualizes two distributions. The gray curve (H₀) represents a world where your strategy has no effect. The green curve (H₁) represents a world where it has a real, positive effect. The vertical line is your decision boundary. Any result to the right of it, you conclude there's an effect. But notice how the curves overlap—this is where errors happen.</p>
+                <p className="mb-6 text-muted-foreground">The chart below visualizes two possible realities. The gray curve (H₀) represents a world where the drug has **no effect**. The green curve (H₁) represents a world where it has a **real, positive effect**. The vertical line is your decision boundary based on your test results. If a result falls to the right of the line, you conclude the drug works. But notice how the curves overlap—this is where errors happen.</p>
                 <DynamicErrorChart />
             </CardContent>
         </Card>
