@@ -23,7 +23,7 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
     let rawData;
     let calculatedMean: number;
     let calculatedStdDev: number;
-    const numPoints = 500;
+    const numPoints = 2000;
 
     switch (distribution) {
       case 'poisson':
