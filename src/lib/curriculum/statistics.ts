@@ -190,7 +190,7 @@ export const statisticsTopics: Topic[] = [
     title: 'The Central Limit Theorem (CLT)',
     href: '/topics/central-limit-theorem',
     icon: FunctionSquare,
-    description: '',
+    description: 'Discover how order emerges from chaos.',
     category: 'sub-topic',
     parent: 'stats-foundations',
   },

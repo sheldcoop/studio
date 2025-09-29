@@ -112,7 +112,7 @@ export default function TopicPage() {
         <div className="mx-auto max-w-4xl">
             <PageHeader title={title} description={description} variant="aligned-left" />
             <div className="flex h-96 items-center justify-center rounded-lg border border-dashed mt-8">
-                <p className="text-muted-foreground">Topic content will go here.</p>
+                <p className="text-muted-foreground">This topic is under construction. Content will be added here soon.</p>
             </div>
         </div>
       );

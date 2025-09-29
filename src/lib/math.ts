@@ -36,12 +36,33 @@ export const generateLogNormalData = (mu: number, sigma: number, n: number) => {
 };
 
 /**
+ * Generates uniformly distributed random data.
+ * @param min - The minimum value.
+ * @param max - The maximum value.
+ * @param n - The number of data points.
+ * @returns An array of uniformly distributed numbers.
+ */
+export const generateUniformData = (min: number, max: number, n: number) => {
+    return Array.from({ length: n }, () => min + Math.random() * (max - min));
+}
+
+/**
+ * Generates exponentially distributed random data.
+ * @param rate - The rate parameter (lambda).
+ * @param n - The number of data points.
+ * @returns An array of exponentially distributed numbers.
+ */
+export const generateExponentialData = (rate: number, n: number) => {
+    return Array.from({ length: n }, () => -Math.log(Math.random()) / rate);
+}
+
+/**
  * Calculates the mean of a set of numbers.
  * @param data - An array of numbers.
  * @returns The mean of the numbers.
  */
 export const getMean = (data: number[]) =>
-  data.reduce((a, b) => a + b, 0) / data.length;
+  data.length > 0 ? data.reduce((a, b) => a + b, 0) / data.length : 0;
 
 /**
  * Calculates the sample variance of a set of numbers.
@@ -55,4 +76,18 @@ export const getVariance = (data: number[]) => {
     data.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
     (data.length - 1)
   );
+};
+
+
+/**
+ * Calculates the standard normal cumulative distribution function (CDF).
+ * @param x The value to calculate the CDF for.
+ * @returns The probability P(Z <= x) for a standard normal variable Z.
+ */
+export const standardNormalCdf = (x: number): number => {
+    const t = 1 / (1 + 0.2316419 * Math.abs(x));
+    const d = 0.3989423 * Math.exp(-x * x / 2);
+    let prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+    if (x > 0) prob = 1 - prob;
+    return prob;
 };
