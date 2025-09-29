@@ -18,9 +18,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts';
 import { standardNormalCdf, standardNormalPdf, inverseStandardNormalCdf } from '@/lib/math';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+type ZToPType = "left" | "right" | "two-tailed";
 
 // Generate data for the normal curve visualization
-const generateCurveData = (shadeFrom: number | null, shadeTo: number | null) => {
+const generateCurveData = (shadeFrom: number | null, shadeTo: number | null, zToPType: ZToPType = "left", zScore: number | null = null) => {
   const data = [];
   const points = 400;
   const range = 8;
@@ -31,8 +34,13 @@ const generateCurveData = (shadeFrom: number | null, shadeTo: number | null) => 
     const x = start + i * step;
     const y = standardNormalPdf(x);
     const point: { x: number; y: number; shaded?: number } = { x, y };
-
-    if (shadeFrom !== null && shadeTo !== null && x >= shadeFrom && x <= shadeTo) {
+    
+    if (zToPType === "two-tailed" && zScore !== null) {
+        const absZ = Math.abs(zScore);
+        if (x <= -absZ || x >= absZ) {
+            point.shaded = y;
+        }
+    } else if (shadeFrom !== null && shadeTo !== null && x >= shadeFrom && x <= shadeTo) {
       point.shaded = y;
     }
     data.push(point);
@@ -41,8 +49,9 @@ const generateCurveData = (shadeFrom: number | null, shadeTo: number | null) => 
 };
 
 // Chart Component for Visualization
-const ZScoreChart = ({ shadeFrom, shadeTo }: { shadeFrom: number | null, shadeTo: number | null }) => {
-  const chartData = useMemo(() => generateCurveData(shadeFrom, shadeTo), [shadeFrom, shadeTo]);
+const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore }: { shadeFrom: number | null, shadeTo: number | null, zToPType?: ZToPType, zScore?: number | null }) => {
+  const chartData = useMemo(() => generateCurveData(shadeFrom, shadeTo, zToPType, zScore), [shadeFrom, shadeTo, zToPType, zScore]);
+  const absZScore = zScore !== null ? Math.abs(zScore) : null;
 
   return (
     <ChartContainer config={{}} className="h-[250px] w-full">
@@ -61,12 +70,23 @@ const ZScoreChart = ({ shadeFrom, shadeTo }: { shadeFrom: number | null, shadeTo
         </defs>
         <Area type="monotone" dataKey="y" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted-foreground))" fillOpacity={0.2} strokeWidth={1.5} dot={false} name="Normal Curve" />
         <Area type="monotone" dataKey="shaded" stroke="hsl(var(--primary))" fill="url(#fillShaded)" strokeWidth={2} dot={false} name="P-Value Area" />
-        {shadeFrom !== null && shadeTo !== null && shadeFrom !== -4 && (
-            <ReferenceLine x={shadeFrom} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${shadeFrom.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+        
+        {zToPType === 'two-tailed' && absZScore !== null ? (
+            <>
+                <ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${-absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                <ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            </>
+        ) : (
+            <>
+                {shadeFrom !== null && shadeTo !== null && shadeFrom !== -4 && shadeFrom !== 4 && (
+                    <ReferenceLine x={shadeFrom} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${shadeFrom.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                )}
+                {shadeTo !== null && shadeFrom !== null && shadeTo !== 4 && shadeTo !== -4 && (
+                  <ReferenceLine x={shadeTo} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${shadeTo.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                )}
+            </>
         )}
-        {shadeTo !== null && (
-          <ReferenceLine x={shadeTo} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${shadeTo.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
-        )}
+
       </AreaChart>
     </ChartContainer>
   );
@@ -96,7 +116,7 @@ const ZTable = () => {
             <table className="w-full text-center text-xs">
               <thead>
                 <tr className="bg-muted">
-                  <th className="sticky top-0 p-2 bg-muted">Z</th>
+                  <th className="sticky top-0 p-2 bg-muted z-10">Z</th>
                   {header.map(h => <th key={h} className="sticky top-0 p-2 bg-muted">{h}</th>)}
                 </tr>
               </thead>
@@ -120,6 +140,8 @@ export default function ZTablePage() {
   // State for Z -> P
   const [zScore, setZScore] = useState<number | null>(1.96);
   const [pValue, setPValue] = useState<number | null>(null);
+  const [zToPType, setZToPType] = useState<ZToPType>("left");
+  const [chartShade, setChartShade] = useState<{from: number | null, to: number | null}>({from: -4, to: 1.96});
 
   // State for P -> Z
   const [inputPValue, setInputPValue] = useState<number | null>(0.975);
@@ -132,11 +154,27 @@ export default function ZTablePage() {
   
   useEffect(() => {
     if (zScore !== null && !isNaN(zScore)) {
-      setPValue(standardNormalCdf(zScore));
+      const leftP = standardNormalCdf(zScore);
+      switch(zToPType) {
+        case 'left':
+            setPValue(leftP);
+            setChartShade({from: -4, to: zScore});
+            break;
+        case 'right':
+            setPValue(1 - leftP);
+            setChartShade({from: zScore, to: 4});
+            break;
+        case 'two-tailed':
+            const absZ = Math.abs(zScore);
+            const p = standardNormalCdf(-absZ);
+            setPValue(2 * p);
+            setChartShade({from: null, to: null}); // Shading is handled by type in chart component
+            break;
+      }
     } else {
         setPValue(null);
     }
-  }, [zScore]);
+  }, [zScore, zToPType]);
 
    useEffect(() => {
     if (inputPValue !== null && !isNaN(inputPValue) && inputPValue > 0 && inputPValue < 1) {
@@ -192,8 +230,8 @@ export default function ZTablePage() {
 
         <Tabs defaultValue="z-to-p">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="z-to-p">Z → P (Left Tail)</TabsTrigger>
-            <TabsTrigger value="p-to-z">P → Z</TabsTrigger>
+            <TabsTrigger value="z-to-p">Z-Score to P-Value</TabsTrigger>
+            <TabsTrigger value="p-to-z">P-Value to Z-Score</TabsTrigger>
             <TabsTrigger value="between">Between Z-Scores</TabsTrigger>
           </TabsList>
           
@@ -201,22 +239,38 @@ export default function ZTablePage() {
             <Card>
               <CardHeader>
                 <CardTitle>Z-Score to P-Value Calculator</CardTitle>
-                <CardDescription>Find the cumulative probability (area to the left) for a given Z-score.</CardDescription>
+                <CardDescription>Find the cumulative probability (area under the curve) for a given Z-score.</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Select Area</Label>
+                     <RadioGroup value={zToPType} onValueChange={(val: ZToPType) => setZToPType(val)} className="grid grid-cols-3 gap-2">
+                        <div>
+                            <RadioGroupItem value="left" id="left" className="peer sr-only" />
+                            <Label htmlFor="left" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Left Tail</Label>
+                        </div>
+                        <div>
+                            <RadioGroupItem value="right" id="right" className="peer sr-only" />
+                            <Label htmlFor="right" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Right Tail</Label>
+                        </div>
+                         <div>
+                            <RadioGroupItem value="two-tailed" id="two-tailed" className="peer sr-only" />
+                            <Label htmlFor="two-tailed" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Two-Tailed</Label>
+                        </div>
+                    </RadioGroup>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="z-score">Enter Z-Score</Label>
                     <Input id="z-score" type="number" value={zScore ?? ''} onChange={(e) => setZScore(parseFloat(e.target.value))} placeholder="e.g., 1.96" />
                   </div>
                   <div className="rounded-lg bg-muted p-4 text-center">
-                    <p className="text-sm text-muted-foreground">Cumulative Probability (P-Value)</p>
+                    <p className="text-sm text-muted-foreground">Calculated Probability (P-Value)</p>
                     <p className="text-3xl font-bold font-mono tracking-tight text-primary">{pValue !== null ? pValue.toFixed(4) : '---'}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground">This is the area under the standard normal curve to the left of the specified Z-score. It represents P(Z ≤ z).</p>
                 </div>
                 <div>
-                  <DynamicZScoreChart shadeFrom={-4} shadeTo={zScore} />
+                  <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zToPType={zToPType} zScore={zScore} />
                 </div>
               </CardContent>
             </Card>
@@ -226,7 +280,7 @@ export default function ZTablePage() {
              <Card>
               <CardHeader>
                 <CardTitle>P-Value to Z-Score Calculator</CardTitle>
-                <CardDescription>Find the Z-score for a given cumulative probability.</CardDescription>
+                <CardDescription>Find the Z-score for a given cumulative probability (area to the left).</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
