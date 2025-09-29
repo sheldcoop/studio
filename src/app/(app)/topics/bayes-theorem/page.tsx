@@ -83,11 +83,11 @@ const CalculationBreakdown = ({ currentState }: { currentState: number }) => {
     const p_m1_d = (p_d_m1 * p_m1) / p_d;
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline">Calculation Breakdown</CardTitle>
+        <Card className="mt-6">
+            <CardHeader className="pb-2">
+                <CardTitle className="font-headline text-lg">Calculation Breakdown</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
                 <CalculationStep
                     title="1. Prior & Likelihood (Given)"
                     calculation={<>P(M1) & P(D|M1)</>}
@@ -177,8 +177,8 @@ export default function BayesTheoremPage() {
                 description="Build an intuition for how beliefs are updated with new evidence."
                 variant="aligned-left"
             />
-             <div className="w-full max-w-6xl mx-auto bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+             <div className="w-full max-w-7xl mx-auto bg-card text-card-foreground rounded-2xl shadow-xl p-6 lg:p-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
                     
                     {/* Left Side: Visuals */}
                     <div className="space-y-6">
@@ -247,6 +247,8 @@ export default function BayesTheoremPage() {
                             </span>
                         </div>
 
+                        <CalculationBreakdown currentState={currentState} />
+
                         <div className="text-center mt-8">
                             <Button onClick={handleNext} size="lg" className="w-full max-w-xs shadow-lg transform hover:scale-105">
                                 {step.buttonText}
@@ -255,9 +257,8 @@ export default function BayesTheoremPage() {
                     </div>
                 </div>
             </div>
-            <div className="w-full max-w-6xl mx-auto mt-8">
-                <CalculationBreakdown currentState={currentState} />
-            </div>
         </>
     );
 }
+
+    
