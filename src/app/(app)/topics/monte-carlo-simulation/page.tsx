@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -198,150 +199,148 @@ export default function MonteCarloSimulationPage() {
 
 
   return (
-    <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-                displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
-      <div className="mx-auto max-w-5xl space-y-8">
-        <PageHeader
-          title="Monte Carlo Simulation for Risk Management"
-          description="Using randomness to quantify the potential losses of a trading portfolio."
-          variant="aligned-left"
+    <div className="mx-auto max-w-5xl space-y-8">
+        <Script
+            id="mathjax-config"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+            __html: `
+                window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+                    displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+                },
+                svg: {
+                    fontCache: 'global'
+                }
+                };
+            `,
+            }}
         />
-        <Card>
+        <Script
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+            strategy="afterInteractive"
+            id="mathjax-script"
+        />
+      <PageHeader
+        title="Monte Carlo Simulation for Risk Management"
+        description="Using randomness to quantify the potential losses of a trading portfolio."
+        variant="aligned-left"
+      />
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline flex items-center gap-2"><Lightbulb className="text-primary"/> The Risk Manager's Story</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
+          <p>
+              Imagine you are a risk manager at a hedge fund. Your team manages a $1,000,000 "Blue Chip Tech" portfolio, holding stocks like Apple, Microsoft, Google, Amazon, NVIDIA, Meta, Tesla, etc. The CEO asks you a simple but crucial question: "How much money could this portfolio lose over the next year in a bad-case scenario?"
+          </p>
+          <p>
+              The future is uncertain. You can't give a single, definitive answer. This is where Monte Carlo simulation comes in. Instead of predicting one future, you simulate thousands of possible futures.
+          </p>
+          <p>
+              First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or $\mu$) and its annual volatility (the 'randomness' or $\sigma$). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card>
           <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><Lightbulb className="text-primary"/> The Risk Manager's Story</CardTitle>
+              <CardTitle className="font-headline">The Math Behind the Magic</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
-            <p>
-                Imagine you are a risk manager at a hedge fund. Your team manages a $1,000,000 "Blue Chip Tech" portfolio, holding stocks like Apple, Microsoft, Google, Amazon, NVIDIA, Meta, Tesla, etc. The CEO asks you a simple but crucial question: "How much money could this portfolio lose over the next year in a bad-case scenario?"
-            </p>
-            <p>
-                The future is uncertain. You can't give a single, definitive answer. This is where Monte Carlo simulation comes in. Instead of predicting one future, you simulate thousands of possible futures.
-            </p>
-            <p>
-                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or $\mu$) and its annual volatility (the 'randomness' or $\sigma$). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
-            </p>
+          <CardContent className="space-y-4">
+               <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion. This formula has two main parts: one that captures the predictable trend and another that adds randomness.</p>
+               
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                  <div className="rounded-lg bg-muted/50 p-4">
+                      <h4 className="font-semibold text-center text-primary">1. The Predictable "Drift"</h4>
+                      <p className="text-sm text-center text-muted-foreground mb-2">The expected return over time.</p>
+                      <div className="font-mono text-center text-lg p-2 bg-background rounded-md">
+                         {"$$ (\\mu - \\frac{\\sigma^2}{2})T $$"}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">This term represents the portfolio's expected growth based on its average return ($\mu$), adjusted downwards by half its variance ($\sigma^2$)—a mathematical quirk of this model—over the time period T.</p>
+                  </div>
+                  <div className="rounded-lg bg-muted/50 p-4">
+                      <h4 className="font-semibold text-center text-primary">2. The Random "Shock"</h4>
+                      <p className="text-sm text-center text-muted-foreground mb-2">The unpredictable market volatility.</p>
+                      <div className="font-mono text-center text-lg p-2 bg-background rounded-md">
+                         {"$$ \\sigma Z \\sqrt{T} $$"}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">This term introduces randomness. It's the portfolio's volatility ($\sigma$) multiplied by a random number from a normal distribution ($Z$) and scaled by the square root of the time period $T$.</p>
+                  </div>
+               </div>
+
+                <p className="mt-4 text-muted-foreground">
+                  By combining these and exponentiating the result, we simulate thousands of possible final values. We can then calculate the 95% VaR by finding the 5th percentile of our results—the value that separates the worst 5% of outcomes from the best 95%.
+                </p>
           </CardContent>
-        </Card>
-        
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline">The Math Behind the Magic</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                 <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion. This formula has two main parts: one that captures the predictable trend and another that adds randomness.</p>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    <div className="rounded-lg bg-muted/50 p-4">
-                        <h4 className="font-semibold text-center text-primary">1. The Predictable "Drift"</h4>
-                        <p className="text-sm text-center text-muted-foreground mb-2">The expected return over time.</p>
-                        <div className="font-mono text-center text-lg p-2 bg-background rounded-md">
-                           {"$$ (\\mu - \\frac{\\sigma^2}{2})T $$"}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-2">This term represents the portfolio's expected growth based on its average return ($\mu$), adjusted downwards by half its variance ($\sigma^2$)—a mathematical quirk of this model—over the time period T.</p>
-                    </div>
-                    <div className="rounded-lg bg-muted/50 p-4">
-                        <h4 className="font-semibold text-center text-primary">2. The Random "Shock"</h4>
-                        <p className="text-sm text-center text-muted-foreground mb-2">The unpredictable market volatility.</p>
-                        <div className="font-mono text-center text-lg p-2 bg-background rounded-md">
-                           {"$$ \\sigma Z \\sqrt{T} $$"}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-2">This term introduces randomness. It's the portfolio's volatility ($\sigma$) multiplied by a random number from a normal distribution ($Z$) and scaled by the square root of the time period $T$.</p>
-                    </div>
-                 </div>
+      </Card>
 
-                  <p className="mt-4 text-muted-foreground">
-                    By combining these and exponentiating the result, we simulate thousands of possible final values. We can then calculate the 95% VaR by finding the 5th percentile of our results—the value that separates the worst 5% of outcomes from the best 95%.
-                  </p>
-            </CardContent>
-        </Card>
+      <Card>
+          <CardHeader>
+              <CardTitle className="font-headline flex items-center gap-2"><ShieldCheck className="text-primary" /> Interactive Value at Risk (VaR) Simulator</CardTitle>
+              <CardDescription>You are the risk manager. Adjust the portfolio's expected return and volatility to see how it impacts potential losses.</CardDescription>
+          </CardHeader>
+          <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                  <div className="space-y-2">
+                      <Label>Initial Portfolio Value ($)</Label>
+                      <Input type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} disabled={isSimulating} />
+                  </div>
+                   <div className="space-y-2">
+                      <Label>Expected Annual Return ($\mu$): {(mu * 100).toFixed(1)}%</Label>
+                      <Slider value={[mu]} onValueChange={v => setMu(v[0])} min={-0.10} max={0.25} step={0.005} disabled={isSimulating} />
+                  </div>
+                   <div className="space-y-2">
+                      <Label>Expected Annual Volatility ($\sigma$): {(sigma * 100).toFixed(1)}%</Label>
+                      <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} disabled={isSimulating}/>
+                  </div>
+              </div>
+              
+              <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center mb-6">
+                  <div className="flex gap-2">
+                      <Button onClick={() => addSimulations(1000)} disabled={isSimulating || simulationResults.length >= SIMULATION_CAP}><Plus className="h-4 w-4 mr-2" /> 1k</Button>
+                      <Button onClick={() => addSimulations(5000)} disabled={isSimulating || simulationResults.length >= SIMULATION_CAP}><Plus className="h-4 w-4 mr-2" /> 5k</Button>
+                  </div>
+                  <Button onClick={() => setIsSimulating(prev => !prev)} variant={isSimulating ? "destructive" : "default"} disabled={simulationResults.length >= SIMULATION_CAP}>
+                      {isSimulating ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                      {isSimulating ? 'Pause Simulation' : 'Run Simulation'}
+                  </Button>
+                  <Button onClick={resetSimulation} variant="outline"><RefreshCw className="h-4 w-4 mr-2" /> Reset</Button>
+              </div>
+              
+              <DynamicVaRChart data={simulationResults} initialValue={initialValue} varValue={varResult?.value || null} />
+              
+               <div className="mt-4 text-center text-sm text-muted-foreground">
+                  <p>Total Simulations: <span className="font-bold text-lg text-foreground">{simulationResults.length.toLocaleString()}</span> / {SIMULATION_CAP.toLocaleString()}</p>
+              </div>
 
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline flex items-center gap-2"><ShieldCheck className="text-primary" /> Interactive Value at Risk (VaR) Simulator</CardTitle>
-                <CardDescription>You are the risk manager. Adjust the portfolio's expected return and volatility to see how it impacts potential losses.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                    <div className="space-y-2">
-                        <Label>Initial Portfolio Value ($)</Label>
-                        <Input type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} disabled={isSimulating} />
-                    </div>
-                     <div className="space-y-2">
-                        <Label>Expected Annual Return ($\mu$): {(mu * 100).toFixed(1)}%</Label>
-                        <Slider value={[mu]} onValueChange={v => setMu(v[0])} min={-0.10} max={0.25} step={0.005} disabled={isSimulating} />
-                    </div>
-                     <div className="space-y-2">
-                        <Label>Expected Annual Volatility ($\sigma$): {(sigma * 100).toFixed(1)}%</Label>
-                        <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} disabled={isSimulating}/>
-                    </div>
-                </div>
-                
-                <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center mb-6">
-                    <div className="flex gap-2">
-                        <Button onClick={() => addSimulations(1000)} disabled={isSimulating || simulationResults.length >= SIMULATION_CAP}><Plus className="h-4 w-4 mr-2" /> 1k</Button>
-                        <Button onClick={() => addSimulations(5000)} disabled={isSimulating || simulationResults.length >= SIMULATION_CAP}><Plus className="h-4 w-4 mr-2" /> 5k</Button>
-                    </div>
-                    <Button onClick={() => setIsSimulating(prev => !prev)} variant={isSimulating ? "destructive" : "default"} disabled={simulationResults.length >= SIMULATION_CAP}>
-                        {isSimulating ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
-                        {isSimulating ? 'Pause Simulation' : 'Run Simulation'}
-                    </Button>
-                    <Button onClick={resetSimulation} variant="outline"><RefreshCw className="h-4 w-4 mr-2" /> Reset</Button>
-                </div>
-                
-                <DynamicVaRChart data={simulationResults} initialValue={initialValue} varValue={varResult?.value || null} />
-                
-                 <div className="mt-4 text-center text-sm text-muted-foreground">
-                    <p>Total Simulations: <span className="font-bold text-lg text-foreground">{simulationResults.length.toLocaleString()}</span> / {SIMULATION_CAP.toLocaleString()}</p>
-                </div>
-
-                {varResult && (
-                     <Alert variant="destructive" className="mt-6">
-                        <TrendingDown className="h-4 w-4" />
-                        <AlertTitle className="font-headline text-lg">95% Value at Risk (1-Year)</AlertTitle>
-                        <AlertDescription className="mt-2 text-base">
-                            <p>
-                                **Value at Risk (VaR)** is a statistical measure of the risk of loss for an investment or portfolio. It estimates how much a set of investments might lose, given normal market conditions, in a set time period.
-                            </p>
-                            <p className="mt-2">
-                                Based on your {simulationResults.length.toLocaleString()} simulations, you can report to the CEO: "We are 95% confident that our Blue Chip Tech portfolio will not lose more than <strong>${varResult.loss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> over the next year."
-                            </p>
-                            <p className="mt-2 text-sm">This corresponds to a worst-case portfolio value of ${varResult.value.toLocaleString(undefined, { maximumFractionDigits: 0 })} at the 5th percentile.</p>
-                        </AlertDescription>
-                    </Alert>
-                )}
-            </CardContent>
-        </Card>
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline">Convergence and the Law of Large Numbers</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <p className="text-muted-foreground">This simulation is a direct application of the <Link href="/topics/law-of-large-numbers" className="text-primary hover:underline">Law of Large Numbers</Link>. Notice how when you run the simulation, the calculated VaR value might jump around a lot at first. As the number of simulations increases, the distribution becomes smoother and the VaR estimate converges towards a stable value.</p>
-                <p className="text-muted-foreground">This is why a high number of simulations is crucial. A simulation with only 100 paths is unreliable, but a simulation with 50,000 paths gives a much more robust and trustworthy estimate of the true risk.</p>
-            </CardContent>
-        </Card>
-      </div>
-    </>
+              {varResult && (
+                   <Alert variant="destructive" className="mt-6">
+                      <TrendingDown className="h-4 w-4" />
+                      <AlertTitle className="font-headline text-lg">95% Value at Risk (1-Year)</AlertTitle>
+                      <AlertDescription className="mt-2 text-base">
+                          <p>
+                              **Value at Risk (VaR)** is a statistical measure of the risk of loss for an investment or portfolio. It estimates how much a set of investments might lose, given normal market conditions, in a set time period.
+                          </p>
+                          <p className="mt-2">
+                              Based on your {simulationResults.length.toLocaleString()} simulations, you can report to the CEO: "We are 95% confident that our Blue Chip Tech portfolio will not lose more than <strong>${varResult.loss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> over the next year."
+                          </p>
+                          <p className="mt-2 text-sm">This corresponds to a worst-case portfolio value of ${varResult.value.toLocaleString(undefined, { maximumFractionDigits: 0 })} at the 5th percentile.</p>
+                      </AlertDescription>
+                  </Alert>
+              )}
+          </CardContent>
+      </Card>
+      <Card>
+          <CardHeader>
+              <CardTitle className="font-headline">Convergence and the Law of Large Numbers</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+              <p className="text-muted-foreground">This simulation is a direct application of the <Link href="/topics/law-of-large-numbers" className="text-primary hover:underline">Law of Large Numbers</Link>. Notice how when you run the simulation, the calculated VaR value might jump around a lot at first. As the number of simulations increases, the distribution becomes smoother and the VaR estimate converges towards a stable value.</p>
+              <p className="text-muted-foreground">This is why a high number of simulations is crucial. A simulation with only 100 paths is unreliable, but a simulation with 50,000 paths gives a much more robust and trustworthy estimate of the true risk.</p>
+          </CardContent>
+      </Card>
+    </div>
   );
 }

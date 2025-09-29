@@ -19,11 +19,17 @@ import Script from 'next/script';
 export default function MLEPage() {
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
+      <PageHeader
+        title="Maximum Likelihood Estimation (MLE)"
+        description="A foundational method for finding the best model parameters to fit your data."
+        variant="aligned-left"
+      />
+      <div className="mx-auto max-w-5xl space-y-8">
+        <Script
+          id="mathjax-config"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
             window.MathJax = {
               tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -34,19 +40,13 @@ export default function MLEPage() {
               }
             };
           `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
-      <PageHeader
-        title="Maximum Likelihood Estimation (MLE)"
-        description="A foundational method for finding the best model parameters to fit your data."
-        variant="aligned-left"
-      />
-      <div className="mx-auto max-w-5xl space-y-8">
+          }}
+        />
+        <Script
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+          strategy="afterInteractive"
+          id="mathjax-script"
+        />
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">
