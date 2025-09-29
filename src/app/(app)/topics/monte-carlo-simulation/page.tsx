@@ -163,7 +163,7 @@ export default function MonteCarloSimulationPage() {
                 <CardDescription>You are the risk manager. Adjust the portfolio's expected return and volatility to see how it impacts potential losses.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <div className="space-y-2">
                         <Label htmlFor="initial-value">Initial Portfolio Value ($)</Label>
                         <Input id="initial-value" type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} />
@@ -176,6 +176,10 @@ export default function MonteCarloSimulationPage() {
                         <Label>Expected Annual Volatility (σ): {(sigma * 100).toFixed(1)}%</Label>
                         <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} />
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="num-simulations">Number of Simulations</Label>
+                        <Input id="num-simulations" type="number" value={numSimulations} max={50000} step={1000} onChange={e => setNumSimulations(Number(e.target.value))} />
+                    </div>
                 </div>
                 <Button onClick={handleRunSimulation} className="w-full mb-6">Run {numSimulations.toLocaleString()} Simulations</Button>
                 
@@ -186,7 +190,12 @@ export default function MonteCarloSimulationPage() {
                         <TrendingDown className="h-4 w-4" />
                         <AlertTitle className="font-headline text-lg">95% Value at Risk (1-Year)</AlertTitle>
                         <AlertDescription className="mt-2 text-base">
-                            <p>Based on your {numSimulations.toLocaleString()} simulations, you can report to the CEO: "We are 95% confident that our Blue Chip Tech portfolio will not lose more than <strong>${varResult.loss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> over the next year."</p>
+                            <p>
+                                **Value at Risk (VaR)** is a statistical measure of the risk of loss for an investment or portfolio. It estimates how much a set of investments might lose, given normal market conditions, in a set time period.
+                            </p>
+                            <p className="mt-2">
+                                Based on your {numSimulations.toLocaleString()} simulations, you can report to the CEO: "We are 95% confident that our Blue Chip Tech portfolio will not lose more than <strong>${varResult.loss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> over the next year."
+                            </p>
                             <p className="mt-2 text-sm">This corresponds to a worst-case portfolio value of ${varResult.value.toLocaleString(undefined, { maximumFractionDigits: 0 })} at the 5th percentile.</p>
                         </AlertDescription>
                     </Alert>
