@@ -53,7 +53,7 @@ const generateCurveData = (shadeFrom: number | null, shadeTo: number | null, zTo
 };
 
 // Chart Component for Visualization
-const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore }: { shadeFrom: number | null, shadeTo: number | null, zToPType?: ZToPType, zScore?: number | null }) => {
+const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }: { shadeFrom: number | null, shadeTo: number | null, zToPType?: ZToPType, zScore?: number | null, zScore1?: number | null, zScore2?: number | null }) => {
   const chartData = useMemo(() => generateCurveData(shadeFrom, shadeTo, zToPType, zScore), [shadeFrom, shadeTo, zToPType, zScore]);
   const absZScore = zScore !== null ? Math.abs(zScore) : null;
 
@@ -409,7 +409,7 @@ export default function ZTablePage() {
                             <p className="text-sm text-muted-foreground">This is the area under the curve between Z-Score 1 and Z-Score 2. This is what you calculate for a confidence interval.</p>
                         </div>
                         <div>
-                            <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zScore={zScore2}/>
+                            <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zScore={zScore2} zScore1={zScore1} zScore2={zScore2}/>
                         </div>
                         </div>
                     </TabsContent>
@@ -440,7 +440,7 @@ export default function ZTablePage() {
                             <p><strong className="text-primary">The Question:</strong> After a week of intense social media hype, the stock is trading $9.50 above its 50-day moving average. Is the stock now "overbought" and due for a fall back to its average?</p>
                            <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
                            <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, the rubber band is stretched very tight.</p>
-                           <p>This Z-score can be a direct, automated trading signal. A mean-reversion trading algorithm could be programmed with a simple rule: If Z &gt; +2.0, consider short-selling; if Z &lt; -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
+                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z &gt; +2.0, consider short-selling; if Z &lt; -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
@@ -452,3 +452,4 @@ export default function ZTablePage() {
     </>
   );
 }
+
