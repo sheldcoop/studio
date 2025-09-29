@@ -1,3 +1,4 @@
+
 /**
  * Generates normally distributed random data.
  * @param mean - The desired mean.
@@ -57,6 +58,27 @@ export const generateExponentialData = (rate: number, n: number) => {
 }
 
 /**
+ * Generates Poisson-distributed random data using the Knuth algorithm.
+ * @param lambda - The average rate of events.
+ * @param n - The number of data points to generate.
+ * @returns An array of Poisson-distributed numbers.
+ */
+export const generatePoissonData = (lambda: number, n: number) => {
+    const data = [];
+    for (let i = 0; i < n; i++) {
+        let L = Math.exp(-lambda);
+        let k = 0;
+        let p = 1;
+        do {
+            k++;
+            p *= Math.random();
+        } while (p > L);
+        data.push(k - 1);
+    }
+    return data;
+}
+
+/**
  * Calculates the mean of a set of numbers.
  * @param data - An array of numbers.
  * @returns The mean of the numbers.
@@ -91,3 +113,5 @@ export const standardNormalCdf = (x: number): number => {
     if (x > 0) prob = 1 - prob;
     return prob;
 };
+
+    

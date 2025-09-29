@@ -9,12 +9,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { BarChart, Bar, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { generateUniformData, generateExponentialData, getMean } from '@/lib/math';
+import { generateUniformData, generateExponentialData, getMean, generatePoissonData } from '@/lib/math';
 import { Loader2 } from 'lucide-react';
 import { ChartContainer } from '@/components/ui/chart';
 import { XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
-type DistributionType = 'uniform' | 'exponential';
+type DistributionType = 'uniform' | 'exponential' | 'poisson';
 
 // --- Chart Components ---
 
@@ -23,21 +23,30 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
     let rawData;
     let calculatedMean: number;
     let calculatedStdDev: number;
+    const numPoints = 500;
 
-    if (distribution === 'uniform') {
-      rawData = Array.from({ length: 500 }, () => Math.random() * 10);
-      calculatedMean = 5;
-      calculatedStdDev = Math.sqrt(((10-0)**2)/12);
-    } else { 
-      rawData = generateExponentialData(1, 500);
-      calculatedMean = 1;
-      calculatedStdDev = 1;
+    switch (distribution) {
+      case 'poisson':
+        rawData = generatePoissonData(3, numPoints);
+        calculatedMean = 3;
+        calculatedStdDev = Math.sqrt(3);
+        break;
+      case 'uniform':
+        rawData = Array.from({ length: numPoints }, () => Math.random() * 10);
+        calculatedMean = 5;
+        calculatedStdDev = Math.sqrt(((10-0)**2)/12);
+        break;
+      case 'exponential': 
+      default:
+        rawData = generateExponentialData(1, numPoints);
+        calculatedMean = 1;
+        calculatedStdDev = 1;
+        break;
     }
 
-    const min = 0;
-    const max = Math.max(...rawData, 5);
-    const bins = 20;
-    const binWidth = max / bins;
+    const maxVal = Math.max(...rawData, 5);
+    const bins = distribution === 'poisson' ? Math.ceil(maxVal) + 1 : 20;
+    const binWidth = distribution === 'poisson' ? 1 : maxVal / bins;
     const histogram = Array(bins).fill(0);
 
     rawData.forEach(d => {
@@ -203,11 +212,19 @@ export default function CentralLimitTheoremPage() {
         }
 
         let sample;
-        if (distribution === 'uniform') {
+        switch (distribution) {
+          case 'poisson':
+            sample = generatePoissonData(3, sampleSize);
+            break;
+          case 'uniform':
             sample = Array.from({ length: sampleSize }, () => Math.random() * 10);
-        } else {
+            break;
+          case 'exponential':
+          default:
             sample = generateExponentialData(1, sampleSize);
+            break;
         }
+        
         const mean = getMean(sample);
         
         setCurrentSample(sample);
@@ -254,7 +271,7 @@ export default function CentralLimitTheoremPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              Imagine you have a giant barrel filled with numbered tickets. The numbers could follow any pattern—maybe there's an equal number of 1s, 2s, and 3s (a <span className="font-semibold text-primary">Uniform</span> distribution), or maybe there are tons of small numbers and very few large ones (a skewed <span className="font-semibold text-primary">Exponential</span> distribution).
+              Imagine you have a giant barrel filled with numbered tickets. The numbers could follow any pattern—maybe there's an equal number of 1s, 2s, and 3s (a <span className="font-semibold text-primary">Uniform</span> distribution), maybe lots of small numbers and few large ones (an <span className="font-semibold text-primary">Exponential</span> distribution), or maybe counts of events (a <span className="font-semibold text-primary">Poisson</span> distribution).
             </p>
             <p>
               The Central Limit Theorem makes a magical promise: if you repeatedly reach in, pull out a <span className="font-semibold text-foreground">handful of tickets</span> (a sample), calculate its <span className="font-semibold text-foreground">average</span>, and plot that average on a histogram, the histogram will almost always form a perfect <span className="font-semibold text-foreground">bell curve (a Normal Distribution)</span>.
@@ -284,6 +301,10 @@ export default function CentralLimitTheoremPage() {
                               <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="exponential" id="exponential" />
                                   <Label htmlFor="exponential">Exponential (Skewed)</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="poisson" id="poisson" />
+                                  <Label htmlFor="poisson">Poisson (Discrete)</Label>
                               </div>
                           </RadioGroup>
                       </div>
@@ -357,3 +378,5 @@ export default function CentralLimitTheoremPage() {
     </>
   );
 }
+
+    
