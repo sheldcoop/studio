@@ -109,20 +109,7 @@ const RegressionChart = () => {
                 <YAxis type="number" dataKey="y" name="Stock Return" unit="%" />
                 <ZAxis dataKey="residual" type="number" range={[0,0]} />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
-                <Scatter name="Data Points" data={residuals} fill="hsl(var(--chart-1))" opacity={0.6}>
-                  {residuals.map((entry, index) => (
-                      <RechartsLine
-                        key={`line-${index}`}
-                        stroke="hsl(var(--primary) / 0.5)"
-                        strokeWidth={1}
-                        dot={false}
-                        isAnimationActive={false}
-                        // @ts-ignore
-                        points={[{x: entry.x, y: entry.y}, {x: entry.x, y: entry.predicted}]}
-                        className="recharts-scatter-custom-line opacity-0 transition-opacity group-hover/scatter-item:opacity-100"
-                      />
-                  ))}
-                </Scatter>
+                <Scatter name="Data Points" data={residuals} fill="hsl(var(--chart-1))" opacity={0.6}/>
                 <RechartsLine
                     type="monotone"
                     dataKey="y"
