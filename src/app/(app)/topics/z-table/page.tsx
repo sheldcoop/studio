@@ -20,6 +20,7 @@ import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis, Tooltip } 
 import { standardNormalCdf, standardNormalPdf, inverseStandardNormalCdf } from '@/lib/math';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
+import { ArrowDown } from 'lucide-react';
 
 type ZToPType = "left" | "right" | "two-tailed";
 
@@ -142,10 +143,10 @@ const ZTable = ({ highlightedZ }: { highlightedZ: number | null }) => {
 // Main Page Component
 export default function ZTablePage() {
   // State for Z -> P
-  const [zScore, setZScore] = useState<number | null>(1.96);
+  const [zScore, setZScore] = useState<number | null>(1.0);
   const [pValue, setPValue] = useState<number | null>(null);
-  const [zToPType, setZToPType] = useState<ZToPType>("two-tailed");
-  const [chartShade, setChartShade] = useState<{from: number | null, to: number | null}>({from: -4, to: 1.96});
+  const [zToPType, setZToPType] = useState<ZToPType>("left");
+  const [chartShade, setChartShade] = useState<{from: number | null, to: number | null}>({from: -4, to: 1.0});
 
   // State for P -> Z
   const [inputPValue, setInputPValue] = useState<number | null>(0.975);
@@ -172,7 +173,7 @@ export default function ZTablePage() {
             const absZ = Math.abs(zScore);
             const p = standardNormalCdf(-absZ);
             setPValue(2 * p);
-            setChartShade({from: null, to: null}); // Shading is handled by type in chart component
+            setChartShade({from: null, to: null});
             break;
       }
     } else {
@@ -198,6 +199,16 @@ export default function ZTablePage() {
     }
   }, [zScore1, zScore2]);
 
+  const activeZForTable = useMemo(() => {
+    const activeTab = document.querySelector('[data-state="active"]')?.getAttribute('data-value');
+    switch (activeTab) {
+        case 'z-to-p': return zScore;
+        case 'p-to-z': return calculatedZ;
+        case 'between': return zScore2;
+        default: return zScore;
+    }
+  }, [zScore, calculatedZ, zScore2, pValue, betweenPValue, zToPType]);
+
   return (
     <>
       <PageHeader
@@ -205,7 +216,7 @@ export default function ZTablePage() {
         description="Calculate probabilities from Z-scores and vice-versa, with interactive visualizations."
         variant="aligned-left"
       />
-      <div className="mx-auto max-w-6xl space-y-8">
+      <div className="mx-auto max-w-5xl space-y-8">
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline">The Story of the Z-Score: The Great Equalizer</CardTitle>
@@ -217,133 +228,138 @@ export default function ZTablePage() {
                 <p>
                     This is where the Z-score comes in. It's a tool that lets us compare apples and oranges by translating any data point from any normal distribution onto a single, universal scale called the **Standard Normal Distribution** (which has a mean of 0 and a standard deviation of 1).
                 </p>
-                <p>The formula is simple: <code className="bg-muted p-1 rounded-md font-mono">Z = (X - μ) / σ</code></p>
-                <ul className="list-disc pl-6">
-                    <li><code className="font-mono">X</code> is the data point you're interested in (e.g., Alice's score of 85).</li>
-                    <li><code className="font-mono">μ</code> (mu) is the mean (average) of the distribution (Alice's class average of 80).</li>
-                    <li><code className="font-mono">σ</code> (sigma) is the standard deviation of the distribution (her class's deviation of 5).</li>
-                </ul>
+                <div className="rounded-lg border bg-muted/50 p-4">
+                    <h4 className="font-semibold mb-2">How It Works: The Formula</h4>
+                    <p className="font-mono text-center text-lg bg-background p-2 rounded-md mb-4">Z = (X - μ) / σ</p>
+                    <ul className="list-disc pl-6 space-y-1">
+                        <li><code className="font-mono bg-background px-1 rounded">X</code> is the data point you're interested in (e.g., Alice's score of 85).</li>
+                        <li><code className="font-mono bg-background px-1 rounded">μ</code> (mu) is the mean (average) of the distribution (Alice's class average of 80).</li>
+                        <li><code className="font-mono bg-background px-1 rounded">σ</code> (sigma) is the standard deviation of the distribution (her class's deviation of 5).</li>
+                    </ul>
+                </div>
                 <p>
-                    So, Alice's Z-score is (85 - 80) / 5 = +1.0. She is exactly one standard deviation above her class average. Bob's Z-score is (75 - 65) / 10 = +1.0. He is also exactly one standard deviation above his class average.
+                    Alice's Z-score is (85 - 80) / 5 = **+1.0**. She is exactly one standard deviation above her class average. Bob's Z-score is (75 - 65) / 10 = **+1.0**. He is also exactly one standard deviation above his class average.
                 </p>
-                <p>
-                    Suddenly, we see they performed identically relative to their peers! The Z-score tells us **how many standard deviations** a point is from the mean. Once we have this standardized value, we can use the Z-table to find the probability of observing a value that low or high, which is the foundation of hypothesis testing and confidence intervals.
+                <p className="font-semibold text-primary">
+                    Suddenly, we see they performed identically relative to their peers! The Z-score tells us **how many standard deviations** a point is from the mean.
+                </p>
+            </CardContent>
+        </Card>
+        
+        <div className="text-center">
+            <ArrowDown className="h-8 w-8 mx-auto text-muted-foreground animate-bounce" />
+        </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">The Real Power of the Z-Score: Finding Probabilities</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
+                <p>Knowing a Z-score is great, but its real power comes from using it to find probabilities. Once we have a Z-score, we can determine the probability of observing a value that low, that high, or even more extreme.</p>
+                <p>This probability is called a **p-value**, and it is the absolute foundation of hypothesis testing. It's the p-value that tells us if an observation (like a stock's return) is statistically significant or just random noise.</p>
+                <p className="text-sm border-l-4 border-primary pl-4 text-muted-foreground">
+                    Remember Alice's Z-score was +1.0. If we wanted to find the percentage of students who scored worse than Alice, we would use her Z-score of 1.0 and select the 'Left Tail'. **Try it now in the calculator below!**
                 </p>
             </CardContent>
         </Card>
 
-        <Tabs defaultValue="z-to-p">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="z-to-p">Z-Score to P-Value</TabsTrigger>
-            <TabsTrigger value="p-to-z">P-Value to Z-Score</TabsTrigger>
-            <TabsTrigger value="between">Between Z-Scores</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="z-to-p" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Z-Score to P-Value Calculator</CardTitle>
-                <CardDescription>Find the cumulative probability (area under the curve) for a given Z-score.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Select Area</Label>
-                     <RadioGroup value={zToPType} onValueChange={(val: ZToPType) => setZToPType(val)} className="grid grid-cols-3 gap-2">
-                        <div>
-                            <RadioGroupItem value="left" id="left" className="peer sr-only" />
-                            <Label htmlFor="left" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Left Tail</Label>
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">The Interactive Sandbox: Z-Score Calculator</CardTitle>
+                <CardDescription>Immediately apply what you've just learned. Calculate probabilities and Z-scores with interactive visualizations.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Tabs defaultValue="z-to-p">
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="z-to-p">Z-Score to P-Value</TabsTrigger>
+                        <TabsTrigger value="p-to-z">P-Value to Z-Score</TabsTrigger>
+                        <TabsTrigger value="between">Between Z-Scores</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="z-to-p" className="mt-6">
+                        <div className="grid gap-6 md:grid-cols-2">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Select Area</Label>
+                                <RadioGroup value={zToPType} onValueChange={(val: ZToPType) => setZToPType(val)} className="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <RadioGroupItem value="left" id="left" className="peer sr-only" />
+                                        <Label htmlFor="left" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Left Tail</Label>
+                                    </div>
+                                    <div>
+                                        <RadioGroupItem value="right" id="right" className="peer sr-only" />
+                                        <Label htmlFor="right" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Right Tail</Label>
+                                    </div>
+                                    <div>
+                                        <RadioGroupItem value="two-tailed" id="two-tailed" className="peer sr-only" />
+                                        <Label htmlFor="two-tailed" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Two-Tailed</Label>
+                                    </div>
+                                </RadioGroup>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="z-score">Enter Z-Score</Label>
+                                <Input id="z-score" type="number" value={zScore ?? ''} onChange={(e) => setZScore(parseFloat(e.target.value))} placeholder="e.g., 1.96" />
+                            </div>
+                            <div className="rounded-lg bg-muted p-4 text-center">
+                                <p className="text-sm text-muted-foreground">Calculated Probability (P-Value)</p>
+                                <p className="text-3xl font-bold font-mono tracking-tight text-primary">{pValue !== null ? pValue.toFixed(4) : '---'}</p>
+                            </div>
                         </div>
                         <div>
-                            <RadioGroupItem value="right" id="right" className="peer sr-only" />
-                            <Label htmlFor="right" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Right Tail</Label>
+                            <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zToPType={zToPType} zScore={zScore} />
                         </div>
-                         <div>
-                            <RadioGroupItem value="two-tailed" id="two-tailed" className="peer sr-only" />
-                            <Label htmlFor="two-tailed" className="flex justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-colors">Two-Tailed</Label>
                         </div>
-                    </RadioGroup>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="z-score">Enter Z-Score</Label>
-                    <Input id="z-score" type="number" value={zScore ?? ''} onChange={(e) => setZScore(parseFloat(e.target.value))} placeholder="e.g., 1.96" />
-                  </div>
-                  <div className="rounded-lg bg-muted p-4 text-center">
-                    <p className="text-sm text-muted-foreground">Calculated Probability (P-Value)</p>
-                    <p className="text-3xl font-bold font-mono tracking-tight text-primary">{pValue !== null ? pValue.toFixed(4) : '---'}</p>
-                  </div>
-                </div>
-                <div>
-                  <DynamicZScoreChart shadeFrom={chartShade.from} shadeTo={chartShade.to} zToPType={zToPType} zScore={zScore} />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    </TabsContent>
 
-          <TabsContent value="p-to-z" className="mt-6">
-             <Card>
-              <CardHeader>
-                <CardTitle>P-Value to Z-Score Calculator</CardTitle>
-                <CardDescription>Find the Z-score for a given cumulative probability (area to the left).</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="p-value">Enter Cumulative Probability (0 to 1)</Label>
-                    <Input id="p-value" type="number" value={inputPValue ?? ''} onChange={(e) => setInputPValue(parseFloat(e.target.value))} placeholder="e.g., 0.975" step="0.0001" min="0.0001" max="0.9999"/>
-                  </div>
-                  <div className="rounded-lg bg-muted p-4 text-center">
-                    <p className="text-sm text-muted-foreground">Calculated Z-Score</p>
-                    <p className="text-3xl font-bold font-mono tracking-tight text-primary">{calculatedZ !== null ? calculatedZ.toFixed(2) : '---'}</p>
-                  </div>
-                   <p className="text-sm text-muted-foreground">This is the Z-score such that the area to its left under the standard normal curve is equal to the specified probability.</p>
-                </div>
-                <div>
-                   <DynamicZScoreChart shadeFrom={-4} shadeTo={calculatedZ} zToPType="left" zScore={calculatedZ}/>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    <TabsContent value="p-to-z" className="mt-6">
+                        <div className="grid gap-6 md:grid-cols-2">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="p-value">Enter Cumulative Probability (0 to 1)</Label>
+                                <Input id="p-value" type="number" value={inputPValue ?? ''} onChange={(e) => setInputPValue(parseFloat(e.target.value))} placeholder="e.g., 0.975" step="0.0001" min="0.0001" max="0.9999"/>
+                            </div>
+                            <div className="rounded-lg bg-muted p-4 text-center">
+                                <p className="text-sm text-muted-foreground">Calculated Z-Score</p>
+                                <p className="text-3xl font-bold font-mono tracking-tight text-primary">{calculatedZ !== null ? calculatedZ.toFixed(2) : '---'}</p>
+                            </div>
+                            <p className="text-sm text-muted-foreground">This is the Z-score such that the area to its left under the standard normal curve is equal to the specified probability.</p>
+                        </div>
+                        <div>
+                            <DynamicZScoreChart shadeFrom={-4} shadeTo={calculatedZ} zToPType="left" zScore={calculatedZ}/>
+                        </div>
+                        </div>
+                    </TabsContent>
 
-          <TabsContent value="between" className="mt-6">
-             <Card>
-              <CardHeader>
-                <CardTitle>Between Two Z-Scores Calculator</CardTitle>
-                <CardDescription>Find the area under the curve between two Z-scores.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="flex gap-4">
-                    <div className="space-y-2 w-full">
-                        <Label htmlFor="z-score-1">Z-Score 1</Label>
-                        <Input id="z-score-1" type="number" value={zScore1 ?? ''} onChange={(e) => setZScore1(parseFloat(e.target.value))} placeholder="e.g., -1.96" />
-                    </div>
-                     <div className="space-y-2 w-full">
-                        <Label htmlFor="z-score-2">Z-Score 2</Label>
-                        <Input id="z-score-2" type="number" value={zScore2 ?? ''} onChange={(e) => setZScore2(parseFloat(e.target.value))} placeholder="e.g., 1.96" />
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-muted p-4 text-center">
-                    <p className="text-sm text-muted-foreground">Area Between Z-Scores</p>
-                    <p className="text-3xl font-bold font-mono tracking-tight text-primary">{betweenPValue !== null ? betweenPValue.toFixed(4) : '---'}</p>
-                  </div>
-                   <p className="text-sm text-muted-foreground">This is the area under the curve between Z-Score 1 and Z-Score 2. This is what you calculate for a confidence interval.</p>
-                </div>
-                <div>
-                   <DynamicZScoreChart shadeFrom={zScore1} shadeTo={zScore2} zScore={zScore2}/>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                    <TabsContent value="between" className="mt-6">
+                        <div className="grid gap-6 md:grid-cols-2">
+                        <div className="space-y-4">
+                            <div className="flex gap-4">
+                                <div className="space-y-2 w-full">
+                                    <Label htmlFor="z-score-1">Z-Score 1</Label>
+                                    <Input id="z-score-1" type="number" value={zScore1 ?? ''} onChange={(e) => setZScore1(parseFloat(e.target.value))} placeholder="e.g., -1.96" />
+                                </div>
+                                <div className="space-y-2 w-full">
+                                    <Label htmlFor="z-score-2">Z-Score 2</Label>
+                                    <Input id="z-score-2" type="number" value={zScore2 ?? ''} onChange={(e) => setZScore2(parseFloat(e.target.value))} placeholder="e.g., 1.96" />
+                                </div>
+                            </div>
+                            <div className="rounded-lg bg-muted p-4 text-center">
+                                <p className="text-sm text-muted-foreground">Area Between Z-Scores</p>
+                                <p className="text-3xl font-bold font-mono tracking-tight text-primary">{betweenPValue !== null ? betweenPValue.toFixed(4) : '---'}</p>
+                            </div>
+                            <p className="text-sm text-muted-foreground">This is the area under the curve between Z-Score 1 and Z-Score 2. This is what you calculate for a confidence interval.</p>
+                        </div>
+                        <div>
+                            <DynamicZScoreChart shadeFrom={zScore1} shadeTo={zScore2} zScore={zScore2}/>
+                        </div>
+                        </div>
+                    </TabsContent>
+                </Tabs>
+            </CardContent>
+        </Card>
         
-        <ZTable highlightedZ={
-            zToPType === 'two-tailed' ? Math.abs(zScore ?? 0) : 
-            (zScore ?? (calculatedZ ?? zScore2 ?? null))
-        } />
+        <ZTable highlightedZ={activeZForTable} />
       </div>
     </>
   );
 }
-
-    
