@@ -195,15 +195,6 @@ export const statisticsTopics: Topic[] = [
     parent: 'stats-foundations',
   },
   {
-    id: 'ci',
-    title: 'Confidence Intervals',
-    href: '/topics/ci',
-    icon: FunctionSquare,
-    description: '',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
-  },
-  {
     id: 'type-i-and-type-ii-errors',
     title: 'Type I & Type II Errors',
     href: '/topics/type-i-and-type-ii-errors',

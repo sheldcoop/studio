@@ -17,7 +17,7 @@ export default function HypothesisTestingPage() {
   const nonParametricTests = allTopics.filter(t => t.category === 'non-parametric');
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Hypothesis Testing & P-Values"
         description="The detective work of data science: making decisions under uncertainty."
@@ -83,6 +83,6 @@ export default function HypothesisTestingPage() {
             </div>
         </section>
       </div>
-    </div>
+    </>
   );
 }
