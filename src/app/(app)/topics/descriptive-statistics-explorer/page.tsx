@@ -25,15 +25,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 type DistributionType = 'normal' | 'right-skewed' | 'left-skewed' | 'fat-tailed';
 
-// Function to generate data with high kurtosis (fat tails)
-// This method mixes a primary distribution with an outlier distribution
-// to create a visually distinct "peaky and fat-tailed" shape.
-const generateFatTailedData = (n: number) => {
-    const primaryData = generateNormalData(5, 0.5, Math.floor(n * 0.9)); // 90% of data is tightly clustered
-    const outlierData = generateNormalData(5, 4, Math.ceil(n * 0.1)); // 10% of data is widely spread
-    return [...primaryData, ...outlierData];
-}
-
 const StatCard = ({ title, value, description }: { title: string; value: string | number, description?: string }) => (
   <Card className="text-center">
     <CardHeader className="pb-2">
@@ -75,9 +66,9 @@ const DistributionChart = ({ data, stats }: { data: number[], stats: Stats | nul
         <YAxis />
         <Tooltip wrapperClassName="text-xs" />
         <Bar dataKey="count" fill="hsl(var(--primary))" barSize={20} />
-        {stats?.mean !== undefined && <ReferenceLine x={stats.mean} stroke="hsl(var(--chart-2))" strokeWidth={2}><RechartsLabel value="Mean" position="top" fill="hsl(var(--chart-2))" fontSize={12} /></ReferenceLine>}
-        {stats?.median !== undefined && <ReferenceLine x={stats.median} stroke="hsl(var(--chart-3))" strokeWidth={2}><RechartsLabel value="Median" position="top" dy={-15} fill="hsl(var(--chart-3))" fontSize={12} /></ReferenceLine>}
-        {stats?.mode !== undefined && <ReferenceLine x={stats.mode} stroke="hsl(var(--chart-5))" strokeWidth={2}><RechartsLabel value="Mode" position="top" dy={-30} fill="hsl(var(--chart-5))" fontSize={12} /></ReferenceLine>}
+        {stats && <ReferenceLine x={stats.mean} stroke="hsl(var(--chart-2))" strokeWidth={2}><RechartsLabel value="Mean" position="top" fill="hsl(var(--chart-2))" fontSize={12} /></ReferenceLine>}
+        {stats && <ReferenceLine x={stats.median} stroke="hsl(var(--chart-3))" strokeWidth={2}><RechartsLabel value="Median" position="top" dy={-15} fill="hsl(var(--chart-3))" fontSize={12} /></ReferenceLine>}
+        {stats && <ReferenceLine x={stats.mode} stroke="hsl(var(--chart-5))" strokeWidth={2}><RechartsLabel value="Mode" position="top" dy={-30} fill="hsl(var(--chart-5))" fontSize={12} /></ReferenceLine>}
       </BarChart>
     </ResponsiveContainer>
   );
@@ -115,7 +106,9 @@ export default function DescriptiveStatisticsPage() {
         newData = generateLogNormalData(0, 0.6, n).map(d => 10 - d);
         break;
       case 'fat-tailed':
-        newData = generateFatTailedData(n);
+        const primaryData = generateNormalData(5, 0.5, Math.floor(n * 0.9));
+        const outlierData = generateNormalData(5, 4, Math.ceil(n * 0.1));
+        newData = [...primaryData, ...outlierData];
         break;
       case 'normal':
       default:
