@@ -257,7 +257,7 @@ export const statisticsTopics: Topic[] = [
     title: "Bayes' Theorem",
     href: '/topics/bayes-theorem',
     icon: FunctionSquare,
-    description: '',
+    description: 'A framework for updating beliefs with new evidence.',
     category: 'sub-topic',
     parent: 'stats-intermediate',
   },
