@@ -50,7 +50,7 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          themes={['light', 'dark', 'slate']}
+          themes={['light', 'dark', 'slate', 'nocturne']}
           disableTransitionOnChange
         >
           <AuthProvider>
