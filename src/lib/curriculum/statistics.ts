@@ -243,15 +243,6 @@ export const statisticsTopics: Topic[] = [
     category: 'sub-topic',
     parent: 'stats-intermediate',
   },
-  {
-    id: 'poisson-distribution',
-    title: 'Poisson Distribution',
-    href: '/probability/poisson-distribution',
-    icon: FunctionSquare,
-    description: '',
-    category: 'sub-topic',
-    parent: 'stats-intermediate',
-  },
    {
     id: 'lognormal-distribution',
     title: 'Lognormal Distribution',
