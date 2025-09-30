@@ -5,7 +5,7 @@ export const statisticsTopics: Topic[] = [
   // Parent "topic" for Hypothesis testing
   {
     id: 'hypothesis-testing',
-    title: 'Hypothesis Testing',
+    title: 'Hypothesis Testing & P-Values',
     href: '/hypothesis-testing',
     icon: FunctionSquare,
     description: 'The detective work of data science.',
@@ -160,11 +160,29 @@ export const statisticsTopics: Topic[] = [
     
   // Stat Toolkit Tier 1
   {
+    id: 'demystifying-hypothesis-testing',
+    title: "Demystifying Hypothesis Testing: A Beginner's Guide",
+    href: '/topics/demystifying-hypothesis-testing',
+    icon: FunctionSquare,
+    description: 'A step-by-step guide to making decisions from data.',
+    category: 'sub-topic',
+    parent: 'stats-foundations',
+  },
+  {
     id: 'confidence-intervals',
     title: 'Confidence Intervals',
     href: '/topics/confidence-intervals',
     icon: FunctionSquare,
     description: 'Understanding the range where a true value likely lies.',
+    category: 'sub-topic',
+    parent: 'stats-foundations',
+  },
+  {
+    id: 'z-table',
+    title: 'Z-Table Calculator',
+    href: '/topics/z-table',
+    icon: FunctionSquare,
+    description: 'Calculate probabilities from Z-scores and vice-versa.',
     category: 'sub-topic',
     parent: 'stats-foundations',
   },
@@ -219,15 +237,6 @@ export const statisticsTopics: Topic[] = [
     href: '/topics/linear-regression',
     icon: FunctionSquare,
     description: 'Modeling the relationship between variables.',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
-  },
-  {
-    id: 'z-table',
-    title: 'Z-Table Calculator',
-    href: '/topics/z-table',
-    icon: FunctionSquare,
-    description: 'Calculate probabilities from Z-scores and vice-versa.',
     category: 'sub-topic',
     parent: 'stats-foundations',
   },

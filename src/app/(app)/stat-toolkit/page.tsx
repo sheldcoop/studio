@@ -6,6 +6,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from '@/components/ui/card';
 import { allTopics } from '@/lib/curriculum';
 import { CheckCircle, ArrowRight } from 'lucide-react';
@@ -28,6 +29,7 @@ export default function StatToolkitPage() {
   });
   
   const hypothesisTestingTopic = allTopics.find(t => t.id === 'hypothesis-testing');
+  const beginnerGuideTopic = allTopics.find(t => t.id === 'demystifying-hypothesis-testing');
 
   return (
     <>
@@ -36,7 +38,47 @@ export default function StatToolkitPage() {
         description="Explore and understand the core concepts of statistics for quantitative analysis."
       />
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6">
+      <div className="space-y-6">
+        {beginnerGuideTopic && (
+          <Link href={beginnerGuideTopic.href} className="group block">
+            <Card className="transform-gpu transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
+              <CardHeader>
+                <CardTitle className="font-headline text-lg text-primary">Demystifying Hypothesis Testing: A Beginner's Guide</CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div>
+                    <p className="font-semibold">A step-by-step guide to making decisions from data.</p>
+                    <p className="text-sm text-muted-foreground">Is it a real effect or just random chance? Let's find out.</p>
+                </div>
+                <div className="flex items-center gap-2 text-sm font-semibold text-primary transition-transform group-hover:translate-x-1">
+                    Read Guide <ArrowRight className="h-4 w-4" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
+
+        {hypothesisTestingTopic && (
+          <Link href={hypothesisTestingTopic.href} className="group block">
+             <Card className="transform-gpu transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
+               <CardHeader>
+                <CardTitle className="font-headline text-lg text-primary">A Quant's Detective Kit</CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold">{hypothesisTestingTopic.title}</p>
+                  <p className="text-sm text-muted-foreground">{hypothesisTestingTopic.description}</p>
+                </div>
+                <div className="flex items-center gap-2 text-sm font-semibold text-primary transition-transform group-hover:translate-x-1">
+                    Explore Tests <ArrowRight className="h-4 w-4" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12">
         {tiers.map((tier) => (
           tier.title && tier.concepts ? (
             <Card key={tier.id} className="flex flex-col bg-card/70">
