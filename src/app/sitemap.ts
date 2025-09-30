@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${URL}/community`, lastModified: new Date() },
     { url: `${URL}/stat-toolkit`, lastModified: new Date() },
     { url: `${URL}/hypothesis-testing`, lastModified: new Date() },
+    { url: `${URL}/topics`, lastModified: new Date() },
   ];
 
   // Create routes for the learning path pages
@@ -24,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Create routes for individual topic pages, filtering out only non-visitable placeholder topics.
   const topicRoutes = allTopics
     .filter(topic => {
-        // A topic is NOT a real page if it's just an organizational category or has no valid link.
+        // A topic is a real page if it's not just a parent category and has a real URL.
         const isCategory = topic.category === 'parent';
         const hasNoPage = topic.href === '#';
         
@@ -34,6 +35,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${URL}${topic.href}`,
       lastModified: new Date(),
   }));
+  
+  // Use a Set to automatically handle any duplicates
+  const allUrls = new Set([
+      ...staticRoutes.map(r => r.url), 
+      ...pathRoutes.map(r => r.url), 
+      ...topicRoutes.map(r => r.url)
+  ]);
 
-  return [...staticRoutes, ...pathRoutes, ...topicRoutes];
+  return Array.from(allUrls).map(url => ({
+      url,
+      lastModified: new Date(),
+  }));
 }

@@ -17,4 +17,5 @@ export const allTopics: Topic[] = [
     return topic;
 });
 
+export { mainTopics };
 export * from './types';

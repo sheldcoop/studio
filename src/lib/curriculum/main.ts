@@ -17,7 +17,7 @@ export const mainTopics: Topic[] = [
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
-    href: '/linear-algebra',
+    href: '/topics/linear-algebra-for-quantitative-finance',
     category: 'main',
   },
   {
@@ -25,7 +25,7 @@ export const mainTopics: Topic[] = [
     title: 'Statistics',
     description: 'Quantifying uncertainty and making sense of distributions.',
     icon: Sigma,
-    href: '/statistics',
+    href: '/stat-toolkit',
     category: 'main',
   },
   {
@@ -33,7 +33,7 @@ export const mainTopics: Topic[] = [
     title: 'Probability',
     description: 'Understanding chance and modeling random events.',
     icon: Percent,
-    href: '/probability',
+    href: '/paths/probability-toolkit',
     category: 'main',
   },
   {
@@ -41,7 +41,7 @@ export const mainTopics: Topic[] = [
     title: 'Mental Math',
     description: 'Train your calculation speed and accuracy for interviews.',
     icon: BrainCircuit,
-    href: '/mental-math',
+    href: '/topics/mental-math',
     category: 'main',
   },
   {
@@ -58,22 +58,6 @@ export const mainTopics: Topic[] = [
     description: 'Building predictive models for financial markets.',
     icon: Cpu,
     href: '/paths/machine-learning-for-quantitative-finance',
-    category: 'main',
-  },
-  {
-    id: 'probability-toolkit',
-    title: 'Probability Toolkit',
-    description: 'Interactive tools for hands-on probability analysis.',
-    icon: CandlestickChart,
-    href: '/paths/probability-toolkit',
-    category: 'main',
-  },
-  {
-    id: 'stat-toolkit',
-    title: "Statistician's Toolkit",
-    description: 'Interactive tools for hands-on statistical analysis.',
-    icon: Boxes,
-    href: '/stat-toolkit',
     category: 'main',
   },
 ];

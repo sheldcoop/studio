@@ -1,4 +1,4 @@
-import { allTopics } from "./curriculum";
+import { mainTopics } from "./curriculum";
 
 export const taglines = [
   ['From Data to ', 'Insight'],
@@ -9,4 +9,4 @@ export const taglines = [
   ['From Alpha to ', 'Mastery'],
 ];
 
-export const quantJourney = allTopics.filter(topic => topic.category === 'main');
+export const quantJourney = mainTopics;
