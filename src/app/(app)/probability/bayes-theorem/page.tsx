@@ -83,7 +83,7 @@ const BayesTheoremCalculator = () => {
 export default function BayesTheoremPage() {
   return (
     <>
-       <Script
+      <Script
         id="mathjax-config"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{

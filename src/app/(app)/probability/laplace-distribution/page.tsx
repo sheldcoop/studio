@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -95,7 +94,7 @@ export default function LaplaceDistributionPage() {
 
   return (
     <>
-       <Script
+      <Script
         id="mathjax-config"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{

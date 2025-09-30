@@ -85,7 +85,7 @@ export default function PoissonDistributionPage() {
 
   return (
     <>
-       <Script
+      <Script
         id="mathjax-config"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{

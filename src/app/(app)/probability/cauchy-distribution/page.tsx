@@ -90,7 +90,7 @@ export default function CauchyDistributionPage() {
 
   return (
     <>
-       <Script
+      <Script
         id="mathjax-config"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
