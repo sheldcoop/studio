@@ -12,15 +12,6 @@ export const probabilityTopics: Topic[] = [
     parent: 'prob-core-tools',
   },
   {
-    id: 'z-table',
-    title: 'Z-Table Calculator',
-    href: '/topics/z-table',
-    icon: FunctionSquare,
-    description: 'Calculate probabilities from Z-scores and vice-versa.',
-    category: 'sub-topic',
-    parent: 'prob-core-tools',
-  },
-  {
     id: 'law-of-large-numbers',
     title: 'The Law of Large Numbers',
     href: '/topics/law-of-large-numbers',
@@ -29,7 +20,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
     parent: 'probability',
   },
-    {
+  {
     id: 'bernoulli-distribution',
     title: 'Bernoulli Distribution',
     href: '/probability/bernoulli-distribution',
@@ -56,7 +47,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
     parent: 'prob-dist-discrete',
   },
-    {
+  {
     id: 'geometric-distribution',
     title: 'Geometric Distribution',
     href: '/probability/geometric-distribution',
@@ -108,16 +99,16 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Modeling waiting times and skewed data.',
     category: 'probability',
-    parent: 'probability',
+    parent: 'prob-dist-continuous',
   },
-   {
+  {
     id: 'beta-distribution',
     title: 'Beta Distribution',
     href: '/probability/beta-distribution',
     icon: FunctionSquare,
     description: 'Modeling probabilities, percentages, and proportions.',
     category: 'probability',
-    parent: 'probability',
+    parent: 'prob-dist-continuous',
   },
   {
     id: 'exponential-distribution',
@@ -126,7 +117,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Modeling the time between events in a Poisson process.',
     category: 'probability',
-    parent: 'probability',
+    parent: 'prob-dist-continuous',
   },
   {
     id: 'cauchy-distribution',
@@ -135,7 +126,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: "Modeling extreme events and 'fat-tailed' phenomena.",
     category: 'probability',
-    parent: 'probability',
+    parent: 'prob-dist-continuous',
   },
   {
     id: 'laplace-distribution',
@@ -144,9 +135,9 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: "Modeling with a sharp peak and 'fat tails'.",
     category: 'probability',
-    parent: 'probability',
+    parent: 'prob-dist-continuous',
   },
-   {
+  {
     id: 'lognormal-distribution',
     title: 'Lognormal Distribution',
     href: '/topics/statistics/lognormal-distribution',
@@ -191,7 +182,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
     parent: 'prob-dist-continuous',
   },
-    {
+  {
     id: 'chi-squared-distribution',
     title: 'Chi-Squared (χ²) Distribution',
     href: '/probability/chi-squared-distribution',

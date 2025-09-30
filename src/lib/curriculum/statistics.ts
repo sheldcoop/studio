@@ -1,5 +1,3 @@
-
-
 import { FunctionSquare, FolderKanban } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -221,6 +219,15 @@ export const statisticsTopics: Topic[] = [
     href: '/topics/linear-regression',
     icon: FunctionSquare,
     description: 'Modeling the relationship between variables.',
+    category: 'sub-topic',
+    parent: 'stats-foundations',
+  },
+  {
+    id: 'z-table',
+    title: 'Z-Table Calculator',
+    href: '/topics/z-table',
+    icon: FunctionSquare,
+    description: 'Calculate probabilities from Z-scores and vice-versa.',
     category: 'sub-topic',
     parent: 'stats-foundations',
   },

@@ -73,14 +73,7 @@ export const getPathById = (id: string): LearningPath | undefined => {
   ];
 
   const pathModules = allModules.filter(m => m.parent === id).map(module => {
-    let lessons: Topic[] = [];
-    if (module.id === 'prob-dist-discrete') {
-        lessons = allTopics.filter(t => t.parent === 'prob-dist-discrete');
-    } else if (module.id === 'prob-dist-continuous') {
-        lessons = allTopics.filter(t => t.parent === 'prob-dist-continuous');
-    } else {
-        lessons = allTopics.filter(t => t.parent === module.id);
-    }
+    let lessons: Topic[] = allTopics.filter(t => t.parent === module.id);
     return { ...module, lessons };
   });
 
