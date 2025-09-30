@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 
@@ -44,22 +44,18 @@ export function ProbabilityAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const primaryColor = new THREE.Color(0x00ffaa);
-
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+    const primaryColor = new THREE.Color(primaryColorValue);
+    
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-    camera.position.z = 10;
+    camera.position.z = 20;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 10, 7.5);
-    scene.add(directionalLight);
     
     // --- Pegs for Galton Board ---
     const pegGroup = new THREE.Group();

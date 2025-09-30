@@ -50,7 +50,12 @@ export function StatisticsAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
-    const primaryColor = new THREE.Color(0x00ffaa);
+    // Read CSS variables for theme-aware colors
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+    const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim() || '0.85');
+    const primaryColor = new THREE.Color(primaryColorValue);
+
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
@@ -86,7 +91,7 @@ export function StatisticsAnimation({
       emissive: primaryColor,
       emissiveIntensity: 0.4,
       transparent: true,
-      opacity: 0.85,
+      opacity: opacityValue,
     });
     const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
     surface.rotation.x = -Math.PI / 2; // Lay it flat on the grid

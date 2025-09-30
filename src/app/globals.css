@@ -29,6 +29,10 @@
     --chart-3: 0 72.2% 50.6%;
     --chart-4: 43.2 95.5% 53.1%;
     --chart-5: 270 95.5% 53.1%;
+
+    /* Animation Theme Variables */
+    --animation-primary-color: hsl(173, 80%, 30%);
+    --animation-opacity: 0.85;
   }
 
   .dark {
@@ -56,6 +60,10 @@
     --chart-3: 0 72.2% 50.6%;
     --chart-4: 43.2 95.5% 53.1%;
     --chart-5: 270 95.5% 53.1%;
+
+    /* Animation Theme Variables */
+    --animation-primary-color: hsl(148, 100%, 50%);
+    --animation-opacity: 0.85;
   }
 }
 

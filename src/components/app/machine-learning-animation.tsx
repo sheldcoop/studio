@@ -23,8 +23,11 @@ export function MachineLearningAnimation({
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
-
-    const primaryColor = new THREE.Color(0x00ffaa);
+    
+    // Read CSS variables for theme-aware colors
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+    const primaryColor = new THREE.Color(primaryColorValue);
     const secondaryColor = new THREE.Color(0x818cf8); // Keep purple for eigenvectors for contrast
 
     // --- Scene setup ---

@@ -24,15 +24,19 @@ export function ConfidenceIntervalAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let frameId: number;
-
-    const primaryColor = new THREE.Color(0x00ffaa);
+    
+    // Read CSS variables for theme-aware colors
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+    const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim() || '0.85');
+    const primaryColor = new THREE.Color(primaryColorValue);
 
     const particleMaterial = new THREE.PointsMaterial({
         color: primaryColor,
         size: 0.2,
         blending: THREE.AdditiveBlending,
         transparent: true,
-        opacity: 0.85,
+        opacity: opacityValue,
         sizeAttenuation: true,
       });
 
