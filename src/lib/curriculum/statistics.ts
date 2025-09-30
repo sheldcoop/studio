@@ -234,15 +234,6 @@ export const statisticsTopics: Topic[] = [
   },
 
   // Stat Toolkit Tier 2
-  {
-    id: 'bayes-theorem',
-    title: "Bayes' Theorem",
-    href: '/probability/bayes-theorem',
-    icon: FunctionSquare,
-    description: 'A framework for updating beliefs with new evidence.',
-    category: 'sub-topic',
-    parent: 'stats-intermediate',
-  },
    {
     id: 'lognormal-distribution',
     title: 'Lognormal Distribution',
@@ -256,24 +247,6 @@ export const statisticsTopics: Topic[] = [
     id: 'logistic-regression',
     title: 'Logistic Regression',
     href: '/topics/statistics/logistic-regression',
-    icon: FunctionSquare,
-    description: '',
-    category: 'sub-topic',
-    parent: 'stats-intermediate',
-  },
-  {
-    id: 'moment-generating-functions',
-    title: 'Moment Generating Functions',
-    href: '/probability/moment-generating-functions',
-    icon: FunctionSquare,
-    description: '',
-    category: 'sub-topic',
-    parent: 'stats-intermediate',
-  },
-  {
-    id: 'maximum-likelihood-estimation',
-    title: 'Maximum Likelihood Estimation (MLE)',
-    href: '/probability/maximum-likelihood-estimation',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',

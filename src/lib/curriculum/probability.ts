@@ -19,7 +19,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'How randomness converges to predictability.',
     category: 'probability',
-    parent: 'stats-intermediate',
+    parent: 'probability',
   },
   {
     id: 'binomial-distribution',
@@ -28,7 +28,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Modeling a series of success/fail trials.',
     category: 'probability',
-    parent: 'stats-intermediate',
+    parent: 'probability',
   },
   {
     id: 'poisson-distribution',
@@ -37,7 +37,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Modeling the frequency of rare events.',
     category: 'probability',
-    parent: 'stats-intermediate',
+    parent: 'probability',
   },
   {
     id: 'gamma-distribution',
@@ -46,7 +46,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Modeling waiting times and skewed data.',
     category: 'probability',
-    parent: 'stats-intermediate',
+    parent: 'probability',
   },
    {
     id: 'beta-distribution',
@@ -55,7 +55,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Modeling probabilities, percentages, and proportions.',
     category: 'probability',
-    parent: 'stats-intermediate',
+    parent: 'probability',
   },
   {
     id: 'exponential-distribution',
@@ -64,7 +64,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Modeling the time between events in a Poisson process.',
     category: 'probability',
-    parent: 'stats-intermediate',
+    parent: 'probability',
   },
   {
     id: 'cauchy-distribution',
@@ -73,7 +73,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: "Modeling extreme events and 'fat-tailed' phenomena.",
     category: 'probability',
-    parent: 'stats-advanced',
+    parent: 'probability',
   },
   {
     id: 'laplace-distribution',
@@ -82,7 +82,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: "Modeling with a sharp peak and 'fat tails'.",
     category: 'probability',
-    parent: 'stats-advanced',
+    parent: 'probability',
   },
   {
     id: 'moment-generating-functions',
