@@ -8,18 +8,20 @@ import { useTheme } from 'next-themes';
 
 interface PlinkoAnimationProps {
   className?: string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  isHovered: boolean;
 }
 
 export function PlinkoAnimation({
   className,
-  onPointerEnter,
-  onPointerLeave,
+  isHovered,
 }: PlinkoAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const isMouseOver = useRef(false);
+  const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    isMouseOver.current = isHovered;
+  }, [isHovered]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -117,14 +119,7 @@ export function PlinkoAnimation({
       window.addEventListener('resize', handleResize);
       cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
       
-      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
-      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
-      currentMount.addEventListener('mouseenter', handleMouseEnter);
-      currentMount.addEventListener('mouseleave', handleMouseLeave);
-      
       cleanupFunctions.push(() => {
-        currentMount.removeEventListener('mouseenter', handleMouseEnter);
-        currentMount.removeEventListener('mouseleave', handleMouseLeave);
         cancelAnimationFrame(animationFrameId);
       });
     });
@@ -138,7 +133,7 @@ export function PlinkoAnimation({
         currentMount.removeChild(currentMount.firstChild);
       }
     };
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [theme]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

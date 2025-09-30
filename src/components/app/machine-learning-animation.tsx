@@ -8,18 +8,20 @@ import { useTheme } from 'next-themes';
 
 interface MachineLearningAnimationProps {
   className?: string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  isHovered: boolean;
 }
 
 export function MachineLearningAnimation({
   className,
-  onPointerEnter,
-  onPointerLeave,
+  isHovered,
 }: MachineLearningAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const isMouseOver = useRef(false);
+  const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    isMouseOver.current = isHovered;
+  }, [isHovered]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -215,14 +217,6 @@ export function MachineLearningAnimation({
 
       animate();
 
-      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
-      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
-      
-      currentMount.addEventListener('mouseenter', handleMouseEnter);
-      currentMount.addEventListener('mouseleave', handleMouseLeave);
-      currentMount.addEventListener('touchstart', handleMouseEnter, { passive: true });
-      currentMount.addEventListener('touchend', handleMouseLeave);
-
       const handleResize = () => {
         if (currentMount) {
           camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
@@ -233,10 +227,6 @@ export function MachineLearningAnimation({
       window.addEventListener('resize', handleResize);
       
       cleanupFunctions.push(() => {
-          currentMount.removeEventListener('mouseenter', handleMouseEnter);
-          currentMount.removeEventListener('mouseleave', handleMouseLeave);
-          currentMount.removeEventListener('touchstart', handleMouseEnter);
-          currentMount.removeEventListener('touchend', handleMouseLeave);
           window.removeEventListener('resize', handleResize);
           cancelAnimationFrame(animationFrameId);
       });
@@ -251,7 +241,7 @@ export function MachineLearningAnimation({
         currentMount.removeChild(currentMount.firstChild);
       }
     };
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [theme]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

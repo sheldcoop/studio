@@ -8,8 +8,7 @@ import { useTheme } from 'next-themes';
 
 interface StatisticsAnimationProps {
   className?: string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  isHovered: boolean;
 }
 
 // Function to create the geometry for a 2D Gaussian surface plot
@@ -40,13 +39,17 @@ const createGaussianSurface = (width: number, height: number, segments: number) 
 
 export function StatisticsAnimation({
   className,
-  onPointerEnter,
-  onPointerLeave,
+  isHovered,
 }: StatisticsAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const isMouseOver = useRef(false);
+  const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    isMouseOver.current = isHovered;
+  }, [isHovered]);
+
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -144,12 +147,7 @@ export function StatisticsAnimation({
           }
       };
       
-      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
-      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
-
       currentMount.addEventListener('mousemove', handleMouseMove);
-      currentMount.addEventListener('mouseenter', handleMouseEnter);
-      currentMount.addEventListener('mouseleave', handleMouseLeave);
 
       // --- Resize handler ---
       const handleResize = () => {
@@ -167,8 +165,6 @@ export function StatisticsAnimation({
         window.removeEventListener('resize', handleResize);
         if (currentMount) {
           currentMount.removeEventListener('mousemove', handleMouseMove);
-          currentMount.removeEventListener('mouseenter', handleMouseEnter);
-          currentMount.removeEventListener('mouseleave', handleMouseLeave);
           // eslint-disable-next-line react-hooks/exhaustive-deps
           if (renderer.domElement) currentMount.removeChild(renderer.domElement);
         }
@@ -190,7 +186,7 @@ export function StatisticsAnimation({
         currentMount.removeChild(currentMount.firstChild);
       }
     }
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [theme]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

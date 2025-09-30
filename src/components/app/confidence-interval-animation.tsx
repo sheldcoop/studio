@@ -8,19 +8,21 @@ import { useTheme } from 'next-themes';
 
 interface CorrelationOrbAnimationProps {
   className?: string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  isHovered: boolean;
 }
 
 export function ConfidenceIntervalAnimation({
   className,
-  onPointerEnter,
-  onPointerLeave,
+  isHovered,
 }: CorrelationOrbAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const isMouseOver = useRef(false);
+  const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    isMouseOver.current = isHovered;
+  }, [isHovered]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -163,12 +165,8 @@ export function ConfidenceIntervalAnimation({
           mouse.current.y = (event.clientY - rect.top) / rect.height - 0.5;
         }
       };
-      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
-      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
-
+      
       currentMount.addEventListener('mousemove', handleMouseMove);
-      currentMount.addEventListener('mouseenter', handleMouseEnter);
-      currentMount.addEventListener('mouseleave', handleMouseLeave);
 
       const handleResize = () => {
         if (currentMount) {
@@ -184,8 +182,6 @@ export function ConfidenceIntervalAnimation({
         window.removeEventListener('resize', handleResize);
         if (currentMount) {
           currentMount.removeEventListener('mousemove', handleMouseMove);
-          currentMount.removeEventListener('mouseenter', handleMouseEnter);
-          currentMount.removeEventListener('mouseleave', handleMouseLeave);
           if (renderer.domElement) currentMount.removeChild(renderer.domElement);
         }
         renderer.dispose();
@@ -206,7 +202,7 @@ export function ConfidenceIntervalAnimation({
         currentMount.removeChild(currentMount.firstChild);
       }
     }
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [theme]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

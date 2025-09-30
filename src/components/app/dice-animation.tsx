@@ -8,8 +8,7 @@ import { useTheme } from 'next-themes';
 
 interface DiceAnimationProps {
   className?: string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  isHovered: boolean;
 }
 
 const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string, bgColor: string) => {
@@ -34,12 +33,15 @@ const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string
 
 export function DiceAnimation({
   className,
-  onPointerEnter,
-  onPointerLeave,
+  isHovered,
 }: DiceAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const isMouseOver = useRef(false);
+  const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    isMouseOver.current = isHovered;
+  }, [isHovered]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -103,11 +105,6 @@ export function DiceAnimation({
 
       animate();
 
-      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
-      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
-      currentMount.addEventListener('mouseenter', handleMouseEnter);
-      currentMount.addEventListener('mouseleave', handleMouseLeave);
-      
       const handleResize = () => {
         if (currentMount) {
           camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
@@ -121,8 +118,6 @@ export function DiceAnimation({
         cancelAnimationFrame(frameId);
         window.removeEventListener('resize', handleResize);
         if (currentMount) {
-          currentMount.removeEventListener('mouseenter', handleMouseEnter);
-          currentMount.removeEventListener('mouseleave', handleMouseLeave);
           if(renderer.domElement) currentMount.removeChild(renderer.domElement);
         }
         renderer.dispose();
@@ -144,7 +139,7 @@ export function DiceAnimation({
         currentMount.removeChild(currentMount.firstChild);
       }
     }
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [theme]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

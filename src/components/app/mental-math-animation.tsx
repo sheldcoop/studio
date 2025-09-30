@@ -8,19 +8,21 @@ import { useTheme } from 'next-themes';
 
 interface MentalMathAnimationProps {
   className?: string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  isHovered: boolean;
 }
 
 export function MentalMathAnimation({
   className,
-  onPointerEnter,
-  onPointerLeave,
+  isHovered,
 }: MentalMathAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const isMouseOver = useRef(false);
+  const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    isMouseOver.current = isHovered;
+  }, [isHovered]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -175,22 +177,6 @@ export function MentalMathAnimation({
         }
       };
 
-      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
-      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
-
-      const handleTouchStart = (event: TouchEvent) => {
-        isMouseOver.current = true;
-        onPointerEnter();
-        if (event.touches.length > 0 && currentMount) {
-          const touch = event.touches[0];
-          const rect = currentMount.getBoundingClientRect();
-          mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-          mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
-        }
-      };
-      
-      const handleTouchEnd = () => { isMouseOver.current = false; onPointerLeave(); };
-
       const handleTouchMove = (event: TouchEvent) => {
         if (event.touches.length > 0 && currentMount) {
           const touch = event.touches[0];
@@ -201,18 +187,10 @@ export function MentalMathAnimation({
       };
       
       currentMount.addEventListener('mousemove', handleMouseMove);
-      currentMount.addEventListener('mouseenter', handleMouseEnter);
-      currentMount.addEventListener('mouseleave', handleMouseLeave);
-      currentMount.addEventListener('touchstart', handleTouchStart, { passive: true });
-      currentMount.addEventListener('touchend', handleTouchEnd);
       currentMount.addEventListener('touchmove', handleTouchMove, { passive: true });
       
       cleanupFunctions.push(() => {
         currentMount.removeEventListener('mousemove', handleMouseMove);
-        currentMount.removeEventListener('mouseenter', handleMouseEnter);
-        currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        currentMount.removeEventListener('touchstart', handleTouchStart);
-        currentMount.removeEventListener('touchend', handleTouchEnd);
         currentMount.removeEventListener('touchmove', handleTouchMove);
       });
 
@@ -241,7 +219,7 @@ export function MentalMathAnimation({
         currentMount.removeChild(currentMount.firstChild);
       }
     };
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [theme]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

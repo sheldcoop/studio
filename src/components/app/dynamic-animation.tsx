@@ -4,11 +4,10 @@
 import dynamic from 'next/dynamic';
 import { useInView } from 'react-intersection-observer';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ComponentType } from 'react';
+import { ComponentType, useState } from 'react';
 
 type AnimationProps = {
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  isHovered: boolean;
   className?: string;
 };
 
@@ -27,9 +26,10 @@ const animationMap: Record<string, ComponentType<AnimationProps>> = {
 
 interface DynamicAnimationProps {
   animationId: string;
+  isHovered: boolean;
 }
 
-export function DynamicAnimation({ animationId }: DynamicAnimationProps) {
+export function DynamicAnimation({ animationId, isHovered }: DynamicAnimationProps) {
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -41,7 +41,7 @@ export function DynamicAnimation({ animationId }: DynamicAnimationProps) {
     <div ref={ref} className="h-full w-full">
       {inView ? (
         AnimationComponent ? (
-          <AnimationComponent onPointerEnter={() => {}} onPointerLeave={() => {}} />
+          <AnimationComponent isHovered={isHovered} />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
             <p>Animation not found.</p>

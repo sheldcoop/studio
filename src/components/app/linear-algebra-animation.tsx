@@ -8,19 +8,21 @@ import { useTheme } from 'next-themes';
 
 interface LinearAlgebraAnimationProps {
   className?: string;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
+  isHovered: boolean;
 }
 
 export function LinearAlgebraAnimation({
   className,
-  onPointerEnter,
-  onPointerLeave,
+  isHovered,
 }: LinearAlgebraAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const isMouseOver = useRef(false);
+  const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    isMouseOver.current = isHovered;
+  }, [isHovered]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -119,12 +121,8 @@ export function LinearAlgebraAnimation({
           mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
         }
       };
-      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
-      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
 
       currentMount.addEventListener('mousemove', handleMouseMove);
-      currentMount.addEventListener('mouseenter', handleMouseEnter);
-      currentMount.addEventListener('mouseleave', handleMouseLeave);
 
       // --- Resize handler ---
       const handleResize = () => {
@@ -142,8 +140,6 @@ export function LinearAlgebraAnimation({
         window.removeEventListener('resize', handleResize);
         if (currentMount) {
           currentMount.removeEventListener('mousemove', handleMouseMove);
-          currentMount.removeEventListener('mouseenter', handleMouseEnter);
-          currentMount.removeEventListener('mouseleave', handleMouseLeave);
           // eslint-disable-next-line react-hooks/exhaustive-deps
           if (renderer.domElement) currentMount.removeChild(renderer.domElement);
         }
@@ -163,7 +159,7 @@ export function LinearAlgebraAnimation({
         currentMount.removeChild(currentMount.firstChild);
       }
     }
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [theme]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
