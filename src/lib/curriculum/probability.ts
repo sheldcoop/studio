@@ -47,6 +47,15 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
     parent: 'stats-intermediate',
   },
+   {
+    id: 'beta-distribution',
+    title: 'Beta Distribution',
+    href: '/probability/beta-distribution',
+    icon: FunctionSquare,
+    description: 'Modeling probabilities, percentages, and proportions.',
+    category: 'probability',
+    parent: 'stats-intermediate',
+  },
   {
     id: 'moment-generating-functions',
     title: 'Moment Generating Functions',
