@@ -48,7 +48,7 @@ export default function StatToolkitPage() {
               <CardContent className="flex flex-1 flex-col">
                 <ul className="flex-1 space-y-2">
                   {tier.concepts.map((concept) => (
-                    <li key={concept.id}>
+                    <li key={`${tier.id}-${concept.id}`}>
                       <Link
                         href={concept.href}
                         className="group flex items-center gap-3 rounded-md p-2 text-sm transition-colors hover:bg-secondary"

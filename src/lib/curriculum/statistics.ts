@@ -244,15 +244,6 @@ export const statisticsTopics: Topic[] = [
     parent: 'stats-intermediate',
   },
   {
-    id: 'law-of-large-numbers',
-    title: 'The Law of Large Numbers',
-    href: '/probability/law-of-large-numbers',
-    icon: FunctionSquare,
-    description: '',
-    category: 'sub-topic',
-    parent: 'stats-intermediate',
-  },
-  {
     id: 'binomial-distribution',
     title: 'Binomial Distribution',
     href: '/probability/binomial-distribution',
