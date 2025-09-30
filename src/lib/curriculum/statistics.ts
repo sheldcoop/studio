@@ -130,7 +130,7 @@ export const statisticsTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Tests for association between two categorical variables.',
     category: 'non-parametric',
-    parent: 'hypothesis-testing',
+    parent: 'prob-cat-tests',
   },
 
   // Stat Toolkit Parent Categories
