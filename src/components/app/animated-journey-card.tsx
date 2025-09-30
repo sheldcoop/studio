@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useRef, useEffect, type ComponentType } from 'react';
+import { useState, useRef, type ComponentType } from 'react';
 import type { Topic } from '@/lib/topics';
 import {
   Card,
@@ -27,12 +27,10 @@ interface AnimatedJourneyCardProps {
 }
 
 export function AnimatedJourneyCard({ item, AnimationComponent }: AnimatedJourneyCardProps) {
-  const [isCardActive, setIsCardActive] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handlePointerEnter = () => {
-    setIsCardActive(true);
     // Trigger the load only on the first hover
     if (!hasLoaded) {
       setHasLoaded(true);
@@ -40,7 +38,7 @@ export function AnimatedJourneyCard({ item, AnimationComponent }: AnimatedJourne
   }
   
   const handlePointerLeave = () => {
-    setIsCardActive(false);
+    // No action needed on leave anymore
   }
 
 
@@ -64,30 +62,21 @@ export function AnimatedJourneyCard({ item, AnimationComponent }: AnimatedJourne
                 <Skeleton className="h-full w-full" />
             )}
           </div>
-          <div className="relative z-10 flex h-full flex-col justify-between p-6">
+          <div className="relative z-10 flex h-full flex-col justify-between p-6 opacity-100 transition-opacity duration-500 group-hover:opacity-0">
             <div>
               <div className="mb-4">
                 <item.icon
-                  className={cn(
-                    'h-8 w-8 text-primary transition-colors',
-                    isCardActive && 'text-primary-foreground/80'
-                  )}
+                  className='h-8 w-8 text-primary'
                 />
               </div>
               <CardTitle
-                className={cn(
-                  'font-headline text-xl transition-colors',
-                  isCardActive && 'text-card'
-                )}
+                className='font-headline text-xl'
               >
                 {item.title}
               </CardTitle>
             </div>
             <CardDescription
-              className={cn(
-                'transition-colors',
-                isCardActive && 'text-primary-foreground/70'
-              )}
+              className='text-muted-foreground'
             >
               {item.description}
             </CardDescription>
