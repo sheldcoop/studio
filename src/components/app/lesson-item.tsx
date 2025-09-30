@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import type { Topic } from '@/lib/data';
+import { type Topic } from '@/lib/curriculum';
 import { cn } from '@/lib/utils';
 import {
   CheckCircle,
@@ -8,10 +8,10 @@ import {
   Clock,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { ArrowRight } from 'lucide-react';
 
 interface LessonItemProps {
   lesson: Topic;
-  isLast: boolean;
 }
 
 const statusIcons = {
@@ -32,26 +32,28 @@ const statusVariants = {
     'not-started': 'notStarted',
 }
 
-export function LessonItem({ lesson, isLast }: LessonItemProps) {
+export function LessonItem({ lesson }: LessonItemProps) {
   const Icon = statusIcons[lesson.status || 'not-started'];
   const label = statusLabels[lesson.status || 'not-started'];
   const variant = statusVariants[lesson.status || 'not-started'] as "completed" | "inProgress" | "notStarted";
 
   return (
-    <li className={cn('mx-6 border-t border-border/50', isLast && 'border-b')}>
-        <Link href={lesson.href} className="group flex items-center justify-between p-4 transition-colors hover:bg-secondary/30">
+    <li key={lesson.id}>
+        <Link
+            href={lesson.href}
+            className="group mx-2 flex items-center justify-between rounded-lg p-4 transition-colors hover:bg-secondary/50"
+            >
             <div className="flex items-center gap-4">
-                <Icon className={cn("h-6 w-6", 
+                <Icon className={cn("h-6 w-6 transition-colors group-hover:text-primary", 
                     lesson.status === 'completed' && 'text-green-500',
                     lesson.status === 'in-progress' && 'text-teal-500',
                     lesson.status === 'not-started' && 'text-muted-foreground'
                 )} />
-                <span className="font-medium text-foreground/90 group-hover:text-foreground">{lesson.title}</span>
+                <span className="text-lg font-medium text-foreground/90 group-hover:text-foreground">
+                    {lesson.title}
+                </span>
             </div>
-            <div className="flex items-center gap-6">
-                <Badge variant={variant} className="hidden w-24 justify-center sm:flex">{label}</Badge>
-                <span className="w-16 text-right text-sm text-muted-foreground">{lesson.duration} min</span>
-            </div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
         </Link>
     </li>
   );

@@ -4,9 +4,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHeader } from '@/components/app/page-header';
 import { getPathById } from '@/lib/learning-paths';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { LessonItem } from '@/components/app/lesson-item';
 
 type PathPageProps = {
   params: {
@@ -69,20 +68,7 @@ export default function PathPage({ params }: PathPageProps) {
              <AccordionContent className="p-0 pt-2">
                 <ul className="divide-y divide-border">
                     {module.lessons.map((lesson) => (
-                    <li key={lesson.id}>
-                        <Link
-                        href={lesson.href}
-                        className="group mx-2 flex items-center justify-between rounded-lg p-4 transition-colors hover:bg-secondary/50"
-                        >
-                        <div className="flex items-center gap-4">
-                            <lesson.icon className="h-6 w-6 text-primary/80 transition-colors group-hover:text-primary" />
-                            <span className="text-lg font-medium text-foreground/90 group-hover:text-foreground">
-                                {lesson.title}
-                            </span>
-                        </div>
-                        <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-                        </Link>
-                    </li>
+                      <LessonItem key={lesson.id} lesson={lesson} />
                     ))}
                 </ul>
              </AccordionContent>
