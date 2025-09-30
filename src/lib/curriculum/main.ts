@@ -21,6 +21,7 @@ export const mainTopics: Topic[] = [
     icon: Pi,
     href: '/topics/linear-algebra-for-quantitative-finance',
     category: 'main',
+    animation: 'linear-algebra',
   },
   {
     id: 'statistics',
@@ -29,6 +30,7 @@ export const mainTopics: Topic[] = [
     icon: Sigma,
     href: '/topics/statistics',
     category: 'main',
+    animation: 'statistics',
   },
   {
     id: 'stat-toolkit',
@@ -37,6 +39,7 @@ export const mainTopics: Topic[] = [
     icon: Wrench,
     href: '/stat-toolkit',
     category: 'main',
+    animation: 'stat-toolkit',
   },
   {
     id: 'probability',
@@ -45,6 +48,7 @@ export const mainTopics: Topic[] = [
     icon: Percent,
     href: '/probability',
     category: 'main',
+    animation: 'probability',
   },
    {
     id: 'probability-toolkit',
@@ -53,6 +57,7 @@ export const mainTopics: Topic[] = [
     icon: FlaskConical,
     href: '/paths/probability-toolkit',
     category: 'main',
+    animation: 'probability-toolkit',
   },
   {
     id: 'mental-math',
@@ -61,6 +66,7 @@ export const mainTopics: Topic[] = [
     icon: BrainCircuit,
     href: '/topics/mental-math',
     category: 'main',
+    animation: 'mental-math',
   },
   {
     id: 'time-series-analysis',
@@ -69,6 +75,7 @@ export const mainTopics: Topic[] = [
     icon: LineChart,
     href: '/paths/time-series-analysis-for-quantitative-finance',
     category: 'main',
+    animation: 'time-series-analysis',
   },
   {
     id: 'machine-learning',
@@ -77,5 +84,6 @@ export const mainTopics: Topic[] = [
     icon: Cpu,
     href: '/paths/machine-learning-for-quantitative-finance',
     category: 'main',
+    animation: 'machine-learning',
   },
 ];

@@ -34,5 +34,6 @@ export type Topic = {
   interactiveExamples?: {
     coreConcepts: CoreConcept[];
     examples: InteractiveExample[];
-  }
+  };
+  animation?: string; // ID for the animation component
 };
