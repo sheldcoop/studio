@@ -63,6 +63,16 @@ export const statisticsTopics: Topic[] = [
     category: 'parametric',
     parent: 'hypothesis-testing',
   },
+  {
+    id: 'chi-squared-test',
+    title: 'Chi-Squared Test',
+    href: '/topics/statistics/chi-squared-test',
+    icon: FunctionSquare,
+    description:
+      'Analyzes categorical data to find significant relationships.',
+    category: 'non-parametric',
+    parent: 'prob-cat-tests',
+  },
 
   // Non-Parametric Tests (sub-topics of hypothesis testing)
   {
@@ -174,9 +184,9 @@ export const statisticsTopics: Topic[] = [
     title: 'The Normal Distribution',
     href: '/topics/statistics/normal-distribution',
     icon: FunctionSquare,
-    description: '',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
+    description: 'The ubiquitous "bell curve."',
+    category: 'probability',
+    parent: 'prob-dist-continuous',
   },
   {
     id: 'central-limit-theorem',
