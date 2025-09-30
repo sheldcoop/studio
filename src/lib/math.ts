@@ -153,9 +153,7 @@ export const getVariance = (data: number[]) => {
  */
 export const getStdDev = (data: number[]): number => {
     if (data.length < 2) return 0;
-    const mean = getMean(data);
-    const variance = data.reduce((acc, val) => acc + (val - mean) ** 2, 0) / (data.length - 1);
-    return Math.sqrt(variance);
+    return Math.sqrt(getVariance(data));
 }
 
 
