@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import './globals.css';
+import 'katex/dist/katex.min.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
 import { AuthProvider } from './auth-provider';
 

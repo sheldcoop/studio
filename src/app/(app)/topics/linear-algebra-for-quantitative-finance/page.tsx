@@ -14,33 +14,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import Script from 'next/script';
+import { InlineMath } from 'react-katex';
 
 export default function LinearAlgebraPage() {
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Linear Algebra for Quants"
         description="The language of data and the backbone of modern quantitative finance."
@@ -83,11 +61,11 @@ export default function LinearAlgebraPage() {
                   <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       <strong>Vector Operations:</strong> Addition, scalar
-                      multiplication, and the dot product ({`$u \\cdot v$`}).
+                      multiplication, and the dot product (<InlineMath math="u \cdot v" />).
                     </li>
                     <li>
                       <strong>Vector Norms:</strong> Understanding vector
-                      length or magnitude, particularly the L1 and L2 norms ({`$||v||$`}).
+                      length or magnitude, particularly the L1 and L2 norms (<InlineMath math="||v||" />).
                     </li>
                     <li>
                       <strong>Vector Spaces and Subspaces:</strong> Formal
@@ -146,15 +124,15 @@ export default function LinearAlgebraPage() {
                  <div>
                   <h4 className="font-semibold">Solving Systems of Linear Equations</h4>
                   <ul className="mt-2 list-disc space-y-2 pl-6">
-                    <li>Representing systems of equations in the form {`$Ax = b$`}.</li>
-                    <li>Methods for solving, including Gaussian elimination and using the matrix inverse ({`$x = A^{-1}b$`}). This is the foundation for linear regression.</li>
+                    <li>Representing systems of equations in the form <InlineMath math="Ax = b" />.</li>
+                    <li>Methods for solving, including Gaussian elimination and using the matrix inverse (<InlineMath math="x = A^{-1}b" />). This is the foundation for linear regression.</li>
                   </ul>
                 </div>
                 <div>
                   <h4 className="font-semibold">Eigenvalues and Eigenvectors</h4>
                   <ul className="mt-2 list-disc space-y-2 pl-6">
-                    <li>The fundamental concept of vectors that are only scaled by a transformation, defined by the equation {`$Ax = \\lambda x$`}.</li>
-                    <li><strong>Eigen-decomposition:</strong> Breaking down a matrix into its constituent eigenvalues and eigenvectors ({`$A = PDP^{-1}$`}). This reveals the matrix's intrinsic properties.</li>
+                    <li>The fundamental concept of vectors that are only scaled by a transformation, defined by the equation <InlineMath math="Ax = \lambda x" />.</li>
+                    <li><strong>Eigen-decomposition:</strong> Breaking down a matrix into its constituent eigenvalues and eigenvectors (<InlineMath math="A = PDP^{-1}" />). This reveals the matrix's intrinsic properties.</li>
                   </ul>
                 </div>
                 <div>
@@ -189,7 +167,7 @@ export default function LinearAlgebraPage() {
                  <div>
                   <h4 className="font-semibold">Linear Regression</h4>
                   <ul className="mt-2 list-disc space-y-2 pl-6">
-                    <li>Framing regression as a problem of <strong>solving a system of linear equations</strong> (the "Normal Equation," {`$\\hat{\\beta} = (X^T X)^{-1} X^T y$}) to find the best-fit line or plane.`}</li>
+                    <li>Framing regression as a problem of <strong>solving a system of linear equations</strong> (the "Normal Equation," <InlineMath math="\hat{\beta} = (X^T X)^{-1} X^T y" />) to find the best-fit line or plane.</li>
                   </ul>
                 </div>
               </div>

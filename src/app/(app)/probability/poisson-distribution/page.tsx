@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import Script from 'next/script';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // --- Math & Simulation Logic ---
 const factorial = (n: number): number => {
@@ -85,28 +85,6 @@ export default function PoissonDistributionPage() {
 
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Poisson Distribution"
         description="Modeling the number of events occurring in a fixed interval of time or space."
@@ -134,12 +112,12 @@ export default function PoissonDistributionPage() {
             </CardHeader>
             <CardContent>
                  <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  $$P(X=k) = \\frac{\\lambda^k e^{-\\lambda}}{k!}$$
+                  <BlockMath math="P(X=k) = \frac{\lambda^k e^{-\lambda}}{k!}" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><code className="font-mono bg-background px-1 rounded">$k$</code> is the number of occurrences of an event.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$\\lambda$</code> (lambda) is the average number of events per interval.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$e$</code> is Euler's number (approximately 2.71828).</li>
+                    <li><InlineMath math="k" /> is the number of occurrences of an event.</li>
+                    <li><InlineMath math="\lambda" /> (lambda) is the average number of events per interval.</li>
+                    <li><InlineMath math="e" /> is Euler's number (approximately 2.71828).</li>
                 </ul>
             </CardContent>
         </Card>

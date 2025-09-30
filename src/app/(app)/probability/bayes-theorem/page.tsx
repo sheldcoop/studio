@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import Script from 'next/script';
+import { BlockMath } from 'react-katex';
+
 
 const BayesTheoremCalculator = () => {
   const [prevalence, setPrevalence] = useState(0.01); // P(D) - Prior
@@ -83,28 +84,6 @@ const BayesTheoremCalculator = () => {
 export default function BayesTheoremPage() {
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Bayes' Theorem"
         description="The mathematical framework for updating your beliefs in light of new evidence."
@@ -120,13 +99,13 @@ export default function BayesTheoremPage() {
               Bayes' Theorem is one of the most important concepts in probability and statistics. It provides a formal way to combine new evidence with existing beliefs (our "priors") to arrive at an updated, more accurate belief (a "posterior").
             </p>
              <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  $$P(A|B) = \\frac{P(B|A) \\cdot P(A)}{P(B)}$$
+                  <BlockMath math="P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}" />
             </div>
             <ul className="list-disc pl-6 space-y-2 text-sm">
-                <li><code className="font-mono bg-background px-1 rounded">$P(A|B)$</code> — The <strong>Posterior Probability</strong>: The probability of event A being true, <span className="font-semibold text-primary">given</span> that event B is true. This is what you are trying to calculate.</li>
-                <li><code className="font-mono bg-background px-1 rounded">$P(B|A)$</code> — The <strong>Likelihood</strong>: The probability of observing event B, <span className="font-semibold text-primary">given</span> that event A is true. (This is often the accuracy of your test or signal).</li>
-                <li><code className="font-mono bg-background px-1 rounded">$P(A)$</code> — The <strong>Prior Probability</strong>: Your initial belief in the probability of event A before seeing any new evidence.</li>
-                <li><code className="font-mono bg-background px-1 rounded">$P(B)$</code> — The <strong>Marginal Probability</strong>: The total probability of observing event B under all circumstances.</li>
+                <li><code className="font-mono bg-background px-1 rounded">P(A|B)</code> — The <strong>Posterior Probability</strong>: The probability of event A being true, <span className="font-semibold text-primary">given</span> that event B is true. This is what you are trying to calculate.</li>
+                <li><code className="font-mono bg-background px-1 rounded">P(B|A)</code> — The <strong>Likelihood</strong>: The probability of observing event B, <span className="font-semibold text-primary">given</span> that event A is true. (This is often the accuracy of your test or signal).</li>
+                <li><code className="font-mono bg-background px-1 rounded">P(A)</code> — The <strong>Prior Probability</strong>: Your initial belief in the probability of event A before seeing any new evidence.</li>
+                <li><code className="font-mono bg-background px-1 rounded">P(B)</code> — The <strong>Marginal Probability</strong>: The total probability of observing event B under all circumstances.</li>
             </ul>
           </CardContent>
         </Card>

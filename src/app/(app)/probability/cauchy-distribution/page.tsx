@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import Script from 'next/script';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // --- Math & Simulation Logic ---
 const cauchyPdf = (x: number, x0: number, gamma: number): number => {
@@ -90,28 +90,6 @@ export default function CauchyDistributionPage() {
 
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Cauchy Distribution"
         description="Modeling extreme events and 'fat-tailed' phenomena."
@@ -139,11 +117,11 @@ export default function CauchyDistributionPage() {
             </CardHeader>
             <CardContent>
                  <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  $$f(x; x_0, \\gamma) = \\frac{1}{\\pi\\gamma \\left[1 + \\left(\\frac{x-x_0}{\\gamma}\\right)^2\\right]}$$
+                  <BlockMath math="f(x; x_0, \gamma) = \frac{1}{\pi\gamma \left[1 + \left(\frac{x-x_0}{\gamma}\right)^2\right]}" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><code className="font-mono bg-background px-1 rounded">$x_0$</code> is the <strong>location</strong> parameter, which specifies the location of the peak (the median and mode).</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$\\gamma$</code> (gamma) is the <strong>scale</strong> parameter, which specifies the half-width at half-maximum. A larger gamma results in a wider, flatter curve with fatter tails.</li>
+                    <li><InlineMath math="x_0" /> is the <strong>location</strong> parameter, which specifies the location of the peak (the median and mode).</li>
+                    <li><InlineMath math="\gamma" /> (gamma) is the <strong>scale</strong> parameter, which specifies the half-width at half-maximum. A larger gamma results in a wider, flatter curve with fatter tails.</li>
                 </ul>
             </CardContent>
         </Card>

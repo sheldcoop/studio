@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import Script from 'next/script';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // --- Math & Simulation Logic ---
 // Lanczos approximation for the gamma function
@@ -117,28 +117,6 @@ export default function GammaDistributionPage() {
 
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Gamma Distribution"
         description="Modeling waiting times and the sum of exponential variables."
@@ -166,13 +144,13 @@ export default function GammaDistributionPage() {
             </CardHeader>
             <CardContent>
                  <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  $$f(x; \\alpha, \\beta) = \\frac{\\beta^\\alpha}{\\Gamma(\\alpha)} x^{\\alpha-1} e^{-\\beta x}$$
+                  <BlockMath math="f(x; \alpha, \beta) = \frac{\beta^\alpha}{\Gamma(\alpha)} x^{\alpha-1} e^{-\beta x}" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><code className="font-mono bg-background px-1 rounded">$x$</code> must be > 0.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$\\alpha$</code> (alpha) is the <strong>shape</strong> parameter.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$\\beta$</code> (beta) is the <strong>rate</strong> parameter.</li>
-                     <li><code className="font-mono bg-background px-1 rounded">$\\Gamma(\\alpha)$</code> is the Gamma function.</li>
+                    <li><InlineMath math="x" /> must be > 0.</li>
+                    <li><InlineMath math="\alpha" /> (alpha) is the <strong>shape</strong> parameter.</li>
+                    <li><InlineMath math="\beta" /> (beta) is the <strong>rate</strong> parameter.</li>
+                     <li><InlineMath math="\Gamma(\alpha)" /> is the Gamma function.</li>
                 </ul>
             </CardContent>
         </Card>

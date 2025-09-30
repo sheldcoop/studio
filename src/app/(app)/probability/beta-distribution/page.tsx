@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import Script from 'next/script';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // --- Math & Simulation Logic ---
 // Gamma function approximation (Lanczos) for the Beta function
@@ -122,28 +122,6 @@ export default function BetaDistributionPage() {
 
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Beta Distribution"
         description="Modeling probabilities, percentages, and proportions."
@@ -171,12 +149,12 @@ export default function BetaDistributionPage() {
             </CardHeader>
             <CardContent>
                  <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  $$f(x; \\alpha, \\beta) = \\frac{x^{\\alpha-1} (1-x)^{\\beta-1}}{B(\\alpha, \\beta)}$$
+                  <BlockMath math="f(x; \alpha, \beta) = \frac{x^{\alpha-1} (1-x)^{\beta-1}}{B(\alpha, \beta)}" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><code className="font-mono bg-background px-1 rounded">$x$</code> is the variable (between 0 and 1).</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$\\alpha$</code> and <code className="font-mono bg-background px-1 rounded">$\\beta$</code> are positive shape parameters.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$B(\\alpha, \\beta)$</code> is the Beta function, which normalizes the total probability to 1.</li>
+                    <li><InlineMath math="x" /> is the variable (between 0 and 1).</li>
+                    <li><InlineMath math="\alpha" /> and <InlineMath math="\beta" /> are positive shape parameters.</li>
+                    <li><InlineMath math="B(\alpha, \beta)" /> is the Beta function, which normalizes the total probability to 1.</li>
                 </ul>
             </CardContent>
         </Card>

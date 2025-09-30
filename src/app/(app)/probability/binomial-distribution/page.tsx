@@ -15,7 +15,8 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import Script from 'next/script';
+import { BlockMath, InlineMath } from 'react-katex';
+
 
 // --- Math & Simulation Logic ---
 const combinations = (n: number, k: number): number => {
@@ -97,28 +98,6 @@ export default function BinomialDistributionPage() {
 
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Binomial Distribution"
         description="Modeling the number of successes in a sequence of independent trials."
@@ -146,13 +125,13 @@ export default function BinomialDistributionPage() {
             </CardHeader>
             <CardContent>
                  <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  $$P(X=k) = \\binom{n}{k} p^k (1-p)^{n-k}$$
+                  <BlockMath math="P(X=k) = \binom{n}{k} p^k (1-p)^{n-k}" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><code className="font-mono bg-background px-1 rounded">$\\binom{n}{k}$</code> is the number of combinations, "n choose k".</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$n$</code> is the number of trials.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$k$</code> is the number of successes.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$p$</code> is the probability of success on a single trial.</li>
+                    <li><InlineMath math="\binom{n}{k}" /> is the number of combinations, "n choose k".</li>
+                    <li><InlineMath math="n" /> is the number of trials.</li>
+                    <li><InlineMath math="k" /> is the number of successes.</li>
+                    <li><InlineMath math="p" /> is the probability of success on a single trial.</li>
                 </ul>
             </CardContent>
         </Card>

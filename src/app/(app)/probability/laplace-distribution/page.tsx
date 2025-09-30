@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import Script from 'next/script';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // --- Math & Simulation Logic ---
 const laplacePdf = (x: number, mu: number, b: number): number => {
@@ -94,28 +94,6 @@ export default function LaplaceDistributionPage() {
 
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Laplace Distribution"
         description="A sharp-peaked, fat-tailed alternative to the Normal Distribution."
@@ -143,11 +121,11 @@ export default function LaplaceDistributionPage() {
             </CardHeader>
             <CardContent>
                  <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  $$f(x | \\mu, b) = \\frac{1}{2b} \\exp\\left( -\\frac{|x - \\mu|}{b} \\right)$$
+                  <BlockMath math="f(x | \mu, b) = \frac{1}{2b} \exp\left( -\frac{|x - \mu|}{b} \right)" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><code className="font-mono bg-background px-1 rounded">$\\mu$</code> (mu) is the <strong>location</strong> parameter, which is also the mean, median, and mode.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$b$</code> is the <strong>scale</strong> parameter (must be > 0), which controls the spread or "width" of the distribution. A larger b results in a wider, flatter curve.</li>
+                    <li><InlineMath math="\mu" /> (mu) is the <strong>location</strong> parameter, which is also the mean, median, and mode.</li>
+                    <li><InlineMath math="b" /> is the <strong>scale</strong> parameter (must be > 0), which controls the spread or "width" of the distribution. A larger b results in a wider, flatter curve.</li>
                 </ul>
             </CardContent>
         </Card>
