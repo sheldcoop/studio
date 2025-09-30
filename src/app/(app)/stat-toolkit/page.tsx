@@ -58,7 +58,7 @@ export default function StatToolkitPage() {
         )}
 
         {hypothesisTestingTopic && (
-          <Link href='/topics/statistics' className="group block">
+          <Link href='/hypothesis-testing-p-values' className="group block">
              <Card className="transform-gpu transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
                <CardHeader>
                 <CardTitle className="font-headline text-lg text-primary">A Quant's Detective Kit: Interactive Tests</CardTitle>

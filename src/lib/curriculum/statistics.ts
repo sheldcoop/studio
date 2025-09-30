@@ -7,7 +7,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'hypothesis-testing',
     title: 'Hypothesis Testing & P-Values',
-    href: '/topics/statistics',
+    href: '/hypothesis-testing-p-values',
     icon: FunctionSquare,
     description: 'The detective work of data science.',
     category: 'sub-topic',
@@ -18,7 +18,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 't-test',
     title: 'T-Test',
-    href: '/topics/statistics',
+    href: '/topics/t-test',
     icon: FunctionSquare,
     description: 'Compares the means of two groups, assuming normal distribution.',
     category: 'parametric',
@@ -27,7 +27,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'z-test',
     title: 'Z-Test',
-    href: '/topics/statistics',
+    href: '/topics/z-test',
     icon: FunctionSquare,
     description:
       'Compares means of large samples (n>30) with known population variance.',
@@ -37,7 +37,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'anova',
     title: 'ANOVA',
-    href: '/topics/statistics',
+    href: '/topics/anova',
     icon: FunctionSquare,
     description: 'Compares the averages of three or more groups.',
     category: 'parametric',
@@ -46,7 +46,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'f-test',
     title: 'F-Test',
-    href: '/topics/statistics',
+    href: '/topics/f-test',
     icon: FunctionSquare,
     description: 'Compares the variances (spread) of two or more groups.',
     category: 'parametric',
@@ -55,7 +55,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'pearson-correlation',
     title: 'Pearson Correlation',
-    href: '/topics/statistics',
+    href: '/topics/pearson-correlation',
     icon: FunctionSquare,
     description:
       'Measures the linear relationship between two continuous variables.',
@@ -65,7 +65,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'chi-squared-test',
     title: 'Chi-Squared Test',
-    href: '/topics/statistics',
+    href: '/topics/chi-squared-test',
     icon: FunctionSquare,
     description:
       'Analyzes categorical data to find significant relationships.',
@@ -77,7 +77,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'mann-whitney-u-test',
     title: 'Mann-Whitney U Test',
-    href: '/topics/statistics',
+    href: '/topics/mann-whitney-u-test',
     icon: FunctionSquare,
     description:
       'Alternative to the T-Test when data is not normally distributed.',
@@ -87,7 +87,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'kruskal-wallis-test',
     title: 'Kruskal-Wallis Test',
-    href: '/topics/statistics',
+    href: '/topics/kruskal-wallis-test',
     icon: FunctionSquare,
     description: 'Alternative to ANOVA for comparing three or more groups.',
     category: 'non-parametric',
@@ -96,7 +96,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'wilcoxon-signed-rank-test',
     title: 'Wilcoxon Signed-Rank Test',
-    href: '/topics/statistics',
+    href: '/topics/wilcoxon-signed-rank-test',
     icon: FunctionSquare,
     description:
       'Alternative to the paired T-Test for repeated measurements.',
@@ -106,7 +106,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'spearmans-rank-correlation',
     title: "Spearman's Rank Correlation",
-    href: '/topics/statistics',
+    href: '/topics/spearmans-rank-correlation',
     icon: FunctionSquare,
     description:
       'Measures the monotonic relationship between two ranked variables.',
@@ -116,7 +116,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'friedman-test',
     title: 'Friedman Test',
-    href: '/topics/statistics',
+    href: '/topics/friedman-test',
     icon: FunctionSquare,
     description:
       'The non-parametric alternative to a repeated-measures ANOVA.',
@@ -126,7 +126,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'kolmogorov-smirnov-k-s-test',
     title: 'Kolmogorov-Smirnov (K-S) Test',
-    href: '/topics/statistics',
+    href: '/topics/kolmogorov-smirnov-k-s-test',
     icon: FunctionSquare,
     description: 'Tests if a sample is drawn from a specific distribution.',
     category: 'non-parametric',
