@@ -9,6 +9,7 @@ import {
   BotMessageSquare,
   Users,
   FolderKanban,
+  Sigma,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -24,6 +25,11 @@ const links = [
     icon: BookOpenCheck,
   },
   {
+    href: '/hypothesis-testing',
+    label: 'Hypothesis Testing',
+    icon: Sigma,
+  },
+  {
     href: '/interview-prep',
     label: 'Interview Prep',
     icon: BotMessageSquare,
@@ -35,7 +41,7 @@ const links = [
   },
   {
     href: '/topics',
-    label: 'Topics',
+    label: 'All Topics',
     icon: FolderKanban,
   },
 ];

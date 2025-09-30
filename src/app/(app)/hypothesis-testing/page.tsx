@@ -1,4 +1,3 @@
-
 'use client';
 
 import { PageHeader } from '@/components/app/page-header';
@@ -11,12 +10,15 @@ import {
 } from '@/components/ui/card';
 import { allTopics } from '@/lib/curriculum';
 import Link from 'next/link';
+import { Table } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function HypothesisTestingPage() {
   const parametricTests = allTopics.filter(t => t.category === 'parametric');
   const nonParametricTests = allTopics.filter(
     t => t.category === 'non-parametric'
   );
+  const zTableTopic = allTopics.find(t => t.id === 'z-table');
 
   return (
     <>
@@ -43,15 +45,29 @@ export default function HypothesisTestingPage() {
               (e.g., "the new drug has an effect").
             </p>
             <p>
-              The <strong>p-value</strong> is the crucial piece of evidence. It's
-              the probability of observing your data (or something even more
-              extreme) if the null hypothesis were actually true. A small
+              The <strong>p-value</strong> is the crucial piece of evidence.
+              It's the probability of observing your data (or something even
+              more extreme) if the null hypothesis were actually true. A small
               p-value (typically &lt; 0.05) suggests that your observed data is
               very unlikely under the null hypothesis, giving you a reason to
               reject it.
             </p>
           </CardContent>
         </Card>
+
+        {zTableTopic && (
+           <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-headline"><Table className="h-6 w-6 text-primary" /> Z-Table Calculator</CardTitle>
+              </CardHeader>
+              <CardContent>
+                  <p className="text-sm text-muted-foreground">The Z-score is a critical value that defines the boundaries of our interval. Explore how Z-scores relate to probabilities with an interactive Z-table.</p>
+                  <Button asChild className="mt-4 w-full">
+                      <Link href={zTableTopic.href}>Open Z-Table Calculator</Link>
+                  </Button>
+              </CardContent>
+          </Card>
+        )}
 
         <section>
           <div className="mb-8 text-center">

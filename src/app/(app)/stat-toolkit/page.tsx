@@ -26,7 +26,7 @@ export default function StatToolkitPage() {
     };
   });
   
-  const hypothesisTestingTopic = allTopics.find(t => t.id === 'hypothesis-testing-p-values');
+  const hypothesisTestingTopic = allTopics.find(t => t.id === 'hypothesis-testing');
   const demystifyingHypothesisTopic = allTopics.find(t => t.id === 'demystifying-hypothesis-testing');
 
   return (
@@ -37,25 +37,6 @@ export default function StatToolkitPage() {
       />
 
       <div className="space-y-6">
-        {hypothesisTestingTopic && (
-          <Card className="bg-primary/5 border-primary/20">
-            <CardHeader>
-              <CardTitle className="font-headline text-xl text-primary">A Quant's Detective Kit</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold">{hypothesisTestingTopic.title}</h3>
-                  <p className="text-muted-foreground">{hypothesisTestingTopic.description}</p>
-                </div>
-                <Link href={hypothesisTestingTopic.href} className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
-                  Explore Tests <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {demystifyingHypothesisTopic && (
           <Card className="bg-primary/5 border-primary/20">
             <CardHeader>
