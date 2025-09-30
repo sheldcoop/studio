@@ -13,6 +13,7 @@ import { generateUniformData, generateExponentialData, getMean, getStdDev, gener
 import { Loader2 } from 'lucide-react';
 import { ChartContainer } from '@/components/ui/chart';
 import { XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { InlineMath } from 'react-katex';
 
 
 type DistributionType = 'uniform' | 'exponential' | 'lognormal';
@@ -79,8 +80,9 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
             <ReferenceLine x={mean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `μ=${mean.toFixed(2)}`, position: 'top', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
         </BarChart>
         </ResponsiveContainer>
-        <div className="text-center text-xs text-muted-foreground mt-2">
-            Population Mean (μ): {mean.toFixed(2)}, Population Std Dev (σ): {stdDev.toFixed(2)}
+        <div className="text-center text-xs text-muted-foreground mt-2 space-x-2">
+            <span>Population Mean (<InlineMath math="\mu" />): {mean.toFixed(2)},</span>
+            <span>Population Std Dev (<InlineMath math="\sigma" />): {stdDev.toFixed(2)}</span>
         </div>
     </>
   );
@@ -180,7 +182,7 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
       </ResponsiveContainer>
       <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-2">
         <div>
-            Mean of Sample Means (x̄): <span className="font-semibold text-foreground block">{overallMean.toFixed(3)}</span>
+            Mean of Sample Means (<InlineMath math="\bar{x}" />): <span className="font-semibold text-foreground block">{overallMean.toFixed(3)}</span>
         </div>
         <div>
             Std. Dev. of Sample Means (Std. Error): <span className="font-semibold text-foreground block">{stdErr.toFixed(3)}</span>
@@ -339,7 +341,7 @@ export default function CentralLimitTheoremPage() {
                           </RadioGroup>
                       </div>
                       <div className="space-y-3">
-                          <Label htmlFor="sample-size-slider">2. Set the Sample Size (n)</Label>
+                          <Label htmlFor="sample-size-slider">2. Set the Sample Size (<InlineMath math="n" />)</Label>
                           <div className="flex items-center gap-4">
                               <Slider id="sample-size-slider" min={2} max={100} step={1} value={[sampleSize]} onValueChange={(val) => setSampleSize(val[0])} disabled={isSampling} />
                               <span className="font-mono text-lg w-12 text-center">{sampleSize}</span>
@@ -408,3 +410,5 @@ export default function CentralLimitTheoremPage() {
     </>
   );
 }
+
+    
