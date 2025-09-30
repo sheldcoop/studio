@@ -68,6 +68,7 @@ export const getPathById = (id: string): LearningPath | undefined => {
     { id: 'stats-module-2', parent: 'statistics-for-quantitative-finance', title: 'Common Distributions', status: 'in-progress', duration: 75 },
     { id: 'stats-module-3', parent: 'statistics-for-quantitative-finance', title: 'Hypothesis Testing', status: 'not-started', duration: 120 },
     { id: 'stats-module-4', parent: 'statistics-for-quantitative-finance', title: 'Bayesian Statistics Intro', status: 'not-started', duration: 60 },
+    { id: 'prob-core-tools', parent: 'probability-toolkit', title: 'Core Probability Tools', status: 'in-progress', duration: 40 },
     { id: 'prob-dist-discrete', parent: 'probability-toolkit', title: 'Discrete Distributions', status: 'in-progress', duration: 30},
     { id: 'prob-dist-continuous', parent: 'probability-toolkit', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
     { id: 'prob-cat-tests', parent: 'probability-toolkit', title: 'Hypothesis Tests for Categorical Data', status: 'not-started', duration: 20 },

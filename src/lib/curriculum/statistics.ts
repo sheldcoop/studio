@@ -176,7 +176,7 @@ export const statisticsTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'Interactive Z-Table for Z-scores and probabilities.',
     category: 'sub-topic',
-    parent: 'stats-foundations',
+    parent: 'prob-core-tools',
   },
   {
     id: 'descriptive-statistics-explorer',

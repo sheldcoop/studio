@@ -10,7 +10,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'A framework for updating beliefs with new evidence.',
     category: 'probability',
-    parent: 'probability',
+    parent: 'prob-core-tools',
   },
   {
     id: 'law-of-large-numbers',
