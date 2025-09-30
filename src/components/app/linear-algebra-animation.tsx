@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface LinearAlgebraAnimationProps {
   className?: string;
@@ -19,10 +20,12 @@ export function LinearAlgebraAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
+    let frameId: number;
 
     // Read CSS variables for theme-aware colors
     const computedStyle = getComputedStyle(currentMount);
@@ -51,12 +54,12 @@ export function LinearAlgebraAnimation({
     scene.add(gridGroup);
     
     const pointCloudMaterial = new THREE.PointsMaterial({
-        color: primaryColor,
         size: 0.25,
         transparent: true,
-        opacity: opacityValue,
         blending: THREE.AdditiveBlending,
     });
+    pointCloudMaterial.color.set(primaryColor);
+    pointCloudMaterial.opacity = opacityValue;
 
     const points = [];
     const gridSize = 10;
@@ -81,7 +84,7 @@ export function LinearAlgebraAnimation({
     const targetScale = new THREE.Vector3(1, 1, 1);
 
     const animate = () => {
-      requestAnimationFrame(animate);
+      frameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
       if (isMouseOver.current) {
@@ -133,6 +136,7 @@ export function LinearAlgebraAnimation({
 
     // --- Cleanup ---
     return () => {
+      cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
       if (currentMount) {
         currentMount.removeEventListener('mousemove', handleMouseMove);
@@ -145,8 +149,7 @@ export function LinearAlgebraAnimation({
       pointCloudGeometry.dispose();
       pointCloudMaterial.dispose();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

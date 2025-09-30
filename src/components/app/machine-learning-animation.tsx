@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface MachineLearningAnimationProps {
   className?: string;
@@ -19,10 +20,12 @@ export function MachineLearningAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
+    let frameId: number;
     
     // Read CSS variables for theme-aware colors
     const computedStyle = getComputedStyle(currentMount);
@@ -87,7 +90,7 @@ export function MachineLearningAnimation({
     const clock = new THREE.Clock();
 
     const animate = () => {
-      requestAnimationFrame(animate);
+      frameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
       // Transformation Matrix (Shear + Rotation)
@@ -151,6 +154,7 @@ export function MachineLearningAnimation({
 
     // --- Cleanup ---
     return () => {
+      cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
       if (currentMount) {
         currentMount.removeEventListener('mousemove', handleMouseMove);
@@ -173,8 +177,7 @@ export function MachineLearningAnimation({
       eigenLine2.geometry.dispose();
       (eigenLine2.material as THREE.Material).dispose();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

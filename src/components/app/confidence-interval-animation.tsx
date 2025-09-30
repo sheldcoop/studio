@@ -1,9 +1,10 @@
 
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface CorrelationOrbAnimationProps {
   className?: string;
@@ -19,6 +20,7 @@ export function ConfidenceIntervalAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -32,15 +34,17 @@ export function ConfidenceIntervalAnimation({
     const primaryColor = new THREE.Color(primaryColorValue);
 
     const particleMaterial = new THREE.PointsMaterial({
-        color: primaryColor,
         size: 0.2,
         blending: THREE.AdditiveBlending,
         transparent: true,
-        opacity: opacityValue,
         sizeAttenuation: true,
       });
+    particleMaterial.color.set(primaryColor);
+    particleMaterial.opacity = opacityValue;
 
-    const axisMaterial = new THREE.LineBasicMaterial({ color: primaryColor, transparent: true, opacity: 0 });
+
+    const axisMaterial = new THREE.LineBasicMaterial({ transparent: true, opacity: 0 });
+    axisMaterial.color.set(primaryColor);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -187,8 +191,7 @@ export function ConfidenceIntervalAnimation({
       particlesGeometry.dispose();
       axisGeometry.dispose();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

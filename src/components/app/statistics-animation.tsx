@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface StatisticsAnimationProps {
   className?: string;
@@ -45,10 +46,12 @@ export function StatisticsAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
+    let frameId: number;
 
     // Read CSS variables for theme-aware colors
     const computedStyle = getComputedStyle(currentMount);
@@ -86,13 +89,14 @@ export function StatisticsAnimation({
     // Surface
     const surfaceGeometry = createGaussianSurface(10, 10, 50);
     const surfaceMaterial = new THREE.MeshStandardMaterial({
-      color: primaryColor,
       wireframe: true,
-      emissive: primaryColor,
       emissiveIntensity: 0.4,
       transparent: true,
-      opacity: opacityValue,
     });
+    surfaceMaterial.color.set(primaryColor);
+    surfaceMaterial.emissive.set(primaryColor);
+    surfaceMaterial.opacity = opacityValue;
+
     const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
     surface.rotation.x = -Math.PI / 2; // Lay it flat on the grid
     group.add(surface);
@@ -106,8 +110,8 @@ export function StatisticsAnimation({
     let targetPosition = new THREE.Vector3(0, 0, 0);
 
     const animate = () => {
+      frameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
-      requestAnimationFrame(animate);
 
       if (isMouseOver.current) {
         targetPosition.x = mouse.current.x * 5;
@@ -157,6 +161,7 @@ export function StatisticsAnimation({
 
     // --- Cleanup ---
     return () => {
+      cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
       if (currentMount) {
         currentMount.removeEventListener('mousemove', handleMouseMove);
@@ -171,8 +176,7 @@ export function StatisticsAnimation({
       grid.geometry.dispose();
       (grid.material as THREE.Material).dispose();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

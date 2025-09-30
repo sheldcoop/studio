@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface MentalMathAnimationProps {
   className?: string;
@@ -18,6 +19,7 @@ export function MentalMathAnimation({
 }: MentalMathAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -32,13 +34,13 @@ export function MentalMathAnimation({
 
 
     const particlesMaterial = new THREE.PointsMaterial({
-        color: primaryColor,
         size: 0.1,
         blending: THREE.AdditiveBlending,
         transparent: true,
-        opacity: opacityValue,
         sizeAttenuation: true,
       });
+    particlesMaterial.color.set(primaryColor);
+    particlesMaterial.opacity = opacityValue;
 
     // --- Scene Setup ---
     const scene = new THREE.Scene();
@@ -178,9 +180,9 @@ export function MentalMathAnimation({
       }
       renderer.dispose();
       particlesGeometry.dispose();
+      particlesMaterial.dispose();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

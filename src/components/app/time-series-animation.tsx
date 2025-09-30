@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface TimeSeriesAnimationProps {
   className?: string;
@@ -19,10 +20,12 @@ export function TimeSeriesAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
+    let frameId: number;
 
     // Read CSS variables for theme-aware colors
     const computedStyle = getComputedStyle(currentMount);
@@ -63,11 +66,11 @@ export function TimeSeriesAnimation({
     lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
     
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: primaryColor,
       linewidth: 3,
       transparent: true,
-      opacity: opacityValue
     });
+    lineMaterial.color.set(primaryColor);
+    lineMaterial.opacity = opacityValue;
     
     const line = new THREE.Line(lineGeometry, lineMaterial);
     scene.add(line);
@@ -75,7 +78,6 @@ export function TimeSeriesAnimation({
     // --- Animation & Interaction ---
     const clock = new THREE.Clock();
     let targetVolatility = 0.5;
-    let frameId: number;
 
     const animate = () => {
       frameId = requestAnimationFrame(animate);
@@ -174,8 +176,7 @@ export function TimeSeriesAnimation({
       grid.geometry.dispose();
       (grid.material as THREE.Material).dispose();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

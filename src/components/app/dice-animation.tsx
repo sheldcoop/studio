@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface DiceAnimationProps {
   className?: string;
@@ -38,6 +39,7 @@ export function DiceAnimation({
 }: DiceAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -64,7 +66,8 @@ export function DiceAnimation({
     scene.add(ambientLight);
 
     const dotColor = primaryColor.getStyle();
-    const faceColor = new THREE.Color(0xffffff).getStyle();
+    const faceColor = theme === 'dark' ? new THREE.Color(0x1a1a1a).getStyle() : new THREE.Color(0xffffff).getStyle();
+
 
     const materials = [
       createDieFaceMaterial([{ x: 64, y: 64 }], dotColor, faceColor), // 1
@@ -123,8 +126,7 @@ export function DiceAnimation({
         m.dispose();
       });
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

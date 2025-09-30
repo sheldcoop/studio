@@ -4,32 +4,13 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface ProbabilityAnimationProps {
   className?: string;
   onPointerEnter: () => void;
   onPointerLeave: () => void;
 }
-
-const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string, bgColor: string) => {
-  const canvas = document.createElement('canvas');
-  canvas.width = 128;
-  canvas.height = 128;
-  const context = canvas.getContext('2d');
-  if (!context) return new THREE.MeshStandardMaterial({ color: 0x111111 });
-
-  context.fillStyle = bgColor;
-  context.fillRect(0, 0, 128, 128);
-  context.fillStyle = fgColor;
-  dots.forEach((dot) => {
-    context.beginPath();
-    context.arc(dot.x, dot.y, 10, 0, Math.PI * 2);
-    context.fill();
-  });
-
-  return new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(canvas) });
-};
-
 
 export function ProbabilityAnimation({
   className,
@@ -38,6 +19,7 @@ export function ProbabilityAnimation({
 }: ProbabilityAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -59,7 +41,8 @@ export function ProbabilityAnimation({
     
     // --- Pegs for Galton Board ---
     const pegGroup = new THREE.Group();
-    const pegMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, opacity: 0.7, transparent: true });
+    const pegMaterial = new THREE.MeshBasicMaterial({ opacity: 0.7, transparent: true });
+    pegMaterial.color.set(primaryColor);
     const pegGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 16);
     pegGeometry.rotateX(Math.PI / 2); // Orient cylinders correctly
     const rows = 10;
@@ -82,7 +65,8 @@ export function ProbabilityAnimation({
 
     // --- Bins ---
     const binGroup = new THREE.Group();
-    const binMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, opacity: 0.5, transparent: true });
+    const binMaterial = new THREE.MeshBasicMaterial({ opacity: 0.5, transparent: true });
+    binMaterial.color.set(primaryColor);
     const binGeometry = new THREE.BoxGeometry(colSpacing * 0.9, 0.2, 0.5);
     const numBins = rows + 1;
     for (let i = 0; i < numBins; i++) {
@@ -185,8 +169,7 @@ export function ProbabilityAnimation({
       particleGeometry.dispose();
       particleMaterial.dispose();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
