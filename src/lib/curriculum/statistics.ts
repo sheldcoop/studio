@@ -71,7 +71,7 @@ export const statisticsTopics: Topic[] = [
     description:
       'Analyzes categorical data to find significant relationships.',
     category: 'non-parametric',
-    parent: 'prob-cat-tests',
+    parent: 'hypothesis-testing',
   },
 
   // Non-Parametric Tests (sub-topics of hypothesis testing)
@@ -185,8 +185,8 @@ export const statisticsTopics: Topic[] = [
     href: '/topics/statistics/normal-distribution',
     icon: FunctionSquare,
     description: 'The ubiquitous "bell curve."',
-    category: 'probability',
-    parent: 'prob-dist-continuous',
+    category: 'sub-topic',
+    parent: 'stats-foundations',
   },
   {
     id: 'central-limit-theorem',
