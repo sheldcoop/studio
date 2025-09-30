@@ -36,8 +36,8 @@ export function PlinkoAnimation({
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(60, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-      camera.position.set(0, 5, 12);
-      camera.lookAt(0, 0, 0);
+      camera.position.set(0, 8, 10);
+      camera.lookAt(0, 2, 0);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
@@ -72,6 +72,7 @@ export function PlinkoAnimation({
       material.color.set(primaryColor);
       const surface = new THREE.Mesh(geometry, material);
       surface.rotation.x = -Math.PI / 2;
+      surface.position.y = 2; // Move the whole surface up
       scene.add(surface);
       cleanupFunctions.push(() => material.dispose());
 
