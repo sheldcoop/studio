@@ -27,15 +27,15 @@ export function MachineLearningAnimation({
     const currentMount = mountRef.current;
     let animationFrameId: number;
 
-    const main = () => {
-      let frameId: number;
-      
-      const computedStyle = getComputedStyle(currentMount);
-      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const primaryColor = new THREE.Color(primaryColorValue);
-      const secondaryColor = new THREE.Color(0x818cf8); 
+    const cleanupFunctions: (() => void)[] = [];
 
-      // --- Scene setup ---
+    const timeoutId = setTimeout(() => {
+      if (!currentMount) return;
+
+      const computedStyle = getComputedStyle(document.documentElement);
+      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+      const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
+
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
         75,
@@ -49,148 +49,183 @@ export function MachineLearningAnimation({
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       currentMount.appendChild(renderer.domElement);
-      
-      // --- Vector Field ---
-      const vectorGroup = new THREE.Group();
-      scene.add(vectorGroup);
-
-      const vectorLength = 1.5;
-      const density = 8;
-      const spacing = 2;
-      const vectors: THREE.ArrowHelper[] = [];
-
-      for (let x = -density; x <= density; x++) {
-        for (let y = -density; y <= density; y++) {
-          if (x === 0 && y === 0) continue;
-          const origin = new THREE.Vector3(x * spacing, y * spacing, 0);
-          const dir = new THREE.Vector3(1, 0, 0).normalize(); // Initial direction
-          const arrow = new THREE.ArrowHelper(dir, origin, vectorLength, primaryColor, 0.6, 0.4);
-          // @ts-ignore
-          arrow.originalPosition = origin.clone();
-          vectorGroup.add(arrow);
-          vectors.push(arrow);
+      cleanupFunctions.push(() => {
+        if (renderer.domElement.parentElement === currentMount) {
+          currentMount.removeChild(renderer.domElement);
         }
-      }
+        renderer.dispose();
+      });
 
-      // --- Eigenvectors ---
-      const eigenMaterial = new THREE.LineBasicMaterial({ color: secondaryColor, transparent: true, opacity: 0, linewidth: 3 });
-      const eigenVector1 = new THREE.Vector3(1, 1, 0).normalize();
-      const eigenVector2 = new THREE.Vector3(-1, 1, 0).normalize();
-      
-      const eigenLine1 = new THREE.Line(
-          new THREE.BufferGeometry().setFromPoints([eigenVector1.clone().multiplyScalar(-25), eigenVector1.clone().multiplyScalar(25)]),
-          eigenMaterial.clone()
-      );
-      const eigenLine2 = new THREE.Line(
-          new THREE.BufferGeometry().setFromPoints([eigenVector2.clone().multiplyScalar(-25), eigenVector2.clone().multiplyScalar(25)]),
-          eigenMaterial.clone()
-      );
-      scene.add(eigenLine1);
-      scene.add(eigenLine2);
-      
-      // --- Animation & Interaction ---
-      const clock = new THREE.Clock();
+      const sprites: THREE.Sprite[] = [];
+      const symbols = ['0', '1']; // Using binary to represent machine learning data
+      const particleCount = 150;
 
-      const animate = () => {
-        frameId = requestAnimationFrame(animate);
-        const elapsedTime = clock.getElapsedTime();
-
-        // Transformation Matrix (Shear + Rotation)
-        const angle = elapsedTime * 0.3;
-        const shearValue = isMouseOver.current ? Math.sin(elapsedTime * 2) * 0.7 : 0;
+      for (let i = 0; i < particleCount; i++) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
         
-        const transformMatrix = new THREE.Matrix4().set(
-          Math.cos(angle), -Math.sin(angle), 0, 0,
-          Math.sin(angle) + shearValue, Math.cos(angle), 0, 0,
-          0, 0, 1, 0,
-          0, 0, 0, 1
+        if (ctx) {
+          ctx.fillStyle = primaryColorValue;
+          ctx.font = 'bold 90px "Courier New", Courier, monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(symbols[Math.floor(Math.random() * symbols.length)], 64, 64);
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        const material = new THREE.SpriteMaterial({
+          map: texture,
+          transparent: true,
+          opacity: opacityValue * 0.8,
+        });
+        const sprite = new THREE.Sprite(material);
+
+        sprite.position.set(
+          (Math.random() - 0.5) * 25,
+          (Math.random() - 0.5) * 15,
+          (Math.random() - 0.5) * 15
         );
 
-        vectors.forEach(arrow => {
-          // @ts-ignore
-          const newDir = arrow.originalPosition.clone().normalize().applyMatrix4(transformMatrix);
-          arrow.setDirection(newDir);
-        });
+        const size = 0.2 + Math.random() * 0.9;
+        sprite.scale.set(size, size, 1);
 
-        // Fade in/out eigenvectors
+        sprite.userData = {
+          velocity: new THREE.Vector3(
+            (Math.random() - 0.5) * 0.04,
+            (Math.random() - 0.5) * 0.04,
+            (Math.random() - 0.5) * 0.04
+          ),
+        };
+
+        scene.add(sprite);
+        sprites.push(sprite);
+      }
+      
+      cleanupFunctions.push(() => {
+        sprites.forEach((sprite) => {
+          sprite.material.map?.dispose();
+          sprite.material.dispose();
+        });
+      });
+
+      const clock = new THREE.Clock();
+      let interactionStrength = 0;
+
+      const animate = () => {
+        animationFrameId = requestAnimationFrame(animate);
+        const elapsedTime = clock.getElapsedTime();
+
         if (isMouseOver.current) {
-          eigenLine1.material.opacity += (0.9 - eigenLine1.material.opacity) * 0.1;
-          eigenLine2.material.opacity += (0.9 - eigenLine2.material.opacity) * 0.1;
+          interactionStrength += (1 - interactionStrength) * 0.05;
         } else {
-          eigenLine1.material.opacity += (0 - eigenLine1.material.opacity) * 0.1;
-          eigenLine2.material.opacity += (0 - eigenLine2.material.opacity) * 0.1;
+          interactionStrength += (0 - interactionStrength) * 0.05;
         }
 
-        vectorGroup.rotation.z += 0.001; // slow constant rotation of the group
+        sprites.forEach((sprite) => {
+          sprite.position.add(sprite.userData.velocity);
+
+          if (isMouseOver.current && interactionStrength > 0.1) {
+            const mousePos = new THREE.Vector3(mouse.current.x * 12, mouse.current.y * 7, 0);
+            const direction = sprite.position.clone().sub(mousePos);
+            const distance = direction.length();
+
+            if (distance < 4) {
+              direction.normalize();
+              const force = (1 - distance / 4) * 0.15 * interactionStrength;
+              sprite.position.add(direction.multiplyScalar(force));
+            }
+          }
+
+          // Wrap around screen edges
+          if (Math.abs(sprite.position.x) > 12) sprite.position.x *= -1;
+          if (Math.abs(sprite.position.y) > 7) sprite.position.y *= -1;
+          if (Math.abs(sprite.position.z) > 7) sprite.position.z *= -1;
+
+          // Pulsing scale
+          const pulse = 1 + Math.sin(elapsedTime * 3 + sprite.position.y) * 0.1;
+          sprite.scale.x = sprite.scale.y * pulse;
+        });
 
         renderer.render(scene, camera);
       };
 
       animate();
 
-      // --- Event Listeners ---
       const handleMouseMove = (event: MouseEvent) => {
-          if (currentMount) {
-              const rect = currentMount.getBoundingClientRect();
-              mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-              mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
-          }
+        if (currentMount) {
+          const rect = currentMount.getBoundingClientRect();
+          mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+        }
+      };
+
+      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
+      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
+
+      const handleTouchStart = (event: TouchEvent) => {
+        isMouseOver.current = true;
+        onPointerEnter();
+        if (event.touches.length > 0 && currentMount) {
+          const touch = event.touches[0];
+          const rect = currentMount.getBoundingClientRect();
+          mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+        }
       };
       
-      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
-      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
+      const handleTouchEnd = () => { isMouseOver.current = false; onPointerLeave(); };
 
+      const handleTouchMove = (event: TouchEvent) => {
+        if (event.touches.length > 0 && currentMount) {
+          const touch = event.touches[0];
+          const rect = currentMount.getBoundingClientRect();
+          mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+        }
+      };
+      
       currentMount.addEventListener('mousemove', handleMouseMove);
       currentMount.addEventListener('mouseenter', handleMouseEnter);
       currentMount.addEventListener('mouseleave', handleMouseLeave);
+      currentMount.addEventListener('touchstart', handleTouchStart, { passive: true });
+      currentMount.addEventListener('touchend', handleTouchEnd);
+      currentMount.addEventListener('touchmove', handleTouchMove, { passive: true });
+      
+      cleanupFunctions.push(() => {
+        currentMount.removeEventListener('mousemove', handleMouseMove);
+        currentMount.removeEventListener('mouseenter', handleMouseEnter);
+        currentMount.removeEventListener('mouseleave', handleMouseLeave);
+        currentMount.removeEventListener('touchstart', handleTouchStart);
+        currentMount.removeEventListener('touchend', handleTouchEnd);
+        currentMount.removeEventListener('touchmove', handleTouchMove);
+      });
 
-      // --- Resize handler ---
       const handleResize = () => {
-          if (currentMount) {
-              renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-              camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-              camera.updateProjectionMatrix();
-          }
+        if (currentMount) {
+          camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        }
       };
       window.addEventListener('resize', handleResize);
+      cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
+      
+      cleanupFunctions.push(() => cancelAnimationFrame(animationFrameId));
 
-      // --- Cleanup ---
-      return () => {
-        cancelAnimationFrame(frameId);
-        window.removeEventListener('resize', handleResize);
-        if (currentMount) {
-          currentMount.removeEventListener('mousemove', handleMouseMove);
-          currentMount.removeEventListener('mouseenter', handleMouseEnter);
-          currentMount.removeEventListener('mouseleave', handleMouseLeave);
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          if (renderer.domElement) currentMount.removeChild(renderer.domElement);
-        }
-        renderer.dispose();
-        // Dispose all geometries and materials
-        vectorGroup.children.forEach(child => {
-          const arrow = child as THREE.ArrowHelper;
-          arrow.line.geometry.dispose();
-          (arrow.line.material as THREE.Material).dispose();
-          arrow.cone.geometry.dispose();
-          (arrow.cone.material as THREE.Material).dispose();
-        });
-        eigenLine1.geometry.dispose();
-        (eigenLine1.material as THREE.Material).dispose();
-        eigenLine2.geometry.dispose();
-        (eigenLine2.material as THREE.Material).dispose();
-      };
-    };
-
-    animationFrameId = requestAnimationFrame(main);
+    }, 10);
 
     return () => {
+      clearTimeout(timeoutId);
+      cleanupFunctions.forEach(fn => fn());
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
       while (currentMount.firstChild) {
         currentMount.removeChild(currentMount.firstChild);
       }
-    }
+    };
   }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
