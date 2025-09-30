@@ -146,7 +146,7 @@ export default function ExponentialDistributionPage() {
                   $$f(x; \lambda) = \lambda e^{-\lambda x}$$
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><code className="font-mono bg-background px-1 rounded">$x$</code> is the time variable (must be {'>'}= 0).</li>
+                    <li><code className="font-mono bg-background px-1 rounded">$x$</code> is the time variable (must be &gt;= 0).</li>
                     <li><code className="font-mono bg-background px-1 rounded">$\lambda$</code> (lambda) is the <strong>rate</strong> parameter, representing the average number of events per unit of time.</li>
                 </ul>
             </CardContent>
