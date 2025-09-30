@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface TimeSeriesAnimationProps {
   className?: string;
@@ -19,6 +20,7 @@ export function TimeSeriesAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -175,7 +177,7 @@ export function TimeSeriesAnimation({
       grid.geometry.dispose();
       (grid.material as THREE.Material).dispose();
     };
-  }, [onPointerEnter, onPointerLeave]);
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
