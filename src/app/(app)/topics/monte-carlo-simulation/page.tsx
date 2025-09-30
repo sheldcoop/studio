@@ -1,4 +1,5 @@
 
+/*
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -86,8 +87,8 @@ const VaRChart = ({ data, initialValue, varValue }: { data: number[], initialVal
                 <Tooltip
                     cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
                     content={<ChartTooltipContent
-                        labelFormatter={(value) => `Value: $${Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-                        formatter={(value, name) => [value, 'Frequency']}
+                        labelFormatter={(value: number) => `Value: $${Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                        formatter={(value: number, name: string) => [value, 'Frequency']}
                     />}
                 />
                 <Bar dataKey="count" fill="hsl(var(--primary))" opacity={0.7} />
@@ -176,28 +177,30 @@ export default function MonteCarloSimulationPage() {
 
   return (
     <>
-      <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
+      <>
+        <Script
+            id="mathjax-config"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+            __html: `
+                window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                },
+                svg: {
+                    fontCache: 'global'
+                }
+                };
+            `,
+            }}
+        />
+        <Script
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+            strategy="afterInteractive"
+            id="mathjax-script"
+        />
+      </>
       <div className="mx-auto max-w-5xl space-y-8">
         <PageHeader
           title="Monte Carlo Simulation for Risk Management"
@@ -302,4 +305,12 @@ export default function MonteCarloSimulationPage() {
       </div>
     </>
   );
+}
+*/
+export default function MonteCarloSimulationPage() {
+    return (
+        <div className="flex h-96 items-center justify-center rounded-lg border border-dashed mt-8">
+            <p className="text-muted-foreground">This page is temporarily disabled for maintenance.</p>
+        </div>
+    );
 }
