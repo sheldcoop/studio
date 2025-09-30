@@ -31,7 +31,7 @@
     --chart-5: 270 95.5% 53.1%;
 
     /* Animation Theme Variables */
-    --animation-primary-color: hsl(222.2, 84%, 4.9%);
+    --animation-primary-color: hsl(222.2 84% 4.9%);
     --animation-opacity: 0.85;
   }
 

@@ -5,37 +5,17 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 
-interface ProbabilityAnimationProps {
+interface PlinkoAnimationProps {
   className?: string;
   onPointerEnter: () => void;
   onPointerLeave: () => void;
 }
 
-const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string, bgColor: string) => {
-  const canvas = document.createElement('canvas');
-  canvas.width = 128;
-  canvas.height = 128;
-  const context = canvas.getContext('2d');
-  if (!context) return new THREE.MeshStandardMaterial({ color: 0x111111 });
-
-  context.fillStyle = bgColor;
-  context.fillRect(0, 0, 128, 128);
-  context.fillStyle = fgColor;
-  dots.forEach((dot) => {
-    context.beginPath();
-    context.arc(dot.x, dot.y, 10, 0, Math.PI * 2);
-    context.fill();
-  });
-
-  return new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(canvas) });
-};
-
-
-export function ProbabilityAnimation({
+export function PlinkoAnimation({
   className,
   onPointerEnter,
   onPointerLeave,
-}: ProbabilityAnimationProps) {
+}: PlinkoAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
 
