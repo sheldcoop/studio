@@ -24,8 +24,7 @@ export function ProbabilityAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const isDark = document.documentElement.classList.contains('dark');
-    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
+    const primaryColor = new THREE.Color(0x00ffaa);
     
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
@@ -38,7 +37,7 @@ export function ProbabilityAnimation({
     
     // --- Pegs for Galton Board ---
     const pegGroup = new THREE.Group();
-    const pegMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, opacity: 0.6, transparent: true });
+    const pegMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, opacity: 0.7, transparent: true });
     const pegGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 16);
     pegGeometry.rotateX(Math.PI / 2); // Orient cylinders correctly
     const rows = 10;
@@ -61,7 +60,7 @@ export function ProbabilityAnimation({
 
     // --- Bins ---
     const binGroup = new THREE.Group();
-    const binMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, opacity: 0.4, transparent: true });
+    const binMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, opacity: 0.5, transparent: true });
     const binGeometry = new THREE.BoxGeometry(colSpacing * 0.9, 0.2, 0.5);
     const numBins = rows + 1;
     for (let i = 0; i < numBins; i++) {

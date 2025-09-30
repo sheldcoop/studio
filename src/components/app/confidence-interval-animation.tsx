@@ -25,15 +25,14 @@ export function ConfidenceIntervalAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const isDark = document.documentElement.classList.contains('dark');
-    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
+    const primaryColor = new THREE.Color(0x00ffaa);
 
     const particleMaterial = new THREE.PointsMaterial({
         color: primaryColor,
         size: 0.2,
         blending: THREE.AdditiveBlending,
         transparent: true,
-        opacity: 0.95,
+        opacity: 0.85,
         sizeAttenuation: true,
       });
 

@@ -50,8 +50,7 @@ export function StatisticsAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
-    const isDark = document.documentElement.classList.contains('dark');
-    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
+    const primaryColor = new THREE.Color(0x00ffaa);
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
@@ -76,7 +75,7 @@ export function StatisticsAnimation({
     // Grid
     const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
     grid.material.transparent = true;
-    grid.material.opacity = 0.3;
+    grid.material.opacity = 0.4;
     group.add(grid);
 
     // Surface
@@ -85,9 +84,9 @@ export function StatisticsAnimation({
       color: primaryColor,
       wireframe: true,
       emissive: primaryColor,
-      emissiveIntensity: 0.3,
+      emissiveIntensity: 0.4,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.85,
     });
     const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
     surface.rotation.x = -Math.PI / 2; // Lay it flat on the grid

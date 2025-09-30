@@ -24,8 +24,7 @@ export function TimeSeriesAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
-    const isDark = document.documentElement.classList.contains('dark');
-    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
+    const primaryColor = new THREE.Color(0x00ffaa);
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
@@ -48,7 +47,7 @@ export function TimeSeriesAnimation({
     // --- Grid ---
     const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
     grid.material.transparent = true;
-    grid.material.opacity = 0.3;
+    grid.material.opacity = 0.4;
     grid.rotation.x = Math.PI / 2;
     scene.add(grid);
 
@@ -62,7 +61,7 @@ export function TimeSeriesAnimation({
       color: primaryColor,
       linewidth: 3,
       transparent: true,
-      opacity: 0.9
+      opacity: 0.85
     });
     
     const line = new THREE.Line(lineGeometry, lineMaterial);

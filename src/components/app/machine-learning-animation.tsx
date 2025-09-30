@@ -24,8 +24,7 @@ export function MachineLearningAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
-    const isDark = document.documentElement.classList.contains('dark');
-    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
+    const primaryColor = new THREE.Color(0x00ffaa);
     const secondaryColor = new THREE.Color(0x818cf8); // Keep purple for eigenvectors for contrast
 
     // --- Scene setup ---

@@ -24,15 +24,14 @@ export function MentalMathAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const isDark = document.documentElement.classList.contains('dark');
-    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
+    const primaryColor = new THREE.Color(0x00ffaa);
 
     const particlesMaterial = new THREE.PointsMaterial({
         color: primaryColor,
         size: 0.1,
         blending: THREE.AdditiveBlending,
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.85,
         sizeAttenuation: true,
       });
 
