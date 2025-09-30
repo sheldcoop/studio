@@ -28,52 +28,37 @@ interface AnimatedJourneyCardProps {
 
 export function AnimatedJourneyCard({ item, AnimationComponent }: AnimatedJourneyCardProps) {
   const [isCardActive, setIsCardActive] = useState(false);
-  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // When the card is intersecting with the viewport, start loading the animation
-        if (entries[0].isIntersecting) {
-          setIsAnimationLoaded(true);
-          // We only need to do this once, so we can unobserve
-          if (cardRef.current) {
-            observer.unobserve(cardRef.current);
-          }
-        }
-      },
-      {
-        // Start loading when the card is 200px away from the viewport
-        rootMargin: '200px',
-      }
-    );
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
+  const handlePointerEnter = () => {
+    setIsCardActive(true);
+    // Trigger the load only on the first hover
+    if (!hasLoaded) {
+      setHasLoaded(true);
     }
-
-    return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current);
-      }
-    };
-  }, []);
+  }
+  
+  const handlePointerLeave = () => {
+    setIsCardActive(false);
+  }
 
 
   return (
     <div
       ref={cardRef}
       key={item.id}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       className="group relative rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <Link href={item.href} className="h-full w-full">
         <Card className="flex h-full transform-gpu flex-col overflow-hidden bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
           <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-            {isAnimationLoaded ? (
+            {hasLoaded ? (
               <AnimationComponent
-                onPointerEnter={() => setIsCardActive(true)}
-                onPointerLeave={() => setIsCardActive(false)}
+                onPointerEnter={() => {}}
+                onPointerLeave={() => {}}
               />
             ) : (
                 <Skeleton className="h-full w-full" />
