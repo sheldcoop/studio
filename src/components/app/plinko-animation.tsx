@@ -5,158 +5,114 @@ import { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 
-interface PlinkoAnimationProps {
+interface ProbabilityAnimationProps {
   className?: string;
   onPointerEnter: () => void;
   onPointerLeave: () => void;
 }
 
-export function PlinkoAnimation({
+const createDieFaceMaterial = (dots: { x: number; y: number }[]) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const context = canvas.getContext('2d');
+  if (!context) return new THREE.MeshStandardMaterial({ color: 0x111111 });
+
+  context.fillStyle = '#333';
+  context.fillRect(0, 0, 128, 128);
+  context.fillStyle = '#22c55e';
+  dots.forEach((dot) => {
+    context.beginPath();
+    context.arc(dot.x, dot.y, 10, 0, Math.PI * 2);
+    context.fill();
+  });
+
+  return new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(canvas) });
+};
+
+
+export function ProbabilityAnimation({
   className,
   onPointerEnter,
   onPointerLeave,
-}: PlinkoAnimationProps) {
+}: ProbabilityAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
 
-  const particleMaterial = useMemo(
-    () =>
-      new THREE.PointsMaterial({
-        color: 0x22c55e,
-        size: 0.2,
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        opacity: 0.9,
-      }),
-    []
-  );
-
-  const pegMaterial = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: 0x888888,
-        roughness: 0.6,
-        metalness: 0.4,
-      }),
-    []
-  );
+  // Use useMemo to prevent recreating materials on every render
+  const dieMaterials = useMemo(() => {
+    const dotsConfig = [
+        [{ x: 64, y: 64 }], // 1
+        [{ x: 32, y: 32 }, { x: 96, y: 96 }], // 2
+        [{ x: 32, y: 32 }, { x: 64, y: 64 }, { x: 96, y: 96 }], // 3
+        [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 4
+        [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 64, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 5
+        [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 6
+    ];
+    return [
+      createDieFaceMaterial(dotsConfig[3]),
+      createDieFaceMaterial(dotsConfig[2]),
+      createDieFaceMaterial(dotsConfig[4]),
+      createDieFaceMaterial(dotsConfig[1]),
+      createDieFaceMaterial(dotsConfig[0]),
+      createDieFaceMaterial(dotsConfig[5]),
+    ];
+  }, []);
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let frameId: number;
 
-    // --- Scene Setup ---
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      currentMount.clientWidth / currentMount.clientHeight,
-      0.1,
-      100
-    );
-    camera.position.set(0, 0, 15);
+    const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+    camera.position.z = 10;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
 
-    // --- Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0xffffff, 1);
-    pointLight.position.set(0, 10, 10);
-    scene.add(pointLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 10, 7.5);
+    scene.add(directionalLight);
     
-    // --- Pegs ---
-    const pegs: THREE.Mesh[] = [];
-    const pegGeometry = new THREE.CylinderGeometry(0.15, 0.15, 1, 8);
-    const numRows = 10;
-    const yOffset = 4;
-    for (let row = 0; row < numRows; row++) {
-      const numPegsInRow = row + 1;
-      for (let i = 0; i < numPegsInRow; i++) {
-        const x = (i - (numPegsInRow - 1) / 2) * 1.5;
-        const y = yOffset - row * 1.2;
-        const peg = new THREE.Mesh(pegGeometry, pegMaterial);
-        peg.position.set(x, y, 0);
-        peg.rotation.x = Math.PI / 2;
-        scene.add(peg);
-        pegs.push(peg);
-      }
-    }
-
-    // --- Particles ---
-    const particleCount = 1000;
-    const particlesGeometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const velocities = new Float32Array(particleCount * 3);
-
-    for (let i = 0; i < particleCount; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 0.1;
-      positions[i * 3 + 1] = yOffset + 2 + Math.random() * 3;
-      positions[i * 3 + 2] = 0;
-      velocities[i * 3] = (Math.random() - 0.5) * 0.5;
-      velocities[i * 3 + 1] = -Math.random() * 2 - 1;
-      velocities[i * 3 + 2] = 0;
-    }
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particlesGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
-
-    const particleSystem = new THREE.Points(particlesGeometry, particleMaterial);
-    scene.add(particleSystem);
+    const dieGeometry = new THREE.BoxGeometry(5, 5, 5);
+    const die = new THREE.Mesh(dieGeometry, dieMaterials);
+    scene.add(die);
     
-    let spawnCounter = 0;
+    let angularVelocity = new THREE.Vector3(
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2
+    );
+
+    const clock = new THREE.Clock();
 
     const animate = () => {
       frameId = requestAnimationFrame(animate);
-      const positionAttribute = particleSystem.geometry.getAttribute('position') as THREE.BufferAttribute;
-      const velocityAttribute = particleSystem.geometry.getAttribute('velocity') as THREE.BufferAttribute;
-      
-      const spawnRate = isMouseOver.current ? 4 : 1;
-      spawnCounter += spawnRate;
-      
-      for (let i = 0; i < particleCount; i++) {
-        const i3 = i * 3;
-        let x = positionAttribute.getX(i);
-        let y = positionAttribute.getY(i);
-        let vx = velocityAttribute.getX(i);
-        let vy = velocityAttribute.getY(i);
+      const delta = clock.getDelta();
 
-        // Gravity
-        vy -= 0.03;
-        x += vx * 0.1;
-        y += vy * 0.1;
-
-        // Peg collisions
-        for (const peg of pegs) {
-            const dx = x - peg.position.x;
-            const dy = y - peg.position.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 0.3) {
-                vx = (dx / dist) * 0.8;
-                vy = (dy / dist) * 0.8;
-            }
+      if (isMouseOver.current) {
+        // Slow down to a stop
+        angularVelocity.multiplyScalar(0.95);
+      } else {
+        // Maintain a minimum speed
+        if (angularVelocity.length() < 0.5) {
+             angularVelocity.set(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+             );
         }
-        
-        // Reset particles that fall off screen
-        if (y < -10) {
-            if (spawnCounter > i) {
-                x = (Math.random() - 0.5) * 0.1;
-                y = yOffset + 2;
-                vx = (Math.random() - 0.5) * 0.5;
-                vy = -Math.random() * 2 - 1;
-            }
-        }
-
-        positionAttribute.setXYZ(i, x, y, 0);
-        velocityAttribute.setXYZ(i, vx, vy, 0);
+         angularVelocity.multiplyScalar(0.99); // Slow damping
       }
-
-      positionAttribute.needsUpdate = true;
-      velocityAttribute.needsUpdate = true;
       
-      scene.rotation.y += 0.001;
+      die.rotation.x += angularVelocity.x * delta;
+      die.rotation.y += angularVelocity.y * delta;
+      die.rotation.z += angularVelocity.z * delta;
 
       renderer.render(scene, camera);
     };
@@ -183,13 +139,16 @@ export function PlinkoAnimation({
       if (currentMount) {
         currentMount.removeEventListener('mouseenter', handleMouseEnter);
         currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        if(renderer.domElement) currentMount.removeChild(renderer.domElement);
+        if (renderer.domElement) {
+           currentMount.removeChild(renderer.domElement);
+        }
       }
       renderer.dispose();
-      particlesGeometry.dispose();
-      pegGeometry.dispose();
-      particleMaterial.dispose();
-      pegMaterial.dispose();
+      dieGeometry.dispose();
+      dieMaterials.forEach(m => {
+        m.map?.dispose();
+        m.dispose();
+      });
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
