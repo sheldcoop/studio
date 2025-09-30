@@ -60,9 +60,9 @@ export const mainTopics: Topic[] = [
     category: 'main',
   },
   {
-    id: 'algo-trading',
-    title: 'Algorithmic Trading Strategies',
-    description: 'From strategy backtesting to live deployment.',
+    id: 'probability-toolkit',
+    title: 'Probability Toolkit',
+    description: 'Interactive tools for hands-on probability analysis.',
     icon: CandlestickChart,
     href: '/paths/algo-trading',
     category: 'main',
