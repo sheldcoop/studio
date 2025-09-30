@@ -73,7 +73,11 @@ export const getPathById = (id: string): LearningPath | undefined => {
   ];
 
   const pathModules = allModules.filter(m => m.parent === id).map(module => {
-    let lessons: Topic[] = allTopics.filter(t => t.parent === module.id);
+    let lessons: Topic[] = allTopics.filter(t => t.parent === module.id).map(lesson => ({
+        ...lesson,
+        status: module.status, // Inherit status from parent module
+        duration: Math.floor(Math.random() * 20) + 5, // Assign random duration for now
+    }));
     return { ...module, lessons };
   });
 

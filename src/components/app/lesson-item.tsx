@@ -8,10 +8,10 @@ import {
   Clock,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight } from 'lucide-react';
 
 interface LessonItemProps {
   lesson: Topic;
+  isLast: boolean;
 }
 
 const statusIcons = {
@@ -32,29 +32,38 @@ const statusVariants = {
     'not-started': 'notStarted',
 }
 
-export function LessonItem({ lesson }: LessonItemProps) {
+export function LessonItem({ lesson, isLast }: LessonItemProps) {
   const Icon = statusIcons[lesson.status || 'not-started'];
   const label = statusLabels[lesson.status || 'not-started'];
   const variant = statusVariants[lesson.status || 'not-started'] as "completed" | "inProgress" | "notStarted";
 
   return (
-    <li key={lesson.id}>
-        <Link
-            href={lesson.href}
-            className="group mx-2 flex items-center justify-between rounded-lg p-4 transition-colors hover:bg-secondary/50"
-            >
-            <div className="flex items-center gap-4">
-                <Icon className={cn("h-6 w-6 transition-colors group-hover:text-primary", 
-                    lesson.status === 'completed' && 'text-green-500',
-                    lesson.status === 'in-progress' && 'text-teal-500',
-                    lesson.status === 'not-started' && 'text-muted-foreground'
-                )} />
-                <span className="text-lg font-medium text-foreground/90 group-hover:text-foreground">
-                    {lesson.title}
-                </span>
-            </div>
-            <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+    <li
+      className={cn(
+        'relative flex items-center gap-4 px-6 py-4',
+        !isLast && 'border-b border-border/50'
+      )}
+    >
+      <div className="absolute left-9 top-0 h-full w-px bg-border/50"></div>
+      <div className="relative z-10">
+        <Icon
+          className={cn(
+            'h-6 w-6 rounded-full bg-background',
+            lesson.status === 'completed' && 'text-green-500',
+            lesson.status === 'in-progress' && 'text-teal-500',
+            lesson.status === 'not-started' && 'text-muted-foreground'
+          )}
+        />
+      </div>
+      <div className="flex flex-1 items-center justify-between">
+        <Link href={lesson.href} className="font-medium hover:underline">
+          {lesson.title}
         </Link>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <Badge variant={variant} className="hidden w-24 justify-center sm:inline-flex">{label}</Badge>
+          <span>{lesson.duration} min</span>
+        </div>
+      </div>
     </li>
   );
 }
