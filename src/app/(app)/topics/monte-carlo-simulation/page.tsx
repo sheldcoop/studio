@@ -206,7 +206,9 @@ export default function MonteCarloSimulationPage() {
             <CardContent className="space-y-4">
                  <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion, a standard way to model stock prices. The formula for the portfolio's value at the end of the period is:</p>
                 <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                    <BlockMath math="S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right)" />
+                    <BlockMath
+                        math="\begin{aligned} S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right) \\end{aligned}"
+                    />
                 </div>
                  <p className="text-muted-foreground">Once we have thousands of simulated final values ($S_T$), we can calculate the 95% VaR by finding the 5th percentile of our results. This is the value that separates the worst 5% of outcomes from the best 95%.</p>
             </CardContent>
