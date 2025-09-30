@@ -20,6 +20,7 @@ const animationComponents = {
   'machine-learning': dynamic(() => import('@/components/app/machine-learning-animation').then(mod => mod.MachineLearningAnimation), { loading: () => <AnimationLoader />, ssr: false }),
   'stat-toolkit': dynamic(() => import('@/components/app/confidence-interval-animation').then(mod => mod.ConfidenceIntervalAnimation), { loading: () => <AnimationLoader />, ssr: false }),
   'probability': dynamic(() => import('@/components/app/probability-animation').then(mod => mod.ProbabilityAnimation), { loading: () => <AnimationLoader />, ssr: false }),
+  'probability-toolkit': dynamic(() => import('@/components/app/plinko-animation').then(mod => mod.ProbabilityAnimation), { loading: () => <AnimationLoader />, ssr: false }),
 };
 
 
