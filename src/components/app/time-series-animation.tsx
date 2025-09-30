@@ -50,9 +50,11 @@ export function TimeSeriesAnimation({
     currentMount.appendChild(renderer.domElement);
     
     // --- Grid ---
-    const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
-    grid.material.transparent = true;
-    grid.material.opacity = 0.4;
+    const grid = new THREE.GridHelper(20, 20);
+    const gridMaterial = grid.material as THREE.LineBasicMaterial;
+    gridMaterial.color.set(primaryColor);
+    gridMaterial.transparent = true;
+    gridMaterial.opacity = 0.4;
     grid.rotation.x = Math.PI / 2;
     scene.add(grid);
 
