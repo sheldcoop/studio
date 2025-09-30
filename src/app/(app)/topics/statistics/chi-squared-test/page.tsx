@@ -136,7 +136,7 @@ const TestForIndependenceChart = () => {
   }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-fit w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={testForIndependenceChartConfig} className="h-full w-full">
             <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -183,7 +183,7 @@ const TestForHomogeneityChart = () => {
     }, []);
 
     return (
-        <div className="flex h-[420px] w-full flex-col">
+        <div className="flex h-fit w-full flex-col">
           <div className="flex-grow">
             <ChartContainer config={testForHomogeneityChartConfig} className="h-full w-full">
                 <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
