@@ -1,4 +1,5 @@
 
+
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -34,27 +35,6 @@ export default function StatToolkitPage() {
         title="Statistician's Toolkit"
         description="Explore and understand the core concepts of statistics for quantitative analysis."
       />
-
-      <div className="space-y-6">
-        {hypothesisTestingTopic && (
-          <Card className="bg-primary/5 border-primary/20">
-            <CardHeader>
-              <CardTitle className="font-headline text-xl text-primary">{hypothesisTestingTopic.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold">{hypothesisTestingTopic.description}</h3>
-                  <p className="text-muted-foreground">Is it a real effect or just random chance? Let's find out.</p>
-                </div>
-                <Link href={hypothesisTestingTopic.href} className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
-                  Explore Tests <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6">
         {tiers.map((tier) => (

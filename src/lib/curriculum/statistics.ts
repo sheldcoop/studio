@@ -17,7 +17,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 't-test',
     title: 'T-Test',
-    href: '/hypothesis-testing/t-test',
+    href: '/topics/statistics/t-test',
     icon: FunctionSquare,
     description: 'Compares the means of two groups, assuming normal distribution.',
     category: 'parametric',
@@ -26,7 +26,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'z-test',
     title: 'Z-Test',
-    href: '/hypothesis-testing/z-test',
+    href: '/topics/statistics/z-test',
     icon: FunctionSquare,
     description:
       'Compares means of large samples (n>30) with known population variance.',
@@ -36,7 +36,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'anova',
     title: 'ANOVA',
-    href: '/hypothesis-testing/anova',
+    href: '/topics/statistics/anova',
     icon: FunctionSquare,
     description: 'Compares the averages of three or more groups.',
     category: 'parametric',
@@ -45,7 +45,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'f-test',
     title: 'F-Test',
-    href: '/hypothesis-testing/f-test',
+    href: '/topics/statistics/f-test',
     icon: FunctionSquare,
     description: 'Compares the variances (spread) of two or more groups.',
     category: 'parametric',
@@ -54,7 +54,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'pearson-correlation',
     title: 'Pearson Correlation',
-    href: '/hypothesis-testing/pearson-correlation',
+    href: '/topics/statistics/pearson-correlation',
     icon: FunctionSquare,
     description:
       'Measures the linear relationship between two continuous variables.',
@@ -66,7 +66,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'mann-whitney-u-test',
     title: 'Mann-Whitney U Test',
-    href: '/hypothesis-testing/mann-whitney-u-test',
+    href: '/topics/statistics/mann-whitney-u-test',
     icon: FunctionSquare,
     description:
       'Alternative to the T-Test when data is not normally distributed.',
@@ -76,7 +76,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'kruskal-wallis-test',
     title: 'Kruskal-Wallis Test',
-    href: '/hypothesis-testing/kruskal-wallis-test',
+    href: '/topics/statistics/kruskal-wallis-test',
     icon: FunctionSquare,
     description: 'Alternative to ANOVA for comparing three or more groups.',
     category: 'non-parametric',
@@ -85,7 +85,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'wilcoxon-signed-rank-test',
     title: 'Wilcoxon Signed-Rank Test',
-    href: '/hypothesis-testing/wilcoxon-signed-rank-test',
+    href: '/topics/statistics/wilcoxon-signed-rank-test',
     icon: FunctionSquare,
     description:
       'Alternative to the paired T-Test for repeated measurements.',
@@ -95,7 +95,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'spearmans-rank-correlation',
     title: "Spearman's Rank Correlation",
-    href: '/hypothesis-testing/spearmans-rank-correlation',
+    href: '/topics/statistics/spearmans-rank-correlation',
     icon: FunctionSquare,
     description:
       'Measures the monotonic relationship between two ranked variables.',
@@ -105,7 +105,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'friedman-test',
     title: 'Friedman Test',
-    href: '/hypothesis-testing/friedman-test',
+    href: '/topics/statistics/friedman-test',
     icon: FunctionSquare,
     description:
       'The non-parametric alternative to a repeated-measures ANOVA.',
@@ -115,7 +115,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'kolmogorov-smirnov-k-s-test',
     title: 'Kolmogorov-Smirnov (K-S) Test',
-    href: '/hypothesis-testing/kolmogorov-smirnov-k-s-test',
+    href: '/topics/statistics/kolmogorov-smirnov-k-s-test',
     icon: FunctionSquare,
     description: 'Tests if a sample is drawn from a specific distribution.',
     category: 'non-parametric',
@@ -124,7 +124,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'chi-squared-test',
     title: 'Chi-Squared Test',
-    href: '/hypothesis-testing/chi-squared-test',
+    href: '/topics/statistics/chi-squared-test',
     icon: FunctionSquare,
     description: 'Tests for association between two categorical variables.',
     category: 'non-parametric',
@@ -159,18 +159,9 @@ export const statisticsTopics: Topic[] = [
     
   // Stat Toolkit Tier 1
   {
-    id: 'demystifying-hypothesis-testing',
-    title: "Demystifying Hypothesis Testing: A Beginner's Guide",
-    href: '/statistics/demystifying-hypothesis-testing',
-    icon: FunctionSquare,
-    description: 'A step-by-step guide to making decisions from data.',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
-  },
-  {
     id: 'confidence-intervals',
     title: 'Confidence Intervals',
-    href: '/statistics/confidence-intervals',
+    href: '/topics/statistics/confidence-intervals',
     icon: FunctionSquare,
     description: 'Understanding the range where a true value likely lies.',
     category: 'sub-topic',
@@ -179,7 +170,7 @@ export const statisticsTopics: Topic[] = [
    {
     id: 'z-table',
     title: 'Z-Table Calculator',
-    href: '/statistics/z-table',
+    href: '/topics/statistics/z-table',
     icon: FunctionSquare,
     description: 'Interactive Z-Table for Z-scores and probabilities.',
     category: 'sub-topic',
@@ -188,7 +179,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'descriptive-statistics-explorer',
     title: 'Descriptive Statistics Explorer',
-    href: '/statistics/descriptive-statistics-explorer',
+    href: '/topics/statistics/descriptive-statistics-explorer',
     icon: FunctionSquare,
     description: 'Interactive guide to mean, median, mode, variance, skewness, and kurtosis.',
     category: 'sub-topic',
@@ -197,7 +188,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'normal-distribution',
     title: 'The Normal Distribution',
-    href: '/statistics/normal-distribution',
+    href: '/topics/statistics/normal-distribution',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -206,7 +197,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'central-limit-theorem',
     title: 'The Central Limit Theorem (CLT)',
-    href: '/statistics/central-limit-theorem',
+    href: '/topics/statistics/central-limit-theorem',
     icon: FunctionSquare,
     description: 'Discover how order emerges from chaos.',
     category: 'sub-topic',
@@ -215,7 +206,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'type-i-and-type-ii-errors',
     title: 'Type I & Type II Errors',
-    href: '/statistics/type-i-and-type-ii-errors',
+    href: '/topics/statistics/type-i-and-type-ii-errors',
     icon: FunctionSquare,
     description: 'The trade-off between false alarms and missed signals.',
     category: 'sub-topic',
@@ -224,7 +215,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'correlation-vs-causation',
     title: 'Correlation vs. Causation',
-    href: '/statistics/correlation-vs-causation',
+    href: '/topics/statistics/correlation-vs-causation',
     icon: FunctionSquare,
     description: "Don't confuse association with influence.",
     category: 'sub-topic',
@@ -233,7 +224,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'linear-regression',
     title: 'Linear Regression',
-    href: '/statistics/linear-regression',
+    href: '/topics/statistics/linear-regression',
     icon: FunctionSquare,
     description: 'Modeling the relationship between variables.',
     category: 'sub-topic',
@@ -242,7 +233,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'standard-deviation-variance',
     title: 'Standard Deviation & Variance',
-    href: '/statistics/standard-deviation-variance',
+    href: '/topics/statistics/standard-deviation-variance',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -251,7 +242,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'r-squared-goodness-of-fit',
     title: 'R-squared & Goodness of Fit',
-    href: '/statistics/r-squared-goodness-of-fit',
+    href: '/topics/statistics/r-squared-goodness-of-fit',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -298,7 +289,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'logistic-regression',
     title: 'Logistic Regression',
-    href: '/statistics/logistic-regression',
+    href: '/topics/statistics/logistic-regression',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -327,7 +318,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'monte-carlo-simulation',
     title: 'Monte Carlo Simulation',
-    href: '/statistics/monte-carlo-simulation',
+    href: '/topics/statistics/monte-carlo-simulation',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -336,7 +327,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'time-series-decomposition',
     title: 'Time Series Decomposition',
-    href: '/statistics/time-series-decomposition',
+    href: '/topics/statistics/time-series-decomposition',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -345,7 +336,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'autocorrelation-acf-pacf',
     title: 'Autocorrelation (ACF & PACF)',
-    href: '/statistics/autocorrelation-acf-pacf',
+    href: '/topics/statistics/autocorrelation-acf-pacf',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -354,7 +345,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'volatility-garch',
     title: 'Volatility &amp; Standard Deviation (GARCH)',
-    href: '/statistics/volatility-garch',
+    href: '/topics/statistics/volatility-garch',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -363,7 +354,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'efficient-frontier-sharpe-ratio',
     title: 'Efficient Frontier &amp; Sharpe Ratio',
-    href: '/statistics/efficient-frontier-sharpe-ratio',
+    href: '/topics/statistics/efficient-frontier-sharpe-ratio',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -372,7 +363,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'kalman-filters',
     title: 'Kalman Filters',
-    href: '/statistics/kalman-filters',
+    href: '/topics/statistics/kalman-filters',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
@@ -381,7 +372,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'stochastic-calculus-itos-lemma',
     title: "Stochastic Calculus &amp; Ito's Lemma",
-    href: '/statistics/stochastic-calculus-itos-lemma',
+    href: '/topics/statistics/stochastic-calculus-itos-lemma',
     icon: FunctionSquare,
     description: '',
     category: 'sub-topic',
