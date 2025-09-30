@@ -9,6 +9,12 @@ export const allTopics: Topic[] = [
     ...linearAlgebraTopics,
     ...statisticsTopics,
     ...probabilityTopics,
-];
+].map(topic => {
+    // Override href for this specific topic to point to the new dedicated page
+    if (topic.id === 'bayes-theorem') {
+        return { ...topic, href: '/probability/bayes-theorem' };
+    }
+    return topic;
+});
 
 export * from './types';
