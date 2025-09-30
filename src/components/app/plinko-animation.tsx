@@ -26,9 +26,9 @@ export function PlinkoAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const primaryColor = new THREE.Color(
-      theme === 'dark' ? '#00ffaa' : '#111827'
-    );
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+    const primaryColor = new THREE.Color(primaryColorValue);
     
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);

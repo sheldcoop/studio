@@ -4,7 +4,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
 
 interface CorrelationOrbAnimationProps {
   className?: string;
@@ -20,17 +19,17 @@ export function ConfidenceIntervalAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
-  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let frameId: number;
     
-    const primaryColor = new THREE.Color(
-      theme === 'dark' ? '#00ffaa' : '#111827'
-    );
-    const opacityValue = 0.85;
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+    const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
+    const primaryColor = new THREE.Color(primaryColorValue);
+
 
     const particleMaterial = new THREE.PointsMaterial({
         size: 0.2,
@@ -190,7 +189,7 @@ export function ConfidenceIntervalAnimation({
       particlesGeometry.dispose();
       axisGeometry.dispose();
     };
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

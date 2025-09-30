@@ -4,7 +4,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
 
 interface ProbabilityAnimationProps {
   className?: string;
@@ -19,7 +18,6 @@ export function ProbabilityAnimation({
 }: ProbabilityAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
-  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -169,7 +167,7 @@ export function ProbabilityAnimation({
       particleGeometry.dispose();
       particleMaterial.dispose();
     };
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

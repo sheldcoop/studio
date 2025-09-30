@@ -31,7 +31,7 @@
     --chart-5: 222.2 47.4% 90%;
 
     /* Animation Theme Variables */
-    --animation-primary-color: hsl(222.2, 84%, 4.9%);
+    --animation-primary-color: hsl(222.2, 47.4%, 11.2%);
     --animation-opacity: 0.85;
   }
 
@@ -62,7 +62,7 @@
     --chart-5: 270 95.5% 53.1%;
 
     /* Animation Theme Variables */
-    --animation-primary-color: hsl(148, 100%, 50%);
+    --animation-primary-color: hsl(173, 98%, 46%);
     --animation-opacity: 0.85;
   }
 
@@ -122,6 +122,10 @@
     --chart-3: 40 20% 55%;
     --chart-4: 40 20% 45%;
     --chart-5: 40 20% 35%;
+
+    /* Animation Theme Variables */
+    --animation-primary-color: hsl(40, 20%, 85%);
+    --animation-opacity: 0.7;
   }
 }
 

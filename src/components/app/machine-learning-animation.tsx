@@ -4,7 +4,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
 
 interface MachineLearningAnimationProps {
   className?: string;
@@ -20,16 +19,15 @@ export function MachineLearningAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
-  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let frameId: number;
     
-    const primaryColor = new THREE.Color(
-      theme === 'dark' ? '#00ffaa' : '#111827'
-    );
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+    const primaryColor = new THREE.Color(primaryColorValue);
     const secondaryColor = new THREE.Color(0x818cf8); 
 
     // --- Scene setup ---
@@ -176,7 +174,7 @@ export function MachineLearningAnimation({
       eigenLine2.geometry.dispose();
       (eigenLine2.material as THREE.Material).dispose();
     };
-  }, [theme, onPointerEnter, onPointerLeave]);
+  }, [onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
