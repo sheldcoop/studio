@@ -25,7 +25,6 @@ export function MachineLearningAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let animationFrameId: number;
-
     const cleanupFunctions: (() => void)[] = [];
 
     // Wrap in requestAnimationFrame to ensure CSS variables are ready
@@ -34,8 +33,8 @@ export function MachineLearningAnimation({
 
       const computedStyle = getComputedStyle(document.documentElement);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
       const primaryColor = new THREE.Color(primaryColorValue);
+      const secondaryColor = new THREE.Color(0x00ff88); // For data particles
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
@@ -44,7 +43,7 @@ export function MachineLearningAnimation({
         0.1,
         1000
       );
-      camera.position.set(0, 0, 8);
+      camera.position.z = 12;
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
@@ -57,99 +56,159 @@ export function MachineLearningAnimation({
         renderer.dispose();
       });
 
-      const networkGroup = new THREE.Group();
-      scene.add(networkGroup);
-      
-      const nodeMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, transparent: true, opacity: opacityValue * 0.8 });
-      const nodeGeometry = new THREE.SphereGeometry(0.2, 16, 16);
-
-      const lineMaterial = new THREE.LineBasicMaterial({ color: primaryColor, transparent: true, opacity: opacityValue * 0.3 });
-
-      const layers = [4, 5, 5, 3]; // Input, 2 Hidden, Output
+      const layers: { neuron: THREE.Mesh; glow: THREE.Mesh; material: THREE.MeshBasicMaterial; glowMaterial: THREE.MeshBasicMaterial; position: THREE.Vector3; activation: number }[][] = [];
+      const connections: { line: THREE.Line; material: THREE.LineBasicMaterial; from: any; to: any }[] = [];
+      const layerSizes = [4, 6, 6, 4, 2];
       const layerSpacing = 4;
-      const nodeSpacing = 2;
-      const nodes: THREE.Mesh[][] = [];
-      
-      // Create nodes
-      layers.forEach((nodeCount, layerIndex) => {
-        const layerNodes: THREE.Mesh[] = [];
-        const x = (layerIndex - (layers.length - 1) / 2) * layerSpacing;
-        for (let i = 0; i < nodeCount; i++) {
-          const y = (i - (nodeCount - 1) / 2) * nodeSpacing;
-          const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
-          node.position.set(x, y, 0);
-          networkGroup.add(node);
-          layerNodes.push(node);
-        }
-        nodes.push(layerNodes);
-      });
+      const nodeSpacing = 1.5;
 
-      // Create lines
-      for (let i = 0; i < nodes.length - 1; i++) {
-        for (const node1 of nodes[i]) {
-          for (const node2 of nodes[i + 1]) {
-            const geometry = new THREE.BufferGeometry().setFromPoints([node1.position, node2.position]);
-            const line = new THREE.Line(geometry, lineMaterial);
-            networkGroup.add(line);
-            cleanupFunctions.push(() => geometry.dispose());
+      // Create neural network
+      layerSizes.forEach((neuronCount, layerIndex) => {
+        const layer: typeof layers[0] = [];
+        const xPos = (layerIndex - (layerSizes.length - 1) / 2) * layerSpacing;
+        
+        for (let i = 0; i < neuronCount; i++) {
+          const yPos = (i - (neuronCount - 1) / 2) * nodeSpacing;
+          
+          const neuronGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+          const neuronMaterial = new THREE.MeshBasicMaterial({ 
+            color: primaryColor,
+            transparent: true,
+            opacity: 0.9
+          });
+          const neuron = new THREE.Mesh(neuronGeometry, neuronMaterial);
+          neuron.position.set(xPos, yPos, 0);
+          scene.add(neuron);
+          cleanupFunctions.push(() => neuronGeometry.dispose());
+          cleanupFunctions.push(() => neuronMaterial.dispose());
+          
+          const glowGeometry = new THREE.SphereGeometry(0.35, 16, 16);
+          const glowMaterial = new THREE.MeshBasicMaterial({
+            color: primaryColor,
+            transparent: true,
+            opacity: 0.2,
+            blending: THREE.AdditiveBlending
+          });
+          const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+          glow.position.set(xPos, yPos, 0);
+          scene.add(glow);
+          cleanupFunctions.push(() => glowGeometry.dispose());
+          cleanupFunctions.push(() => glowMaterial.dispose());
+          
+          layer.push({ 
+            neuron, 
+            glow,
+            material: neuronMaterial, 
+            glowMaterial,
+            position: new THREE.Vector3(xPos, yPos, 0),
+            activation: Math.random()
+          });
+          
+          if (layerIndex > 0) {
+            layers[layerIndex - 1].forEach((prevNeuron) => {
+              const points = [prevNeuron.position, new THREE.Vector3(xPos, yPos, 0)];
+              const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+              const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: primaryColor,
+                transparent: true,
+                opacity: 0.15
+              });
+              const line = new THREE.Line(lineGeometry, lineMaterial);
+              scene.add(line);
+              
+              connections.push({
+                line,
+                material: lineMaterial,
+                from: prevNeuron,
+                to: layer[layer.length - 1]
+              });
+              cleanupFunctions.push(() => lineGeometry.dispose());
+              cleanupFunctions.push(() => lineMaterial.dispose());
+            });
           }
         }
+        layers.push(layer);
+      });
+
+      const particleGeometry = new THREE.SphereGeometry(0.08, 8, 8);
+      const particleMaterial = new THREE.MeshBasicMaterial({ 
+        color: secondaryColor,
+        transparent: true,
+        opacity: 0.8
+      });
+      cleanupFunctions.push(() => particleGeometry.dispose());
+      cleanupFunctions.push(() => particleMaterial.dispose());
+
+      const dataParticles: { mesh: THREE.Mesh; material: THREE.MeshBasicMaterial; progress: number; speed: number; path: number }[] = [];
+      for (let i = 0; i < 15; i++) {
+        const particle = new THREE.Mesh(particleGeometry, particleMaterial.clone());
+        particle.position.set(-10, 0, 0);
+        scene.add(particle);
+        dataParticles.push({
+          mesh: particle,
+          material: particle.material as THREE.MeshBasicMaterial,
+          progress: Math.random(),
+          speed: 0.3 + Math.random() * 0.2,
+          path: Math.floor(Math.random() * layers[0].length)
+        });
+        cleanupFunctions.push(() => (particle.material as THREE.Material).dispose());
       }
       
-      cleanupFunctions.push(() => {
-          nodeGeometry.dispose();
-          nodeMaterial.dispose();
-          lineMaterial.dispose();
-      });
-
-      // Create pulses
-      const pulseGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-      const pulseMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, transparent: true, opacity: opacityValue });
-      const pulses: { mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3, progress: number, speed: number }[] = [];
-      const pulseCount = 50;
-
-      for (let i = 0; i < pulseCount; i++) {
-        const mesh = new THREE.Mesh(pulseGeometry, pulseMaterial);
-        pulses.push({ mesh, start: new THREE.Vector3(), end: new THREE.Vector3(), progress: 1, speed: 0 });
-        scene.add(mesh);
-      }
-      cleanupFunctions.push(() => {
-          pulseGeometry.dispose();
-          pulseMaterial.dispose();
-      });
-
-      const resetPulse = (pulse: typeof pulses[0]) => {
-        const startLayerIndex = Math.floor(Math.random() * (layers.length - 1));
-        const endLayerIndex = startLayerIndex + 1;
-        const startNode = nodes[startLayerIndex][Math.floor(Math.random() * nodes[startLayerIndex].length)];
-        const endNode = nodes[endLayerIndex][Math.floor(Math.random() * nodes[endLayerIndex].length)];
-        
-        pulse.start.copy(startNode.position);
-        pulse.end.copy(endNode.position);
-        pulse.progress = 0;
-        pulse.speed = 0.5 + Math.random() * 0.8;
-      };
-
-      pulses.forEach(resetPulse);
-
       const clock = new THREE.Clock();
 
       const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
+        const time = clock.getElapsedTime();
         const delta = clock.getDelta();
 
-        networkGroup.rotation.y += 0.0005;
-        networkGroup.rotation.x += 0.0005;
-
-        const pulseSpeedMultiplier = isMouseOver.current ? 4 : 1;
-
-        pulses.forEach(pulse => {
-          pulse.progress += pulse.speed * delta * pulseSpeedMultiplier;
-          if (pulse.progress >= 1) {
-            resetPulse(pulse);
-          }
-          pulse.mesh.position.lerpVectors(pulse.start, pulse.end, pulse.progress);
+        layers.forEach((layer, layerIndex) => {
+          layer.forEach((neuron, neuronIndex) => {
+            const delay = layerIndex * 0.3 + neuronIndex * 0.1;
+            const pulse = Math.sin(time * 1.5 + delay) * 0.5 + 0.5;
+            
+            neuron.activation = pulse;
+            neuron.material.opacity = 0.6 + pulse * 0.4;
+            neuron.glowMaterial.opacity = 0.1 + pulse * 0.3;
+            
+            const scale = 1 + pulse * 0.2;
+            neuron.neuron.scale.setScalar(scale);
+            neuron.glow.scale.setScalar(scale * 1.2);
+          });
         });
+
+        connections.forEach((conn) => {
+          const avgActivation = (conn.from.activation + conn.to.activation) / 2;
+          conn.material.opacity = 0.1 + avgActivation * 0.4;
+        });
+
+        const speedMultiplier = isMouseOver.current ? 4 : 1;
+        dataParticles.forEach((particle) => {
+          particle.progress += particle.speed * delta * speedMultiplier;
+          
+          if (particle.progress > 1) {
+            particle.progress = 0;
+            particle.path = Math.floor(Math.random() * layers[0].length);
+          }
+          
+          const layerProgress = particle.progress * (layers.length - 1);
+          const currentLayerIdx = Math.floor(layerProgress);
+          const nextLayerIdx = Math.min(currentLayerIdx + 1, layers.length - 1);
+          const t = layerProgress - currentLayerIdx;
+          
+          if (currentLayerIdx < layers.length && nextLayerIdx < layers.length) {
+            const fromIndex = Math.min(particle.path, layers[currentLayerIdx].length - 1);
+            const toIndex = Math.min(particle.path, layers[nextLayerIdx].length - 1);
+            
+            const from = layers[currentLayerIdx][fromIndex].position;
+            const to = layers[nextLayerIdx][toIndex].position;
+            
+            particle.mesh.position.lerpVectors(from, to, t);
+            particle.material.opacity = 0.8 * (1 - Math.abs(t - 0.5) * 2);
+          }
+        });
+
+        scene.rotation.y = Math.sin(time * 0.2) * 0.1;
+        scene.rotation.x = Math.cos(time * 0.2) * 0.05;
 
         renderer.render(scene, camera);
       };
