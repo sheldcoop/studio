@@ -27,11 +27,10 @@ export function MachineLearningAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
     
-    // Read CSS variables for theme-aware colors
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-    const primaryColor = new THREE.Color(primaryColorValue);
-    const secondaryColor = new THREE.Color(0x818cf8); // Keep purple for eigenvectors for contrast
+    const primaryColor = new THREE.Color(
+      theme === 'dark' ? '#00ffaa' : '#111827'
+    );
+    const secondaryColor = new THREE.Color(0x818cf8); 
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
@@ -161,7 +160,7 @@ export function MachineLearningAnimation({
         currentMount.removeEventListener('mouseenter', handleMouseEnter);
         currentMount.removeEventListener('mouseleave', handleMouseLeave);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        currentMount.removeChild(renderer.domElement);
+        if (renderer.domElement) currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
       // Dispose all geometries and materials

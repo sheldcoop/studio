@@ -27,11 +27,10 @@ export function ConfidenceIntervalAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
     
-    // Read CSS variables for theme-aware colors
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-    const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim() || '0.85');
-    const primaryColor = new THREE.Color(primaryColorValue);
+    const primaryColor = new THREE.Color(
+      theme === 'dark' ? '#00ffaa' : '#111827'
+    );
+    const opacityValue = 0.85;
 
     const particleMaterial = new THREE.PointsMaterial({
         size: 0.2,
@@ -183,7 +182,7 @@ export function ConfidenceIntervalAnimation({
         currentMount.removeEventListener('mousemove', handleMouseMove);
         currentMount.removeEventListener('mouseenter', handleMouseEnter);
         currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        currentMount.removeChild(renderer.domElement);
+        if (renderer.domElement) currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
       particleMaterial.dispose();

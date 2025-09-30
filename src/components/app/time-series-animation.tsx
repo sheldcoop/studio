@@ -27,12 +27,10 @@ export function TimeSeriesAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    // Read CSS variables for theme-aware colors
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-    const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim() || '0.85');
-    const primaryColor = new THREE.Color(primaryColorValue);
-
+    const primaryColor = new THREE.Color(
+      theme === 'dark' ? '#00ffaa' : '#111827'
+    );
+    const opacityValue = 0.85;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
@@ -168,7 +166,7 @@ export function TimeSeriesAnimation({
         currentMount.removeEventListener('touchstart', handleTouchStart);
         currentMount.removeEventListener('touchend', handleTouchEnd);
         currentMount.removeEventListener('touchmove', handleTouchMove);
-        currentMount.removeChild(renderer.domElement);
+        if (renderer.domElement) currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
       lineGeometry.dispose();
