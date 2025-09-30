@@ -123,15 +123,6 @@ export const statisticsTopics: Topic[] = [
     category: 'non-parametric',
     parent: 'hypothesis-testing',
   },
-  {
-    id: 'chi-squared-test',
-    title: 'Chi-Squared Test',
-    href: '/topics/statistics/chi-squared-test',
-    icon: FunctionSquare,
-    description: 'Tests for association between two categorical variables.',
-    category: 'non-parametric',
-    parent: 'prob-cat-tests',
-  },
 
   // Stat Toolkit Parent Categories
   {
@@ -168,15 +159,6 @@ export const statisticsTopics: Topic[] = [
     description: 'Understanding the range where a true value likely lies.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-   {
-    id: 'z-table',
-    title: 'Z-Table Calculator',
-    href: '/topics/z-table',
-    icon: FunctionSquare,
-    description: 'Interactive Z-Table for Z-scores and probabilities.',
-    category: 'sub-topic',
-    parent: 'prob-core-tools',
   },
   {
     id: 'descriptive-statistics-explorer',
@@ -234,15 +216,6 @@ export const statisticsTopics: Topic[] = [
   },
 
   // Stat Toolkit Tier 2
-   {
-    id: 'lognormal-distribution',
-    title: 'Lognormal Distribution',
-    href: '/topics/statistics/lognormal-distribution',
-    icon: FunctionSquare,
-    description: 'Modeling variables that cannot be negative, like stock prices.',
-    category: 'sub-topic',
-    parent: 'stats-intermediate',
-  },
   {
     id: 'logistic-regression',
     title: 'Logistic Regression',

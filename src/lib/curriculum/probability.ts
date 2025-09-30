@@ -84,6 +84,15 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
     parent: 'probability',
   },
+   {
+    id: 'lognormal-distribution',
+    title: 'Lognormal Distribution',
+    href: '/topics/statistics/lognormal-distribution',
+    icon: FunctionSquare,
+    description: 'Modeling variables that cannot be negative, like stock prices.',
+    category: 'probability',
+    parent: 'prob-dist-continuous',
+  },
   {
     id: 'moment-generating-functions',
     title: 'Moment Generating Functions',
