@@ -244,15 +244,6 @@ export const statisticsTopics: Topic[] = [
     parent: 'stats-intermediate',
   },
   {
-    id: 'binomial-distribution',
-    title: 'Binomial Distribution',
-    href: '/probability/binomial-distribution',
-    icon: FunctionSquare,
-    description: '',
-    category: 'sub-topic',
-    parent: 'stats-intermediate',
-  },
-  {
     id: 'poisson-distribution',
     title: 'Poisson Distribution',
     href: '/probability/poisson-distribution',
