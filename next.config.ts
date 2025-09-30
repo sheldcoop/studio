@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -8,6 +9,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  productionBrowserSourceMaps: false, // Disable source maps in production
   images: {
     remotePatterns: [
       {
@@ -23,7 +25,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
+        protocol: 'httpshttps',
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
