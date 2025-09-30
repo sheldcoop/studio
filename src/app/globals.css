@@ -65,6 +65,37 @@
     --animation-primary-color: hsl(148, 100%, 50%);
     --animation-opacity: 0.85;
   }
+
+  .slate {
+    --background: 223 24% 10%;
+    --foreground: 220 13% 91%;
+    --card: 223 24% 10%;
+    --card-foreground: 220 13% 91%;
+    --popover: 223 24% 10%;
+    --popover-foreground: 220 13% 91%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 38 100% 10%;
+    --secondary: 226 24% 16%;
+    --secondary-foreground: 220 13% 91%;
+    --muted: 226 24% 16%;
+    --muted-foreground: 226 12% 46%;
+    --accent: 226 24% 16%;
+    --accent-foreground: 38 92% 50%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 220 13% 91%;
+    --border: 226 24% 20%;
+    --input: 226 24% 20%;
+    --ring: 38 92% 50%;
+    --chart-1: 38 92% 50%;
+    --chart-2: 259 44% 80%;
+    --chart-3: 0 72.2% 50.6%;
+    --chart-4: 43.2 95.5% 53.1%;
+    --chart-5: 270 95.5% 53.1%;
+
+    /* Animation Theme Variables */
+    --animation-primary-color: hsl(38, 92%, 50%);
+    --animation-opacity: 0.85;
+  }
 }
 
 @layer base {
