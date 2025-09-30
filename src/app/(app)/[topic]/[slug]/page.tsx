@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/app/page-header';
 import { allTopics, type SubTopic } from '@/lib/curriculum';
 import { notFound } from 'next/navigation';
@@ -69,7 +70,8 @@ function TableOfContents({ subTopics }: { subTopics: SubTopic[] }) {
     )
 }
 
-export default function TopicPage({ params }: { params: { topic: string, slug: string } }) {
+export default function TopicPage() {
+  const params = useParams() as { topic: string; slug: string };
   const path = `/${params.topic}/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
   
