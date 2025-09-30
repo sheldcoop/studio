@@ -1,3 +1,4 @@
+
 import { FunctionSquare, FolderKanban } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -316,15 +317,6 @@ export const statisticsTopics: Topic[] = [
     href: '/topics/linear-regression',
     icon: FunctionSquare,
     description: 'Modeling the relationship between variables.',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
-  },
-  {
-    id: 'r-squared-goodness-of-fit',
-    title: 'R-squared & Goodness of Fit',
-    href: '/topics/statistics/r-squared-goodness-of-fit',
-    icon: FunctionSquare,
-    description: '',
     category: 'sub-topic',
     parent: 'stats-foundations',
   },

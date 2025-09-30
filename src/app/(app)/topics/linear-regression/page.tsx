@@ -198,11 +198,11 @@ export default function LinearRegressionPage() {
                 <CardTitle className="font-headline">Key Metrics & Assumptions</CardTitle>
             </CardHeader>
             <CardContent>
-                 <Accordion type="single" collapsible className="w-full">
+                 <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
                     <AccordionItem value="item-1">
                         <AccordionTrigger>What is R-Squared?</AccordionTrigger>
                         <AccordionContent>
-                           R-Squared (or the coefficient of determination) tells you what percentage of the variation in the dependent variable (the stock's return) can be explained by the independent variable (the market's return). An R-Squared of 0.85 means that 85% of the stock's price movement can be explained by movements in the overall market. It's a measure of how well your model fits the data.
+                           R-Squared (or the coefficient of determination) tells you what percentage of the variation in the dependent variable (the stock's return) can be explained by the independent variable (the market's return). An R-Squared of 0.85 means that 85% of the stock's price movement can be explained by movements in the overall market. It's a measure of how well your model fits the data. Adjust the "Noise" slider in the chart above: as noise increases, the data points spread out from the line and the R-Squared value drops, indicating a weaker fit.
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-2">
