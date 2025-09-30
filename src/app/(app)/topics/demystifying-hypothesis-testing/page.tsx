@@ -7,7 +7,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Detective, Lightbulb, Scale } from 'lucide-react';
+import { AlertTriangle, Search, Lightbulb, Scale } from 'lucide-react';
 import { BlockMath } from 'react-katex';
 
 export default function DemystifyingHypothesisTestingPage() {
@@ -22,7 +22,7 @@ export default function DemystifyingHypothesisTestingPage() {
       <Card>
         <CardHeader>
           <CardTitle className="font-headline flex items-center gap-2">
-            <Detective className="text-primary" /> The Data Detective Analogy
+            <Search className="text-primary" /> The Data Detective Analogy
           </CardTitle>
           <CardDescription>
             The easiest way to understand hypothesis testing is to think like a
