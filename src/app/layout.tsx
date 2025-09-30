@@ -7,6 +7,7 @@ import './globals.css';
 import 'katex/dist/katex.min.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
 import { AuthProvider } from './auth-provider';
+import { OrientationBanner } from '@/components/app/orientation-banner';
 
 const fontBody = Inter({
   subsets: ['latin'],
@@ -55,6 +56,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             {children}
+            <OrientationBanner />
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
