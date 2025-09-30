@@ -1,3 +1,4 @@
+
 import { FunctionSquare } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -71,6 +72,15 @@ export const probabilityTopics: Topic[] = [
     href: '/probability/cauchy-distribution',
     icon: FunctionSquare,
     description: "Modeling extreme events and 'fat-tailed' phenomena.",
+    category: 'probability',
+    parent: 'stats-advanced',
+  },
+  {
+    id: 'laplace-distribution',
+    title: 'Laplace Distribution',
+    href: '/probability/laplace-distribution',
+    icon: FunctionSquare,
+    description: "Modeling with a sharp peak and 'fat tails'.",
     category: 'probability',
     parent: 'stats-advanced',
   },
