@@ -79,7 +79,7 @@ const HypergeometricDistributionChart = ({ N, K, n }: { N: number; K: number; n:
 
 const DynamicHypergeometricDistributionChart = dynamic(() => Promise.resolve(HypergeometricDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

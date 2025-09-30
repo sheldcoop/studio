@@ -83,7 +83,7 @@ const LaplaceDistributionChart = ({ location, scale }: { location: number; scale
 
 const DynamicLaplaceDistributionChart = dynamic(() => Promise.resolve(LaplaceDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

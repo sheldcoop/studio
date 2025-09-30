@@ -87,7 +87,7 @@ const BinomialDistributionChart = ({ n, p }: { n: number; p: number }) => {
 
 const DynamicBinomialDistributionChart = dynamic(() => Promise.resolve(BinomialDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

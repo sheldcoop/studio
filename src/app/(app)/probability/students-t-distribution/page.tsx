@@ -13,7 +13,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import { standardNormalPdf } from '@/lib/math';
@@ -104,7 +104,7 @@ const TDistributionChart = ({ df }: { df: number }) => {
 
 const DynamicTDistributionChart = dynamic(() => Promise.resolve(TDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 // --- Main Page Component ---

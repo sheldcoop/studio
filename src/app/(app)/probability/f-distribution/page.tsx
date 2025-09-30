@@ -111,7 +111,7 @@ const FDistributionChart = ({ d1, d2 }: { d1: number; d2: number }) => {
 
 const DynamicFDistributionChart = dynamic(() => Promise.resolve(FDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 // --- Main Page Component ---

@@ -15,8 +15,8 @@ import { Button } from '@/components/ui/button';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine, Legend } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Play, Pause, Plus, ChevronsRight, Milestone } from 'lucide-react';
-import { ChartTooltipContent } from '@/lib/chart-config';
+import { Play, Pause, Plus, RefreshCw, Milestone } from 'lucide-react';
+import { ChartTooltipContent } from '@/components/ui/chart';
 
 type RollData = {
   rollCount: number;
@@ -178,7 +178,7 @@ export default function LawOfLargeNumbersPage() {
                         {isSimulating ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
                         {isSimulating ? 'Pause Simulation' : 'Run Simulation'}
                      </Button>
-                     <Button onClick={resetSimulation} variant="outline">Reset</Button>
+                     <Button onClick={resetSimulation} variant="outline"><RefreshCw className="mr-2 h-4 w-4" /> Reset</Button>
                 </div>
                  <div className="mt-6 text-center text-sm text-muted-foreground">
                     <p>Total Rolls: <span className="font-bold text-lg text-foreground">{rolls.length.toLocaleString()}</span> / {SIMULATION_CAP.toLocaleString()}</p>

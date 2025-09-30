@@ -79,7 +79,7 @@ const CauchyDistributionChart = ({ location, scale }: { location: number; scale:
 
 const DynamicCauchyDistributionChart = dynamic(() => Promise.resolve(CauchyDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

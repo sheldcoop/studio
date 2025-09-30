@@ -111,7 +111,7 @@ const BetaDistributionChart = ({ alpha, beta }: { alpha: number; beta: number })
 
 const DynamicBetaDistributionChart = dynamic(() => Promise.resolve(BetaDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

@@ -106,7 +106,7 @@ const GammaDistributionChart = ({ alpha, beta }: { alpha: number; beta: number }
 
 const DynamicGammaDistributionChart = dynamic(() => Promise.resolve(GammaDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

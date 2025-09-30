@@ -70,7 +70,7 @@ const GeometricDistributionChart = ({ p }: { p: number }) => {
 
 const DynamicGeometricDistributionChart = dynamic(() => Promise.resolve(GeometricDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

@@ -100,7 +100,7 @@ const ChiSquaredDistributionChart = ({ df }: { df: number }) => {
 
 const DynamicChiSquaredDistributionChart = dynamic(() => Promise.resolve(ChiSquaredDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

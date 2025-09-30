@@ -85,7 +85,7 @@ const LogisticDistributionChart = ({ location, scale }: { location: number; scal
 
 const DynamicLogisticDistributionChart = dynamic(() => Promise.resolve(LogisticDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 

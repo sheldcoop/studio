@@ -75,7 +75,7 @@ const PoissonDistributionChart = ({ lambda }: { lambda: number }) => {
 
 const DynamicPoissonDistributionChart = dynamic(() => Promise.resolve(PoissonDistributionChart), {
   ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
 });
 
 
