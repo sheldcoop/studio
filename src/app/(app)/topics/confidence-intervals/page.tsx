@@ -123,25 +123,6 @@ function ConfidenceIntervalCalculator() {
           </div>
         </CardContent>
       </Card>
-      {zTableTopic && (
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-headline">
-                <FunctionSquare className="h-6 w-6 text-primary" /> Z-Table Calculator
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                The Z-score is a critical value that defines the boundaries of
-                our interval. Explore how Z-scores relate to probabilities with
-                an interactive Z-table.
-              </p>
-              <Button asChild className="mt-4 w-full md:w-auto">
-                <Link href={zTableTopic.href}>Open Z-Table Calculator</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        )}
     </>
   );
 }

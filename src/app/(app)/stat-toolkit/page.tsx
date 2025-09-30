@@ -6,7 +6,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/components/ui/card';
 import { allTopics } from '@/lib/curriculum';
 import { CheckCircle, ArrowRight } from 'lucide-react';
@@ -59,10 +58,10 @@ export default function StatToolkitPage() {
         )}
 
         {hypothesisTestingTopic && (
-          <Link href={hypothesisTestingTopic.href} className="group block">
+          <Link href='/topics/statistics' className="group block">
              <Card className="transform-gpu transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
                <CardHeader>
-                <CardTitle className="font-headline text-lg text-primary">A Quant's Detective Kit</CardTitle>
+                <CardTitle className="font-headline text-lg text-primary">A Quant's Detective Kit: Interactive Tests</CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-between">
                 <div>

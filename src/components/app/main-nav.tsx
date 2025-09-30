@@ -25,8 +25,8 @@ const links = [
     icon: BookOpenCheck,
   },
   {
-    href: '/hypothesis-testing',
-    label: 'Hypothesis Testing',
+    href: '/topics/statistics',
+    label: 'Statistical Tests',
     icon: Sigma,
   },
   {

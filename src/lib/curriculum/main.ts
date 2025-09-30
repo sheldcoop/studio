@@ -24,10 +24,10 @@ export const mainTopics: Topic[] = [
   },
   {
     id: 'statistics',
-    title: 'Statistics',
+    title: 'Statistical Tests',
     description: 'The science of collecting, analyzing, and interpreting data.',
     icon: Sigma,
-    href: '/statistics',
+    href: '/topics/statistics',
     category: 'main',
   },
   {
