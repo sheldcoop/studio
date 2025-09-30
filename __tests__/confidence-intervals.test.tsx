@@ -37,8 +37,7 @@ describe('ConfidenceIntervalsPage', () => {
     // Lower = 50 - 0.98 = 49.02
     // Upper = 50 + 0.98 = 50.98
     // The component formats to 3 decimal places, so [49.020, 50.980]
-    const resultText = screen.getByText('[49.02, 50.98]');
-    expect(resultText).toBeInTheDocument();
+    expect(screen.getByText('[49.020, 50.980]')).toBeInTheDocument();
   });
 
   it('shows an error message for invalid input (e.g., sample size <= 0)', () => {
