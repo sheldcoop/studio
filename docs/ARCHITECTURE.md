@@ -12,9 +12,11 @@ Our stack is centered around **Next.js** and **TypeScript**, a combination chose
 
 - **What it is:** Next.js is a production-grade **React framework** that provides a structured way to build applications. We specifically use its modern **App Router**.
 - **Why we use it:**
-    - **Performance & SEO:** Next.js excels at server-side rendering (SSR), which means pages are prepared on the server and sent to the user as fully-formed HTML. This leads to significantly faster initial load times and makes our content easily discoverable by search engines like Google—a crucial feature for an educational platform.
-    - **Server Components (The "Secret Sauce"):** The App Router allows us to use **React Server Components** by default. This is a revolutionary feature. It means most of our components run exclusively on the server, fetching data and rendering static content without sending any JavaScript to the user's browser. The result is a much lighter, faster experience. Only components that require user interactivity (like a button with an `onClick` handler) are marked with `'use client';` and sent to the browser.
+    - **Server Components (The "Secret Sauce"):** The App Router allows us to use **React Server Components** by default. This is a revolutionary feature. It means most of our components run exclusively on the server, fetching data and rendering static content without sending any JavaScript to the user's browser. The result is a much lighter, faster experience. Only components that require user interactivity (like a button with an `onClick` handler) are marked with `'use client';` and sent to the browser. This approach gives us:
+        - **Drastically Faster Load Times:** The user's browser has much less to download, parse, and execute.
+        - **Better SEO:** Search engine bots can easily read the fully-formed HTML content, leading to better indexing and ranking.
     - **Simplified Routing:** The file system itself defines the website's URL structure. The folder `src/app/(app)/topics/statistics/normal-distribution/` directly maps to the URL `/topics/statistics/normal-distribution`, making navigation intuitive to manage.
+    - **Colocation:** All files related to a specific route—the page itself (`page.tsx`), its loading UI (`loading.tsx`), and its error UI (`error.tsx`)—can live together inside the same folder. This makes finding and managing route-specific code much easier.
 
 ### b. Language: TypeScript
 
@@ -27,7 +29,7 @@ Our stack is centered around **Next.js** and **TypeScript**, a combination chose
 
 - **What it is:** React is a JavaScript library for building user interfaces based on a **component model**.
 - **Why we use it:**
-    - **Component-Based Architecture:** React allows us to break down our complex UI into small, reusable, and isolated pieces called components (e.g., `Card`, `Button`, `PageHeader`). This makes our code organized, consistent, and easy to manage. We can build a component once and reuse it everywhere.
+    - **Component-Based Architecture:** React allows us to break down our complex UI into small, reusable, and isolated pieces called components (e.g., `Card`, `Button`, `PageHeader`). This makes our code organized, consistent, and easy to manage. We can build a component once and reuse it everywhere, following the **DRY (Don't Repeat Yourself)** principle.
     - **Vibrant Ecosystem:** As the most popular UI library, React has a massive ecosystem of tools and third-party libraries (like `recharts` for our charts or `react-katex` for our formulas) that accelerate development.
 
 ---
@@ -53,8 +55,27 @@ Our visual identity is managed by a consistent and modern styling pipeline.
 
 ---
 
-## 3. Core Architectural Decisions
+## 3. Core Architectural Decisions & Future Considerations
 
-- **Server-First Approach:** We default to using Server Components for everything unless interactivity is explicitly needed. This is a core principle for maximizing performance.
+- **Server-First Approach:** We default to using Server Components for everything unless interactivity is explicitly needed. This is a core principle for maximizing performance. Any component with hooks (`useState`, `useEffect`) must be in a file marked with `'use client';`. The ideal architecture is to push these client "islands" as deep into the component tree as possible.
 - **Data-Driven Content:** The curriculum, learning paths, and topic definitions are stored in structured data files (`src/lib/curriculum/`, `src/lib/learning-paths.ts`). The pages read from this data, meaning we can add or change a topic by simply updating a data file, not by creating a new page.
-- **Static Overrides for Custom Pages:** For our most complex, interactive pages (like the `ANOVA` or `T-Test` pages), we create specific page files that override the generic template. This gives us the flexibility for bespoke UI where needed, while still benefiting from a scalable template for simpler content pages.
+- **Reusable "Cookie-Cutter" Components:** Instead of repeatedly building the same UI with primitive `<div>` and `<Card>` elements, we create dedicated, reusable components (e.g., `<LessonItem />`, `<LearningPathCard />`). This follows the **DRY (Don't Repeat Yourself)** principle, making the codebase cleaner, more consistent, and much easier to maintain.
+- **(Future) Decouple Content with a Headless CMS:** Currently, our content lives in TypeScript files. For long-term scalability, we should consider moving this content into a headless CMS. This would allow non-developers to manage and publish content without requiring a code deployment, dramatically speeding up our content production pipeline.
+
+---
+
+## 4. Testing Strategy
+
+Our application uses a multi-layered testing strategy to ensure code quality and prevent regressions. The configuration for this is located in `jest.config.mjs` and `jest.setup.js`.
+
+- **Unit Testing (Jest):**
+  - **Purpose:** To test small, isolated pieces of pure logic, primarily our utility and calculation functions in `src/lib/math.ts`.
+  - **Impact:** Guarantees that our foundational calculations are correct. These tests are fast, easy to write, and form the base of our testing pyramid.
+
+- **Integration Testing (React Testing Library):**
+  - **Purpose:** To test individual components to ensure they render correctly and behave as a user would expect. This is our primary testing method for interactive client components (e.g., calculators, interactive charts).
+  - **Impact:** This is the most valuable type of testing for our app, giving us high confidence that our UI works as intended. Tests simulate user actions like clicking buttons and typing into fields.
+
+- **(Future) End-to-End Testing (Playwright/Cypress):**
+  - **Purpose:** To simulate a full user journey in a real browser (e.g., "log in, navigate to a page, complete a quiz").
+  - **Impact:** This provides the ultimate assurance that critical user flows are not broken. This is a future goal that would require installing and configuring a dedicated E2E framework.
