@@ -50,10 +50,10 @@ export const learningPaths: Omit<LearningPath, 'modules'>[] = [
     description: 'Apply ML algorithms to trading, risk, and asset management.',
   },
   {
-    id: 'algo-trading',
-    title: 'Algorithmic Trading Strategies',
+    id: 'probability-toolkit',
+    title: 'Probability Toolkit',
     icon: CandlestickChart,
-    description: 'Design, backtest, and deploy automated trading strategies.',
+    description: 'Interactive tools for hands-on probability analysis.',
   },
 ];
 
@@ -67,12 +67,21 @@ export const getPathById = (id: string): LearningPath | undefined => {
     { id: 'stats-module-2', parent: 'statistics-for-quantitative-finance', title: 'Common Distributions', status: 'in-progress', duration: 75 },
     { id: 'stats-module-3', parent: 'statistics-for-quantitative-finance', title: 'Hypothesis Testing', status: 'not-started', duration: 120 },
     { id: 'stats-module-4', parent: 'statistics-for-quantitative-finance', title: 'Bayesian Statistics Intro', status: 'not-started', duration: 60 },
+    { id: 'prob-dist-discrete', parent: 'probability-toolkit', title: 'Discrete Distributions', status: 'in-progress', duration: 30},
+    { id: 'prob-dist-continuous', parent: 'probability-toolkit', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
   ];
 
-  const pathModules = allModules.filter(m => m.parent === id).map(module => ({
-    ...module,
-    lessons: allTopics.filter(t => t.parent === module.id)
-  }));
+  const pathModules = allModules.filter(m => m.parent === id).map(module => {
+    let lessons: Topic[] = [];
+    if (module.id === 'prob-dist-discrete') {
+        lessons = allTopics.filter(t => ['binomial-distribution', 'poisson-distribution'].includes(t.id));
+    } else if (module.id === 'prob-dist-continuous') {
+        lessons = allTopics.filter(t => ['gamma-distribution', 'beta-distribution', 'exponential-distribution', 'cauchy-distribution', 'laplace-distribution', 'lognormal-distribution', 'normal-distribution'].includes(t.id));
+    } else {
+        lessons = allTopics.filter(t => t.parent === module.id);
+    }
+    return { ...module, lessons };
+  });
 
   return {
     ...pathInfo,
