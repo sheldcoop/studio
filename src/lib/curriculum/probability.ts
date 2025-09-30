@@ -1,4 +1,3 @@
-
 import { FunctionSquare } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -108,6 +107,15 @@ export const probabilityTopics: Topic[] = [
     href: '/probability/f-distribution',
     icon: FunctionSquare,
     description: 'Comparing variances between two or more samples.',
+    category: 'probability',
+    parent: 'prob-dist-continuous',
+  },
+  {
+    id: 'students-t-distribution',
+    title: "Student's t-Distribution",
+    href: '/probability/students-t-distribution',
+    icon: FunctionSquare,
+    description: 'The backbone of hypothesis testing with small sample sizes.',
     category: 'probability',
     parent: 'prob-dist-continuous',
   },
