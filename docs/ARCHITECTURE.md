@@ -1,48 +1,60 @@
-# QuantPrep High-Level Architecture
+# QuantPrep Application Architecture
 
-This document provides a high-level overview of the QuantPrep application's architecture to help new developers get up to speed quickly.
+This document provides a comprehensive overview of the technologies and architectural patterns used to build the QuantPrep application. Understanding these choices is key to contributing effectively to the project.
 
-## Tech Stack
+---
 
-- **Framework:** [Next.js](https://nextjs.org/) (using the App Router)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **UI:** [React](https://react.dev/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components:** [ShadCN UI](https://ui.shadcn.com/)
-- **AI/Generative:** [Genkit](https://firebase.google.com/docs/genkit) (currently disabled)
-- **Testing:** [Jest](https://jestjs.io/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+## 1. Core Technology Stack
 
-## Core Architectural Concepts
+Our stack is centered around **Next.js** and **TypeScript**, a combination chosen for its performance, developer experience, and robust features for building modern web applications.
 
-### 1. Next.js App Router
+### a. Framework: Next.js (with App Router)
 
-The application is built using the Next.js App Router paradigm. This means:
-- **File-based Routing:** The folder structure inside `src/app` directly maps to the application's URL routes. For example, `src/app/(app)/dashboard/page.tsx` corresponds to the `/dashboard` route.
-- **Layouts:** Shared UI, like the header and main navigation, is defined in `layout.tsx` files. The root layout is `src/app/layout.tsx`, and the layout for the authenticated app is `src/app/(app)/layout.tsx`.
-- **Route Groups:** The `(app)` folder is a Next.js Route Group. This allows us to apply a specific layout to a group of routes (`/dashboard`, `/paths`, etc.) without affecting the URL structure.
+- **What it is:** Next.js is a production-grade **React framework** that provides a structured way to build applications. We specifically use its modern **App Router**.
+- **Why we use it:**
+    - **Performance & SEO:** Next.js excels at server-side rendering (SSR), which means pages are prepared on the server and sent to the user as fully-formed HTML. This leads to significantly faster initial load times and makes our content easily discoverable by search engines like Google—a crucial feature for an educational platform.
+    - **Server Components (The "Secret Sauce"):** The App Router allows us to use **React Server Components** by default. This is a revolutionary feature. It means most of our components run exclusively on the server, fetching data and rendering static content without sending any JavaScript to the user's browser. The result is a much lighter, faster experience. Only components that require user interactivity (like a button with an `onClick` handler) are marked with `'use client';` and sent to the browser.
+    - **Simplified Routing:** The file system itself defines the website's URL structure. The folder `src/app/(app)/topics/statistics/normal-distribution/` directly maps to the URL `/topics/statistics/normal-distribution`, making navigation intuitive to manage.
 
-### 2. Server Components vs. Client Components
+### b. Language: TypeScript
 
-This is the most important architectural pattern in the app.
+- **What it is:** TypeScript is a superset of JavaScript that adds a **static type system**.
+- **Why we use it:**
+    - **Reliability and Bug Prevention:** In a project of this scale, ensuring data flows correctly is critical. TypeScript acts as a safety net, catching common errors (like passing a `string` where a `number` is expected) during development, long before they can crash the application for a user.
+    - **Maintainability & Developer Experience:** Types serve as living documentation for our code. When a developer looks at a function, they immediately know what kind of data it expects and what it returns. This makes the codebase easier to understand, refactor, and build upon.
 
-- **Server Components (Default):** By default, all components in the App Router are **React Server Components (RSCs)**. They run exclusively on the server. They are ideal for fetching data and rendering static content because they send zero JavaScript to the client, leading to faster page loads. Most pages (like `dashboard`, `paths`) are primarily Server Components.
+### c. UI Library: React
 
-- **Client Components (Opt-in):** Components that require browser-only APIs or interactivity (e.g., `useState`, `useEffect`, event handlers like `onClick`) must be explicitly marked with the `'use client';` directive at the top of the file. These components are pre-rendered on the server and then "hydrated" on the client to become interactive. Good examples include the interactive charts on the statistics pages or the `Header` component which manages mobile menu state.
+- **What it is:** React is a JavaScript library for building user interfaces based on a **component model**.
+- **Why we use it:**
+    - **Component-Based Architecture:** React allows us to break down our complex UI into small, reusable, and isolated pieces called components (e.g., `Card`, `Button`, `PageHeader`). This makes our code organized, consistent, and easy to manage. We can build a component once and reuse it everywhere.
+    - **Vibrant Ecosystem:** As the most popular UI library, React has a massive ecosystem of tools and third-party libraries (like `recharts` for our charts or `react-katex` for our formulas) that accelerate development.
 
-Our strategy is to **keep Client Components as small as possible** and push them to the "leaves" of the component tree.
+---
 
-### 3. State Management
+## 2. Styling and UI Components
 
-The application uses simple, component-level state for most features.
-- **`useState` and `useEffect`:** For local component state and side effects in Client Components. This is sufficient for most of our interactive UI, like the calculators and charts.
-- **React Context (Provider Pattern):** For cross-cutting concerns, we use React Context. The best example is the `ChartContainer` (`src/components/ui/chart.tsx`), which provides theme and configuration information to all of its children, avoiding the need to pass props down manually ("prop drilling").
+Our visual identity is managed by a consistent and modern styling pipeline.
 
-### 4. Styling
+### a. Styling Engine: Tailwind CSS
 
-- **Tailwind CSS:** All styling is done using Tailwind CSS utility classes.
-- **ShadCN UI and CSS Variables:** We use ShadCN for our base UI components. The application's theme (colors, fonts, etc.) is defined using CSS variables in `src/app/globals.css`. This allows for a consistent look and feel and easy theme updates. We avoid hard-coding colors directly in components, preferring to use the theme variables (e.g., `bg-primary`, `text-muted-foreground`).
+- **What it is:** A **utility-first CSS framework**. Instead of writing custom CSS files, we build layouts by applying pre-existing utility classes directly in our HTML (e.g., `p-4` for padding, `flex` for a flexbox container, `font-bold` for bold text).
+- **Why we use it:**
+    - **Rapid Prototyping:** It allows for incredibly fast UI development without ever leaving the component file.
+    - **Consistency:** It enforces a consistent design system (spacing, colors, font sizes), preventing the "style chaos" that can occur in large projects.
+    - **Performance:** It automatically removes all unused CSS classes during the build process, resulting in the smallest possible stylesheet for our users.
 
-### 5. Data and Content
+### b. UI Component Library: ShadCN UI
 
-- **Static Data:** Most of the application's content (like learning paths and community posts) is currently mocked and stored in `src/lib/data.ts`. In a real-world scenario, this data would be fetched from a database or a headless CMS.
-- **Client-Side Data Generation:** The interactive charts generate their sample data on the client side within `useEffect` hooks. This is for demonstration purposes; real financial data would be fetched from a dedicated API.
+- **What it is:** A unique collection of reusable UI components (like our `Card`, `Button`, `Dialog`, `Tabs`) built on top of Tailwind CSS.
+- **Why we use it:**
+    - **Ownership and Customization:** Unlike traditional component libraries, we don't install ShadCN as a dependency. Instead, we copy its source code directly into our project under `src/components/ui`. This gives us full control to customize the components to perfectly match our application's needs.
+    - **Theming with CSS Variables:** The entire look and feel (colors, border radius, etc.) is controlled by CSS variables defined in `src/app/globals.css`. This makes it trivial to manage our dark/light mode themes and ensure a consistent visual identity across the entire platform.
+
+---
+
+## 3. Core Architectural Decisions
+
+- **Server-First Approach:** We default to using Server Components for everything unless interactivity is explicitly needed. This is a core principle for maximizing performance.
+- **Data-Driven Content:** The curriculum, learning paths, and topic definitions are stored in structured data files (`src/lib/curriculum/`, `src/lib/learning-paths.ts`). The pages read from this data, meaning we can add or change a topic by simply updating a data file, not by creating a new page.
+- **Static Overrides for Custom Pages:** For our most complex, interactive pages (like the `ANOVA` or `T-Test` pages), we create specific page files that override the generic template. This gives us the flexibility for bespoke UI where needed, while still benefiting from a scalable template for simpler content pages.
