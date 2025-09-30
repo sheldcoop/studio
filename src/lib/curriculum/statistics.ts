@@ -18,7 +18,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 't-test',
     title: 'T-Test',
-    href: '/topics/statistics/t-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description: 'Compares the means of two groups, assuming normal distribution.',
     category: 'parametric',
@@ -27,7 +27,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'z-test',
     title: 'Z-Test',
-    href: '/topics/statistics/z-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description:
       'Compares means of large samples (n>30) with known population variance.',
@@ -37,7 +37,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'anova',
     title: 'ANOVA',
-    href: '/topics/statistics/anova',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description: 'Compares the averages of three or more groups.',
     category: 'parametric',
@@ -46,7 +46,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'f-test',
     title: 'F-Test',
-    href: '/topics/statistics/f-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description: 'Compares the variances (spread) of two or more groups.',
     category: 'parametric',
@@ -65,7 +65,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'chi-squared-test',
     title: 'Chi-Squared Test',
-    href: '/topics/statistics/chi-squared-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description:
       'Analyzes categorical data to find significant relationships.',
@@ -77,7 +77,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'mann-whitney-u-test',
     title: 'Mann-Whitney U Test',
-    href: '/topics/statistics/mann-whitney-u-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description:
       'Alternative to the T-Test when data is not normally distributed.',
@@ -87,7 +87,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'kruskal-wallis-test',
     title: 'Kruskal-Wallis Test',
-    href: '/topics/statistics/kruskal-wallis-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description: 'Alternative to ANOVA for comparing three or more groups.',
     category: 'non-parametric',
@@ -96,7 +96,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'wilcoxon-signed-rank-test',
     title: 'Wilcoxon Signed-Rank Test',
-    href: '/topics/statistics/wilcoxon-signed-rank-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description:
       'Alternative to the paired T-Test for repeated measurements.',
