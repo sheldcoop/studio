@@ -17,6 +17,7 @@ import { Slider } from '@/components/ui/slider';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Line as RechartsLine, Legend } from 'recharts';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import 'katex/dist/katex.min.css';
 
 // Helper function to generate data for regression
 const generateRegressionData = (n: number, slope: number, intercept: number, noise: number) => {

@@ -16,6 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { BlockMath, InlineMath } from 'react-katex';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import 'katex/dist/katex.min.css';
 
 // --- Math & Simulation Logic ---
 const factorial = (n: number): number => {

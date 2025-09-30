@@ -16,6 +16,7 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine, Label } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { generateNormalData, generateLogNormalData, getMean, getMedian, getMode, getStdDev, getSkewness, getKurtosis } from '@/lib/math';
+import 'katex/dist/katex.min.css';
 
 type DistributionType = 'normal' | 'skewed-right' | 'skewed-left';
 

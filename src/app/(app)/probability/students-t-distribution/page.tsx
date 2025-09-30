@@ -17,6 +17,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine } 
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import { standardNormalPdf } from '@/lib/math';
+import 'katex/dist/katex.min.css';
 
 // --- Math & Simulation Logic ---
 // Lanczos approximation for the Gamma function

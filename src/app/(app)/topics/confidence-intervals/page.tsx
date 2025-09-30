@@ -20,6 +20,7 @@ import { AlertTriangle, FunctionSquare, Calculator } from 'lucide-react';
 import Link from 'next/link';
 import { allTopics } from '@/lib/curriculum';
 import { BlockMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 function ConfidenceIntervalCalculator() {
   const [sampleMean, setSampleMean] = useState(100);

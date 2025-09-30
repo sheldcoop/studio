@@ -11,6 +11,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, TestTube2, Scale, BarChart, Forward, BrainCircuit, Sigma } from 'lucide-react';
 import { BlockMath } from 'react-katex';
 import Link from 'next/link';
+import 'katex/dist/katex.min.css';
 
 export default function DemystifyingHypothesisTestingPage() {
   return (
@@ -90,7 +91,7 @@ export default function DemystifyingHypothesisTestingPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
-            <p>We choose how confident we want to be in our conclusion. The standard is 95% confidence. This means we accept there's a 5% risk that we might be wrong. This risk is the **Significance Level (Alpha α)**.</p>
+            <p>We choose how confident we want to be in our conclusion. The standard is 95% confidence. This means we accept there's a 5% risk that we might be wrong. This risk is the <strong>Significance Level (Alpha α)</strong>.</p>
              <div className="rounded-lg border bg-muted/50 p-4 text-center">
                 <BlockMath math="\alpha = 1 - \text{Confidence Level}" />
                 <p className="text-sm text-muted-foreground">For 95% confidence, α = 1 - 0.95 = 0.05</p>

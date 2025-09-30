@@ -16,6 +16,7 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 // --- Math & Simulation Logic ---
 const logisticPdf = (x: number, mu: number, s: number): number => {
