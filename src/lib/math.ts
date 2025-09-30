@@ -1,7 +1,7 @@
 
 
 /**
- * Generates normally distributed random data.
+ * Generates normally distributed random data using the central limit theorem approximation.
  * @param mean - The desired mean.
  * @param stdDev - The desired standard deviation.
  * @param n - The number of data points.
@@ -77,6 +77,19 @@ export const generateBetaData = (alpha: number, beta: number, n: number) => {
     }
     return data;
 }
+
+/**
+ * Generates uniformly distributed random data.
+ * @param min The minimum value of the distribution.
+ * @param max The maximum value of the distribution.
+ * @param n The number of data points.
+ * @returns An array of uniformly distributed numbers.
+ */
+export const generateUniformData = (min: number, max: number, n: number) => {
+  if (n <= 0) return [];
+  return Array.from({ length: n }, () => min + Math.random() * (max - min));
+};
+
 
 /**
  * Generates exponentially distributed random data.
