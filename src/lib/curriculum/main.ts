@@ -1,3 +1,4 @@
+
 import {
   Pi,
   Sigma,
@@ -64,7 +65,7 @@ export const mainTopics: Topic[] = [
     title: 'Probability Toolkit',
     description: 'Interactive tools for hands-on probability analysis.',
     icon: CandlestickChart,
-    href: '/paths/algo-trading',
+    href: '/paths/probability-toolkit',
     category: 'main',
   },
   {
