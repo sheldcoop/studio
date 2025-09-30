@@ -1,8 +1,8 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { Metadata } from 'next';
 import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/app/page-header';
 import { allTopics, type SubTopic } from '@/lib/curriculum';
@@ -18,6 +18,23 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Siren, ArrowRight, Lightbulb, BrainCircuit, CandlestickChart } from 'lucide-react';
+
+
+export async function generateMetadata({ params }: { params: { topic: string, slug: string }}): Promise<Metadata> {
+  const path = `/${params.topic}/${params.slug}`;
+  const topicInfo = allTopics.find((t) => t.href === path);
+
+  if (!topicInfo) {
+    return {
+      title: 'Topic Not Found',
+    };
+  }
+
+  return {
+    title: topicInfo.title,
+    description: topicInfo.description,
+  };
+}
 
 
 function TableOfContents({ subTopics }: { subTopics: SubTopic[] }) {

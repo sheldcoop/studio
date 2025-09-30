@@ -28,9 +28,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // We filter out the 'parent' category topics as they are not actual pages
+  // We filter out 'parent' category topics and topics with no real page (href === '#')
   const topicRoutes = allTopics
-    .filter(topic => topic.category !== 'parent' && topic.href !== '#')
+    .filter(topic => 
+        topic.category !== 'parent' && 
+        topic.href !== '#' && 
+        (topic.subTopics || topic.interactiveExamples || topic.category === 'main' || topic.parent === 'stats-foundations' || topic.parent === 'prob-core-tools' || topic.parent === 'prob-dist-discrete' || topic.parent === 'prob-dist-continuous')
+    )
     .map((topic) => ({
       url: `${URL}${topic.href}`,
       lastModified: new Date(),
