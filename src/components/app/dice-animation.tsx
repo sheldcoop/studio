@@ -44,91 +44,106 @@ export function DiceAnimation({
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
-    let frameId: number;
+    let animationFrameId: number;
 
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-    const primaryColor = new THREE.Color(primaryColorValue);
-    
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-    camera.position.z = 5;
+    const main = () => {
+      let frameId: number;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    currentMount.appendChild(renderer.domElement);
-
-    const light = new THREE.DirectionalLight(0xffffff, 2.5);
-    light.position.set(2, 5, 3);
-    scene.add(light);
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-
-    const dotColor = primaryColor.getStyle();
-    
-    // Determine face color based on the computed background color of the element
-    const backgroundColorValue = computedStyle.getPropertyValue('background-color').trim();
-    const faceColor = new THREE.Color(backgroundColorValue).getStyle();
-
-
-    const materials = [
-      createDieFaceMaterial([{ x: 64, y: 64 }], dotColor, faceColor), // 1
-      createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }], dotColor, faceColor), // 2
-      createDieFaceMaterial([{ x: 32, y: 32 }, { x: 64, y: 64 }, { x: 96, y: 96 }], dotColor, faceColor), // 3
-      createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 96 }, { x: 96, y: 32 }], dotColor, faceColor), // 4
-      createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 96 }, { x: 96, y: 32 }, { x: 64, y: 64 }], dotColor, faceColor), // 5
-      createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 32 }], dotColor, faceColor), // 6
-    ];
-
-    const dieGeometry = new THREE.BoxGeometry(2, 2, 2);
-    const die = new THREE.Mesh(dieGeometry, materials);
-    scene.add(die);
-
-    const clock = new THREE.Clock();
-
-    const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      const computedStyle = getComputedStyle(currentMount);
+      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+      const primaryColor = new THREE.Color(primaryColorValue);
       
-      const rotationSpeed = isMouseOver.current ? 1.5 : 0.2;
-      die.rotation.x += rotationSpeed * delta;
-      die.rotation.y += rotationSpeed * delta;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+      camera.position.z = 5;
 
-      renderer.render(scene, camera);
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      currentMount.appendChild(renderer.domElement);
+
+      const light = new THREE.DirectionalLight(0xffffff, 2.5);
+      light.position.set(2, 5, 3);
+      scene.add(light);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambientLight);
+
+      const dotColor = primaryColor.getStyle();
+      
+      const backgroundColorValue = getComputedStyle(document.documentElement).getPropertyValue('--card').trim();
+      const [h, s, l] = backgroundColorValue.split(' ').map(parseFloat);
+      const faceColor = new THREE.Color(`hsl(${h}, ${s}%, ${l}%)`).getStyle();
+
+
+      const materials = [
+        createDieFaceMaterial([{ x: 64, y: 64 }], dotColor, faceColor), // 1
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }], dotColor, faceColor), // 2
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 64, y: 64 }, { x: 96, y: 96 }], dotColor, faceColor), // 3
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 96 }, { x: 96, y: 32 }], dotColor, faceColor), // 4
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 96 }, { x: 96, y: 32 }, { x: 64, y: 64 }], dotColor, faceColor), // 5
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 32 }], dotColor, faceColor), // 6
+      ];
+
+      const dieGeometry = new THREE.BoxGeometry(2, 2, 2);
+      const die = new THREE.Mesh(dieGeometry, materials);
+      scene.add(die);
+
+      const clock = new THREE.Clock();
+
+      const animate = () => {
+        frameId = requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        
+        const rotationSpeed = isMouseOver.current ? 1.5 : 0.2;
+        die.rotation.x += rotationSpeed * delta;
+        die.rotation.y += rotationSpeed * delta;
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
+
+      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
+      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
+      currentMount.addEventListener('mouseenter', handleMouseEnter);
+      currentMount.addEventListener('mouseleave', handleMouseLeave);
+      
+      const handleResize = () => {
+        if (currentMount) {
+          camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        }
+      };
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        cancelAnimationFrame(frameId);
+        window.removeEventListener('resize', handleResize);
+        if (currentMount) {
+          currentMount.removeEventListener('mouseenter', handleMouseEnter);
+          currentMount.removeEventListener('mouseleave', handleMouseLeave);
+          if(renderer.domElement) currentMount.removeChild(renderer.domElement);
+        }
+        renderer.dispose();
+        dieGeometry.dispose();
+        materials.forEach(m => {
+          m.map?.dispose();
+          m.dispose();
+        });
+      };
     };
-
-    animate();
-
-    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
-    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
-    currentMount.addEventListener('mouseenter', handleMouseEnter);
-    currentMount.addEventListener('mouseleave', handleMouseLeave);
     
-    const handleResize = () => {
-      if (currentMount) {
-        camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-      }
-    };
-    window.addEventListener('resize', handleResize);
+    animationFrameId = requestAnimationFrame(main);
 
     return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', handleResize);
-      if (currentMount) {
-        currentMount.removeEventListener('mouseenter', handleMouseEnter);
-        currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        if(renderer.domElement) currentMount.removeChild(renderer.domElement);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
-      renderer.dispose();
-      dieGeometry.dispose();
-      materials.forEach(m => {
-        m.map?.dispose();
-        m.dispose();
-      });
-    };
+      while (currentMount.firstChild) {
+        currentMount.removeChild(currentMount.firstChild);
+      }
+    }
   }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;

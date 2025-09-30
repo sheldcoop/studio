@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface StatisticsAnimationProps {
   className?: string;
@@ -45,135 +46,151 @@ export function StatisticsAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
-    let frameId: number;
+    let animationFrameId: number;
 
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-    const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
-    const primaryColor = new THREE.Color(primaryColorValue);
+    const main = () => {
+      let frameId: number;
+
+      const computedStyle = getComputedStyle(currentMount);
+      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+      const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
+      const primaryColor = new THREE.Color(primaryColorValue);
 
 
-    // --- Scene setup ---
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      currentMount.clientWidth / currentMount.clientHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(0, 6, 9);
-    camera.lookAt(0, 0, 0);
+      // --- Scene setup ---
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        currentMount.clientWidth / currentMount.clientHeight,
+        0.1,
+        1000
+      );
+      camera.position.set(0, 6, 9);
+      camera.lookAt(0, 0, 0);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    currentMount.appendChild(renderer.domElement);
-    
-    // --- Objects ---
-    const group = new THREE.Group();
-    scene.add(group);
-
-    // Grid
-    const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
-    grid.material.transparent = true;
-    grid.material.opacity = 0.4;
-    group.add(grid);
-
-    // Surface
-    const surfaceGeometry = createGaussianSurface(10, 10, 50);
-    const surfaceMaterial = new THREE.MeshStandardMaterial({
-      wireframe: true,
-      emissiveIntensity: 0.4,
-      transparent: true,
-    });
-    surfaceMaterial.color.set(primaryColor);
-    surfaceMaterial.emissive.set(primaryColor);
-    surfaceMaterial.opacity = opacityValue;
-
-    const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
-    surface.rotation.x = -Math.PI / 2; // Lay it flat on the grid
-    group.add(surface);
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-    
-    // --- Animation & Interaction ---
-    const clock = new THREE.Clock();
-    let targetPosition = new THREE.Vector3(0, 0, 0);
-
-    const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
-
-      if (isMouseOver.current) {
-        targetPosition.x = mouse.current.x * 5;
-        targetPosition.z = mouse.current.y * 5; // Map mouse Y to Z-axis movement
-      } else {
-        targetPosition.x = 0;
-        targetPosition.z = 0;
-      }
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      currentMount.appendChild(renderer.domElement);
       
-      // Easing / Smoothing for the surface position (mean)
-      surface.position.x += (targetPosition.x - surface.position.x) * 0.05;
-      surface.position.z += (targetPosition.z - surface.position.z) * 0.05;
+      // --- Objects ---
+      const group = new THREE.Group();
+      scene.add(group);
 
-      // Slow rotation of the entire group
-      group.rotation.y = elapsedTime * 0.05;
+      // Grid
+      const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
+      grid.material.transparent = true;
+      grid.material.opacity = 0.4;
+      group.add(grid);
 
-      renderer.render(scene, camera);
-    };
+      // Surface
+      const surfaceGeometry = createGaussianSurface(10, 10, 50);
+      const surfaceMaterial = new THREE.MeshStandardMaterial({
+        wireframe: true,
+        emissiveIntensity: 0.4,
+        transparent: true,
+      });
+      surfaceMaterial.color.set(primaryColor);
+      surfaceMaterial.emissive.set(primaryColor);
+      surfaceMaterial.opacity = opacityValue;
 
-    animate();
+      const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
+      surface.rotation.x = -Math.PI / 2; // Lay it flat on the grid
+      group.add(surface);
 
-    // --- Event Listeners ---
-    const handleMouseMove = (event: MouseEvent) => {
-        if (currentMount) {
-            const rect = currentMount.getBoundingClientRect();
-            mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.current.y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
+      
+      // --- Animation & Interaction ---
+      const clock = new THREE.Clock();
+      let targetPosition = new THREE.Vector3(0, 0, 0);
+
+      const animate = () => {
+        frameId = requestAnimationFrame(animate);
+        const elapsedTime = clock.getElapsedTime();
+
+        if (isMouseOver.current) {
+          targetPosition.x = mouse.current.x * 5;
+          targetPosition.z = mouse.current.y * 5; // Map mouse Y to Z-axis movement
+        } else {
+          targetPosition.x = 0;
+          targetPosition.z = 0;
         }
-    };
+        
+        // Easing / Smoothing for the surface position (mean)
+        surface.position.x += (targetPosition.x - surface.position.x) * 0.05;
+        surface.position.z += (targetPosition.z - surface.position.z) * 0.05;
+
+        // Slow rotation of the entire group
+        group.rotation.y = elapsedTime * 0.05;
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
+
+      // --- Event Listeners ---
+      const handleMouseMove = (event: MouseEvent) => {
+          if (currentMount) {
+              const rect = currentMount.getBoundingClientRect();
+              mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+              mouse.current.y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+          }
+      };
+      
+      const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
+      const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
+
+      currentMount.addEventListener('mousemove', handleMouseMove);
+      currentMount.addEventListener('mouseenter', handleMouseEnter);
+      currentMount.addEventListener('mouseleave', handleMouseLeave);
+
+      // --- Resize handler ---
+      const handleResize = () => {
+          if (currentMount) {
+              renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+              camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+              camera.updateProjectionMatrix();
+          }
+      };
+      window.addEventListener('resize', handleResize);
+
+      // --- Cleanup ---
+      return () => {
+        cancelAnimationFrame(frameId);
+        window.removeEventListener('resize', handleResize);
+        if (currentMount) {
+          currentMount.removeEventListener('mousemove', handleMouseMove);
+          currentMount.removeEventListener('mouseenter', handleMouseEnter);
+          currentMount.removeEventListener('mouseleave', handleMouseLeave);
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+          if (renderer.domElement) currentMount.removeChild(renderer.domElement);
+        }
+        renderer.dispose();
+        surfaceGeometry.dispose();
+        surfaceMaterial.dispose();
+        grid.geometry.dispose();
+        (grid.material as THREE.Material).dispose();
+      };
+    }
     
-    const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); }
-    const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); }
+    animationFrameId = requestAnimationFrame(main);
 
-    currentMount.addEventListener('mousemove', handleMouseMove);
-    currentMount.addEventListener('mouseenter', handleMouseEnter);
-    currentMount.addEventListener('mouseleave', handleMouseLeave);
-
-    // --- Resize handler ---
-    const handleResize = () => {
-        if (currentMount) {
-            renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-            camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-            camera.updateProjectionMatrix();
-        }
-    };
-    window.addEventListener('resize', handleResize);
-
-    // --- Cleanup ---
     return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', handleResize);
-      if (currentMount) {
-        currentMount.removeEventListener('mousemove', handleMouseMove);
-        currentMount.removeEventListener('mouseenter', handleMouseEnter);
-        currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        if (renderer.domElement) currentMount.removeChild(renderer.domElement);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
-      renderer.dispose();
-      surfaceGeometry.dispose();
-      surfaceMaterial.dispose();
-      grid.geometry.dispose();
-      (grid.material as THREE.Material).dispose();
-    };
-  }, [onPointerEnter, onPointerLeave]);
+      while (currentMount.firstChild) {
+        currentMount.removeChild(currentMount.firstChild);
+      }
+    }
+  }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

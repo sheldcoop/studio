@@ -25,11 +25,12 @@ export function TimeSeriesAnimation({
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
-    let frameId: number;
+    let animationFrameId: number;
 
     // Use requestAnimationFrame to ensure CSS variables are applied before we read them
-    const animationFrameId = requestAnimationFrame(() => {
+    animationFrameId = requestAnimationFrame(() => {
       if (!currentMount) return;
+      let frameId: number;
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
