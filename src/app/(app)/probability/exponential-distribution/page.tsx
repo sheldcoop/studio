@@ -94,7 +94,7 @@ export default function ExponentialDistributionPage() {
 
   return (
     <>
-       <Script
+      <Script
         id="mathjax-config"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
