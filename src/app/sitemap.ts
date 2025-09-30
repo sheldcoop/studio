@@ -21,19 +21,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
   }));
 
-  // Create routes for individual topic pages, filtering out placeholder/category topics
+  // Create routes for individual topic pages, filtering out only non-visitable placeholder topics.
   const topicRoutes = allTopics
     .filter(topic => {
-        // Exclude topics that are just organizational categories
+        // A topic is NOT a real page if it's just an organizational category or has no valid link.
         const isCategory = topic.category === 'parent';
-        // Exclude topics that don't have a real page
         const hasNoPage = topic.href === '#';
         
-        // This is the new, stricter logic. A topic is a "real" page if it has its own content,
-        // interactive examples, or sub-topics that are rendered on its page. Otherwise, it's just a link in a list.
-        const hasRenderableContent = !!topic.content || !!topic.interactiveExamples || (!!topic.subTopics && topic.subTopics.length > 0);
-        
-        return !isCategory && !hasNoPage && hasRenderableContent;
+        return !isCategory && !hasNoPage;
     })
     .map((topic) => ({
       url: `${URL}${topic.href}`,
