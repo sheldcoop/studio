@@ -28,14 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         const isCategory = topic.category === 'parent';
         // Exclude topics that don't have a real page
         const hasNoPage = topic.href === '#';
-        // A topic is a "real" page if it has sub-topics (like a chapter), interactive examples, or its own content.
-        // If it lacks all of these, it's likely just a link in a list.
-        const hasContent = !!topic.subTopics || !!topic.interactiveExamples || !!topic.content;
-        // The old logic was too permissive. This is a stricter check.
-        // A page is only a "parent-only" if it has children but no content of its own.
-        const isParentOnly = allTopics.some(child => child.parent === topic.id) && !hasContent;
-
-        return !isCategory && !hasNoPage && !isParentOnly;
+        
+        // This is the new, stricter logic. A topic is a "real" page if it has its own content,
+        // interactive examples, or sub-topics that are rendered on its page. Otherwise, it's just a link in a list.
+        const hasRenderableContent = !!topic.content || !!topic.interactiveExamples || (!!topic.subTopics && topic.subTopics.length > 0);
+        
+        return !isCategory && !hasNoPage && hasRenderableContent;
     })
     .map((topic) => ({
       url: `${URL}${topic.href}`,
