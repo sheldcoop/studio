@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import Script from 'next/script';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // --- Math & Simulation Logic ---
 const logNormalPdf = (x: number, mu: number, sigma: number): number => {
@@ -96,28 +96,6 @@ export default function LognormalDistributionPage() {
 
   return (
     <>
-       <Script
-        id="mathjax-config"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-        strategy="afterInteractive"
-        id="mathjax-script"
-      />
       <PageHeader
         title="Lognormal Distribution"
         description="Modeling variables that cannot be negative, like stock prices and asset values."
@@ -145,12 +123,12 @@ export default function LognormalDistributionPage() {
             </CardHeader>
             <CardContent>
                  <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  $$f(x) = \\frac{1}{x\\sigma\\sqrt{2\\pi}} \\exp\\left(-\\frac{(\\ln(x) - \\mu)^2}{2\\sigma^2}\\right)$$
+                  <BlockMath math="f(x) = \frac{1}{x\sigma\sqrt{2\pi}} \exp\left(-\frac{(\ln(x) - \mu)^2}{2\sigma^2}\right)" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><code className="font-mono bg-background px-1 rounded">$x$</code> is the variable (e.g., stock price), must be > 0.</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$\\mu$</code> (mu) is the mean of the underlying normal distribution (location parameter).</li>
-                    <li><code className="font-mono bg-background px-1 rounded">$\\sigma$</code> (sigma) is the standard deviation of the underlying normal distribution (scale parameter).</li>
+                    <li><InlineMath math="x" /> is the variable (e.g., stock price), must be > 0.</li>
+                    <li><InlineMath math="\mu" /> (mu) is the mean of the underlying normal distribution (location parameter).</li>
+                    <li><InlineMath math="\sigma" /> (sigma) is the standard deviation of the underlying normal distribution (scale parameter).</li>
                 </ul>
             </CardContent>
         </Card>
