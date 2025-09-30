@@ -43,7 +43,7 @@ export function MachineLearningAnimation({
         0.1,
         1000
       );
-      camera.position.z = 12;
+      camera.position.z = 10; // Moved camera closer to make the network larger
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
@@ -148,7 +148,7 @@ export function MachineLearningAnimation({
           mesh: particle,
           material: particle.material as THREE.MeshBasicMaterial,
           progress: Math.random(),
-          speed: 0.3 + Math.random() * 0.2,
+          speed: 0.8 + Math.random() * 0.4, // Increased speed
           path: Math.floor(Math.random() * layers[0].length)
         });
         cleanupFunctions.push(() => (particle.material as THREE.Material).dispose());
