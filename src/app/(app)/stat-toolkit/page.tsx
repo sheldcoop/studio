@@ -27,7 +27,6 @@ export default function StatToolkitPage() {
   });
   
   const hypothesisTestingTopic = allTopics.find(t => t.id === 'hypothesis-testing');
-  const demystifyingHypothesisTopic = allTopics.find(t => t.id === 'demystifying-hypothesis-testing');
 
   return (
     <>
@@ -37,19 +36,19 @@ export default function StatToolkitPage() {
       />
 
       <div className="space-y-6">
-        {demystifyingHypothesisTopic && (
+        {hypothesisTestingTopic && (
           <Card className="bg-primary/5 border-primary/20">
             <CardHeader>
-              <CardTitle className="font-headline text-xl text-primary">{demystifyingHypothesisTopic.title}</CardTitle>
+              <CardTitle className="font-headline text-xl text-primary">{hypothesisTestingTopic.title}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold">{demystifyingHypothesisTopic.description}</h3>
+                  <h3 className="font-semibold">{hypothesisTestingTopic.description}</h3>
                   <p className="text-muted-foreground">Is it a real effect or just random chance? Let's find out.</p>
                 </div>
-                <Link href={demystifyingHypothesisTopic.href} className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
-                  Read Guide <ArrowRight className="h-4 w-4" />
+                <Link href={hypothesisTestingTopic.href} className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+                  Explore Tests <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </CardContent>

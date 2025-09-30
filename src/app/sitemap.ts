@@ -23,14 +23,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
-      url: `${URL}/topics`,
+      url: `${URL}/stat-toolkit`,
       lastModified: new Date(),
     },
   ];
 
   // We filter out the 'parent' category topics as they are not actual pages
   const topicRoutes = allTopics
-    .filter(topic => topic.category !== 'parent')
+    .filter(topic => topic.category !== 'parent' && topic.href !== '#')
     .map((topic) => ({
       url: `${URL}${topic.href}`,
       lastModified: new Date(),

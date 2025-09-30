@@ -1,4 +1,5 @@
 
+
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -26,7 +27,7 @@ export default function StatToolkitPage() {
     };
   });
   
-  const hypothesisTestingTopic = allTopics.find(t => t.id === 'hypothesis-testing-p-values');
+  const hypothesisTestingTopic = allTopics.find(t => t.id === 'hypothesis-testing');
 
   return (
     <>
@@ -87,3 +88,4 @@ export default function StatToolkitPage() {
     </>
   );
 }
+

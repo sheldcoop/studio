@@ -12,19 +12,19 @@ import type { Topic } from './types';
 
 export const mainTopics: Topic[] = [
   {
-    id: 'linear-algebra-for-quantitative-finance',
+    id: 'linear-algebra',
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
-    href: '/paths/linear-algebra-for-quantitative-finance',
+    href: '/linear-algebra',
     category: 'main',
   },
   {
-    id: 'statistics-for-quantitative-finance',
+    id: 'statistics',
     title: 'Statistics',
     description: 'Quantifying uncertainty and making sense of distributions.',
     icon: Sigma,
-    href: '/paths/statistics-for-quantitative-finance',
+    href: '/statistics',
     category: 'main',
   },
   {
@@ -32,7 +32,7 @@ export const mainTopics: Topic[] = [
     title: 'Probability',
     description: 'Understanding chance and modeling random events.',
     icon: Percent,
-    href: '/topics/probability',
+    href: '/probability',
     category: 'main',
   },
   {
@@ -40,11 +40,11 @@ export const mainTopics: Topic[] = [
     title: 'Mental Math',
     description: 'Train your calculation speed and accuracy for interviews.',
     icon: BrainCircuit,
-    href: '/topics/mental-math',
+    href: '/mental-math',
     category: 'main',
   },
   {
-    id: 'time-series-analysis-for-quantitative-finance',
+    id: 'time-series-analysis',
     title: 'Time Series Analysis',
     description: 'ARIMA, GARCH, and forecasting market movements.',
     icon: LineChart,
@@ -52,7 +52,7 @@ export const mainTopics: Topic[] = [
     category: 'main',
   },
   {
-    id: 'machine-learning-for-quantitative-finance',
+    id: 'machine-learning',
     title: 'Machine Learning',
     description: 'Building predictive models for financial markets.',
     icon: Cpu,
@@ -61,7 +61,7 @@ export const mainTopics: Topic[] = [
   },
   {
     id: 'algo-trading',
-    title: 'Algorithmic Trading',
+    title: 'Algorithmic Trading Strategies',
     description: 'From strategy backtesting to live deployment.',
     icon: CandlestickChart,
     href: '/paths/algo-trading',

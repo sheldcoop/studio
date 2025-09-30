@@ -26,7 +26,7 @@ export type Topic = {
   href: string;
   icon: LucideIcon;
   description: string;
-  category: 'main' | 'sub-topic' | 'parametric' | 'non-parametric' | 'parent';
+  category: 'main' | 'sub-topic' | 'parametric' | 'non-parametric' | 'parent' | 'probability';
   parent?: string; // id of parent topic
   status?: 'completed' | 'in-progress' | 'not-started';
   duration?: number; // in minutes
