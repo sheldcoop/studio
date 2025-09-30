@@ -25,165 +25,118 @@ export function PlinkoAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let animationFrameId: number;
+    const cleanupFunctions: (() => void)[] = [];
 
-    const main = () => {
-      let frameId: number;
+    animationFrameId = requestAnimationFrame(() => {
+      if (!currentMount) return;
 
-      const computedStyle = getComputedStyle(currentMount);
+      const computedStyle = getComputedStyle(document.documentElement);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const primaryColor = new THREE.Color(primaryColorValue);
-      
+
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-      camera.position.z = 20;
+      const camera = new THREE.PerspectiveCamera(60, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+      camera.position.set(0, 5, 12);
+      camera.lookAt(0, 0, 0);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       currentMount.appendChild(renderer.domElement);
-      
-      // --- Pegs for Galton Board ---
-      const pegGroup = new THREE.Group();
-      const pegMaterial = new THREE.MeshBasicMaterial({ opacity: 0.7, transparent: true });
-      pegMaterial.color.set(primaryColor);
-      const pegGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 16);
-      pegGeometry.rotateX(Math.PI / 2); // Orient cylinders correctly
-      const rows = 10;
-      const rowSpacing = 1.5;
-      const colSpacing = 1.8;
+      cleanupFunctions.push(() => {
+        if (renderer.domElement.parentElement === currentMount) {
+            currentMount.removeChild(renderer.domElement);
+        }
+        renderer.dispose();
+      });
 
-      for (let row = 0; row < rows; row++) {
-          const numPegs = row + 1;
-          for (let col = 0; col < numPegs; col++) {
-              const peg = new THREE.Mesh(pegGeometry, pegMaterial);
-              peg.position.set(
-                  (col - (numPegs - 1) / 2) * colSpacing,
-                  (rows / 2 - row) * rowSpacing,
-                  0
-              );
-              pegGroup.add(peg);
-          }
+      // Create surface
+      const size = 20;
+      const segments = 50;
+      const geometry = new THREE.PlaneGeometry(size, size, segments, segments);
+      const positions = geometry.attributes.position.array as Float32Array;
+      cleanupFunctions.push(() => geometry.dispose());
+
+      for (let i = 0; i < positions.length; i += 3) {
+        const x = positions[i];
+        const y = positions[i + 1];
+        const dist = Math.sqrt(x * x + y * y);
+        positions[i + 2] = 3 * Math.exp(-(dist * dist) / 20);
       }
-      scene.add(pegGroup);
+      geometry.computeVertexNormals();
 
-      // --- Bins ---
-      const binGroup = new THREE.Group();
-      const binMaterial = new THREE.MeshBasicMaterial({ opacity: 0.5, transparent: true });
-      binMaterial.color.set(primaryColor);
-      const binGeometry = new THREE.BoxGeometry(colSpacing * 0.9, 0.2, 0.5);
-      const numBins = rows + 1;
-      for (let i = 0; i < numBins; i++) {
-          const bin = new THREE.Mesh(binGeometry, binMaterial);
-          bin.position.set(
-              (i - (numBins - 1) / 2) * colSpacing,
-              (rows / 2 - rows - 1) * rowSpacing,
-              0
-          );
-          binGroup.add(bin);
-      }
-      scene.add(binGroup);
-
-      // --- Particles ---
-      const particleCount = 200;
-      const particles: { mesh: THREE.Mesh; velocity: THREE.Vector3, life: number }[] = [];
-      const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-      const particleMaterial = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x818cf8) });
-
-      function createParticle() {
-          const mesh = new THREE.Mesh(particleGeometry, particleMaterial);
-          mesh.position.set((Math.random() - 0.5) * 0.5, (rows / 2 + 1) * rowSpacing, 0);
-          const velocity = new THREE.Vector3(0, -2, 0);
-          particles.push({ mesh, velocity, life: 0 });
-          scene.add(mesh);
-      }
+      const material = new THREE.MeshBasicMaterial({
+        wireframe: true,
+        transparent: true,
+      });
+      material.color.set(primaryColor);
+      const surface = new THREE.Mesh(geometry, material);
+      surface.rotation.x = -Math.PI / 2;
+      scene.add(surface);
+      cleanupFunctions.push(() => material.dispose());
 
       const clock = new THREE.Clock();
+      let rippleAmplitude = 0.3;
 
       const animate = () => {
-        frameId = requestAnimationFrame(animate);
-        const delta = clock.getDelta();
-        
-        const spawnRate = isMouseOver.current ? 5 : 1;
-        if (Math.random() < spawnRate * delta && particles.length < particleCount) {
-          createParticle();
-        }
+        animationFrameId = requestAnimationFrame(animate);
+        const time = clock.getElapsedTime();
 
-        particles.forEach((p, index) => {
-          p.life += delta;
-          p.velocity.y -= 9.8 * delta; // Gravity
-          p.mesh.position.add(p.velocity.clone().multiplyScalar(delta));
+        const targetAmplitude = isMouseOver.current ? 1.2 : 0.3;
+        rippleAmplitude += (targetAmplitude - rippleAmplitude) * 0.05;
 
-          // Bounce off pegs
-          pegGroup.children.forEach(peg => {
-              const dist = p.mesh.position.distanceTo(peg.position);
-              if (dist < 0.3) { // Collision radius
-                  const normal = p.mesh.position.clone().sub(peg.position).normalize();
-                  p.velocity.reflect(normal).multiplyScalar(0.6);
-                  p.velocity.x += (Math.random() - 0.5) * 2; // Add randomness
-              }
-          });
+        for (let i = 0; i < positions.length; i += 3) {
+          const x = positions[i];
+          const y = positions[i + 1];
+          const dist = Math.sqrt(x * x + y * y);
           
-          // Land in bins
-          if (p.mesh.position.y < (rows / 2 - rows - 0.9) * rowSpacing && p.velocity.y < 0) {
-              p.mesh.position.y = (rows / 2 - rows - 0.9) * rowSpacing;
-              p.velocity.set(0, 0, 0);
-          }
-
-          if (p.life > 15) { // Remove old particles
-              scene.remove(p.mesh);
-              particles.splice(index, 1);
-          }
-        });
+          const baseHeight = 3 * Math.exp(-(dist * dist) / 20);
+          const ripple = Math.sin(time * 2 - dist * 0.4) * rippleAmplitude;
+          
+          positions[i + 2] = baseHeight + ripple;
+        }
         
-        pegGroup.rotation.y = clock.getElapsedTime() * 0.05;
+        geometry.attributes.position.needsUpdate = true;
+        geometry.computeVertexNormals();
+
+        scene.rotation.y = time * 0.08;
 
         renderer.render(scene, camera);
       };
 
       animate();
 
+      const handleResize = () => {
+        if (currentMount) {
+            camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        }
+      };
+      window.addEventListener('resize', handleResize);
+      cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
+      
       const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
       const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
       currentMount.addEventListener('mouseenter', handleMouseEnter);
       currentMount.addEventListener('mouseleave', handleMouseLeave);
       
-      const handleResize = () => {
-        if (currentMount) {
-          camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-        }
-      };
-      window.addEventListener('resize', handleResize);
-
-      return () => {
-        cancelAnimationFrame(frameId);
-        window.removeEventListener('resize', handleResize);
-        if (currentMount) {
-          currentMount.removeEventListener('mouseenter', handleMouseEnter);
-          currentMount.removeEventListener('mouseleave', handleMouseLeave);
-          if(renderer.domElement) currentMount.removeChild(renderer.domElement);
-        }
-        renderer.dispose();
-        pegGeometry.dispose();
-        pegMaterial.dispose();
-        binGeometry.dispose();
-        binMaterial.dispose();
-        particleGeometry.dispose();
-        particleMaterial.dispose();
-      };
-    }
-    
-    animationFrameId = requestAnimationFrame(main);
+      cleanupFunctions.push(() => {
+        currentMount.removeEventListener('mouseenter', handleMouseEnter);
+        currentMount.removeEventListener('mouseleave', handleMouseLeave);
+        cancelAnimationFrame(animationFrameId);
+      });
+    });
 
     return () => {
+      cleanupFunctions.forEach(fn => fn());
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
       while (currentMount.firstChild) {
         currentMount.removeChild(currentMount.firstChild);
       }
-    }
+    };
   }, [theme, onPointerEnter, onPointerLeave]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
