@@ -5,5 +5,5 @@
 import { redirect } from 'next/navigation';
 
 export default function DeprecatedHypothesisTestingPage() {
-  redirect('/topics/statistics');
+  redirect('/hypothesis-testing-p-values');
 }
