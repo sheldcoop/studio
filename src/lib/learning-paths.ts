@@ -1,4 +1,3 @@
-
 import {
   Calculator,
   BarChart3,
@@ -79,7 +78,7 @@ export const getPathById = (id: string): LearningPath | undefined => {
     if (module.id === 'prob-dist-discrete') {
         lessons = allTopics.filter(t => ['binomial-distribution', 'poisson-distribution'].includes(t.id));
     } else if (module.id === 'prob-dist-continuous') {
-        lessons = allTopics.filter(t => ['gamma-distribution', 'beta-distribution', 'exponential-distribution', 'cauchy-distribution', 'laplace-distribution', 'lognormal-distribution', 'normal-distribution', 'f-distribution', 'students-t-distribution'].includes(t.id));
+        lessons = allTopics.filter(t => ['gamma-distribution', 'beta-distribution', 'exponential-distribution', 'cauchy-distribution', 'laplace-distribution', 'lognormal-distribution', 'normal-distribution', 'f-distribution', 'students-t-distribution', 'weibull-distribution'].includes(t.id));
     } else {
         lessons = allTopics.filter(t => t.parent === module.id);
     }

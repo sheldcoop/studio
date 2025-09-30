@@ -120,6 +120,15 @@ export const probabilityTopics: Topic[] = [
     parent: 'prob-dist-continuous',
   },
   {
+    id: 'weibull-distribution',
+    title: 'Weibull Distribution',
+    href: '/probability/weibull-distribution',
+    icon: FunctionSquare,
+    description: 'Modeling time-to-failure and event durations.',
+    category: 'probability',
+    parent: 'prob-dist-continuous',
+  },
+  {
     id: 'moment-generating-functions',
     title: 'Moment Generating Functions',
     href: '/probability/moment-generating-functions',
