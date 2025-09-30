@@ -27,85 +27,114 @@ export function TimeSeriesAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-    const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
-    const primaryColor = new THREE.Color(primaryColorValue);
+    // Use requestAnimationFrame to ensure CSS variables are applied before we read them
+    const animationFrameId = requestAnimationFrame(() => {
+      if (!currentMount) return;
+
+      const computedStyle = getComputedStyle(currentMount);
+      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
+      const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
+      const primaryColor = new THREE.Color(primaryColorValue);
 
 
-    // --- Scene setup ---
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      currentMount.clientWidth / currentMount.clientHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 8;
+      // --- Scene setup ---
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        currentMount.clientWidth / currentMount.clientHeight,
+        0.1,
+        1000
+      );
+      camera.position.z = 8;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(
-      currentMount.clientWidth,
-      currentMount.clientHeight
-    );
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    currentMount.appendChild(renderer.domElement);
-    
-    // --- Grid ---
-    const grid = new THREE.GridHelper(20, 20);
-    const gridMaterial = grid.material as THREE.LineBasicMaterial;
-    gridMaterial.color.set(primaryColor);
-    gridMaterial.transparent = true;
-    gridMaterial.opacity = 0.4;
-    grid.rotation.x = Math.PI / 2;
-    scene.add(grid);
-
-    // --- Line ---
-    const lineSegments = 200;
-    const lineGeometry = new THREE.BufferGeometry();
-    const linePositions = new Float32Array((lineSegments + 1) * 3);
-    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
-    
-    const lineMaterial = new THREE.LineBasicMaterial({
-      linewidth: 3,
-      transparent: true,
-    });
-    lineMaterial.color.set(primaryColor);
-    lineMaterial.opacity = opacityValue;
-    
-    const line = new THREE.Line(lineGeometry, lineMaterial);
-    scene.add(line);
-
-    // --- Animation & Interaction ---
-    const clock = new THREE.Clock();
-    let targetVolatility = 0.5;
-
-    const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
-
-      if (isMouseOver.current) {
-        targetVolatility = (mouse.current.y + 1) * 1.5; // Map mouse Y to volatility (0 to 3)
-      } else {
-        targetVolatility += (0.5 - targetVolatility) * 0.1; // Ease back to default
-      }
-
-      const positions = line.geometry.attributes.position.array as Float32Array;
-      for (let i = 0; i <= lineSegments; i++) {
-        const x = (i / lineSegments - 0.5) * 20;
-        const y = Math.sin(i * 0.2 + elapsedTime * 2) * targetVolatility;
-        positions[i * 3] = x;
-        positions[i * 3 + 1] = y;
-        positions[i * 3 + 2] = 0;
-      }
-      line.geometry.attributes.position.needsUpdate = true;
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(
+        currentMount.clientWidth,
+        currentMount.clientHeight
+      );
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      currentMount.appendChild(renderer.domElement);
       
-      line.rotation.y = elapsedTime * 0.05; // Slow rotation
+      // --- Grid ---
+      const grid = new THREE.GridHelper(20, 20);
+      const gridMaterial = grid.material as THREE.LineBasicMaterial;
+      gridMaterial.color.set(primaryColor);
+      gridMaterial.transparent = true;
+      gridMaterial.opacity = 0.4;
+      grid.rotation.x = Math.PI / 2;
+      scene.add(grid);
 
-      renderer.render(scene, camera);
-    };
+      // --- Line ---
+      const lineSegments = 200;
+      const lineGeometry = new THREE.BufferGeometry();
+      const linePositions = new Float32Array((lineSegments + 1) * 3);
+      lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+      
+      const lineMaterial = new THREE.LineBasicMaterial({
+        linewidth: 3,
+        transparent: true,
+      });
+      lineMaterial.color.set(primaryColor);
+      lineMaterial.opacity = opacityValue;
+      
+      const line = new THREE.Line(lineGeometry, lineMaterial);
+      scene.add(line);
 
-    animate();
+      // --- Animation & Interaction ---
+      const clock = new THREE.Clock();
+      let targetVolatility = 0.5;
+
+      const animate = () => {
+        frameId = requestAnimationFrame(animate);
+        const elapsedTime = clock.getElapsedTime();
+
+        if (isMouseOver.current) {
+          targetVolatility = (mouse.current.y + 1) * 1.5; // Map mouse Y to volatility (0 to 3)
+        } else {
+          targetVolatility += (0.5 - targetVolatility) * 0.1; // Ease back to default
+        }
+
+        const positions = line.geometry.attributes.position.array as Float32Array;
+        for (let i = 0; i <= lineSegments; i++) {
+          const x = (i / lineSegments - 0.5) * 20;
+          const y = Math.sin(i * 0.2 + elapsedTime * 2) * targetVolatility;
+          positions[i * 3] = x;
+          positions[i * 3 + 1] = y;
+          positions[i * 3 + 2] = 0;
+        }
+        line.geometry.attributes.position.needsUpdate = true;
+        
+        line.rotation.y = elapsedTime * 0.05; // Slow rotation
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
+
+      const handleResize = () => {
+        if (currentMount) {
+          camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        }
+      };
+      window.addEventListener('resize', handleResize);
+
+      // Cleanup for this specific animation frame setup
+      return () => {
+        cancelAnimationFrame(frameId);
+        window.removeEventListener('resize', handleResize);
+        if (renderer.domElement && currentMount.contains(renderer.domElement)) {
+          currentMount.removeChild(renderer.domElement);
+        }
+        renderer.dispose();
+        lineGeometry.dispose();
+        lineMaterial.dispose();
+        grid.geometry.dispose();
+        (grid.material as THREE.Material).dispose();
+      };
+    });
+
 
     // --- Event Listeners ---
     const handleMouseMove = (event: MouseEvent) => {
@@ -148,20 +177,9 @@ export function TimeSeriesAnimation({
     currentMount.addEventListener('touchmove', handleTouchMove, { passive: true });
 
 
-    // --- Resize handler ---
-    const handleResize = () => {
-      if (currentMount) {
-        camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-
-    // --- Cleanup ---
+    // --- Main Cleanup ---
     return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
       if (currentMount) {
         currentMount.removeEventListener('mousemove', handleMouseMove);
         currentMount.removeEventListener('mouseenter', handleMouseEnter);
@@ -169,13 +187,11 @@ export function TimeSeriesAnimation({
         currentMount.removeEventListener('touchstart', handleTouchStart);
         currentMount.removeEventListener('touchend', handleTouchEnd);
         currentMount.removeEventListener('touchmove', handleTouchMove);
-        if (renderer.domElement) currentMount.removeChild(renderer.domElement);
+        // Clean up any remaining children from previous renders
+        while (currentMount.firstChild) {
+            currentMount.removeChild(currentMount.firstChild);
+        }
       }
-      renderer.dispose();
-      lineGeometry.dispose();
-      lineMaterial.dispose();
-      grid.geometry.dispose();
-      (grid.material as THREE.Material).dispose();
     };
   }, [theme, onPointerEnter, onPointerLeave]);
 
