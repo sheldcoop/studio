@@ -5,14 +5,14 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 48 25% 95%;
     --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
+    --card: 48 25% 95%;
     --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
+    --popover: 48 25% 95%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 173 80% 30%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 222.2 84% 4.9%;
+    --primary-foreground: 48 25% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
@@ -23,15 +23,15 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 173 80% 30%;
-    --chart-1: 173 80% 30%;
-    --chart-2: 259 55% 52%;
-    --chart-3: 0 72.2% 50.6%;
-    --chart-4: 43.2 95.5% 53.1%;
-    --chart-5: 270 95.5% 53.1%;
+    --ring: 222.2 84% 4.9%;
+    --chart-1: 222.2 84% 4.9%;
+    --chart-2: 215.4 16.3% 46.9%;
+    --chart-3: 215.4 16.3% 56.9%;
+    --chart-4: 215.4 16.3% 66.9%;
+    --chart-5: 215.4 16.3% 76.9%;
 
     /* Animation Theme Variables */
-    --animation-primary-color: hsl(222.2 84% 4.9%);
+    --animation-primary-color: hsl(222.2, 84%, 4.9%);
     --animation-opacity: 0.85;
   }
 
