@@ -15,7 +15,8 @@ Our stack is centered around **Next.js** and **TypeScript**, a combination chose
     - **Server Components (The "Secret Sauce"):** The App Router allows us to use **React Server Components** by default. This is a revolutionary feature. It means most of our components run exclusively on the server, fetching data and rendering static content without sending any JavaScript to the user's browser. The result is a much lighter, faster experience. Only components that require user interactivity (like a button with an `onClick` handler) are marked with `'use client';` and sent to the browser. This approach gives us:
         - **Drastically Faster Load Times:** The user's browser has much less to download, parse, and execute.
         - **Better SEO:** Search engine bots can easily read the fully-formed HTML content, leading to better indexing and ranking.
-    - **Simplified Routing:** The file system itself defines the website's URL structure. The folder `src/app/(app)/topics/statistics/normal-distribution/` directly maps to the URL `/topics/statistics/normal-distribution`, making navigation intuitive to manage.
+    - **Simplified Routing:** The file system itself defines the website's URL structure. The folder `src/app/(app)/topics/statistics/` directly maps to the URL `/topics/statistics`.
+    - **Dynamic Routing with Slugs:** For pages that represent unique items from a dataset (like a specific learning path or topic), we use **dynamic segments**. A file named `src/app/(app)/paths/[slug]/page.tsx` automatically handles URLs like `/paths/linear-algebra` or `/paths/statistics-for-quantitative-finance`, where the `slug` is passed as a parameter to the page.
     - **Colocation:** All files related to a specific route—the page itself (`page.tsx`), its loading UI (`loading.tsx`), and its error UI (`error.tsx`)—can live together inside the same folder. This makes finding and managing route-specific code much easier.
 
 ### b. Language: TypeScript
@@ -30,7 +31,9 @@ Our stack is centered around **Next.js** and **TypeScript**, a combination chose
 - **What it is:** React is a JavaScript library for building user interfaces based on a **component model**.
 - **Why we use it:**
     - **Component-Based Architecture:** React allows us to break down our complex UI into small, reusable, and isolated pieces called components (e.g., `Card`, `Button`, `PageHeader`). This makes our code organized, consistent, and easy to manage. We can build a component once and reuse it everywhere, following the **DRY (Don't Repeat Yourself)** principle.
-    - **Vibrant Ecosystem:** As the most popular UI library, React has a massive ecosystem of tools and third-party libraries (like `recharts` for our charts or `react-katex` for our formulas) that accelerate development.
+    - **Vibrant Ecosystem:** As the most popular UI library, React has a massive ecosystem of tools and third-party libraries that accelerate development. Our key external libraries are:
+        - **`recharts`**: For all data visualizations and charts.
+        - **`react-katex`**: For rendering all mathematical formulas and equations consistently.
 
 ---
 
