@@ -1,3 +1,4 @@
+
 import { FunctionSquare } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -53,6 +54,15 @@ export const probabilityTopics: Topic[] = [
     href: '/probability/beta-distribution',
     icon: FunctionSquare,
     description: 'Modeling probabilities, percentages, and proportions.',
+    category: 'probability',
+    parent: 'stats-intermediate',
+  },
+  {
+    id: 'exponential-distribution',
+    title: 'Exponential Distribution',
+    href: '/probability/exponential-distribution',
+    icon: FunctionSquare,
+    description: 'Modeling the time between events in a Poisson process.',
     category: 'probability',
     parent: 'stats-intermediate',
   },
