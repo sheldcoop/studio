@@ -36,21 +36,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
-  // This webpack configuration block is what Turbopack was warning about.
-  // By moving the bundle analyzer wrapping logic here, we ensure it's
-  // only applied when we are actually running the analyze script.
-  webpack: (config, { isServer }) => {
-    if (process.env.ANALYZE === 'true' && !isServer) {
-      const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-      config.plugins.push(new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        reportFilename: '../analyze/client.html',
-        openAnalyzer: true,
-      }));
-    }
-    return config;
-  },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
