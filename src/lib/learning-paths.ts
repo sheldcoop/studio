@@ -76,9 +76,9 @@ export const getPathById = (id: string): LearningPath | undefined => {
   const pathModules = allModules.filter(m => m.parent === id).map(module => {
     let lessons: Topic[] = [];
     if (module.id === 'prob-dist-discrete') {
-        lessons = allTopics.filter(t => ['binomial-distribution', 'poisson-distribution'].includes(t.id));
+        lessons = allTopics.filter(t => t.parent === 'prob-dist-discrete');
     } else if (module.id === 'prob-dist-continuous') {
-        lessons = allTopics.filter(t => ['gamma-distribution', 'beta-distribution', 'exponential-distribution', 'cauchy-distribution', 'laplace-distribution', 'logistic-distribution', 'lognormal-distribution', 'normal-distribution', 'f-distribution', 'students-t-distribution', 'weibull-distribution'].includes(t.id));
+        lessons = allTopics.filter(t => t.parent === 'prob-dist-continuous');
     } else {
         lessons = allTopics.filter(t => t.parent === module.id);
     }
