@@ -77,13 +77,13 @@ export function PlinkoAnimation({
       cleanupFunctions.push(() => material.dispose());
 
       const clock = new THREE.Clock();
-      let rippleAmplitude = 0.2; // Start with a smaller base amplitude
+      let rippleAmplitude = 0.5;
 
       const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
 
-        const targetAmplitude = isMouseOver.current ? 0.8 : 0.2; // Reduced max amplitude
+        const targetAmplitude = isMouseOver.current ? 1.5 : 0.5;
         rippleAmplitude += (targetAmplitude - rippleAmplitude) * 0.05;
 
         for (let i = 0; i < positions.length; i += 3) {
@@ -92,7 +92,6 @@ export function PlinkoAnimation({
           const dist = Math.sqrt(x * x + y * y);
           
           const baseHeight = 3 * Math.exp(-(dist * dist) / 20);
-          // Increased frequency (dist * 0.8) for "pointier" ripples
           const ripple = Math.sin(time * 2 - dist * 0.8) * rippleAmplitude;
           
           positions[i + 2] = baseHeight + ripple;
