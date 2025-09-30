@@ -29,8 +29,8 @@ export default function RootPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex flex-1 flex-col items-center justify-center p-4 md:p-8">
-        <div className="mb-12 max-w-3xl text-center">
+      <main className="flex flex-1 flex-col items-center p-4 md:p-8">
+        <div className="my-12 max-w-3xl text-center">
           <AnimatedTagline />
           <p className="mt-4 text-lg text-muted-foreground">
             Master the core pillars of quantitative finance and data science,

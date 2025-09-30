@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useRef, type ComponentType } from 'react';
+import { useState, useRef, type ComponentType, useEffect } from 'react';
 import type { Topic } from '@/lib/topics';
 import {
   Card,
@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { useInView } from 'react-intersection-observer';
 
 
 interface AnimationProps {
@@ -27,59 +27,46 @@ interface AnimatedJourneyCardProps {
 }
 
 export function AnimatedJourneyCard({ item, AnimationComponent }: AnimatedJourneyCardProps) {
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const handlePointerEnter = () => {
-    // Trigger the load only on the first hover
-    if (!hasLoaded) {
-      setHasLoaded(true);
-    }
-  }
-  
-  const handlePointerLeave = () => {
-    // No action needed on leave anymore
-  }
-
+  const { ref, inView } = useInView({
+    triggerOnce: true, // Only trigger this once
+    threshold: 0.1, // Trigger when 10% of the element is visible
+  });
 
   return (
     <div
-      ref={cardRef}
+      ref={ref}
       key={item.id}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
-      className="group relative rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <Link href={item.href} className="h-full w-full">
         <Card className="flex h-full transform-gpu flex-col overflow-hidden bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
-          <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-            {hasLoaded ? (
-              <AnimationComponent
-                onPointerEnter={() => {}}
-                onPointerLeave={() => {}}
-              />
-            ) : (
-                <Skeleton className="h-full w-full" />
-            )}
-          </div>
-          <div className="relative z-10 flex h-full flex-col justify-between p-6 opacity-100 transition-opacity duration-500 group-hover:opacity-0">
-            <div>
-              <div className="mb-4">
-                <item.icon
-                  className='h-8 w-8 text-primary'
-                />
-              </div>
-              <CardTitle
-                className='font-headline text-xl'
-              >
-                {item.title}
-              </CardTitle>
+          <div className="flex h-full">
+            {/* Text Content Area */}
+            <div className="flex w-1/2 flex-col justify-between p-6">
+                 <div>
+                    <div className="mb-4">
+                        <item.icon className="h-8 w-8 text-primary" />
+                    </div>
+                    <CardTitle className="font-headline text-xl">
+                        {item.title}
+                    </CardTitle>
+                 </div>
+                <CardDescription className="text-muted-foreground">
+                    {item.description}
+                </CardDescription>
             </div>
-            <CardDescription
-              className='text-muted-foreground'
-            >
-              {item.description}
-            </CardDescription>
+
+            {/* Animation Area */}
+            <div className="relative w-1/2">
+                {inView ? (
+                    <AnimationComponent
+                        onPointerEnter={() => {}}
+                        onPointerLeave={() => {}}
+                    />
+                ) : (
+                    <Skeleton className="h-full w-full" />
+                )}
+            </div>
           </div>
         </Card>
       </Link>
