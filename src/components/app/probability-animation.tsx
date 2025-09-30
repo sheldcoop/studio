@@ -24,8 +24,8 @@ export function ProbabilityAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColor = new THREE.Color(computedStyle.getPropertyValue('--animation-primary').trim());
+    const isDark = document.documentElement.classList.contains('dark');
+    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
     
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);

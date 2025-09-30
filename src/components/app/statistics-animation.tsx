@@ -50,8 +50,8 @@ export function StatisticsAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColor = new THREE.Color(computedStyle.getPropertyValue('--animation-primary').trim());
+    const isDark = document.documentElement.classList.contains('dark');
+    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
 
     // --- Scene setup ---
     const scene = new THREE.Scene();

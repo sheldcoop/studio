@@ -24,8 +24,8 @@ export function LinearAlgebraAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColor = computedStyle.getPropertyValue('--animation-primary').trim();
+    const isDark = document.documentElement.classList.contains('dark');
+    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
@@ -47,7 +47,7 @@ export function LinearAlgebraAnimation({
     scene.add(gridGroup);
     
     const pointCloudMaterial = new THREE.PointsMaterial({
-        color: new THREE.Color(primaryColor),
+        color: primaryColor,
         size: 0.25,
         transparent: true,
         opacity: 0.9,

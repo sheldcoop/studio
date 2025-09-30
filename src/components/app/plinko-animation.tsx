@@ -44,9 +44,8 @@ export function ProbabilityAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColor = computedStyle.getPropertyValue('--animation-primary').trim();
-    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = document.documentElement.classList.contains('dark');
+    const primaryColor = isDark ? '#00ffaa' : '#666666';
     const dieBg = isDark ? '#222' : '#FFF';
     const dieFg = primaryColor;
 

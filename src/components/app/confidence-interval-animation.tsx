@@ -25,10 +25,8 @@ export function ConfidenceIntervalAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
-    const computedStyle = getComputedStyle(currentMount);
-    const primaryColor = new THREE.Color(
-      computedStyle.getPropertyValue('--animation-primary').trim()
-    );
+    const isDark = document.documentElement.classList.contains('dark');
+    const primaryColor = new THREE.Color(isDark ? 0x00ffaa : 0x666666);
 
     const particleMaterial = new THREE.PointsMaterial({
         color: primaryColor,
