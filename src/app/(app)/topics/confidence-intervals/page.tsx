@@ -19,6 +19,7 @@ import { inverseStandardNormalCdf } from '@/lib/math';
 import { AlertTriangle, FunctionSquare, Calculator } from 'lucide-react';
 import Link from 'next/link';
 import { allTopics } from '@/lib/curriculum';
+import { BlockMath } from 'react-katex';
 
 function ConfidenceIntervalCalculator() {
   const [sampleMean, setSampleMean] = useState(100);
@@ -177,13 +178,9 @@ export default function ConfidenceIntervalsPage() {
         
         <div className="text-center my-8">
           <h2 className="font-headline text-2xl font-bold">The Formula</h2>
-          <div className="rounded-lg border bg-muted/50 p-4 mt-4">
-              <p className="font-mono text-center text-lg bg-background p-2 rounded-md mb-4">
-                CI = Sample Mean ± (Z-score * Standard Error)
-              </p>
-              <p className="font-mono text-center text-md bg-background p-2 rounded-md">
-                Standard Error = Standard Deviation / √Sample Size
-              </p>
+          <div className="rounded-lg border bg-muted/50 p-4 mt-4 space-y-2">
+              <BlockMath math="CI = \bar{x} \pm Z \cdot \frac{\sigma}{\sqrt{n}}" />
+              <BlockMath math="\text{Standard Error} = \frac{\sigma}{\sqrt{n}}" />
           </div>
         </div>
 
