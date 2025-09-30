@@ -1,5 +1,4 @@
 
-/*
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -22,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Lightbulb, TrendingDown, ShieldCheck, Play, Pause, Plus, RefreshCw } from 'lucide-react';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import Script from 'next/script';
+import { BlockMath } from 'react-katex';
 import Link from 'next/link';
 
 
@@ -177,30 +176,6 @@ export default function MonteCarloSimulationPage() {
 
   return (
     <>
-      <>
-        <Script
-            id="mathjax-config"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-            __html: `
-                window.MathJax = {
-                tex: {
-                    inlineMath: [['$', '$'], ['\\(', '\\)']],
-                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                },
-                svg: {
-                    fontCache: 'global'
-                }
-                };
-            `,
-            }}
-        />
-        <Script
-            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-            strategy="afterInteractive"
-            id="mathjax-script"
-        />
-      </>
       <div className="mx-auto max-w-5xl space-y-8">
         <PageHeader
           title="Monte Carlo Simulation for Risk Management"
@@ -219,7 +194,7 @@ export default function MonteCarloSimulationPage() {
                 The future is uncertain. You can't give a single, definitive answer. This is where Monte Carlo simulation comes in. Instead of predicting one future, you simulate thousands of possible futures.
             </p>
             <p>
-                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or $\mu$) and its annual volatility (the 'randomness' or $\sigma$). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
+                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or $\\mu$) and its annual volatility (the 'randomness' or $\\sigma$). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
             </p>
           </CardContent>
         </Card>
@@ -231,7 +206,7 @@ export default function MonteCarloSimulationPage() {
             <CardContent className="space-y-4">
                  <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion, a standard way to model stock prices. The formula for the portfolio's value at the end of the period is:</p>
                 <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                    $$S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right)$$
+                    <BlockMath math="S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right)" />
                 </div>
                  <p className="text-muted-foreground">Once we have thousands of simulated final values ($S_T$), we can calculate the 95% VaR by finding the 5th percentile of our results. This is the value that separates the worst 5% of outcomes from the best 95%.</p>
             </CardContent>
@@ -305,12 +280,4 @@ export default function MonteCarloSimulationPage() {
       </div>
     </>
   );
-}
-*/
-export default function MonteCarloSimulationPage() {
-    return (
-        <div className="flex h-96 items-center justify-center rounded-lg border border-dashed mt-8">
-            <p className="text-muted-foreground">This page is temporarily disabled for maintenance.</p>
-        </div>
-    );
 }
