@@ -169,5 +169,3 @@ export function StatisticsAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
-
-    

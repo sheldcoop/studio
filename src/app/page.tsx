@@ -16,10 +16,11 @@ const animationComponents = {
   'linear-algebra-for-quantitative-finance': dynamic(() => import('@/components/app/linear-algebra-animation').then(mod => mod.LinearAlgebraAnimation), { loading: () => <AnimationLoader />, ssr: false }),
   'mental-math': dynamic(() => import('@/components/app/mental-math-animation').then(mod => mod.MentalMathAnimation), { loading: () => <AnimationLoader />, ssr: false }),
   'time-series-analysis-for-quantitative-finance': dynamic(() => import('@/components/app/time-series-animation').then(mod => mod.TimeSeriesAnimation), { loading: () => <AnimationLoader />, ssr: false }),
-  'statistics-for-quantitative-finance': dynamic(() => import('@/components/app/statistics-animation').then(mod => mod.StatisticsAnimation), { loading: () => <AnimationLoader />, ssr: false }),
+  'statistics': dynamic(() => import('@/components/app/statistics-animation').then(mod => mod.StatisticsAnimation), { loading: () => <AnimationLoader />, ssr: false }),
   'machine-learning-for-quantitative-finance': dynamic(() => import('@/components/app/machine-learning-animation').then(mod => mod.MachineLearningAnimation), { loading: () => <AnimationLoader />, ssr: false }),
   'stat-toolkit': dynamic(() => import('@/components/app/confidence-interval-animation').then(mod => mod.ConfidenceIntervalAnimation), { loading: () => <AnimationLoader />, ssr: false }),
   'probability': dynamic(() => import('@/components/app/probability-animation').then(mod => mod.ProbabilityAnimation), { loading: () => <AnimationLoader />, ssr: false }),
+  'probability-toolkit': dynamic(() => import('@/components/app/probability-animation').then(mod => mod.ProbabilityAnimation), { loading: () => <AnimationLoader />, ssr: false }),
 };
 
 
