@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -87,14 +88,14 @@ export function MentalMathAnimation({
           (Math.random() - 0.5) * 15
         );
 
-        const size = 0.3 + Math.random() * 0.4;
+        const size = 0.2 + Math.random() * 0.8;
         sprite.scale.set(size, size, 1);
 
         sprite.userData = {
           velocity: new THREE.Vector3(
-            (Math.random() - 0.5) * 0.02,
-            (Math.random() - 0.5) * 0.02,
-            (Math.random() - 0.5) * 0.02
+            (Math.random() - 0.5) * 0.04,
+            (Math.random() - 0.5) * 0.04,
+            (Math.random() - 0.5) * 0.04
           ),
           rotationSpeed: (Math.random() - 0.5) * 0.02,
         };
