@@ -18,7 +18,6 @@ export function MachineLearningAnimation({
   onPointerLeave,
 }: MachineLearningAnimationProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
   const { theme } = useTheme();
 
@@ -29,12 +28,14 @@ export function MachineLearningAnimation({
 
     const cleanupFunctions: (() => void)[] = [];
 
-    const timeoutId = setTimeout(() => {
+    // Wrap in requestAnimationFrame to ensure CSS variables are ready
+    animationFrameId = requestAnimationFrame(() => {
       if (!currentMount) return;
 
       const computedStyle = getComputedStyle(document.documentElement);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
+      const primaryColor = new THREE.Color(primaryColorValue);
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
@@ -43,7 +44,7 @@ export function MachineLearningAnimation({
         0.1,
         1000
       );
-      camera.position.z = 12;
+      camera.position.set(0, 0, 10);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
@@ -56,96 +57,98 @@ export function MachineLearningAnimation({
         renderer.dispose();
       });
 
-      const sprites: THREE.Sprite[] = [];
-      const symbols = ['0', '1']; // Using binary to represent machine learning data
-      const particleCount = 150;
+      const networkGroup = new THREE.Group();
+      scene.add(networkGroup);
+      
+      const nodeMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, transparent: true, opacity: opacityValue * 0.8 });
+      const nodeGeometry = new THREE.SphereGeometry(0.2, 16, 16);
 
-      for (let i = 0; i < particleCount; i++) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 128;
-        canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        
-        if (ctx) {
-          ctx.fillStyle = primaryColorValue;
-          ctx.font = 'bold 90px "Courier New", Courier, monospace';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(symbols[Math.floor(Math.random() * symbols.length)], 64, 64);
+      const lineMaterial = new THREE.LineBasicMaterial({ color: primaryColor, transparent: true, opacity: opacityValue * 0.3 });
+
+      const layers = [4, 5, 5, 3]; // Input, 2 Hidden, Output
+      const layerSpacing = 4;
+      const nodeSpacing = 2;
+      const nodes: THREE.Mesh[][] = [];
+      
+      // Create nodes
+      layers.forEach((nodeCount, layerIndex) => {
+        const layerNodes: THREE.Mesh[] = [];
+        const x = (layerIndex - (layers.length - 1) / 2) * layerSpacing;
+        for (let i = 0; i < nodeCount; i++) {
+          const y = (i - (nodeCount - 1) / 2) * nodeSpacing;
+          const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
+          node.position.set(x, y, 0);
+          networkGroup.add(node);
+          layerNodes.push(node);
         }
+        nodes.push(layerNodes);
+      });
 
-        const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.SpriteMaterial({
-          map: texture,
-          transparent: true,
-          opacity: opacityValue * 0.8,
-        });
-        const sprite = new THREE.Sprite(material);
-
-        sprite.position.set(
-          (Math.random() - 0.5) * 25,
-          (Math.random() - 0.5) * 15,
-          (Math.random() - 0.5) * 15
-        );
-
-        const size = 0.2 + Math.random() * 0.9;
-        sprite.scale.set(size, size, 1);
-
-        sprite.userData = {
-          velocity: new THREE.Vector3(
-            (Math.random() - 0.5) * 0.04,
-            (Math.random() - 0.5) * 0.04,
-            (Math.random() - 0.5) * 0.04
-          ),
-        };
-
-        scene.add(sprite);
-        sprites.push(sprite);
+      // Create lines
+      for (let i = 0; i < nodes.length - 1; i++) {
+        for (const node1 of nodes[i]) {
+          for (const node2 of nodes[i + 1]) {
+            const geometry = new THREE.BufferGeometry().setFromPoints([node1.position, node2.position]);
+            const line = new THREE.Line(geometry, lineMaterial);
+            networkGroup.add(line);
+            cleanupFunctions.push(() => geometry.dispose());
+          }
+        }
       }
       
       cleanupFunctions.push(() => {
-        sprites.forEach((sprite) => {
-          sprite.material.map?.dispose();
-          sprite.material.dispose();
-        });
+          nodeGeometry.dispose();
+          nodeMaterial.dispose();
+          lineMaterial.dispose();
       });
 
+      // Create pulses
+      const pulseGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+      const pulseMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, transparent: true, opacity: opacityValue });
+      const pulses: { mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3, progress: number, speed: number }[] = [];
+      const pulseCount = 50;
+
+      for (let i = 0; i < pulseCount; i++) {
+        const mesh = new THREE.Mesh(pulseGeometry, pulseMaterial);
+        pulses.push({ mesh, start: new THREE.Vector3(), end: new THREE.Vector3(), progress: 1, speed: 0 });
+        scene.add(mesh);
+      }
+      cleanupFunctions.push(() => {
+          pulseGeometry.dispose();
+          pulseMaterial.dispose();
+      });
+
+      const resetPulse = (pulse: typeof pulses[0]) => {
+        const startLayerIndex = Math.floor(Math.random() * (layers.length - 1));
+        const endLayerIndex = startLayerIndex + 1;
+        const startNode = nodes[startLayerIndex][Math.floor(Math.random() * nodes[startLayerIndex].length)];
+        const endNode = nodes[endLayerIndex][Math.floor(Math.random() * nodes[endLayerIndex].length)];
+        
+        pulse.start.copy(startNode.position);
+        pulse.end.copy(endNode.position);
+        pulse.progress = 0;
+        pulse.speed = 0.5 + Math.random() * 0.8;
+      };
+
+      pulses.forEach(resetPulse);
+
       const clock = new THREE.Clock();
-      let interactionStrength = 0;
 
       const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
-        const elapsedTime = clock.getElapsedTime();
+        const delta = clock.getDelta();
 
-        if (isMouseOver.current) {
-          interactionStrength += (1 - interactionStrength) * 0.05;
-        } else {
-          interactionStrength += (0 - interactionStrength) * 0.05;
-        }
+        networkGroup.rotation.y += 0.0005;
+        networkGroup.rotation.x += 0.0005;
 
-        sprites.forEach((sprite) => {
-          sprite.position.add(sprite.userData.velocity);
+        const pulseSpeedMultiplier = isMouseOver.current ? 4 : 1;
 
-          if (isMouseOver.current && interactionStrength > 0.1) {
-            const mousePos = new THREE.Vector3(mouse.current.x * 12, mouse.current.y * 7, 0);
-            const direction = sprite.position.clone().sub(mousePos);
-            const distance = direction.length();
-
-            if (distance < 4) {
-              direction.normalize();
-              const force = (1 - distance / 4) * 0.15 * interactionStrength;
-              sprite.position.add(direction.multiplyScalar(force));
-            }
+        pulses.forEach(pulse => {
+          pulse.progress += pulse.speed * delta * pulseSpeedMultiplier;
+          if (pulse.progress >= 1) {
+            resetPulse(pulse);
           }
-
-          // Wrap around screen edges
-          if (Math.abs(sprite.position.x) > 12) sprite.position.x *= -1;
-          if (Math.abs(sprite.position.y) > 7) sprite.position.y *= -1;
-          if (Math.abs(sprite.position.z) > 7) sprite.position.z *= -1;
-
-          // Pulsing scale
-          const pulse = 1 + Math.sin(elapsedTime * 3 + sprite.position.y) * 0.1;
-          sprite.scale.x = sprite.scale.y * pulse;
+          pulse.mesh.position.lerpVectors(pulse.start, pulse.end, pulse.progress);
         });
 
         renderer.render(scene, camera);
@@ -153,54 +156,13 @@ export function MachineLearningAnimation({
 
       animate();
 
-      const handleMouseMove = (event: MouseEvent) => {
-        if (currentMount) {
-          const rect = currentMount.getBoundingClientRect();
-          mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-          mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
-        }
-      };
-
       const handleMouseEnter = () => { isMouseOver.current = true; onPointerEnter(); };
       const handleMouseLeave = () => { isMouseOver.current = false; onPointerLeave(); };
-
-      const handleTouchStart = (event: TouchEvent) => {
-        isMouseOver.current = true;
-        onPointerEnter();
-        if (event.touches.length > 0 && currentMount) {
-          const touch = event.touches[0];
-          const rect = currentMount.getBoundingClientRect();
-          mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-          mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
-        }
-      };
       
-      const handleTouchEnd = () => { isMouseOver.current = false; onPointerLeave(); };
-
-      const handleTouchMove = (event: TouchEvent) => {
-        if (event.touches.length > 0 && currentMount) {
-          const touch = event.touches[0];
-          const rect = currentMount.getBoundingClientRect();
-          mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-          mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
-        }
-      };
-      
-      currentMount.addEventListener('mousemove', handleMouseMove);
       currentMount.addEventListener('mouseenter', handleMouseEnter);
       currentMount.addEventListener('mouseleave', handleMouseLeave);
-      currentMount.addEventListener('touchstart', handleTouchStart, { passive: true });
-      currentMount.addEventListener('touchend', handleTouchEnd);
-      currentMount.addEventListener('touchmove', handleTouchMove, { passive: true });
-      
-      cleanupFunctions.push(() => {
-        currentMount.removeEventListener('mousemove', handleMouseMove);
-        currentMount.removeEventListener('mouseenter', handleMouseEnter);
-        currentMount.removeEventListener('mouseleave', handleMouseLeave);
-        currentMount.removeEventListener('touchstart', handleTouchStart);
-        currentMount.removeEventListener('touchend', handleTouchEnd);
-        currentMount.removeEventListener('touchmove', handleTouchMove);
-      });
+      currentMount.addEventListener('touchstart', handleMouseEnter, { passive: true });
+      currentMount.addEventListener('touchend', handleMouseLeave);
 
       const handleResize = () => {
         if (currentMount) {
@@ -210,14 +172,18 @@ export function MachineLearningAnimation({
         }
       };
       window.addEventListener('resize', handleResize);
-      cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
       
-      cleanupFunctions.push(() => cancelAnimationFrame(animationFrameId));
-
-    }, 10);
+      cleanupFunctions.push(() => {
+          currentMount.removeEventListener('mouseenter', handleMouseEnter);
+          currentMount.removeEventListener('mouseleave', handleMouseLeave);
+          currentMount.removeEventListener('touchstart', handleMouseEnter);
+          currentMount.removeEventListener('touchend', handleMouseLeave);
+          window.removeEventListener('resize', handleResize);
+          cancelAnimationFrame(animationFrameId);
+      });
+    });
 
     return () => {
-      clearTimeout(timeoutId);
       cleanupFunctions.forEach(fn => fn());
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
