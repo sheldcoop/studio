@@ -1,4 +1,3 @@
-
 import { FunctionSquare } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -65,6 +64,15 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling the time between events in a Poisson process.',
     category: 'probability',
     parent: 'stats-intermediate',
+  },
+  {
+    id: 'cauchy-distribution',
+    title: 'Cauchy Distribution',
+    href: '/probability/cauchy-distribution',
+    icon: FunctionSquare,
+    description: "Modeling extreme events and 'fat-tailed' phenomena.",
+    category: 'probability',
+    parent: 'stats-advanced',
   },
   {
     id: 'moment-generating-functions',
