@@ -11,16 +11,16 @@ interface ProbabilityAnimationProps {
   onPointerLeave: () => void;
 }
 
-const createDieFaceMaterial = (dots: { x: number; y: number }[]) => {
+const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string, bgColor: string) => {
   const canvas = document.createElement('canvas');
   canvas.width = 128;
   canvas.height = 128;
   const context = canvas.getContext('2d');
   if (!context) return new THREE.MeshStandardMaterial({ color: 0x111111 });
 
-  context.fillStyle = '#333';
+  context.fillStyle = bgColor;
   context.fillRect(0, 0, 128, 128);
-  context.fillStyle = '#22c55e';
+  context.fillStyle = fgColor;
   dots.forEach((dot) => {
     context.beginPath();
     context.arc(dot.x, dot.y, 10, 0, Math.PI * 2);
@@ -39,30 +39,25 @@ export function ProbabilityAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
 
-  // Use useMemo to prevent recreating materials on every render
-  const dieMaterials = useMemo(() => {
-    const dotsConfig = [
-        [{ x: 64, y: 64 }], // 1
-        [{ x: 32, y: 32 }, { x: 96, y: 96 }], // 2
-        [{ x: 32, y: 32 }, { x: 64, y: 64 }, { x: 96, y: 96 }], // 3
-        [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 4
-        [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 64, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 5
-        [{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 96 }], // 6
-    ];
-    return [
-      createDieFaceMaterial(dotsConfig[3]),
-      createDieFaceMaterial(dotsConfig[2]),
-      createDieFaceMaterial(dotsConfig[4]),
-      createDieFaceMaterial(dotsConfig[1]),
-      createDieFaceMaterial(dotsConfig[0]),
-      createDieFaceMaterial(dotsConfig[5]),
-    ];
-  }, []);
-
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let frameId: number;
+
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColor = computedStyle.getPropertyValue('--animation-primary').trim();
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const dieBg = isDark ? '#222' : '#FFF';
+    const dieFg = primaryColor;
+
+    const dieMaterials = [
+        createDieFaceMaterial([{ x: 64, y: 64 }], dieFg, dieBg), // 1
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }], dieFg, dieBg), // 2
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 64, y: 64 }, { x: 96, y: 96 }], dieFg, dieBg), // 3
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 32, y: 96 }, { x: 96, y: 96 }], dieFg, dieBg), // 4
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 64, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 96 }], dieFg, dieBg), // 5
+        createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 32 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 96 }], dieFg, dieBg), // 6
+    ];
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
@@ -96,10 +91,8 @@ export function ProbabilityAnimation({
       const delta = clock.getDelta();
 
       if (isMouseOver.current) {
-        // Slow down to a stop
         angularVelocity.multiplyScalar(0.95);
       } else {
-        // Maintain a minimum speed
         if (angularVelocity.length() < 0.5) {
              angularVelocity.set(
                 (Math.random() - 0.5) * 2,
@@ -107,7 +100,7 @@ export function ProbabilityAnimation({
                 (Math.random() - 0.5) * 2
              );
         }
-         angularVelocity.multiplyScalar(0.99); // Slow damping
+         angularVelocity.multiplyScalar(0.99);
       }
       
       die.rotation.x += angularVelocity.x * delta;

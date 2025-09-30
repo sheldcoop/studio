@@ -24,6 +24,9 @@ export function ProbabilityAnimation({
     const currentMount = mountRef.current;
     let frameId: number;
 
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColor = new THREE.Color(computedStyle.getPropertyValue('--animation-primary').trim());
+    
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
     camera.position.z = 20;
@@ -35,7 +38,7 @@ export function ProbabilityAnimation({
     
     // --- Pegs for Galton Board ---
     const pegGroup = new THREE.Group();
-    const pegMaterial = new THREE.MeshBasicMaterial({ color: 0x22c55e, opacity: 0.6, transparent: true });
+    const pegMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, opacity: 0.6, transparent: true });
     const pegGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 16);
     pegGeometry.rotateX(Math.PI / 2); // Orient cylinders correctly
     const rows = 10;
@@ -58,7 +61,7 @@ export function ProbabilityAnimation({
 
     // --- Bins ---
     const binGroup = new THREE.Group();
-    const binMaterial = new THREE.MeshBasicMaterial({ color: 0x22c55e, opacity: 0.4, transparent: true });
+    const binMaterial = new THREE.MeshBasicMaterial({ color: primaryColor, opacity: 0.4, transparent: true });
     const binGeometry = new THREE.BoxGeometry(colSpacing * 0.9, 0.2, 0.5);
     const numBins = rows + 1;
     for (let i = 0; i < numBins; i++) {
@@ -76,7 +79,7 @@ export function ProbabilityAnimation({
     const particleCount = 200;
     const particles: { mesh: THREE.Mesh; velocity: THREE.Vector3, life: number }[] = [];
     const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0x818cf8 });
+    const particleMaterial = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x818cf8) });
 
     function createParticle() {
         const mesh = new THREE.Mesh(particleGeometry, particleMaterial);

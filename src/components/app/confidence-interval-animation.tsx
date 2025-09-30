@@ -20,28 +20,26 @@ export function ConfidenceIntervalAnimation({
   const mouse = useRef({ x: 0, y: 0 });
   const isMouseOver = useRef(false);
 
-  const particleMaterial = useMemo(
-    () =>
-      new THREE.PointsMaterial({
-        color: 0x22c55e,
-        size: 0.2, // Increased size
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        opacity: 0.95, // Increased opacity
-        sizeAttenuation: true,
-      }),
-    []
-  );
-
-  const axisMaterial = useMemo(
-    () => new THREE.LineBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0 }),
-    []
-  );
-
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
     let frameId: number;
+
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColor = new THREE.Color(
+      computedStyle.getPropertyValue('--animation-primary').trim()
+    );
+
+    const particleMaterial = new THREE.PointsMaterial({
+        color: primaryColor,
+        size: 0.2,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        opacity: 0.95,
+        sizeAttenuation: true,
+      });
+
+    const axisMaterial = new THREE.LineBasicMaterial({ color: primaryColor, transparent: true, opacity: 0 });
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -61,17 +59,16 @@ export function ConfidenceIntervalAnimation({
     scene.add(orbGroup);
 
     // --- Particles ---
-    const particleCount = 1500; // Increased particle count
+    const particleCount = 1500;
     const particlesGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const particleData = [];
 
-    const sphereRadius = 7; // Increased sphere radius
+    const sphereRadius = 7;
     for (let i = 0; i < particleCount; i++) {
       const theta = Math.random() * 2 * Math.PI;
       const phi = Math.acos(2 * Math.random() - 1);
       
-      // Store original spherical coordinates
       particleData.push({
         theta,
         phi,
@@ -104,26 +101,22 @@ export function ConfidenceIntervalAnimation({
       const delta = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
 
-      // --- Update Interaction State ---
       const targetCorrelation = isMouseOver.current ? 1 : 0;
-      correlationFactor += (targetCorrelation - correlationFactor) * 0.1; // Faster transition
+      correlationFactor += (targetCorrelation - correlationFactor) * 0.1;
 
-      (axisLine.material as THREE.LineBasicMaterial).opacity = correlationFactor * 0.9; // Brighter axis
+      (axisLine.material as THREE.LineBasicMaterial).opacity = correlationFactor * 0.9;
 
-      // --- Update Particle Positions ---
       const currentPositions = particleSystem.geometry.getAttribute('position') as THREE.BufferAttribute;
       for (let i = 0; i < particleCount; i++) {
         const { theta, phi, randomSpeed } = particleData[i];
 
-        // State 1: Random drift on sphere surface
         const randomX = sphereRadius * Math.sin(phi) * Math.cos(theta + elapsedTime * randomSpeed * 0.3);
         const randomY = sphereRadius * Math.sin(phi) * Math.sin(theta + elapsedTime * randomSpeed * 0.3);
         const randomZ = sphereRadius * Math.cos(phi);
 
-        // State 2: Correlated ellipse
         const ellipseAngle = elapsedTime * 0.8 + i * 0.1;
         const ellipseRadiusX = sphereRadius * Math.sin(phi);
-        const ellipseRadiusY = sphereRadius * Math.sin(phi) * 0.2; // Tighter ellipse for more drama
+        const ellipseRadiusY = sphereRadius * Math.sin(phi) * 0.2;
         
         const axis = new THREE.Vector3(0.5, 1, 0).normalize();
         const ellipsePoint = new THREE.Vector3(
@@ -133,7 +126,6 @@ export function ConfidenceIntervalAnimation({
         );
         ellipsePoint.applyAxisAngle(axis, Math.PI / 4);
 
-        // Interpolate between states
         const currentVec = new THREE.Vector3(currentPositions.getX(i), currentPositions.getY(i), currentPositions.getZ(i));
         const randomVec = new THREE.Vector3(randomX, randomY, randomZ);
         const correlatedVec = ellipsePoint;
@@ -145,7 +137,6 @@ export function ConfidenceIntervalAnimation({
       }
       currentPositions.needsUpdate = true;
 
-      // --- Update Group Rotation ---
       targetRotation.y = -mouse.current.x * 0.5;
       targetRotation.x = mouse.current.y * 0.5;
       
@@ -157,7 +148,6 @@ export function ConfidenceIntervalAnimation({
 
     animate();
 
-    // --- Event Listeners ---
     const handleMouseMove = (event: MouseEvent) => {
       if (currentMount) {
         const rect = currentMount.getBoundingClientRect();
@@ -181,7 +171,6 @@ export function ConfidenceIntervalAnimation({
     };
     window.addEventListener('resize', handleResize);
 
-    // --- Cleanup ---
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);

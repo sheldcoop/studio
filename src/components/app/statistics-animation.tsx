@@ -50,6 +50,9 @@ export function StatisticsAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColor = new THREE.Color(computedStyle.getPropertyValue('--animation-primary').trim());
+
     // --- Scene setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -71,7 +74,7 @@ export function StatisticsAnimation({
     scene.add(group);
 
     // Grid
-    const grid = new THREE.GridHelper(20, 20, 0x22c55e, 0x22c55e);
+    const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
     grid.material.transparent = true;
     grid.material.opacity = 0.3;
     group.add(grid);
@@ -79,9 +82,9 @@ export function StatisticsAnimation({
     // Surface
     const surfaceGeometry = createGaussianSurface(10, 10, 50);
     const surfaceMaterial = new THREE.MeshStandardMaterial({
-      color: 0x22c55e,
+      color: primaryColor,
       wireframe: true,
-      emissive: 0x22c55e,
+      emissive: primaryColor,
       emissiveIntensity: 0.3,
       transparent: true,
       opacity: 0.9,
@@ -162,7 +165,7 @@ export function StatisticsAnimation({
       surfaceGeometry.dispose();
       surfaceMaterial.dispose();
       grid.geometry.dispose();
-      grid.material.dispose();
+      (grid.material as THREE.Material).dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

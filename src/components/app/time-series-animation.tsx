@@ -24,6 +24,9 @@ export function TimeSeriesAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColor = new THREE.Color(computedStyle.getPropertyValue('--animation-primary').trim());
+
     // --- Scene setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -43,7 +46,7 @@ export function TimeSeriesAnimation({
     currentMount.appendChild(renderer.domElement);
     
     // --- Grid ---
-    const grid = new THREE.GridHelper(20, 20, 0x22c55e, 0x22c55e);
+    const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
     grid.material.transparent = true;
     grid.material.opacity = 0.3;
     grid.rotation.x = Math.PI / 2;
@@ -56,7 +59,7 @@ export function TimeSeriesAnimation({
     lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
     
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x22c55e,
+      color: primaryColor,
       linewidth: 3,
       transparent: true,
       opacity: 0.9
@@ -165,7 +168,7 @@ export function TimeSeriesAnimation({
       lineGeometry.dispose();
       lineMaterial.dispose();
       grid.geometry.dispose();
-      grid.material.dispose();
+      (grid.material as THREE.Material).dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 
@@ -19,23 +19,22 @@ export function MentalMathAnimation({
   const mountRef = useRef<HTMLDivElement>(null);
   const isMouseOver = useRef(false);
 
-  const particlesMaterial = useMemo(
-    () =>
-      new THREE.PointsMaterial({
-        color: 0x22c55e,
+  useEffect(() => {
+    if (!mountRef.current) return;
+    const currentMount = mountRef.current;
+    let frameId: number;
+
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColor = new THREE.Color(computedStyle.getPropertyValue('--animation-primary').trim());
+
+    const particlesMaterial = new THREE.PointsMaterial({
+        color: primaryColor,
         size: 0.1,
         blending: THREE.AdditiveBlending,
         transparent: true,
         opacity: 0.8,
         sizeAttenuation: true,
-      }),
-    []
-  );
-
-  useEffect(() => {
-    if (!mountRef.current) return;
-    const currentMount = mountRef.current;
-    let frameId: number;
+      });
 
     // --- Scene Setup ---
     const scene = new THREE.Scene();
@@ -177,7 +176,7 @@ export function MentalMathAnimation({
       particlesGeometry.dispose();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [particlesMaterial]);
+  }, []);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

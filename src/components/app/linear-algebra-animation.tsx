@@ -24,6 +24,9 @@ export function LinearAlgebraAnimation({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
+    const computedStyle = getComputedStyle(currentMount);
+    const primaryColor = computedStyle.getPropertyValue('--animation-primary').trim();
+
     // --- Scene setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -43,10 +46,8 @@ export function LinearAlgebraAnimation({
     const gridGroup = new THREE.Group();
     scene.add(gridGroup);
     
-    const gridSize = 10;
-    const gridDivisions = 10;
     const pointCloudMaterial = new THREE.PointsMaterial({
-        color: 0x22c55e,
+        color: new THREE.Color(primaryColor),
         size: 0.25,
         transparent: true,
         opacity: 0.9,
@@ -54,6 +55,8 @@ export function LinearAlgebraAnimation({
     });
 
     const points = [];
+    const gridSize = 10;
+    const gridDivisions = 10;
     const step = gridSize / gridDivisions;
 
     for (let i = -gridSize / 2; i <= gridSize / 2; i += step) {
@@ -143,5 +146,3 @@ export function LinearAlgebraAnimation({
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
-
-    
