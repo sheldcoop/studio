@@ -1,15 +1,39 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { taglines } from '@/lib/site';
 
 export function AnimatedTagline() {
   const [taglineIndex, setTaglineIndex] = useState(0);
   const [animatedText, setAnimatedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPaused(!entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    if(ref.current) {
+      observer.observe(ref.current);
+    }
+    return () => {
+      if(ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isPaused) {
+      return;
+    }
+
     const currentAnimatedPart = taglines[taglineIndex][1];
     const typeSpeed = 100;
     const deleteSpeed = 50;
@@ -35,12 +59,12 @@ export function AnimatedTagline() {
     const typingTimeout = setTimeout(handleTyping, isDeleting ? deleteSpeed : typeSpeed);
 
     return () => clearTimeout(typingTimeout);
-  }, [animatedText, isDeleting, taglineIndex]);
+  }, [animatedText, isDeleting, taglineIndex, isPaused]);
 
   const staticPart = taglines[taglineIndex][0];
 
   return (
-    <>
+    <div ref={ref}>
       {/* This h2 is for SEO and screen readers, providing a stable, non-animated version */}
       <h2 className="sr-only">From Data to Insight, From Model to Alpha.</h2>
       <div
@@ -56,6 +80,6 @@ export function AnimatedTagline() {
           ></span>
         </span>
       </div>
-    </>
+    </div>
   );
 }
