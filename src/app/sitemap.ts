@@ -12,9 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${URL}/interview-prep`, lastModified: new Date() },
     { url: `${URL}/community`, lastModified: new Date() },
     { url: `${URL}/stat-toolkit`, lastModified: new Date() },
-    { url: `${URL}/hypothesis-testing`, lastModified: new Date() },
     { url: `${URL}/topics`, lastModified: new Date() },
-    { url: `${URL}/statistics`, lastModified: new Date() },
     { url: `${URL}/probability`, lastModified: new Date() },
   ];
 

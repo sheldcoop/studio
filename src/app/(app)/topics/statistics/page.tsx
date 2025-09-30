@@ -1,20 +1,25 @@
+
 'use client';
 
-import { useState } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import dynamic from 'next/dynamic';
 
 // Dynamically import all the test components to keep the initial load small
-const TTestPage = dynamic(() => import('@/app/(app)/topics/statistics/t-test/page'));
-const ZTestPage = dynamic(() => import('@/app/(app)/topics/statistics/z-test/page'));
-const AnovaPage = dynamic(() => import('@/app/(app)/topics/statistics/anova/page'));
-const FTestPage = dynamic(() => import('@/app/(app)/topics/statistics/f-test/page'));
-const ChiSquaredTestPage = dynamic(() => import('@/app/(app)/topics/statistics/chi-squared-test/page'));
-const MannWhitneyUPage = dynamic(() => import('@/app/(app)/topics/statistics/mann-whitney-u-test/page'));
-const KruskalWallisTestPage = dynamic(() => import('@/app/(app)/topics/statistics/kruskal-wallis-test/page'));
-const WilcoxonSignedRankTestPage = dynamic(() => import('@/app/(app)/topics/statistics/wilcoxon-signed-rank-test/page'));
+const TTestPage = dynamic(() => import('workspace/src/app/(app)/topics/t-test/page'));
+const ZTestPage = dynamic(() => import('workspace/src/app/(app)/topics/z-test/page'));
+const AnovaPage = dynamic(() => import('workspace/src/app/(app)/topics/anova/page'));
+const FTestPage = dynamic(() => import('workspace/src/app/(app)/topics/f-test/page'));
+const ChiSquaredTestPage = dynamic(() => import('workspace/src/app/(app)/topics/chi-squared-test/page'));
+const MannWhitneyUPage = dynamic(() => import('workspace/src/app/(app)/topics/mann-whitney-u-test/page'));
+const KruskalWallisTestPage = dynamic(() => import('workspace/src/app/(app)/topics/kruskal-wallis-test/page'));
+const WilcoxonSignedRankTestPage = dynamic(() => import('workspace/src/app/(app)/topics/wilcoxon-signed-rank-test/page'));
+const PearsonCorrelationPage = dynamic(() => import('workspace/src/app/(app)/topics/pearson-correlation/page'));
+const SpearmanCorrelationPage = dynamic(() => import('workspace/src/app/(app)/topics/spearmans-rank-correlation/page'));
+const FriedmanTestPage = dynamic(() => import('workspace/src/app/(app)/topics/friedman-test/page'));
+const KSTestPage = dynamic(() => import('workspace/src/app/(app)/topics/kolmogorov-smirnov-k-s-test/page'));
+
 
 const tests = [
     { id: 't-test', title: 'T-Test', Component: TTestPage },
@@ -22,9 +27,13 @@ const tests = [
     { id: 'anova', title: 'ANOVA', Component: AnovaPage },
     { id: 'f-test', title: 'F-Test', Component: FTestPage },
     { id: 'chi-squared', title: 'Chi-Squared', Component: ChiSquaredTestPage },
+    { id: 'pearson', title: 'Pearson Correlation', Component: PearsonCorrelationPage },
     { id: 'mann-whitney', title: 'Mann-Whitney U', Component: MannWhitneyUPage },
     { id: 'kruskal-wallis', title: 'Kruskal-Wallis', Component: KruskalWallisTestPage },
     { id: 'wilcoxon', title: 'Wilcoxon Signed-Rank', Component: WilcoxonSignedRankTestPage },
+    { id: 'spearman', title: "Spearman's Rank", Component: SpearmanCorrelationPage },
+    { id: 'friedman', title: 'Friedman Test', Component: FriedmanTestPage },
+    { id: 'ks-test', title: 'K-S Test', Component: KSTestPage },
 ];
 
 export default function ConsolidatedStatisticsPage() {
@@ -32,13 +41,26 @@ export default function ConsolidatedStatisticsPage() {
     <>
       <PageHeader
         title="Interactive Statistical Tests"
-        description="Explore the core statistical tests used in quantitative analysis. Each tab provides an interactive example to help you build intuition."
+        description="The detective work of data science. Explore the core statistical tests used in quantitative analysis. Each tab provides an interactive example to help you build intuition."
         variant="aligned-left"
       />
-      <Card>
+       <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">The Core Idea: What is Hypothesis Testing?</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
+            <p>
+              Think of hypothesis testing as being a data detective. You start with a default assumption, the <strong>Null Hypothesis (H₀)</strong>, which states there is no effect or no difference (e.g., "a new drug has no effect"). Then, you gather evidence (your sample data) to see if you have enough proof to reject that default assumption in favor of an alternative, the <strong>Alternative Hypothesis (H₁)</strong> (e.g., "the new drug has an effect").
+            </p>
+            <p>
+                The <strong>p-value</strong> is the crucial piece of evidence. It's the probability of observing your data (or something even more extreme) if the null hypothesis were actually true. A small p-value (typically &lt; 0.05) suggests that your observed data is very unlikely under the null hypothesis, giving you a reason to reject it.
+            </p>
+          </CardContent>
+        </Card>
+      <Card className="mt-8">
         <CardContent className="p-4 md:p-6">
           <Tabs defaultValue="t-test" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 h-auto md:grid-cols-4 lg:grid-cols-4">
+            <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {tests.map(test => (
                 <TabsTrigger key={test.id} value={test.id} className="text-xs md:text-sm">
                   {test.title}

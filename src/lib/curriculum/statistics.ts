@@ -7,7 +7,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'hypothesis-testing',
     title: 'Hypothesis Testing & P-Values',
-    href: '/hypothesis-testing',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description: 'The detective work of data science.',
     category: 'sub-topic',
@@ -55,7 +55,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'pearson-correlation',
     title: 'Pearson Correlation',
-    href: '/topics/statistics/pearson-correlation',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description:
       'Measures the linear relationship between two continuous variables.',
@@ -106,7 +106,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'spearmans-rank-correlation',
     title: "Spearman's Rank Correlation",
-    href: '/topics/statistics/spearmans-rank-correlation',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description:
       'Measures the monotonic relationship between two ranked variables.',
@@ -116,7 +116,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'friedman-test',
     title: 'Friedman Test',
-    href: '/topics/statistics/friedman-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description:
       'The non-parametric alternative to a repeated-measures ANOVA.',
@@ -126,7 +126,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'kolmogorov-smirnov-k-s-test',
     title: 'Kolmogorov-Smirnov (K-S) Test',
-    href: '/topics/statistics/kolmogorov-smirnov-k-s-test',
+    href: '/topics/statistics',
     icon: FunctionSquare,
     description: 'Tests if a sample is drawn from a specific distribution.',
     category: 'non-parametric',
