@@ -11,7 +11,7 @@ export const statisticsTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'The detective work of data science.',
     category: 'sub-topic',
-    parent: 'statistics-for-quantitative-finance',
+    parent: 'stat-toolkit',
   },
 
   // Parametric Tests (sub-topics of hypothesis testing)

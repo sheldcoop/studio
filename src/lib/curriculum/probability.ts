@@ -18,7 +18,7 @@ export const probabilityTopics: Topic[] = [
     icon: FunctionSquare,
     description: 'How randomness converges to predictability.',
     category: 'probability',
-    parent: 'probability',
+    parent: 'prob-core-tools',
   },
   {
     id: 'bernoulli-distribution',
@@ -190,23 +190,5 @@ export const probabilityTopics: Topic[] = [
     description: 'The distribution of the sum of squared standard normal deviates.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-  },
-  {
-    id: 'moment-generating-functions',
-    title: 'Moment Generating Functions',
-    href: '/probability/moment-generating-functions',
-    icon: FunctionSquare,
-    description: '',
-    category: 'probability',
-    parent: 'probability',
-  },
-  {
-    id: 'maximum-likelihood-estimation',
-    title: 'Maximum Likelihood Estimation (MLE)',
-    href: '/probability/maximum-likelihood-estimation',
-    icon: FunctionSquare,
-    description: '',
-    category: 'probability',
-    parent: 'probability',
   },
 ];

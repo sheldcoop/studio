@@ -8,6 +8,8 @@ import {
   CandlestickChart,
   Boxes,
   Percent,
+  FlaskConical,
+  Wrench,
 } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -23,16 +25,32 @@ export const mainTopics: Topic[] = [
   {
     id: 'statistics',
     title: 'Statistics',
-    description: 'Quantifying uncertainty and making sense of distributions.',
+    description: 'The science of collecting, analyzing, and interpreting data.',
     icon: Sigma,
+    href: '/statistics',
+    category: 'main',
+  },
+  {
+    id: 'stat-toolkit',
+    title: "Statistician's Toolkit",
+    description: 'Explore and understand the core concepts of statistics for quantitative analysis.',
+    icon: Wrench,
     href: '/stat-toolkit',
     category: 'main',
   },
   {
     id: 'probability',
     title: 'Probability',
-    description: 'Understanding chance and modeling random events.',
+    description: 'The mathematical foundation for understanding randomness and uncertainty.',
     icon: Percent,
+    href: '/probability',
+    category: 'main',
+  },
+   {
+    id: 'probability-toolkit',
+    title: 'Probability Toolkit',
+    description: 'An interactive journey through the key distributions in probability theory.',
+    icon: FlaskConical,
     href: '/paths/probability-toolkit',
     category: 'main',
   },
