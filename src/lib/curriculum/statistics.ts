@@ -320,15 +320,6 @@ export const statisticsTopics: Topic[] = [
     parent: 'stats-foundations',
   },
   {
-    id: 'standard-deviation-variance',
-    title: 'Standard Deviation & Variance',
-    href: '/topics/statistics/standard-deviation-variance',
-    icon: FunctionSquare,
-    description: '',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
-  },
-  {
     id: 'r-squared-goodness-of-fit',
     title: 'R-squared & Goodness of Fit',
     href: '/topics/statistics/r-squared-goodness-of-fit',
