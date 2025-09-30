@@ -129,6 +129,15 @@ export const probabilityTopics: Topic[] = [
     parent: 'prob-dist-continuous',
   },
   {
+    id: 'logistic-distribution',
+    title: 'Logistic Distribution',
+    href: '/probability/logistic-distribution',
+    icon: FunctionSquare,
+    description: 'A key distribution in machine learning and growth modeling.',
+    category: 'probability',
+    parent: 'prob-dist-continuous',
+  },
+  {
     id: 'moment-generating-functions',
     title: 'Moment Generating Functions',
     href: '/probability/moment-generating-functions',
