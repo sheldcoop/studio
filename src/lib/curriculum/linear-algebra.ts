@@ -37,4 +37,15 @@ export const linearAlgebraTopics: Topic[] = [
     createTopic('la-module-4', 'Covariance & Correlation Matrices', "The cornerstone of portfolio theory."),
     createTopic('la-module-4', 'Positive Definite Matrices', "The mathematical property that makes portfolio optimization possible."),
     createTopic('la-module-4', 'Cholesky Decomposition', "The key to generating correlated random asset paths for Monte Carlo simulations."),
+
+    // Main topic entry for the hub page itself
+    {
+        id: 'linear-algebra-for-quantitative-finance',
+        title: 'Linear Algebra for Quants',
+        href: '/linear-algebra-for-quantitative-finance',
+        icon: 'Waypoints',
+        description:
+        'The language of data and the backbone of modern quantitative finance.',
+        category: 'main',
+    },
 ];
