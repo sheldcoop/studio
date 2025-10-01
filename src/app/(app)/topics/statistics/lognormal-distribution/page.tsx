@@ -17,6 +17,7 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 // --- Math & Simulation Logic ---
 const logNormalPdf = (x: number, mu: number, sigma: number): number => {
@@ -127,7 +128,7 @@ export default function LognormalDistributionPage() {
                   <BlockMath math="f(x) = \frac{1}{x\sigma\sqrt{2\pi}} \exp\left(-\frac{(\ln(x) - \mu)^2}{2\sigma^2}\right)" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><InlineMath math="x" /> is the variable (e.g., stock price), must be > 0.</li>
+                    <li><InlineMath math="x" /> is the variable (e.g., stock price), must be <InlineMath math="> 0" />.</li>
                     <li><InlineMath math="\mu" /> (mu) is the mean of the underlying normal distribution (location parameter).</li>
                     <li><InlineMath math="\sigma" /> (sigma) is the standard deviation of the underlying normal distribution (scale parameter).</li>
                 </ul>

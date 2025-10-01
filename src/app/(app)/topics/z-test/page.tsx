@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts';
+import { InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -168,7 +170,7 @@ export default function ZTestPage() {
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
-                  A Z-test, like a t-test, checks if differences in means are significant. However, it's used for large crowds (samples > 30) where you already have a map of the entire population's variability (known population standard deviation).
+                  A Z-test, like a t-test, checks if differences in means are significant. However, it&apos;s used for large crowds (samples <InlineMath math="> 30" />) where you already have a map of the entire population&apos;s variability (known population standard deviation).
                 </p>
               </div>
               <div>
@@ -179,7 +181,7 @@ export default function ZTestPage() {
                   The main requirements are a{' '}
                   <strong className="text-foreground">
                     large sample size
-                  </strong> (n > 30), approximately{' '}
+                  </strong> (<InlineMath math="n > 30" />), approximately{' '}
                    <strong className="text-foreground">
                     normally distributed
                   </strong> data, and critically, a{' '}
@@ -202,13 +204,13 @@ export default function ZTestPage() {
               <TabsContent value="one-sample" className="mt-6">
                 <h3 className="text-xl font-bold">One-Sample Z-Test</h3>
                 <p className="mt-2 text-muted-foreground">
-                  This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It's useful for seeing if a recent change has had a statistically significant effect.
+                  This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It&apos;s useful for seeing if a recent change has had a statistically significant effect.
                 </p>
                 <p className="mt-4 text-sm">
                   <span className="font-semibold text-foreground">
                     Example:
                   </span>{' '}
-                  After a major platform update, you analyze the daily returns of 'Stock A' for the last 100 trading days. You want to know if its average daily return is now different from its known historical average of 0.05% over the past 10 years (with a population standard deviation of 1.2%).
+                  After a major platform update, you analyze the daily returns of &apos;Stock A&apos; for the last 100 trading days. You want to know if its average daily return is now different from its known historical average of 0.05% over the past 10 years (with a population standard deviation of 1.2%).
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
                   <DynamicOneSampleZTestChart />
@@ -217,13 +219,13 @@ export default function ZTestPage() {
               <TabsContent value="two-sample" className="mt-6">
                 <h3 className="text-xl font-bold">Two-Sample Z-Test</h3>
                 <p className="mt-2 text-muted-foreground">
-                  This test compares the means of two large, independent stocks or assets. It's used when you have extensive historical data that provides the population standard deviations for both.
+                  This test compares the means of two large, independent stocks or assets. It&apos;s used when you have extensive historical data that provides the population standard deviations for both.
                 </p>
                 <p className="mt-4 text-sm">
                   <span className="font-semibold text-foreground">
                     Example:
                   </span>{' '}
-                  A firm compares the average daily volatility of 'Stock A' vs. 'Stock B' over the past five years (~1260 data points each). With known population standard deviations for both stocks' volatility, they test if there is a significant difference between them.
+                  A firm compares the average daily volatility of &apos;Stock A&apos; vs. &apos;Stock B&apos; over the past five years (~1260 data points each). With known population standard deviations for both stocks&apos; volatility, they test if there is a significant difference between them.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
                   <DynamicTwoSampleZTestChart />
