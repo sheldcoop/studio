@@ -1,10 +1,21 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import { useRef } from 'react';
+import { 
+  SphereGeometry, 
+  MeshBasicMaterial, 
+  Mesh, 
+  Vector3, 
+  BufferGeometry,
+  LineBasicMaterial,
+  Line,
+  Clock,
+  Color
+} from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
+import { useThreeAnimation } from '@/hooks/useThreeAnimation';
 
 interface MachineLearningAnimationProps {
   className?: string;
@@ -19,52 +30,42 @@ export function MachineLearningAnimation({
   const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
 
-  useEffect(() => {
-    isMouseOver.current = isHovered;
-  }, [isHovered]);
-
-  useEffect(() => {
-    if (!mountRef.current) return;
-    const currentMount = mountRef.current;
-    let animationFrameId: number;
-    const cleanupFunctions: (() => void)[] = [];
-
-    // Wrap in requestAnimationFrame to ensure CSS variables are ready
-    animationFrameId = requestAnimationFrame(() => {
-      if (!currentMount) return;
-
-      const computedStyle = getComputedStyle(document.documentElement);
-      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const primaryColor = new THREE.Color(primaryColorValue);
-      const secondaryColor = new THREE.Color(0x00ff88); // For data particles
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        currentMount.clientWidth / currentMount.clientHeight,
-        0.1,
-        1000
-      );
-      camera.position.z = 8; // Make the animation bigger
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      currentMount.appendChild(renderer.domElement);
-      cleanupFunctions.push(() => {
-        if (renderer.domElement.parentElement === currentMount) {
-          currentMount.removeChild(renderer.domElement);
-        }
-        renderer.dispose();
-      });
-
-      const layers: { neuron: THREE.Mesh; glow: THREE.Mesh; material: THREE.MeshBasicMaterial; glowMaterial: THREE.MeshBasicMaterial; position: THREE.Vector3; activation: number }[][] = [];
-      const connections: { line: THREE.Line; material: THREE.LineBasicMaterial; from: any; to: any }[] = [];
+  useThreeAnimation(mountRef, {
+    theme,
+    onSetup: ({ scene, camera, renderer, primaryColor }) => {
+      camera.position.z = 8;
+      
+      // Shared geometries
+      const neuronGeometry = new SphereGeometry(0.25, 12, 12); // Reduced segments
+      const glowGeometry = new SphereGeometry(0.35, 12, 12);
+      const particleGeometry = new SphereGeometry(0.08, 6, 6);
+      
+      const secondaryColor = new Color(0x00ff88);
+      
+      // Network configuration
       const layerSizes = [4, 6, 6, 4, 2];
       const layerSpacing = 4;
       const nodeSpacing = 1.5;
+      
+      const layers: { 
+        neuron: Mesh; 
+        glow: Mesh; 
+        material: MeshBasicMaterial; 
+        glowMaterial: MeshBasicMaterial; 
+        position: Vector3; 
+        activation: number;
+      }[][] = [];
+      
+      const connections: { 
+        line: Line; 
+        material: LineBasicMaterial; 
+        from: any; 
+        to: any;
+      }[] = [];
+      
+      const materials: (MeshBasicMaterial | LineBasicMaterial)[] = [];
 
-      // Create neural network
+      // Create neural network layers
       layerSizes.forEach((neuronCount, layerIndex) => {
         const layer: typeof layers[0] = [];
         const xPos = (layerIndex - (layerSizes.length - 1) / 2) * layerSpacing;
@@ -72,51 +73,50 @@ export function MachineLearningAnimation({
         for (let i = 0; i < neuronCount; i++) {
           const yPos = (i - (neuronCount - 1) / 2) * nodeSpacing;
           
-          const neuronGeometry = new THREE.SphereGeometry(0.25, 16, 16);
-          const neuronMaterial = new THREE.MeshBasicMaterial({ 
+          // Reuse geometry, clone material
+          const neuronMaterial = new MeshBasicMaterial({ 
             color: primaryColor,
             transparent: true,
             opacity: 0.9
           });
-          const neuron = new THREE.Mesh(neuronGeometry, neuronMaterial);
+          const neuron = new Mesh(neuronGeometry, neuronMaterial);
           neuron.position.set(xPos, yPos, 0);
           scene.add(neuron);
-          cleanupFunctions.push(() => neuronGeometry.dispose());
-          cleanupFunctions.push(() => neuronMaterial.dispose());
+          materials.push(neuronMaterial);
           
-          const glowGeometry = new THREE.SphereGeometry(0.35, 16, 16);
-          const glowMaterial = new THREE.MeshBasicMaterial({
+          const glowMaterial = new MeshBasicMaterial({
             color: primaryColor,
             transparent: true,
             opacity: 0.2,
-            blending: THREE.AdditiveBlending
+            blending: 2 // THREE.AdditiveBlending
           });
-          const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+          const glow = new Mesh(glowGeometry, glowMaterial);
           glow.position.set(xPos, yPos, 0);
           scene.add(glow);
-          cleanupFunctions.push(() => glowGeometry.dispose());
-          cleanupFunctions.push(() => glowMaterial.dispose());
+          materials.push(glowMaterial);
           
           layer.push({ 
             neuron, 
             glow,
             material: neuronMaterial, 
             glowMaterial,
-            position: new THREE.Vector3(xPos, yPos, 0),
+            position: new Vector3(xPos, yPos, 0),
             activation: Math.random()
           });
           
+          // Create connections to previous layer
           if (layerIndex > 0) {
             layers[layerIndex - 1].forEach((prevNeuron) => {
-              const points = [prevNeuron.position, new THREE.Vector3(xPos, yPos, 0)];
-              const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-              const lineMaterial = new THREE.LineBasicMaterial({ 
+              const points = [prevNeuron.position, new Vector3(xPos, yPos, 0)];
+              const lineGeometry = new BufferGeometry().setFromPoints(points);
+              const lineMaterial = new LineBasicMaterial({ 
                 color: primaryColor,
                 transparent: true,
                 opacity: 0.15
               });
-              const line = new THREE.Line(lineGeometry, lineMaterial);
+              const line = new Line(lineGeometry, lineMaterial);
               scene.add(line);
+              materials.push(lineMaterial);
               
               connections.push({
                 line,
@@ -124,45 +124,47 @@ export function MachineLearningAnimation({
                 from: prevNeuron,
                 to: layer[layer.length - 1]
               });
-              cleanupFunctions.push(() => lineGeometry.dispose());
-              cleanupFunctions.push(() => lineMaterial.dispose());
             });
           }
         }
         layers.push(layer);
       });
 
-      const particleGeometry = new THREE.SphereGeometry(0.08, 8, 8);
-      const particleMaterial = new THREE.MeshBasicMaterial({ 
+      // Particle system with object pooling
+      const particleMaterial = new MeshBasicMaterial({ 
         color: secondaryColor,
         transparent: true,
         opacity: 0.8
       });
-      cleanupFunctions.push(() => particleGeometry.dispose());
-      cleanupFunctions.push(() => particleMaterial.dispose());
-
-      const dataParticles: { mesh: THREE.Mesh; material: THREE.MeshBasicMaterial; progress: number; speed: number; path: number }[] = [];
-      for (let i = 0; i < 15; i++) {
-        const particle = new THREE.Mesh(particleGeometry, particleMaterial.clone());
+      
+      const maxParticles = 15;
+      const dataParticles: { 
+        mesh: Mesh; 
+        progress: number; 
+        speed: number; 
+        path: number;
+      }[] = [];
+      
+      for (let i = 0; i < maxParticles; i++) {
+        const particle = new Mesh(particleGeometry, particleMaterial);
         particle.position.set(-10, 0, 0);
         scene.add(particle);
         dataParticles.push({
           mesh: particle,
-          material: particle.material as THREE.MeshBasicMaterial,
           progress: Math.random(),
-          speed: 1.5 + Math.random() * 0.4, // Increased speed
+          speed: 1.5 + Math.random() * 0.4,
           path: Math.floor(Math.random() * layers[0].length)
         });
-        cleanupFunctions.push(() => (particle.material as THREE.Material).dispose());
       }
       
-      const clock = new THREE.Clock();
+      const clock = new Clock();
+      const tempVec = new Vector3();
 
       const animate = () => {
-        animationFrameId = requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
         const delta = clock.getDelta();
 
+        // Update neuron activations
         layers.forEach((layer, layerIndex) => {
           layer.forEach((neuron, neuronIndex) => {
             const delay = layerIndex * 0.3 + neuronIndex * 0.1;
@@ -178,11 +180,13 @@ export function MachineLearningAnimation({
           });
         });
 
+        // Update connection opacities
         connections.forEach((conn) => {
           const avgActivation = (conn.from.activation + conn.to.activation) / 2;
           conn.material.opacity = 0.1 + avgActivation * 0.4;
         });
 
+        // Update particles
         const speedMultiplier = isMouseOver.current ? 4 : 1;
         dataParticles.forEach((particle) => {
           particle.progress += particle.speed * delta * speedMultiplier;
@@ -204,44 +208,39 @@ export function MachineLearningAnimation({
             const from = layers[currentLayerIdx][fromIndex].position;
             const to = layers[nextLayerIdx][toIndex].position;
             
-            particle.mesh.position.lerpVectors(from, to, t);
-            particle.material.opacity = 0.8 * (1 - Math.abs(t - 0.5) * 2);
+            // Lerp position
+            tempVec.lerpVectors(from, to, t);
+            particle.mesh.position.copy(tempVec);
+            
+            // Fade in/out during transit
+            particleMaterial.opacity = 0.8 * (1 - Math.abs(t - 0.5) * 2);
           }
         });
 
+        // Subtle scene rotation
         scene.rotation.y = Math.sin(time * 0.2) * 0.1;
         scene.rotation.x = Math.cos(time * 0.2) * 0.05;
 
         renderer.render(scene, camera);
       };
 
-      animate();
-
-      const handleResize = () => {
-        if (currentMount) {
-          camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-        }
+      return {
+        animate,
+        cleanup: () => {
+          neuronGeometry.dispose();
+          glowGeometry.dispose();
+          particleGeometry.dispose();
+          particleMaterial.dispose();
+          materials.forEach(m => m.dispose());
+          connections.forEach(c => c.line.geometry.dispose());
+        },
+        materials
       };
-      window.addEventListener('resize', handleResize);
-      
-      cleanupFunctions.push(() => {
-          window.removeEventListener('resize', handleResize);
-          cancelAnimationFrame(animationFrameId);
-      });
-    });
+    }
+  });
 
-    return () => {
-      cleanupFunctions.forEach(fn => fn());
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-      while (currentMount.firstChild) {
-        currentMount.removeChild(currentMount.firstChild);
-      }
-    };
-  }, [theme]);
+  // Sync isHovered prop with ref
+  isMouseOver.current = isHovered;
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
