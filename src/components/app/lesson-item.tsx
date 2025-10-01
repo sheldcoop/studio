@@ -8,6 +8,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { TopicIcon } from './topic-icon';
 
 interface LessonItemProps {
   lesson: Topic;
@@ -15,9 +16,9 @@ interface LessonItemProps {
 }
 
 const statusIcons = {
-  completed: CheckCircle,
-  'in-progress': PlayCircle,
-  'not-started': Clock,
+  completed: 'CheckCircle',
+  'in-progress': 'PlayCircle',
+  'not-started': 'Clock',
 };
 
 const statusLabels = {
@@ -33,7 +34,7 @@ const statusVariants = {
 }
 
 export function LessonItem({ lesson, isLast }: LessonItemProps) {
-  const Icon = statusIcons[lesson.status || 'not-started'];
+  const iconName = statusIcons[lesson.status || 'not-started'];
   const label = statusLabels[lesson.status || 'not-started'];
   const variant = statusVariants[lesson.status || 'not-started'] as "completed" | "inProgress" | "notStarted";
 
@@ -46,7 +47,8 @@ export function LessonItem({ lesson, isLast }: LessonItemProps) {
     >
       <div className="absolute left-9 top-0 h-full w-px bg-border/50"></div>
       <div className="relative z-10">
-        <Icon
+        <TopicIcon
+          iconName={iconName}
           className={cn(
             'h-6 w-6 rounded-full bg-background',
             lesson.status === 'completed' && 'text-green-500',

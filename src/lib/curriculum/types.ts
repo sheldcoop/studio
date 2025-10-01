@@ -1,4 +1,3 @@
-import { type LucideIcon } from 'lucide-react';
 import { type ComponentType } from 'react';
 
 export type SubTopic = {
@@ -24,7 +23,7 @@ export type Topic = {
   id: string;
   title: string;
   href: string;
-  icon?: LucideIcon;
+  icon?: string; // Changed from LucideIcon to string
   description: string;
   category: 'main' | 'sub-topic' | 'parametric' | 'non-parametric' | 'parent' | 'probability';
   parent?: string; // id of parent topic

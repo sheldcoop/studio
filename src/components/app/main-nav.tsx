@@ -11,37 +11,38 @@ import {
   BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { TopicIcon } from './topic-icon';
 
 const links = [
   {
     href: '/',
     label: 'Dashboard',
-    icon: LayoutDashboard,
+    icon: 'LayoutDashboard',
   },
   {
     href: '/paths',
     label: 'Learning Paths',
-    icon: BookOpenCheck,
+    icon: 'BookOpenCheck',
   },
   {
     href: '/statistics',
     label: 'Advanced Statistics',
-    icon: BarChart3,
+    icon: 'BarChart3',
   },
   {
     href: '/hypothesis-testing-p-values',
     label: 'Statistical Tests',
-    icon: Sigma,
+    icon: 'Sigma',
   },
   {
     href: '/community',
     label: 'Community',
-    icon: Users,
+    icon: 'Users',
   },
   {
     href: '/topics',
     label: 'All Topics',
-    icon: FolderKanban,
+    icon: 'FolderKanban',
   },
 ];
 
@@ -70,7 +71,7 @@ export function MainNav({ onLinkClick }: MainNavProps) {
                'flex items-center p-2 rounded-md hover:bg-secondary md:p-0 md:hover:bg-transparent'
             )}
           >
-             <link.icon className="mr-2 h-5 w-5 md:hidden" />
+             <TopicIcon iconName={link.icon} className="mr-2 h-5 w-5 md:hidden" />
             {link.label}
           </Link>
         );

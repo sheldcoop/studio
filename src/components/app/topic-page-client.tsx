@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -86,7 +85,7 @@ function SimpleContentPage({ topicInfo }: { topicInfo: Topic }) {
 
 
 export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
-  const { title, description, subTopics, interactiveExamples } = topicInfo;
+  const { title, description, subTopics, interactiveExamples, content } = topicInfo;
 
   // Render interactive test page if examples are available
   if (interactiveExamples) {
@@ -117,6 +116,7 @@ export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
     );
   }
 
-  // If there are no sub-topics, this is a simple content page.
+  // If there are no sub-topics and no interactive examples, treat it as a simple content page.
+  // This will now correctly render the placeholder.
   return <SimpleContentPage topicInfo={topicInfo} />;
 }

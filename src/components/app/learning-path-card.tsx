@@ -8,13 +8,14 @@ import {
 } from '@/components/ui/accordion';
 import { LessonItem } from './lesson-item';
 import { Progress } from '../ui/progress';
+import { TopicIcon } from './topic-icon';
 
 interface LearningPathCardProps {
   module: Module;
-  icon: LucideIcon;
+  iconName: string;
 }
 
-export function LearningPathCard({ module, icon: Icon }: LearningPathCardProps) {
+export function LearningPathCard({ module, iconName }: LearningPathCardProps) {
   const totalLessons = module.lessons.length;
   const completedLessons = module.lessons.filter(
     (l) => l.status === 'completed'
@@ -33,7 +34,7 @@ export function LearningPathCard({ module, icon: Icon }: LearningPathCardProps) 
           <div className="flex w-full items-start justify-between gap-4">
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <Icon className="h-6 w-6 text-primary" />
+                <TopicIcon iconName={iconName} className="h-6 w-6 text-primary" />
               </div>
               <div className="flex flex-col gap-1">
                 <h3 className="font-headline text-xl font-semibold">

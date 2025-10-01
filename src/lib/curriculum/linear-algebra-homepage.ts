@@ -1,5 +1,4 @@
 
-import { Waypoints } from 'lucide-react';
 import { type Topic } from './types';
 
 // Helper to create slugs from titles
@@ -9,7 +8,7 @@ const createTopic = (module: string, title: string, description: string): Topic 
     id: `la-${toSlug(title)}`,
     title,
     href: `/linear-algebra-for-quantitative-finance/${toSlug(title)}`,
-    icon: Waypoints,
+    icon: 'Waypoints',
     description,
     category: 'sub-topic',
     parent: module,
@@ -41,7 +40,7 @@ export const linearAlgebraTopics: Topic[] = [
         id: 'linear-algebra-for-quantitative-finance',
         title: 'Linear Algebra for Quants',
         href: '/linear-algebra',
-        icon: Waypoints,
+        icon: 'Waypoints',
         description:
         'The language of data and the backbone of modern quantitative finance.',
         category: 'main',

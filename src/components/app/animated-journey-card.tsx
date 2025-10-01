@@ -14,6 +14,7 @@ import {
 import { DynamicAnimation } from './dynamic-animation';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { TopicIcon } from './topic-icon';
 
 
 interface AnimatedJourneyCardProps {
@@ -49,7 +50,7 @@ export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
           "absolute inset-0 h-full w-full transition-opacity duration-300",
           isHovered ? "opacity-100" : "opacity-0"
         )}>
-           {item.animation && item.icon && (
+           {item.animation && (
              <DynamicAnimation 
                 animationId={item.animation}
                 isHovered={isHovered}
@@ -64,7 +65,7 @@ export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
         )}>
             <CardHeader className="p-0">
                 <div className="mb-4">
-                  {item.icon && <item.icon className="h-8 w-8 text-primary" />}
+                  {item.icon && <TopicIcon iconName={item.icon} className="h-8 w-8 text-primary" />}
                 </div>
                 <CardTitle className="font-headline text-xl">
                   {item.title}
@@ -90,7 +91,7 @@ export function StaticJourneyCard({ item }: { item: Topic }) {
       <Card className="flex h-full transform-gpu flex-col bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
         <CardHeader>
           <div className="mb-4">
-            {item.icon && <item.icon className="h-8 w-8 text-primary" />}
+            {item.icon && <TopicIcon iconName={item.icon} className="h-8 w-8 text-primary" />}
           </div>
           <CardTitle className="font-headline text-xl">
             {item.title}

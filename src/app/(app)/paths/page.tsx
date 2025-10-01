@@ -9,6 +9,7 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
+import { TopicIcon } from '@/components/app/topic-icon';
 
 export const metadata: Metadata = {
   title: 'Learning Paths',
@@ -33,7 +34,7 @@ export default function PathsPage() {
             <Card className="flex h-full transform-gpu flex-col transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
               <CardHeader className="flex-row items-start gap-4">
                 <div className="rounded-lg bg-primary/10 p-3">
-                  <path.icon className="h-8 w-8 text-primary" />
+                  <TopicIcon iconName={path.icon} className="h-8 w-8 text-primary" />
                 </div>
                 <div>
                   <CardTitle className="font-headline text-lg">
