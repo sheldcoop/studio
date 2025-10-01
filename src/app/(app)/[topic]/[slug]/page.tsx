@@ -4,19 +4,20 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 // Define the shape of the props object that Next.js will pass to this page.
+// In Next.js 15, params is now a Promise
 type PageProps = {
-  params: {
+  params: Promise<{
     topic: string;
     slug: string;
-  };
+  }>;
 };
 
 /**
  * Generates dynamic metadata for the page based on the route parameters.
- * Using the `PageProps` type ensures `params` is correctly typed as an object.
+ * Now async and awaits the params Promise.
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { topic, slug } = params;
+  const { topic, slug } = await params;
 
   // Example: You would typically fetch data here to generate a real title.
   const pageTitle = `${topic.charAt(0).toUpperCase() + topic.slice(1)}: ${slug}`;
@@ -29,11 +30,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 /**
  * This is the main page component for the dynamic route.
- * It uses the same `PageProps` type to correctly define its props.
- * This resolves the "Promise<any>" type error.
+ * Now async and awaits the params Promise.
  */
-export default function TopicPage({ params }: PageProps) {
-  const { topic, slug } = params;
+export default async function TopicPage({ params }: PageProps) {
+  const { topic, slug } = await params;
 
   // --- Placeholder for your data fetching logic ---
   // In a real application, you might fetch data based on the params.
