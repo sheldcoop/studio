@@ -18,7 +18,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import 'katex/dist/katex.min.css';
 import { CheckCircle, Network, TrendingUp, Cpu } from 'lucide-react';
-import { allTopics } from '@/lib/curriculum';
+import { allTopics } from '@/lib/data';
 import Link from 'next/link';
 
 const applications = [
