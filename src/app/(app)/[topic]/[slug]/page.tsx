@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: { topic: string; sl
 
 // This is now a Server Component.
 // It fetches the data on the server and passes it to the client component.
-export default function TopicPage({ params }: TopicPageProps) {
+export default function TopicPage({ params }: { params: { topic: string; slug: string } }) {
   const path = `/${params.topic}/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
   
