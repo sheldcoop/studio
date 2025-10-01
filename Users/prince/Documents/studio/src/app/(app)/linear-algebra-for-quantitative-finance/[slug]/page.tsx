@@ -4,9 +4,14 @@ import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
+type TopicPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
 // This function generates metadata for the page based on the slug.
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const path = `/linear-algebra-for-quantitative-finance/${params.slug}`;
+export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const path = `/linear-algebra-for-quantitative-finance/${slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
 
   if (!topicInfo) {
@@ -22,8 +27,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 // This is the main server component for the page.
-export default function TopicPage({ params }: { params: { slug: string } }) {
-  const path = `/linear-algebra-for-quantitative-finance/${params.slug}`;
+export default async function TopicPage({ params }: TopicPageProps) {
+  const { slug } = await params;
+  const path = `/linear-algebra-for-quantitative-finance/${slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
   
   if (!topicInfo) {
