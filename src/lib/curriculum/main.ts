@@ -19,7 +19,7 @@ export const mainTopics: Topic[] = [
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: Pi,
-    href: '/linear-algebra-for-quantitative-finance',
+    href: '/paths/linear-algebra-for-quantitative-finance',
     category: 'main',
     animation: 'linear-algebra',
   },

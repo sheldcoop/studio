@@ -8,8 +8,8 @@ const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').repla
 const createTopic = (module: string, title: string, description: string): Topic => ({
     id: `la-${toSlug(title)}`,
     title,
-    href: `/linear-algebra/${toSlug(title)}`, // Use the new /<category>/<slug> structure
-    icon: Waypoints, // Using a consistent icon for all sub-topics
+    href: `/topics/${toSlug(title)}`, // Use the new /topics/[slug] structure
+    icon: Waypoints,
     description,
     category: 'sub-topic',
     parent: module,
@@ -36,11 +36,11 @@ export const linearAlgebraTopics: Topic[] = [
     createTopic('la-module-4', 'Positive Definite Matrices', "The mathematical property that makes portfolio optimization possible."),
     createTopic('la-module-4', 'Cholesky Decomposition', "The key to generating correlated random asset paths for Monte Carlo simulations."),
 
-    // Main topic entry for the hub page itself
+    // Main topic entry for the hub page itself - NO LONGER NEEDED, but kept for data integrity if referenced elsewhere
     {
         id: 'linear-algebra-for-quantitative-finance',
         title: 'Linear Algebra for Quants',
-        href: '/topics/linear-algebra-for-quantitative-finance', // This hub page URL remains unchanged
+        href: '/paths/linear-algebra-for-quantitative-finance',
         icon: Waypoints,
         description:
         'The language of data and the backbone of modern quantitative finance.',
