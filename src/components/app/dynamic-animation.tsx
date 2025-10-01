@@ -17,7 +17,6 @@ const animationMap: Record<string, ComponentType<AnimationProps>> = {
   'mental-math': dynamic(() => import('@/components/app/mental-math-animation').then(mod => mod.MentalMathAnimation)),
   'time-series-analysis': dynamic(() => import('@/components/app/time-series-animation').then(mod => mod.TimeSeriesAnimation)),
   'statistics': dynamic(() => import('@/components/app/statistics-animation').then(mod => mod.StatisticsAnimation)),
-  'machine-learning': dynamic(() => import('@/components/app/machine-learning-animation').then(mod => mod.MachineLearningAnimation)),
   'stat-toolkit': dynamic(() => import('@/components/app/confidence-interval-animation').then(mod => mod.ConfidenceIntervalAnimation)),
   'probability': dynamic(() => import('@/components/app/plinko-animation').then(mod => mod.PlinkoAnimation)),
   'probability-toolkit': dynamic(() => import('@/components/app/dice-animation').then(mod => mod.DiceAnimation)),
