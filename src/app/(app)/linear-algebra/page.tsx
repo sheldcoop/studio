@@ -1,12 +1,10 @@
 
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
-import { allTopics } from '@/lib/data';
+import { allTopics, type Topic, type Module } from '@/lib/data';
 import { Accordion } from '@/components/ui/accordion';
 import { LearningPathCard } from '@/components/app/learning-path-card';
 import { Calculator } from 'lucide-react';
-import type { Topic, Module } from '@/lib/data';
-
 
 export const metadata: Metadata = {
   title: 'Linear Algebra for Quants',
