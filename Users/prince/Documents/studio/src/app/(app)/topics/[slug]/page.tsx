@@ -11,6 +11,7 @@ type TopicPageProps = {
 // This function generates metadata for the page based on the slug.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
   const { slug } = await params;
+  // Find the topic by its unique ID, which is the slug.
   const topicInfo = allTopics.find((t) => t.id === slug);
 
   if (!topicInfo) {
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 export default async function TopicPage({ params }: TopicPageProps) {
   const { slug } = await params;
   
-  // Find the topic by its unique ID, which is now the slug
+  // Find the topic by its unique ID, which is now the slug. This is the correct way.
   const topicInfo = allTopics.find((t) => t.id === slug);
   
   if (!topicInfo) {
