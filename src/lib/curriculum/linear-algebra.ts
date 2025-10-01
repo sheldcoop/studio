@@ -8,7 +8,7 @@ const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').repla
 const createTopic = (module: string, title: string, description: string): Topic => ({
     id: `la-${toSlug(title)}`,
     title,
-    href: `/linear-algebra/${toSlug(title)}`,
+    href: `/linear-algebra/${toSlug(title)}`, // Use the new /<category>/<slug> structure
     icon: Waypoints, // Using a consistent icon for all sub-topics
     description,
     category: 'sub-topic',
@@ -40,7 +40,7 @@ export const linearAlgebraTopics: Topic[] = [
     {
         id: 'linear-algebra-for-quantitative-finance',
         title: 'Linear Algebra for Quants',
-        href: '/linear-algebra-for-quantitative-finance',
+        href: '/topics/linear-algebra-for-quantitative-finance', // This hub page URL remains unchanged
         icon: Waypoints,
         description:
         'The language of data and the backbone of modern quantitative finance.',
