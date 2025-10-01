@@ -10,6 +10,7 @@ import {
   Percent,
   FlaskConical,
   Wrench,
+  BarChart3,
 } from 'lucide-react';
 import type { Topic } from './types';
 
@@ -25,9 +26,9 @@ export const mainTopics: Topic[] = [
   },
   {
     id: 'statistics',
-    title: 'Statistical Tests',
+    title: 'Advanced Statistics',
     description: 'The science of collecting, analyzing, and interpreting data.',
-    icon: Sigma,
+    icon: BarChart3,
     href: '/statistics',
     category: 'main',
     animation: 'statistics',
@@ -64,7 +65,7 @@ export const mainTopics: Topic[] = [
     title: 'Mental Math',
     description: 'Train your calculation speed and accuracy for interviews.',
     icon: BrainCircuit,
-    href: '/mental-math',
+    href: '/topics/mental-math',
     category: 'main',
     animation: 'mental-math',
   },
