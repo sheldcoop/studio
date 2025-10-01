@@ -10,9 +10,9 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    allowedDevOrigins: [
-        "https://6000-firebase-quantprep3-1759145568602.cluster-fnjdffmttjhy2qqdugh3yehhs2.cloudworkstations.dev",
-    ],
+    // allowedDevOrigins was removed in Next.js 15
+    // Use serverActions.allowedOrigins instead for Server Actions
+    // or handle CORS at the server/middleware level
   },
   productionBrowserSourceMaps: false, // Disable source maps in production
   images: {
