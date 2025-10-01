@@ -8,13 +8,14 @@ import { Accordion } from '@/components/ui/accordion';
 import { LearningPathCard } from '@/components/app/learning-path-card';
 
 type PathPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function generateMetadata({ params }: PathPageProps): Promise<Metadata> {
-  const path = getPathById(params.slug);
+  const { slug } = await params;
+  const path = getPathById(slug);
 
   if (!path) {
     return {
@@ -28,8 +29,9 @@ export async function generateMetadata({ params }: PathPageProps): Promise<Metad
   };
 }
 
-export default function PathPage({ params }: PathPageProps) {
-  const path = getPathById(params.slug);
+export default async function PathPage({ params }: PathPageProps) {
+  const { slug } = await params;
+  const path = getPathById(slug);
 
   if (!path) {
     notFound();
