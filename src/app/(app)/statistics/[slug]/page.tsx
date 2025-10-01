@@ -35,10 +35,6 @@ export default function TopicPage({ params }: TopicPageProps) {
   if (!topicInfo) {
     notFound();
   }
-
-  // Destructure the topicInfo object to remove the non-serializable 'icon' property
-  // before passing it to the client component.
-  const { icon, ...serializableTopicInfo } = topicInfo;
   
-  return <TopicPageClient topicInfo={serializableTopicInfo} />;
+  return <TopicPageClient topicInfo={topicInfo} />;
 }
