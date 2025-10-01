@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/curriculum';
@@ -35,6 +34,10 @@ export default function TopicPage({ params }: TopicPageProps) {
   if (!topicInfo) {
     notFound();
   }
+
+  // Destructure the topicInfo object to remove the non-serializable 'icon' property
+  // before passing it to the client component.
+  const { icon, ...serializableTopicInfo } = topicInfo;
   
-  return <TopicPageClient topicInfo={topicInfo} />;
+  return <TopicPageClient topicInfo={serializableTopicInfo} />;
 }
