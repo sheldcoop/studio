@@ -8,11 +8,11 @@ type TopicPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-// This function MUST be in a server component.
+// This function generates metadata for the page based on the slug.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const path = `/topics/${slug}`;
-  const topicInfo = allTopics.find((t) => t.href === path);
+  // The slug can come from various paths, so we find the topic that ends with this slug.
+  const topicInfo = allTopics.find((t) => t.href.endsWith(`/${slug}`));
 
   if (!topicInfo) {
     return {
@@ -26,16 +26,16 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
   };
 }
 
-// This is now a Server Component.
-// It fetches the data on the server and passes it to the client component.
+// This is the main server component for the page.
 export default async function TopicPage({ params }: TopicPageProps) {
   const { slug } = await params;
-  const path = `/topics/${slug}`;
-  const topicInfo = allTopics.find((t) => t.href === path);
+  
+  // Find the topic by looking at the end of the href, which corresponds to the slug
+  const topicInfo = allTopics.find((t) => t.href.endsWith(`/${slug}`));
   
   if (!topicInfo) {
     notFound();
   }
-  
+
   return <TopicPageClient topicInfo={topicInfo} />;
 }

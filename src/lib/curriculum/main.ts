@@ -16,7 +16,7 @@ export const mainTopics: Topic[] = [
     title: 'Advanced Statistics',
     description: 'The science of collecting, analyzing, and interpreting data.',
     icon: 'BarChart3',
-    href: '/statistics',
+    href: '/paths/statistics-for-quantitative-finance',
     category: 'main',
     animation: 'statistics',
   },
