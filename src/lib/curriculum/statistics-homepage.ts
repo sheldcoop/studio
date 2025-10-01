@@ -5,15 +5,18 @@ import { type Topic } from './types';
 // Helper to create slugs from titles
 const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
-const createTopic = (module: string, title: string, description: string): Topic => ({
-    id: `stats-${toSlug(title)}`,
-    title,
-    href: `/statistics/${toSlug(title)}`,
-    icon: FunctionSquare,
-    description,
-    category: 'sub-topic',
-    parent: module,
-});
+const createTopic = (module: string, title: string, description: string): Topic => {
+    const slug = `stats-${toSlug(title)}`;
+    return {
+        id: slug,
+        title,
+        href: `/statistics/${slug}`, // Corrected href
+        icon: 'FunctionSquare',
+        description,
+        category: 'sub-topic',
+        parent: module,
+    };
+};
 
 export const statisticsHomepageTopics: Topic[] = [
     // --- Module 1: Foundations in Probability & Random Variables ---
