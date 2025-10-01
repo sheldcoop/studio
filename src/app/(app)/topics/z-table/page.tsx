@@ -55,7 +55,7 @@ const generateCurveData = (shadeFrom: number | null, shadeTo: number | null, zTo
 // Chart Component for Visualization
 const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }: { shadeFrom: number | null, shadeTo: number | null, zToPType?: ZToPType, zScore?: number | null, zScore1?: number | null, zScore2?: number | null }) => {
   const chartData = useMemo(() => generateCurveData(shadeFrom, shadeTo, zToPType, zScore), [shadeFrom, shadeTo, zToPType, zScore]);
-  const absZScore = zScore != null ? Math.abs(zScore) : null;
+  const absZScore = typeof zScore === 'number' ? Math.abs(zScore) : null;
 
   return (
     <ChartContainer config={{}} className="h-[250px] w-full">
@@ -80,15 +80,15 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
                 <ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${(-absZScore).toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 <ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
             </>
-        ) : zScore !== null ? (
-            <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+        ) : typeof zScore === 'number' ? (
+            <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         ) : null}
 
-        {zScore1 !== null && (
-            <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+        {typeof zScore1 === 'number' && (
+            <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
-        {zScore2 !== null && (
-            <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+        {typeof zScore2 === 'number' && (
+            <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
 
       </AreaChart>

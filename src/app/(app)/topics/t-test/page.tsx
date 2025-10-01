@@ -241,11 +241,12 @@ const OneSampleTestChart = () => {
               strokeDasharray="3 3"
             >
               <RechartsLabel
-                value={`Claimed: ${target}%`}
                 position="insideTopRight"
                 fill="hsl(var(--destructive))"
                 fontSize={12}
-              />
+              >
+                {`Claimed: ${target}%`}
+              </RechartsLabel>
             </ReferenceLine>
           </RechartsBarChart>
         </ChartContainer>
