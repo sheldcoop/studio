@@ -1,3 +1,4 @@
+
 import { Waypoints } from 'lucide-react';
 import { type Topic } from './types';
 
