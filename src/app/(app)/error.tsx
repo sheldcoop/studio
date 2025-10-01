@@ -1,4 +1,3 @@
-
 'use client' 
 
 import { useEffect } from 'react'
@@ -17,7 +16,7 @@ export default function Error({
     // Log the error to an error reporting service
     console.error(error)
   }, [error])
- body.
+ 
   return (
     <div className="flex h-full flex-1 flex-col items-center justify-center text-center">
         <div>
