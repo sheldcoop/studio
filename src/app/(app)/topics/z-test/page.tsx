@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -48,7 +47,6 @@ const twoSampleZTestChartConfig = {
     color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
-
 
 // --- Chart Components ---
 
@@ -153,7 +151,6 @@ const TwoSampleZTestChart = () => {
 
 const DynamicOneSampleZTestChart = dynamic(() => Promise.resolve(OneSampleZTestChart), { ssr: false });
 const DynamicTwoSampleZTestChart = dynamic(() => Promise.resolve(TwoSampleZTestChart), { ssr: false });
-
 
 export default function ZTestPage() {
   return (
