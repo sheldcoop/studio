@@ -110,7 +110,7 @@ const ZTable = ({ highlightedZ }: { highlightedZ: number | null }) => {
     }
 
     const highlightedRow = highlightedZ !== null ? (Math.round(highlightedZ * 10) / 10).toFixed(1) : null;
-    const highlightedCol = highlightedZ !== null ? Math.abs(Math.round((highlightedZ - parseFloat(highlightedRow!)) * 100) / 100).toFixed(2) : null;
+    const highlightedCol = highlightedZ !== null && highlightedRow !== null ? Math.abs(Math.round((highlightedZ - parseFloat(highlightedRow)) * 100) / 100).toFixed(2) : null;
 
     return (
       <Card>
@@ -493,3 +493,5 @@ export default function ZTablePage() {
     </>
   );
 }
+
+    
