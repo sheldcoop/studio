@@ -8,7 +8,6 @@ type TopicPageProps = {
   params: { topic: string; slug: string };
 };
 
-
 // This function MUST be in a server component.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
   const path = `/${params.topic}/${params.slug}`;
