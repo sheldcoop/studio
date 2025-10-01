@@ -27,7 +27,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 type ZToPType = "left" | "right" | "two-tailed";
 
 // Generate data for the normal curve visualization
-const generateCurveData = (shadeFrom: number | null, shadeTo: number | null, zToPType: ZToPType = "left", zScore: number | null = null) => {
+const generateCurveData = (shadeFrom: number | null, shadeTo: number | null, zToPType: ZToPType = "left", zScore: number | null | undefined = null) => {
   const data = [];
   const points = 400;
   const range = 8;
@@ -39,7 +39,7 @@ const generateCurveData = (shadeFrom: number | null, shadeTo: number | null, zTo
     const y = standardNormalPdf(x);
     const point: { x: number; y: number; shaded?: number } = { x, y };
     
-    if (zToPType === "two-tailed" && zScore !== null) {
+    if (zToPType === "two-tailed" && zScore != null) {
         const absZ = Math.abs(zScore);
         if (x <= -absZ || x >= absZ) {
             point.shaded = y;
@@ -55,7 +55,7 @@ const generateCurveData = (shadeFrom: number | null, shadeTo: number | null, zTo
 // Chart Component for Visualization
 const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }: { shadeFrom: number | null, shadeTo: number | null, zToPType?: ZToPType, zScore?: number | null, zScore1?: number | null, zScore2?: number | null }) => {
   const chartData = useMemo(() => generateCurveData(shadeFrom, shadeTo, zToPType, zScore), [shadeFrom, shadeTo, zToPType, zScore]);
-  const absZScore = zScore !== null ? Math.abs(zScore) : null;
+  const absZScore = zScore != null ? Math.abs(zScore) : null;
 
   return (
     <ChartContainer config={{}} className="h-[250px] w-full">
@@ -81,14 +81,14 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
                 <ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
             </>
         ) : zScore !== null ? (
-            <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         ) : null}
 
         {zScore1 !== null && (
-            <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
         {zScore2 !== null && (
-            <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
 
       </AreaChart>
@@ -110,7 +110,7 @@ const ZTable = ({ highlightedZ }: { highlightedZ: number | null }) => {
     }
 
     const highlightedRow = highlightedZ !== null ? (Math.round(highlightedZ * 10) / 10).toFixed(1) : null;
-    const highlightedCol = highlightedZ !== null ? Math.abs(Math.round((highlightedZ - parseFloat(highlightedRow!)) * 100) / 100).toFixed(2) : null;
+    const highlightedCol = highlightedZ !== null && highlightedRow !== null ? Math.abs(Math.round((highlightedZ - parseFloat(highlightedRow)) * 100) / 100).toFixed(2) : null;
 
     return (
       <Card>
@@ -315,8 +315,12 @@ export default function ZTablePage() {
                 <CardTitle className="font-headline">The Real Power of the Z-Score: Finding Probabilities</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
-                <p>Knowing a Z-score is great, but its real power comes from using it to find probabilities. Once we have a Z-score, we can determine the probability of observing a value that low, that high, or even more extreme.</p>
-                <p>This probability is called a <strong>p-value</strong>, and it is the absolute foundation of hypothesis testing. It's the p-value that tells us if an observation (like a stock's return) is statistically significant or just random noise.</p>
+                <p>
+                    Knowing a Z-score is great, but its real power comes from using it to find probabilities. Once we have a Z-score, we can determine the probability of observing a value that low, that high, or even more extreme.
+                </p>
+                <p>
+                    This probability is called a <strong>p-value</strong>, and it is the absolute foundation of hypothesis testing. It's the p-value that tells us if an observation (like a stock's return) is statistically significant or just random noise.
+                </p>
             </CardContent>
         </Card>
         

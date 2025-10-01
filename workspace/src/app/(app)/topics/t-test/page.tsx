@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,6 +24,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+import { Label as RechartsLabel } from 'recharts';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -238,12 +240,13 @@ const OneSampleTestChart = () => {
               strokeWidth={2}
               strokeDasharray="3 3"
             >
-              <Label
-                value={`Claimed: ${target}%`}
+              <RechartsLabel
                 position="insideTopRight"
                 fill="hsl(var(--destructive))"
                 fontSize={12}
-              />
+              >
+                {`Claimed: ${target}%`}
+              </RechartsLabel>
             </ReferenceLine>
           </RechartsBarChart>
         </ChartContainer>
