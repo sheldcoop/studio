@@ -8,7 +8,7 @@ const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').repla
 const createTopic = (module: string, title: string, description: string): Topic => ({
     id: `stats-${toSlug(title)}`,
     title,
-    href: `/topics/statistics/${toSlug(title)}`,
+    href: `/statistics/${toSlug(title)}`,
     icon: FunctionSquare,
     description,
     category: 'sub-topic',
