@@ -170,7 +170,7 @@ export default function ZTestPage() {
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
-                  A Z-test, like a t-test, checks if differences in means are significant. However, it&apos;s used for large crowds (samples <InlineMath math="> 30" />) where you already have a map of the entire population&apos;s variability (known population standard deviation).
+                  A Z-test, like a t-test, checks if differences in means are significant. However, it&apos;s used for large crowds (samples &gt; 30) where you already have a map of the entire population&apos;s variability (known population standard deviation).
                 </p>
               </div>
               <div>
@@ -181,7 +181,7 @@ export default function ZTestPage() {
                   The main requirements are a{' '}
                   <strong className="text-foreground">
                     large sample size
-                  </strong> (<InlineMath math="n > 30" />), approximately{' '}
+                  </strong> (n &gt; 30), approximately{' '}
                    <strong className="text-foreground">
                     normally distributed
                   </strong> data, and critically, a{' '}
