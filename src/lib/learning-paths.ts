@@ -63,7 +63,7 @@ export const getPathById = (id: string): LearningPath | undefined => {
   const pathInfo = learningPaths.find(p => p.id === id);
   if (!pathInfo) return undefined;
 
-  const allModules = [
+  const allModules: Omit<Module, 'lessons' | 'status'> & { parent: string; status?: 'completed' | 'in-progress' | 'not-started' }[] = [
     { id: 'la-main-chapters', parent: 'linear-algebra-for-quantitative-finance', title: 'Chapters', status: 'in-progress', duration: 0 },
     { id: 'stats-module-1', parent: 'statistics-for-quantitative-finance', title: 'Probability Theory', status: 'completed', duration: 60},
     { id: 'stats-module-2', parent: 'statistics-for-quantitative-finance', title: 'Common Distributions', status: 'in-progress', duration: 75 },
@@ -74,8 +74,8 @@ export const getPathById = (id: string): LearningPath | undefined => {
     { id: 'prob-dist-continuous', parent: 'probability-toolkit', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
   ];
 
-  const pathModules = allModules.filter(m => m.parent === id).map(module => {
-    let lessons: Topic[] = allTopics.filter(t => t.parent === module.id).map(lesson => ({
+  const pathModules: Module[] = allModules.filter(m => m.parent === id).map(module => {
+    const lessons: Topic[] = allTopics.filter(t => t.parent === module.id).map(lesson => ({
         ...lesson,
         status: module.status, // Inherit status from parent module
         duration: Math.floor(Math.random() * 20) + 5, // Assign random duration for now

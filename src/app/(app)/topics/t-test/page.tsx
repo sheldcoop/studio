@@ -24,6 +24,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
+import { Label as RechartsLabel } from 'recharts';
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -239,7 +240,7 @@ const OneSampleTestChart = () => {
               strokeWidth={2}
               strokeDasharray="3 3"
             >
-              <Label
+              <RechartsLabel
                 value={`Claimed: ${target}%`}
                 position="insideTopRight"
                 fill="hsl(var(--destructive))"

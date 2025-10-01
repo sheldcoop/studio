@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -79,7 +80,7 @@ export default function DiscreteUniformDistributionPage() {
               The Discrete Uniform distribution describes a situation where there are a finite number of outcomes, and each outcome is equally likely to occur.
             </p>
             <p>
-              The most classic example is a single roll of a fair six-sided die. The possible outcomes are {1, 2, 3, 4, 5, 6}, and the probability of rolling any one of these numbers is exactly 1/6. There is no bias towards any particular outcome.
+              The most classic example is a single roll of a fair six-sided die. The possible outcomes are [1, 2, 3, 4, 5, 6], and the probability of rolling any one of these numbers is exactly 1/6. There is no bias towards any particular outcome.
             </p>
           </CardContent>
         </Card>

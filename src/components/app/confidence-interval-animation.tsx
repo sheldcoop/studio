@@ -72,7 +72,7 @@ export function ConfidenceIntervalAnimation({
       const particleCount = 1500;
       const particlesGeometry = new THREE.BufferGeometry();
       const positions = new Float32Array(particleCount * 3);
-      const particleData = [];
+      const particleData: { theta: number; phi: number; randomPhase: number; randomSpeed: number }[] = [];
 
       const sphereRadius = 7;
       for (let i = 0; i < particleCount; i++) {

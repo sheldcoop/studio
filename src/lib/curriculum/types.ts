@@ -24,13 +24,14 @@ export type Topic = {
   id: string;
   title: string;
   href: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   description: string;
   category: 'main' | 'sub-topic' | 'parametric' | 'non-parametric' | 'parent' | 'probability';
   parent?: string; // id of parent topic
   status?: 'completed' | 'in-progress' | 'not-started';
   duration?: number; // in minutes
   subTopics?: SubTopic[];
+   content?: string; // Added for simple content pages
   interactiveExamples?: {
     coreConcepts: CoreConcept[];
     examples: InteractiveExample[];
