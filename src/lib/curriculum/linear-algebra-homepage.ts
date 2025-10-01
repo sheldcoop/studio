@@ -36,11 +36,11 @@ export const linearAlgebraTopics: Topic[] = [
     createTopic('la-module-4', 'Positive Definite Matrices', "The mathematical property that makes portfolio optimization possible."),
     createTopic('la-module-4', 'Cholesky Decomposition', "The key to generating correlated random asset paths for Monte Carlo simulations."),
 
-    // Main topic entry for the hub page itself - NO LONGER NEEDED, but kept for data integrity if referenced elsewhere
+    // Main topic entry for the hub page itself
     {
         id: 'linear-algebra-for-quantitative-finance',
         title: 'Linear Algebra for Quants',
-        href: '/linear-algebra-for-quantitative-finance',
+        href: '/linear-algebra',
         icon: Waypoints,
         description:
         'The language of data and the backbone of modern quantitative finance.',
