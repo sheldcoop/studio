@@ -40,7 +40,7 @@ export const linearAlgebraTopics: Topic[] = [
     {
         id: 'linear-algebra-for-quantitative-finance',
         title: 'Linear Algebra for Quants',
-        href: '/linear-algebra-for-quantitative-finance',
+        href: '/linear-algebra',
         icon: Waypoints,
         description:
         'The language of data and the backbone of modern quantitative finance.',
