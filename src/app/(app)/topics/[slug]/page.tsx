@@ -11,8 +11,8 @@ type TopicPageProps = {
 // This function generates metadata for the page based on the slug.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
   const { slug } = await params;
-  // The slug can come from various paths, so we find the topic that ends with this slug.
-  const topicInfo = allTopics.find((t) => t.href.endsWith(`/${slug}`));
+  // Find the topic by its unique ID, which is the slug.
+  const topicInfo = allTopics.find((t) => t.id === slug);
 
   if (!topicInfo) {
     return {
@@ -30,8 +30,8 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 export default async function TopicPage({ params }: TopicPageProps) {
   const { slug } = await params;
   
-  // Find the topic by looking at the end of the href, which corresponds to the slug
-  const topicInfo = allTopics.find((t) => t.href.endsWith(`/${slug}`));
+  // Find the topic by its unique ID, which is now the slug. This is the correct way.
+  const topicInfo = allTopics.find((t) => t.id === slug);
   
   if (!topicInfo) {
     notFound();

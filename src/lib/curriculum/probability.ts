@@ -1,10 +1,11 @@
+
 import type { Topic } from './types';
 
 export const probabilityTopics: Topic[] = [
   {
     id: 'bayes-theorem',
     title: "Bayes' Theorem",
-    href: '/probability/bayes-theorem',
+    href: '/topics/bayes-theorem',
     icon: 'FunctionSquare',
     description: 'A framework for updating beliefs with new evidence.',
     category: 'probability',
@@ -22,7 +23,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'bernoulli-distribution',
     title: 'Bernoulli Distribution',
-    href: '/probability/bernoulli-distribution',
+    href: '/topics/bernoulli-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling a single trial with two outcomes.',
     category: 'probability',
@@ -31,7 +32,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'binomial-distribution',
     title: 'Binomial Distribution',
-    href: '/probability/binomial-distribution',
+    href: '/topics/binomial-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling a series of success/fail trials.',
     category: 'probability',
@@ -40,7 +41,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'poisson-distribution',
     title: 'Poisson Distribution',
-    href: '/probability/poisson-distribution',
+    href: '/topics/poisson-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling the frequency of rare events.',
     category: 'probability',
@@ -49,7 +50,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'geometric-distribution',
     title: 'Geometric Distribution',
-    href: '/probability/geometric-distribution',
+    href: '/topics/geometric-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling trials until the first success.',
     category: 'probability',
@@ -58,7 +59,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'hypergeometric-distribution',
     title: 'Hypergeometric Distribution',
-    href: '/probability/hypergeometric-distribution',
+    href: '/topics/hypergeometric-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling sampling without replacement.',
     category: 'probability',
@@ -67,7 +68,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'negative-binomial-distribution',
     title: 'Negative Binomial Distribution',
-    href: '/probability/negative-binomial-distribution',
+    href: '/topics/negative-binomial-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling trials until a set number of successes.',
     category: 'probability',
@@ -76,7 +77,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'discrete-uniform-distribution',
     title: 'Discrete Uniform Distribution',
-    href: '/probability/discrete-uniform-distribution',
+    href: '/topics/discrete-uniform-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling where all outcomes are equally likely.',
     category: 'probability',
@@ -85,7 +86,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'multinomial-distribution',
     title: 'Multinomial Distribution',
-    href: '/probability/multinomial-distribution',
+    href: '/topics/multinomial-distribution',
     icon: 'FunctionSquare',
     description: 'Generalizing the Binomial for multiple outcomes.',
     category: 'probability',
@@ -94,7 +95,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'gamma-distribution',
     title: 'Gamma Distribution',
-    href: '/probability/gamma-distribution',
+    href: '/topics/gamma-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling waiting times and skewed data.',
     category: 'probability',
@@ -103,7 +104,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'beta-distribution',
     title: 'Beta Distribution',
-    href: '/probability/beta-distribution',
+    href: '/topics/beta-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling probabilities, percentages, and proportions.',
     category: 'probability',
@@ -112,7 +113,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'exponential-distribution',
     title: 'Exponential Distribution',
-    href: '/probability/exponential-distribution',
+    href: '/topics/exponential-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling the time between events in a Poisson process.',
     category: 'probability',
@@ -121,7 +122,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'cauchy-distribution',
     title: 'Cauchy Distribution',
-    href: '/probability/cauchy-distribution',
+    href: '/topics/cauchy-distribution',
     icon: 'FunctionSquare',
     description: "Modeling extreme events and 'fat-tailed' phenomena.",
     category: 'probability',
@@ -130,7 +131,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'laplace-distribution',
     title: 'Laplace Distribution',
-    href: '/probability/laplace-distribution',
+    href: '/topics/laplace-distribution',
     icon: 'FunctionSquare',
     description: "Modeling with a sharp peak and 'fat tails'.",
     category: 'probability',
@@ -139,7 +140,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'lognormal-distribution',
     title: 'Lognormal Distribution',
-    href: '/topics/statistics/lognormal-distribution',
+    href: '/topics/lognormal-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling variables that cannot be negative, like stock prices.',
     category: 'probability',
@@ -148,7 +149,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'f-distribution',
     title: 'F-Distribution',
-    href: '/probability/f-distribution',
+    href: '/topics/f-distribution',
     icon: 'FunctionSquare',
     description: 'Comparing variances between two or more samples.',
     category: 'probability',
@@ -157,7 +158,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'students-t-distribution',
     title: "Student's t-Distribution",
-    href: '/probability/students-t-distribution',
+    href: '/topics/students-t-distribution',
     icon: 'FunctionSquare',
     description: 'The backbone of hypothesis testing with small sample sizes.',
     category: 'probability',
@@ -166,7 +167,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'weibull-distribution',
     title: 'Weibull Distribution',
-    href: '/probability/weibull-distribution',
+    href: '/topics/weibull-distribution',
     icon: 'FunctionSquare',
     description: 'Modeling time-to-failure and event durations.',
     category: 'probability',
@@ -175,7 +176,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'logistic-distribution',
     title: 'Logistic Distribution',
-    href: '/probability/logistic-distribution',
+    href: '/topics/logistic-distribution',
     icon: 'FunctionSquare',
     description: 'A key distribution in machine learning and growth modeling.',
     category: 'probability',
@@ -184,7 +185,7 @@ export const probabilityTopics: Topic[] = [
   {
     id: 'chi-squared-distribution',
     title: 'Chi-Squared (χ²) Distribution',
-    href: '/probability/chi-squared-distribution',
+    href: '/topics/chi-squared-distribution',
     icon: 'FunctionSquare',
     description: 'The distribution of the sum of squared standard normal deviates.',
     category: 'probability',

@@ -5,11 +5,11 @@ import { type Topic } from './types';
 const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
 const createTopic = (module: string, title: string, description: string): Topic => {
-    const slug = toSlug(title);
+    const slug = `la-${toSlug(title)}`;
     return {
-        id: `la-${slug}`,
+        id: slug,
         title,
-        href: `/linear-algebra-for-quantitative-finance/${slug}`,
+        href: `/topics/${slug}`, // Use the unified /topics/ route
         icon: 'Waypoints',
         description,
         category: 'sub-topic',
@@ -37,15 +37,4 @@ export const linearAlgebraTopics: Topic[] = [
     createTopic('la-module-4', 'Covariance & Correlation Matrices', "The cornerstone of portfolio theory."),
     createTopic('la-module-4', 'Positive Definite Matrices', "The mathematical property that makes portfolio optimization possible."),
     createTopic('la-module-4', 'Cholesky Decomposition', "The key to generating correlated random asset paths for Monte Carlo simulations."),
-    
-    // Main topic entry for the hub page itself
-    {
-        id: 'linear-algebra-for-quantitative-finance',
-        title: 'Linear Algebra for Quants',
-        href: '/linear-algebra-for-quantitative-finance',
-        icon: 'Calculator',
-        description:
-        'The language of data and the backbone of modern quantitative finance.',
-        category: 'main',
-    },
 ];
