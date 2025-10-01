@@ -14,6 +14,7 @@ const createTopic = (module: string, title: string, description: string): Topic 
     parent: module,
 });
 
+
 export const linearAlgebraTopics: Topic[] = [
     // --- Module 1 ---
     createTopic('la-module-1', 'Vectors & Vector Spaces', "Representing asset returns or portfolio weights."),
@@ -39,7 +40,7 @@ export const linearAlgebraTopics: Topic[] = [
     {
         id: 'linear-algebra-for-quantitative-finance',
         title: 'Linear Algebra for Quants',
-        href: '/linear-algebra',
+        href: '/linear-algebra-for-quantitative-finance',
         icon: 'Waypoints',
         description:
         'The language of data and the backbone of modern quantitative finance.',
