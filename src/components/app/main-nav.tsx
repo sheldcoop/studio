@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -6,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   BookOpenCheck,
-  BotMessageSquare,
   Users,
   FolderKanban,
   Sigma,
@@ -34,11 +32,6 @@ const links = [
     href: '/hypothesis-testing-p-values',
     label: 'Statistical Tests',
     icon: Sigma,
-  },
-  {
-    href: '/interview-prep',
-    label: 'Interview Prep',
-    icon: BotMessageSquare,
   },
   {
     href: '/community',
