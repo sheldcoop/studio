@@ -1,38 +1,69 @@
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { taglines } from '@/lib/site';
 
 export function AnimatedTagline() {
-  const [index, setIndex] = useState(0);
-  const [subIndex, setSubIndex] = useState(0);
+  const [taglineIndex, setTaglineIndex] = useState(0);
+  const [animatedText, setAnimatedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [currentTagline, setCurrentTagline] = useState(taglines[0]);
+  const [isPaused, setIsPaused] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
-    if (subIndex === currentTagline[1].length + 1 && !isDeleting) {
-      setTimeout(() => setIsDeleting(true), 2000);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPaused(!entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    if(ref.current) {
+      observer.observe(ref.current);
+    }
+    return () => {
+      if(ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isPaused) {
       return;
     }
 
-    if (isDeleting && subIndex === 0) {
-      const nextIndex = (index + 1) % taglines.length;
-      setIndex(nextIndex);
-      setCurrentTagline(taglines[nextIndex]);
-      setIsDeleting(false);
-      return;
-    }
+    const currentAnimatedPart = taglines[taglineIndex][1];
+    const typeSpeed = 100;
+    const deleteSpeed = 50;
+    const delayAfterTyping = 1500;
 
-    const timeout = setTimeout(() => {
-      setSubIndex((prev) => prev + (isDeleting ? -1 : 1));
-    }, isDeleting ? 75 : 150);
+    const handleTyping = () => {
+      if (isDeleting) {
+        if (animatedText.length > 0) {
+          setAnimatedText((prev) => prev.substring(0, prev.length - 1));
+        } else {
+          setIsDeleting(false);
+          setTaglineIndex((prev) => (prev + 1) % taglines.length);
+        }
+      } else {
+        if (animatedText !== currentAnimatedPart) {
+          setAnimatedText(currentAnimatedPart.substring(0, animatedText.length + 1));
+        } else {
+          setTimeout(() => setIsDeleting(true), delayAfterTyping);
+        }
+      }
+    };
 
-    return () => clearTimeout(timeout);
-  }, [subIndex, isDeleting, index, currentTagline]);
+    const typingTimeout = setTimeout(handleTyping, isDeleting ? deleteSpeed : typeSpeed);
+
+    return () => clearTimeout(typingTimeout);
+  }, [animatedText, isDeleting, taglineIndex, isPaused]);
+
+  const staticPart = taglines[taglineIndex][0];
 
   return (
-    <div>
+    <div ref={ref}>
       {/* This h2 is for SEO and screen readers, providing a stable, non-animated version */}
       <h2 className="sr-only">From Data to Insight, From Model to Alpha.</h2>
       <div
@@ -40,16 +71,12 @@ export function AnimatedTagline() {
         className="font-headline text-5xl font-bold tracking-tight md:text-6xl"
       >
         <span className="inline-block h-14">
-          <span className="text-primary">{currentTagline[0]}</span>
-          <span className="relative">
-            <span className="invisible">{currentTagline[1]}</span>
-            <span
-              className="absolute left-0 text-primary"
-            >
-              {currentTagline[1].substring(0, subIndex)}
-            </span>
-            <span className="animate-blink border-r-2 border-primary"></span>
-          </span>
+          <span>{staticPart}</span>
+          <span className="text-primary">{animatedText}</span>
+          <span
+            className="animate-blink border-r-2 border-foreground align-bottom"
+            aria-hidden="true"
+          ></span>
         </span>
       </div>
     </div>
