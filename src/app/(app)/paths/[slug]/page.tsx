@@ -63,7 +63,7 @@ export default async function PathPage({ params }: PathPageProps) {
       />
       <Accordion type="single" collapsible className="w-full space-y-4" defaultValue={path.modules[0].id}>
         {path.modules.map((module) => (
-          <LearningPathCard key={module.id} module={module} iconName={path.icon} />
+          <LearningPathCard key={module.id} module={module} icon={path.icon} />
         ))}
       </Accordion>
     </>
