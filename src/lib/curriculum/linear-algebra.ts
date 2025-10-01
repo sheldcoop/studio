@@ -8,7 +8,7 @@ const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').repla
 const createTopic = (module: string, title: string, description: string): Topic => ({
     id: `la-${toSlug(title)}`,
     title,
-    href: `/topics/${toSlug(title)}`, // Use the new /topics/[slug] structure
+    href: `/linear-algebra/${toSlug(title)}`, // Use the new /linear-algebra/[slug] structure
     icon: Waypoints,
     description,
     category: 'sub-topic',
@@ -40,7 +40,7 @@ export const linearAlgebraTopics: Topic[] = [
     {
         id: 'linear-algebra-for-quantitative-finance',
         title: 'Linear Algebra for Quants',
-        href: '/paths/linear-algebra-for-quantitative-finance',
+        href: '/linear-algebra-for-quantitative-finance',
         icon: Waypoints,
         description:
         'The language of data and the backbone of modern quantitative finance.',
