@@ -1,10 +1,35 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { taglines } from '@/lib/site';
 
 export function AnimatedTagline() {
-  const animatedPart = taglines.map(t => t[1]);
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [currentTagline, setCurrentTagline] = useState(taglines[0]);
+
+  useEffect(() => {
+    if (subIndex === currentTagline[1].length + 1 && !isDeleting) {
+      setTimeout(() => setIsDeleting(true), 2000);
+      return;
+    }
+
+    if (isDeleting && subIndex === 0) {
+      const nextIndex = (index + 1) % taglines.length;
+      setIndex(nextIndex);
+      setCurrentTagline(taglines[nextIndex]);
+      setIsDeleting(false);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setSubIndex((prev) => prev + (isDeleting ? -1 : 1));
+    }, isDeleting ? 75 : 150);
+
+    return () => clearTimeout(timeout);
+  }, [subIndex, isDeleting, index, currentTagline]);
 
   return (
     <div>
@@ -15,14 +40,15 @@ export function AnimatedTagline() {
         className="font-headline text-5xl font-bold tracking-tight md:text-6xl"
       >
         <span className="inline-block h-14">
-          <span className="text-primary">From Insight to </span>
+          <span className="text-primary">{currentTagline[0]}</span>
           <span className="relative">
-            <span className="invisible">{animatedPart[0]}</span>
+            <span className="invisible">{currentTagline[1]}</span>
             <span
-              className="absolute left-0 text-primary overflow-hidden whitespace-nowrap animate-[typing_2s_steps(8,end)_1s_1_normal_both,blink_1s_step-end_infinite] border-r-2"
+              className="absolute left-0 text-primary"
             >
-              {animatedPart[0]}
+              {currentTagline[1].substring(0, subIndex)}
             </span>
+            <span className="animate-blink border-r-2 border-primary"></span>
           </span>
         </span>
       </div>
