@@ -11,7 +11,7 @@ type TopicPageProps = {
 
 // This function MUST be in a server component.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const path = `/${params.topic}/${params.slug}`;
+  const path = `/topics/${params.topic}/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
 
   if (!topicInfo) {
