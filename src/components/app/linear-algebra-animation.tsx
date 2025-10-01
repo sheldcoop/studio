@@ -1,8 +1,15 @@
-
 'use client';
 
 import { useRef } from 'react';
-import * as THREE from 'three';
+import {
+  PointsMaterial,
+  Points,
+  BufferGeometry,
+  Vector3,
+  Euler,
+  Clock,
+  Group,
+} from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import { useThreeAnimation } from '@/hooks/useThreeAnimation';
@@ -11,6 +18,23 @@ interface LinearAlgebraAnimationProps {
   className?: string;
   isHovered: boolean;
 }
+
+// Create geometry once and reuse it. This is a major memory optimization.
+const pointCloudGeometry = new BufferGeometry();
+const points = [];
+const gridSize = 10;
+const gridDivisions = 10;
+const step = gridSize / gridDivisions;
+
+for (let i = -gridSize / 2; i <= gridSize / 2; i += step) {
+  for (let j = -gridSize / 2; j <= gridSize / 2; j += step) {
+    for (let k = -gridSize / 2; k <= gridSize / 2; k += step) {
+      points.push(new Vector3(i, j, k));
+    }
+  }
+}
+pointCloudGeometry.setFromPoints(points);
+
 
 export function LinearAlgebraAnimation({
   className,
@@ -26,37 +50,23 @@ export function LinearAlgebraAnimation({
       onSetup: ({ scene, camera, renderer, primaryColor, opacityValue }) => {
         camera.position.z = 15;
         
-        const gridGroup = new THREE.Group();
+        const gridGroup = new Group();
         scene.add(gridGroup);
         
-        const pointCloudMaterial = new THREE.PointsMaterial({
+        const pointCloudMaterial = new PointsMaterial({
             size: 0.25,
             transparent: true,
-            blending: THREE.AdditiveBlending,
+            blending: 2, // AdditiveBlending
             color: primaryColor,
             opacity: opacityValue,
         });
   
-        const points = [];
-        const gridSize = 10;
-        const gridDivisions = 10;
-        const step = gridSize / gridDivisions;
-  
-        for (let i = -gridSize / 2; i <= gridSize / 2; i += step) {
-            for (let j = -gridSize / 2; j <= gridSize / 2; j += step) {
-                for (let k = -gridSize / 2; k <= gridSize/2; k += step) {
-                     points.push(new THREE.Vector3(i, j, k));
-                }
-            }
-        }
-        
-        const pointCloudGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        const pointCloud = new THREE.Points(pointCloudGeometry, pointCloudMaterial);
+        const pointCloud = new Points(pointCloudGeometry, pointCloudMaterial);
         gridGroup.add(pointCloud);
   
-        const clock = new THREE.Clock();
-        const targetRotation = new THREE.Euler(0, 0, 0);
-        const targetScale = new THREE.Vector3(1, 1, 1);
+        const clock = new Clock();
+        const targetRotation = new Euler(0, 0, 0);
+        const targetScale = new Vector3(1, 1, 1);
   
         const animate = () => {
           const elapsedTime = clock.getElapsedTime();
@@ -92,7 +102,7 @@ export function LinearAlgebraAnimation({
           animate,
           cleanup: () => {
             if(mountRef.current) mountRef.current.removeEventListener('mousemove', handleMouseMove);
-            pointCloudGeometry.dispose();
+            // Geometry is shared, so it should not be disposed here.
           },
           materials: [pointCloudMaterial]
         };

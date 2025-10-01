@@ -1,8 +1,13 @@
-
 'use client';
 
 import { useRef } from 'react';
-import * as THREE from 'three';
+import {
+  Sprite,
+  SpriteMaterial,
+  Vector3,
+  CanvasTexture,
+  Clock,
+} from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import { useThreeAnimation } from '@/hooks/useThreeAnimation';
@@ -10,6 +15,34 @@ import { useThreeAnimation } from '@/hooks/useThreeAnimation';
 interface MentalMathAnimationProps {
   className?: string;
   isHovered: boolean;
+}
+
+const symbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '−', '×', '÷', '='];
+const ATLAS_SIZE = 512;
+const GRID_SIZE = 4; // 4x4 grid for 16 symbols
+const CELL_SIZE = ATLAS_SIZE / GRID_SIZE;
+
+// Create one texture atlas for all symbols to save memory.
+const createTextureAtlas = (color: string) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = ATLAS_SIZE;
+    canvas.height = ATLAS_SIZE;
+    const ctx = canvas.getContext('2d');
+
+    if (ctx) {
+        ctx.fillStyle = color;
+        ctx.font = 'bold 80px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (let i = 0; i < symbols.length; i++) {
+            const row = Math.floor(i / GRID_SIZE);
+            const col = i % GRID_SIZE;
+            const x = col * CELL_SIZE + CELL_SIZE / 2;
+            const y = row * CELL_SIZE + CELL_SIZE / 2;
+            ctx.fillText(symbols[i], x, y);
+        }
+    }
+    return new CanvasTexture(canvas);
 }
 
 export function MentalMathAnimation({
@@ -26,34 +59,29 @@ export function MentalMathAnimation({
     onSetup: ({ scene, camera, renderer, primaryColor, opacityValue }) => {
       camera.position.z = 12;
 
-      const sprites: THREE.Sprite[] = [];
-      const symbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '−', '×', '÷', '='];
+      const textureAtlas = createTextureAtlas(primaryColor.getStyle());
+
+      const sprites: Sprite[] = [];
       const particleCount = 100;
-      const spriteMaterials: THREE.SpriteMaterial[] = [];
+      const allMaterials: SpriteMaterial[] = [];
 
       for (let i = 0; i < particleCount; i++) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 128;
-        canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        
-        if (ctx) {
-          ctx.fillStyle = primaryColor.getStyle();
-          ctx.font = 'bold 80px Arial';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(symbols[Math.floor(Math.random() * symbols.length)], 64, 64);
-        }
+        const symbolIndex = Math.floor(Math.random() * symbols.length);
+        const row = Math.floor(symbolIndex / GRID_SIZE);
+        const col = symbolIndex % GRID_SIZE;
 
-        const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.SpriteMaterial({
-          map: texture,
+        const material = new SpriteMaterial({
+          map: textureAtlas,
           transparent: true,
           opacity: opacityValue * 0.7,
         });
-        spriteMaterials.push(material);
 
-        const sprite = new THREE.Sprite(material);
+        // Use UV mapping to select the right symbol from the atlas
+        material.map!.offset.set(col / GRID_SIZE, 1.0 - (row + 1) / GRID_SIZE);
+        material.map!.repeat.set(1 / GRID_SIZE, 1 / GRID_SIZE);
+        allMaterials.push(material);
+
+        const sprite = new Sprite(material);
         sprite.position.set(
           (Math.random() - 0.5) * 25,
           (Math.random() - 0.5) * 15,
@@ -64,7 +92,7 @@ export function MentalMathAnimation({
         sprite.scale.set(size, size, 1);
 
         sprite.userData = {
-          velocity: new THREE.Vector3(
+          velocity: new Vector3(
             (Math.random() - 0.5) * 0.04,
             (Math.random() - 0.5) * 0.04,
             (Math.random() - 0.5) * 0.04
@@ -76,7 +104,7 @@ export function MentalMathAnimation({
         sprites.push(sprite);
       }
 
-      const clock = new THREE.Clock();
+      const clock = new Clock();
       let interactionStrength = 0;
 
       const animate = () => {
@@ -92,7 +120,7 @@ export function MentalMathAnimation({
           sprite.position.add(sprite.userData.velocity);
 
           if (isMouseOver.current && interactionStrength > 0.1) {
-            const mousePos = new THREE.Vector3(mouse.current.x * 12, mouse.current.y * 7, 0);
+            const mousePos = new Vector3(mouse.current.x * 12, mouse.current.y * 7, 0);
             const direction = sprite.position.clone().sub(mousePos);
             const distance = direction.length();
 
@@ -129,12 +157,11 @@ export function MentalMathAnimation({
           animate,
           cleanup: () => {
               if(mountRef.current) mountRef.current.removeEventListener('mousemove', handleMouseMove);
-              spriteMaterials.forEach(m => {
-                  m.map?.dispose();
-                  m.dispose();
-              });
+              textureAtlas.dispose();
+              allMaterials.forEach(m => m.dispose());
           },
-          materials: [] // Canvas textures are not easily updatable this way
+          // Color update is handled by recreating the atlas, so we don't pass materials.
+          materials: []
       }
     }
   });

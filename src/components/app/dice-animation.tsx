@@ -1,8 +1,16 @@
-
 'use client';
 
-import { useRef, useEffect } from 'react';
-import * as THREE from 'three';
+import { useRef } from 'react';
+import { 
+    BoxGeometry, 
+    MeshStandardMaterial, 
+    Mesh, 
+    DirectionalLight, 
+    AmbientLight,
+    CanvasTexture,
+    Clock,
+    Color,
+} from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import { useThreeAnimation } from '@/hooks/useThreeAnimation';
@@ -12,12 +20,13 @@ interface DiceAnimationProps {
   isHovered: boolean;
 }
 
+// This function is now outside the component, so it doesn't get redefined on every render.
 const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string, bgColor: string) => {
   const canvas = document.createElement('canvas');
   canvas.width = 128;
   canvas.height = 128;
   const context = canvas.getContext('2d');
-  if (!context) return new THREE.MeshStandardMaterial({ color: 0x111111 });
+  if (!context) return new MeshStandardMaterial({ color: 0x111111 });
 
   context.fillStyle = bgColor;
   context.fillRect(0, 0, 128, 128);
@@ -28,9 +37,11 @@ const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string
     context.fill();
   });
 
-  return new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(canvas) });
+  return new MeshStandardMaterial({ map: new CanvasTexture(canvas) });
 };
 
+// Create geometry once and reuse it across all instances of the component.
+const dieGeometry = new BoxGeometry(2, 2, 2);
 
 export function DiceAnimation({
   className,
@@ -45,17 +56,17 @@ export function DiceAnimation({
     onSetup: ({ scene, camera, renderer, primaryColor }) => {
       camera.position.z = 5;
 
-      const light = new THREE.DirectionalLight(0xffffff, 2.5);
+      const light = new DirectionalLight(0xffffff, 2.5);
       light.position.set(2, 5, 3);
       scene.add(light);
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      const ambientLight = new AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
 
       const dotColor = primaryColor.getStyle();
       
       const backgroundColorValue = getComputedStyle(document.documentElement).getPropertyValue('--card').trim();
       const [h, s, l] = backgroundColorValue.split(' ').map(parseFloat);
-      const faceColor = new THREE.Color(`hsl(${h}, ${s}%, ${l}%)`).getStyle();
+      const faceColor = new Color(`hsl(${h}, ${s}%, ${l}%)`).getStyle();
 
       const faceMaterials = [
         createDieFaceMaterial([{ x: 64, y: 64 }], dotColor, faceColor), // 1
@@ -66,11 +77,10 @@ export function DiceAnimation({
         createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 32 }], dotColor, faceColor), // 6
       ];
 
-      const dieGeometry = new THREE.BoxGeometry(2, 2, 2);
-      const die = new THREE.Mesh(dieGeometry, faceMaterials);
+      const die = new Mesh(dieGeometry, faceMaterials);
       scene.add(die);
 
-      const clock = new THREE.Clock();
+      const clock = new Clock();
 
       const animate = () => {
         const delta = clock.getDelta();
@@ -85,21 +95,19 @@ export function DiceAnimation({
       return {
         animate,
         cleanup: () => {
-            dieGeometry.dispose();
+            // Do not dispose shared geometry here
             faceMaterials.forEach(m => {
                 m.map?.dispose();
                 m.dispose();
             });
         },
-        materials: [] // No materials to update on theme change
+        // Materials are recreated on theme change, so no need to return them
+        materials: []
       };
     }
   });
 
-  useEffect(() => {
-    isMouseOver.current = isHovered;
-  }, [isHovered]);
-
+  isMouseOver.current = isHovered;
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
