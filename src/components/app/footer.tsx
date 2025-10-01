@@ -12,7 +12,7 @@ export function Footer() {
           <div className="flex flex-col items-center gap-4 sm:items-start">
             <Logo />
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} QuantPrep. All rights reserved.
+              &copy; {new Date().getFullYear()} QuantfianceLab. All rights reserved.
             </p>
           </div>
           <div className="flex flex-col items-center gap-4 sm:items-end">
