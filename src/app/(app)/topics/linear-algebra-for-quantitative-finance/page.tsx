@@ -16,6 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { CheckCircle, Network, TrendingUp, Cpu } from 'lucide-react';
@@ -44,6 +45,24 @@ const applications = [
         title: "Risk Management & Monte Carlo",
         description: "Use Cholesky Decomposition of a covariance matrix to generate correlated random variables, allowing you to accurately simulate portfolio performance.",
         concept: "Matrix Decompositions"
+    }
+]
+
+const module1Concepts = [
+    {
+        concept: "Vectors & Vector Spaces",
+        application: "Representing asset returns or portfolio weights. The entire state of a portfolio can be seen as a single point in a high-dimensional vector space.",
+        terms: "Vector, Scalar, Rn, Linear Combination, Span"
+    },
+    {
+        concept: "Matrix Operations",
+        application: "Aggregating data across assets and time. Used to apply transformations to entire datasets at once, like calculating portfolio variance from a covariance matrix.",
+        terms: "Matrix Multiplication, Transpose, Inverse, Identity Matrix"
+    },
+    {
+        concept: "Linear Independence",
+        application: "Crucial for diversification and factor models. If asset returns are linearly dependent, they are redundant and offer no diversification benefit.",
+        terms: "Linear Dependence, Basis, Dimension"
     }
 ]
 
@@ -103,13 +122,26 @@ export default function LinearAlgebraPage() {
             <AccordionTrigger className="text-xl font-headline hover:no-underline">
               Module 1: The Building Blocks - Vectors & Matrices
             </AccordionTrigger>
-            <AccordionContent className="px-6 py-4">
-              <p className="mb-4 text-muted-foreground">Mastering the fundamentals. Learn how to represent financial data as vectors and matrices and perform the essential operations that underpin all advanced models.</p>
-              <ul className="list-disc space-y-2 pl-6 text-base text-foreground/90">
-                <li><strong>Vectors & Spaces:</strong> Representing asset returns, understanding portfolio weights, and the geometry of financial data.</li>
-                <li><strong>Matrix Operations:</strong> Aggregating data, applying transformations, and setting the stage for systems of equations. Key concepts include multiplication, the transpose, and the inverse.</li>
-                <li><strong>Linear Independence & Span:</strong> Are your trading signals redundant? Do your chosen assets truly provide diversification? This is where you find out.</li>
-              </ul>
+            <AccordionContent className="p-0">
+               <p className="px-6 py-4 text-muted-foreground">Mastering the fundamentals. Learn how to represent financial data as vectors and matrices and perform the essential operations that underpin all advanced models.</p>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-1/4">Concept</TableHead>
+                            <TableHead className="w-1/2">Why it Matters (The Quant Application)</TableHead>
+                            <TableHead className="w-1/4">Key Terms</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {module1Concepts.map((item) => (
+                            <TableRow key={item.concept}>
+                                <TableCell className="font-medium">{item.concept}</TableCell>
+                                <TableCell className="text-muted-foreground">{item.application}</TableCell>
+                                <TableCell className="font-mono text-xs text-primary/90">{item.terms}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">
@@ -156,7 +188,3 @@ export default function LinearAlgebraPage() {
     </>
   );
 }
-
-    
-
-    
