@@ -10,7 +10,7 @@ const createTopic = (module: string, title: string, description: string): Topic 
     return {
         id: slug,
         title,
-        href: `/topics/${slug}`,
+        href: `/topics/${slug}`, // Corrected href to point to the unified topics page
         icon: 'FunctionSquare',
         description,
         category: 'sub-topic',
