@@ -7,7 +7,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription
+  CardDescription,
+  CardFooter
 } from '@/components/ui/card';
 import {
   Accordion,
@@ -155,5 +156,7 @@ export default function LinearAlgebraPage() {
     </>
   );
 }
+
+    
 
     
