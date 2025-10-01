@@ -7,7 +7,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardFooter
 } from '@/components/ui/card';
 import {
@@ -20,6 +19,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { CheckCircle, Network, TrendingUp, Cpu } from 'lucide-react';
+import { allTopics } from '@/lib/curriculum';
+import Link from 'next/link';
 
 const applications = [
     {
@@ -48,25 +49,19 @@ const applications = [
     }
 ]
 
-const module1Concepts = [
-    {
-        concept: "Vectors & Vector Spaces",
-        application: "Representing asset returns or portfolio weights. The entire state of a portfolio can be seen as a single point in a high-dimensional vector space.",
-        terms: "Vector, Scalar, Rn, Linear Combination, Span"
-    },
-    {
-        concept: "Matrix Operations",
-        application: "Aggregating data across assets and time. Used to apply transformations to entire datasets at once, like calculating portfolio variance from a covariance matrix.",
-        terms: "Matrix Multiplication, Transpose, Inverse, Identity Matrix"
-    },
-    {
-        concept: "Linear Independence",
-        application: "Crucial for diversification and factor models. If asset returns are linearly dependent, they are redundant and offer no diversification benefit.",
-        terms: "Linear Dependence, Basis, Dimension"
-    }
-]
+const modules = [
+  { id: 'la-module-1', title: "Module 1: The Building Blocks - Vectors & Matrices", description: "Mastering the fundamentals. Learn how to represent financial data as vectors and matrices and perform the essential operations that underpin all advanced models." },
+  { id: 'la-module-2', title: "Module 2: The Engine Room - Solving Equations & Finding Structure", description: "Go beyond arithmetic. This module is about solving complex financial puzzles, from pricing derivatives to finding the hidden factors that drive market movements." },
+  { id: 'la-module-3', title: "Module 3: The DNA of a Matrix - Eigen-Decomposition & SVD", description: "This is where the magic happens. Decomposing matrices reveals their intrinsic properties, allowing for powerful applications in dimensionality reduction and risk analysis." },
+  { id: 'la-module-4', title: "Module 4: The Quant's Toolkit - Financial Applications", description: "Connect theory to practice. This module focuses on the direct implementation of linear algebra in solving real-world quantitative finance problems." },
+];
 
 export default function LinearAlgebraPage() {
+  
+  const getLessonsForModule = (moduleId: string) => {
+    return allTopics.filter(t => t.parent === moduleId);
+  }
+
   return (
     <>
       <PageHeader
@@ -117,72 +112,38 @@ export default function LinearAlgebraPage() {
         </section>
 
 
-        <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-xl font-headline hover:no-underline">
-              Module 1: The Building Blocks - Vectors & Matrices
-            </AccordionTrigger>
-            <AccordionContent className="p-0">
-               <p className="px-6 py-4 text-muted-foreground">Mastering the fundamentals. Learn how to represent financial data as vectors and matrices and perform the essential operations that underpin all advanced models.</p>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-1/4">Concept</TableHead>
-                            <TableHead className="w-1/2">Why it Matters (The Quant Application)</TableHead>
-                            <TableHead className="w-1/4">Key Terms</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {module1Concepts.map((item) => (
-                            <TableRow key={item.concept}>
-                                <TableCell className="font-medium">{item.concept}</TableCell>
-                                <TableCell className="text-muted-foreground">{item.application}</TableCell>
-                                <TableCell className="font-mono text-xs text-primary/90">{item.terms}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger className="text-xl font-headline hover:no-underline">
-              Module 2: The Engine Room - Solving Equations & Finding Structure
-            </AccordionTrigger>
-            <AccordionContent className="px-6 py-4">
-              <p className="mb-4 text-muted-foreground">Go beyond arithmetic. This module is about solving complex financial puzzles, from pricing derivatives to finding the hidden factors that drive market movements.</p>
-              <ul className="list-disc space-y-2 pl-6 text-base text-foreground/90">
-                 <li><strong>Systems of Linear Equations (<InlineMath math="Ax=b" />):</strong> The mathematical basis for linear regression. Find the relationship between a stock's return and the market's movement.</li>
-                 <li><strong>Orthogonality & Projections:</strong> The core of Ordinary Least Squares (OLS) regression. Find the "best fit" line by projecting your data onto a subspace.</li>
-                 <li><strong>The Four Fundamental Subspaces:</strong> Understand the complete picture of a matrix—its column space (what you can create) and null space (what gets lost).</li>
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger className="text-xl font-headline hover:no-underline">
-              Module 3: The DNA of a Matrix - Eigen-Decomposition & SVD
-            </AccordionTrigger>
-            <AccordionContent className="px-6 py-4">
-               <p className="mb-4 text-muted-foreground">This is where the magic happens. Decomposing matrices reveals their intrinsic properties, allowing for powerful applications in dimensionality reduction and risk analysis.</p>
-              <ul className="list-disc space-y-2 pl-6 text-base text-foreground/90">
-                <li><strong>Eigenvalues & Eigenvectors (<InlineMath math="Av = \lambda v" />):</strong> Find the "axes of greatest variance" in your data. The eigenvectors of a covariance matrix are the principal components in PCA.</li>
-                <li><strong>Diagonalization:</strong> Simplify complex systems. This makes calculating high powers of matrices trivial, essential for modeling long-term system evolution (e.g., Markov chains).</li>
-                <li><strong>Singular Value Decomposition (SVD):</strong> The master decomposition for any matrix. Used in everything from noise reduction in time series to building recommendation systems.</li>
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-           <AccordionItem value="item-4">
-            <AccordionTrigger className="text-xl font-headline hover:no-underline">
-              Module 4: The Quant's Toolkit - Financial Applications
-            </AccordionTrigger>
-            <AccordionContent className="px-6 py-4">
-              <p className="mb-4 text-muted-foreground">Connect theory to practice. This module focuses on the direct implementation of linear algebra in solving real-world quantitative finance problems.</p>
-              <ul className="list-disc space-y-2 pl-6 text-base text-foreground/90">
-                <li><strong>Covariance & Correlation Matrices:</strong> The cornerstone of portfolio theory. Understand how assets move together to quantify and manage risk.</li>
-                <li><strong>Positive Definite Matrices & Quadratic Forms:</strong> The mathematical property of covariance matrices that makes portfolio optimization possible.</li>
-                <li><strong>Cholesky Decomposition:</strong> The key to generating correlated random asset paths for realistic Monte Carlo simulations of your portfolio's future performance.</li>
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
+        <Accordion type="single" collapsible className="w-full" defaultValue="la-module-1">
+          {modules.map(module => {
+            const lessons = getLessonsForModule(module.id);
+            return (
+              <AccordionItem key={module.id} value={module.id}>
+                <AccordionTrigger className="text-xl font-headline hover:no-underline">
+                  {module.title}
+                </AccordionTrigger>
+                <AccordionContent className="p-0">
+                  <p className="px-6 py-4 text-muted-foreground">{module.description}</p>
+                  <Table>
+                      <TableHeader>
+                          <TableRow>
+                              <TableHead className="w-1/4">Concept</TableHead>
+                              <TableHead className="w-1/2">Why it Matters (The Quant Application)</TableHead>
+                          </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                          {lessons.map((lesson) => (
+                              <TableRow key={lesson.id}>
+                                  <TableCell className="font-medium">
+                                    <Link href={lesson.href} className="text-primary hover:underline">{lesson.title}</Link>
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">{lesson.description}</TableCell>
+                              </TableRow>
+                          ))}
+                      </TableBody>
+                  </Table>
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
         </Accordion>
       </div>
     </>
