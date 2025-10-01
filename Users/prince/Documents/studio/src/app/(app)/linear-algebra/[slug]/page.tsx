@@ -4,12 +4,8 @@ import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
-type TopicPageProps = {
-  params: { slug: string };
-};
-
 // This function generates metadata for the page based on the slug.
-export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const path = `/linear-algebra-for-quantitative-finance/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
 
@@ -26,7 +22,7 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 }
 
 // This is the main server component for the page.
-export default function TopicPage({ params }: TopicPageProps) {
+export default function TopicPage({ params }: { params: { slug: string } }) {
   const path = `/linear-algebra-for-quantitative-finance/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
   
@@ -34,8 +30,5 @@ export default function TopicPage({ params }: TopicPageProps) {
     notFound();
   }
 
-  // Destructure to remove non-serializable 'icon' property before passing to client.
-  const { icon, ...serializableTopicInfo } = topicInfo;
-  
-  return <TopicPageClient topicInfo={serializableTopicInfo} />;
+  return <TopicPageClient topicInfo={topicInfo} />;
 }

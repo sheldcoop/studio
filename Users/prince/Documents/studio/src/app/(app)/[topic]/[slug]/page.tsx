@@ -4,11 +4,7 @@ import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
-type TopicPageProps = {
-  params: { topic: string; slug: string };
-};
-
-export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { topic: string; slug: string } }): Promise<Metadata> {
   const path = `/${params.topic}/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
 
@@ -24,7 +20,7 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
   };
 }
 
-export default function TopicPage({ params }: TopicPageProps) {
+export default function TopicPage({ params }: { params: { topic: string; slug: string } }) {
   const path = `/${params.topic}/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
   
@@ -32,7 +28,5 @@ export default function TopicPage({ params }: TopicPageProps) {
     notFound();
   }
 
-  const { icon, ...serializableTopicInfo } = topicInfo;
-  
-  return <TopicPageClient topicInfo={serializableTopicInfo} />;
+  return <TopicPageClient topicInfo={topicInfo} />;
 }
