@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    // allowedDevOrigins was removed in Next.js 15
+    // Use serverActions.allowedOrigins instead for Server Actions
+    // or handle CORS at the server/middleware level
+  },
   productionBrowserSourceMaps: false, // Disable source maps in production
   images: {
     remotePatterns: [
