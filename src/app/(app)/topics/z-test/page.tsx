@@ -73,9 +73,13 @@ const OneSampleZTestChart = () => {
               stroke="hsl(var(--destructive))"
               strokeWidth={2}
               strokeDasharray="3 3"
-            >
-              <Label value={`Historical Avg: ${target}%`} position="insideTopRight" fill="hsl(var(--destructive))" fontSize={12} />
-            </ReferenceLine>
+              label={{
+                value: `Historical Avg: ${target}%`,
+                position: "insideTopRight",
+                fill: "hsl(var(--destructive))",
+                fontSize: 12,
+              }}
+            />
           </RechartsBarChart>
         </ChartContainer>
       </div>
@@ -90,7 +94,7 @@ const OneSampleZTestChart = () => {
             max={0.2}
             value={[meanValue]}
             step={0.005}
-            onValueChange={(value) => setMeanValue(value[0])}
+            onValueChange={(value: number[]) => setMeanValue(value[0])}
             className="my-4"
           />
         </div>
@@ -135,8 +139,8 @@ const TwoSampleZTestChart = () => {
                 <YAxis unit="%" />
                 <Tooltip content={<ChartTooltipContent indicator='dot' />} />
                 <Legend />
-                <Bar dataKey="Stock_A" radius={4} fill="var(--color-Stock_A)" />
-                <Bar dataKey="Stock_B" radius={4} fill="var(--color-Stock_B)" />
+                <Bar dataKey="Stock_A" radius={4} fill="hsl(var(--chart-1))" />
+                <Bar dataKey="Stock_B" radius={4} fill="hsl(var(--chart-2))" />
             </RechartsBarChart>
         </ChartContainer>
       </div>
@@ -204,7 +208,7 @@ export default function ZTestPage() {
               <TabsContent value="one-sample" className="mt-6">
                 <h3 className="text-xl font-bold">One-Sample Z-Test</h3>
                 <p className="mt-2 text-muted-foreground">
-                  This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It&apos;s useful for seeing if a recent change has had a statistically significant effect.
+                  This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It's useful for seeing if a recent change has had a statistically significant effect.
                 </p>
                 <p className="mt-4 text-sm">
                   <span className="font-semibold text-foreground">
