@@ -204,7 +204,7 @@ export default function ZTestPage() {
               <TabsContent value="one-sample" className="mt-6">
                 <h3 className="text-xl font-bold">One-Sample Z-Test</h3>
                 <p className="mt-2 text-muted-foreground">
-                  This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It's useful for seeing if a recent change has had a statistically significant effect.
+                  This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It&apos;s useful for seeing if a recent change has had a statistically significant effect.
                 </p>
                 <p className="mt-4 text-sm">
                   <span className="font-semibold text-foreground">
