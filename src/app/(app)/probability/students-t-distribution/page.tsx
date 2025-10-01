@@ -96,7 +96,7 @@ const TDistributionChart = ({ df }: { df: number }) => {
           Mean: <span className="font-semibold text-foreground block">0</span>
         </div>
         <div>
-          Variance (for df > 2): <span className="font-semibold text-foreground block">{isFinite(variance) ? variance.toFixed(3) : 'Undefined'}</span>
+          Variance (for <InlineMath math="df > 2" />): <span className="font-semibold text-foreground block">{isFinite(variance) ? variance.toFixed(3) : 'Undefined'}</span>
         </div>
       </div>
     </div>

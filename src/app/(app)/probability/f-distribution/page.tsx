@@ -100,10 +100,10 @@ const FDistributionChart = ({ d1, d2 }: { d1: number; d2: number }) => {
       </ChartContainer>
       <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-4">
         <div>
-          Mean (for d₂ > 2): <span className="font-semibold text-foreground block">{isFinite(mean) ? mean.toFixed(3) : 'Undefined'}</span>
+          Mean (for <InlineMath math="d_2 > 2" />): <span className="font-semibold text-foreground block">{isFinite(mean) ? mean.toFixed(3) : 'Undefined'}</span>
         </div>
         <div>
-          Variance (for d₂ > 4): <span className="font-semibold text-foreground block">{isFinite(variance) ? variance.toFixed(3) : 'Undefined'}</span>
+          Variance (for <InlineMath math="d_2 > 4" />): <span className="font-semibold text-foreground block">{isFinite(variance) ? variance.toFixed(3) : 'Undefined'}</span>
         </div>
       </div>
     </div>

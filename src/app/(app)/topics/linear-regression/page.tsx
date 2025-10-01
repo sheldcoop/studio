@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -18,6 +17,7 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Line as RechartsLine, Legend } from 'recharts';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import 'katex/dist/katex.min.css';
+import { InlineMath } from 'react-katex';
 
 // Helper function to generate data for regression
 const generateRegressionData = (n: number, slope: number, intercept: number, noise: number) => {
@@ -189,7 +189,7 @@ export default function LinearRegressionPage() {
                 <CardDescription>A foundational model in finance that is a direct application of linear regression.</CardDescription>
             </CardHeader>
             <CardContent>
-                <p className="text-muted-foreground mb-4">CAPM models a stock's excess return as a function of the overall market's excess return. The slope of this regression line, known as "Beta" (β), measures the stock's systematic risk. A Beta > 1 means the stock is more volatile than the market; a Beta &lt; 1 means it's less volatile. The intercept, "Alpha" (α), theoretically represents the excess return the stock earns that isn't explained by the market. A positive alpha is the holy grail for portfolio managers.</p>
+                <p className="text-muted-foreground mb-4">CAPM models a stock's excess return as a function of the overall market's excess return. The slope of this regression line, known as "Beta" (β), measures the stock's systematic risk. A Beta <InlineMath math=">" /> 1 means the stock is more volatile than the market; a Beta <InlineMath math="<" /> 1 means it's less volatile. The intercept, "Alpha" (α), theoretically represents the excess return the stock earns that isn't explained by the market. A positive alpha is the holy grail for portfolio managers.</p>
                 <DynamicRegressionChart />
             </CardContent>
         </Card>

@@ -148,7 +148,7 @@ export default function GammaDistributionPage() {
                   <BlockMath math="f(x; \alpha, \beta) = \frac{\beta^\alpha}{\Gamma(\alpha)} x^{\alpha-1} e^{-\beta x}" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><InlineMath math="x" /> must be > 0.</li>
+                    <li><InlineMath math="x > 0" />.</li>
                     <li><InlineMath math="\alpha" /> (alpha) is the <strong>shape</strong> parameter.</li>
                     <li><InlineMath math="\beta" /> (beta) is the <strong>rate</strong> parameter.</li>
                      <li><InlineMath math="\Gamma(\alpha)" /> is the Gamma function.</li>
