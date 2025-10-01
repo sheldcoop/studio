@@ -1,10 +1,11 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
+import { useThreeAnimation } from '@/hooks/useThreeAnimation';
 
 interface TimeSeriesAnimationProps {
   className?: string;
@@ -20,43 +21,10 @@ export function TimeSeriesAnimation({
   const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
 
-  useEffect(() => {
-    isMouseOver.current = isHovered;
-  }, [isHovered]);
-
-  useEffect(() => {
-    if (!mountRef.current) return;
-    const currentMount = mountRef.current;
-    let animationFrameId: number;
-
-    // Use requestAnimationFrame to ensure CSS variables are applied before we read them
-    animationFrameId = requestAnimationFrame(() => {
-      if (!currentMount) return;
-      let frameId: number;
-
-      const computedStyle = getComputedStyle(currentMount);
-      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
-      const primaryColor = new THREE.Color(primaryColorValue);
-
-
-      // --- Scene setup ---
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        currentMount.clientWidth / currentMount.clientHeight,
-        0.1,
-        1000
-      );
+  useThreeAnimation(mountRef, {
+    theme,
+    onSetup: ({ scene, camera, renderer, primaryColor, opacityValue }) => {
       camera.position.z = 8;
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(
-        currentMount.clientWidth,
-        currentMount.clientHeight
-      );
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      currentMount.appendChild(renderer.domElement);
       
       // --- Grid ---
       const grid = new THREE.GridHelper(20, 20);
@@ -74,27 +42,25 @@ export function TimeSeriesAnimation({
       lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
       
       const lineMaterial = new THREE.LineBasicMaterial({
+        color: primaryColor,
         linewidth: 3,
         transparent: true,
+        opacity: opacityValue,
       });
-      lineMaterial.color.set(primaryColor);
-      lineMaterial.opacity = opacityValue;
       
       const line = new THREE.Line(lineGeometry, lineMaterial);
       scene.add(line);
 
-      // --- Animation & Interaction ---
       const clock = new THREE.Clock();
       let targetVolatility = 0.5;
 
       const animate = () => {
-        frameId = requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
 
         if (isMouseOver.current) {
-          targetVolatility = (mouse.current.y + 1) * 1.5; // Map mouse Y to volatility (0 to 3)
+          targetVolatility = (mouse.current.y + 1) * 1.5;
         } else {
-          targetVolatility += (0.5 - targetVolatility) * 0.1; // Ease back to default
+          targetVolatility += (0.5 - targetVolatility) * 0.1;
         }
 
         const positions = line.geometry.attributes.position.array as Float32Array;
@@ -107,73 +73,33 @@ export function TimeSeriesAnimation({
         }
         line.geometry.attributes.position.needsUpdate = true;
         
-        line.rotation.y = elapsedTime * 0.05; // Slow rotation
+        line.rotation.y = elapsedTime * 0.05;
 
         renderer.render(scene, camera);
       };
-
-      animate();
-
-      const handleResize = () => {
-        if (currentMount) {
-          camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+      
+      const handleMouseMove = (event: MouseEvent) => {
+        if (mountRef.current) {
+          const rect = mountRef.current.getBoundingClientRect();
+          mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
         }
       };
-      window.addEventListener('resize', handleResize);
+      if(mountRef.current) mountRef.current.addEventListener('mousemove', handleMouseMove);
 
-      // Cleanup for this specific animation frame setup
-      return () => {
-        cancelAnimationFrame(frameId);
-        window.removeEventListener('resize', handleResize);
-        if (renderer.domElement && currentMount.contains(renderer.domElement)) {
-          currentMount.removeChild(renderer.domElement);
-        }
-        renderer.dispose();
-        lineGeometry.dispose();
-        lineMaterial.dispose();
-        grid.geometry.dispose();
-        (grid.material as THREE.Material).dispose();
+      return {
+        animate,
+        cleanup: () => {
+          if(mountRef.current) mountRef.current.removeEventListener('mousemove', handleMouseMove);
+          lineGeometry.dispose();
+          grid.geometry.dispose();
+        },
+        materials: [lineMaterial, gridMaterial]
       };
-    });
+    }
+  });
 
-
-    // --- Event Listeners ---
-    const handleMouseMove = (event: MouseEvent) => {
-      if (currentMount) {
-        const rect = currentMount.getBoundingClientRect();
-        mouse.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.current.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
-      }
-    };
-    
-    const handleTouchMove = (event: TouchEvent) => {
-      if (event.touches.length > 0 && currentMount) {
-        const touch = event.touches[0];
-        const rect = currentMount.getBoundingClientRect();
-        mouse.current.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.current.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
-      }
-    };
-
-    currentMount.addEventListener('mousemove', handleMouseMove);
-    currentMount.addEventListener('touchmove', handleTouchMove, { passive: true });
-
-
-    // --- Main Cleanup ---
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      if (currentMount) {
-        currentMount.removeEventListener('mousemove', handleMouseMove);
-        currentMount.removeEventListener('touchmove', handleTouchMove);
-        // Clean up any remaining children from previous renders
-        while (currentMount.firstChild) {
-            currentMount.removeChild(currentMount.firstChild);
-        }
-      }
-    };
-  }, [theme]);
+  isMouseOver.current = isHovered;
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

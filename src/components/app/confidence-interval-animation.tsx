@@ -1,10 +1,11 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
+import { useThreeAnimation } from '@/hooks/useThreeAnimation';
 
 interface CorrelationOrbAnimationProps {
   className?: string;
@@ -20,50 +21,25 @@ export function ConfidenceIntervalAnimation({
   const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
 
-  useEffect(() => {
-    isMouseOver.current = isHovered;
-  }, [isHovered]);
-
-  useEffect(() => {
-    if (!mountRef.current) return;
-    const currentMount = mountRef.current;
-    let animationFrameId: number;
-
-    const main = () => {
-      let frameId: number;
-
-      const computedStyle = getComputedStyle(currentMount);
-      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
-      const primaryColor = new THREE.Color(primaryColorValue);
-
-
-      const particleMaterial = new THREE.PointsMaterial({
-          size: 0.2,
-          blending: THREE.AdditiveBlending,
-          transparent: true,
-          sizeAttenuation: true,
-        });
-      particleMaterial.color.set(primaryColor);
-      particleMaterial.opacity = opacityValue;
-
-
-      const axisMaterial = new THREE.LineBasicMaterial({ transparent: true, opacity: 0 });
-      axisMaterial.color.set(primaryColor);
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        currentMount.clientWidth / currentMount.clientHeight,
-        0.1,
-        1000
-      );
+  useThreeAnimation(mountRef, {
+    theme,
+    onSetup: ({ scene, camera, renderer, primaryColor, opacityValue }) => {
       camera.position.set(0, 0, 15);
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      currentMount.appendChild(renderer.domElement);
+      const particleMaterial = new THREE.PointsMaterial({
+        size: 0.2,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        sizeAttenuation: true,
+        color: primaryColor,
+        opacity: opacityValue,
+      });
+
+      const axisMaterial = new THREE.LineBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        color: primaryColor,
+      });
 
       const orbGroup = new THREE.Group();
       scene.add(orbGroup);
@@ -72,7 +48,7 @@ export function ConfidenceIntervalAnimation({
       const particleCount = 1500;
       const particlesGeometry = new THREE.BufferGeometry();
       const positions = new Float32Array(particleCount * 3);
-      const particleData = [];
+      const particleData: { theta: number; phi: number; randomSpeed: number }[] = [];
 
       const sphereRadius = 7;
       for (let i = 0; i < particleCount; i++) {
@@ -82,7 +58,6 @@ export function ConfidenceIntervalAnimation({
         particleData.push({
           theta,
           phi,
-          randomPhase: Math.random() * Math.PI * 2,
           randomSpeed: 0.1 + Math.random() * 0.2,
         });
 
@@ -107,8 +82,6 @@ export function ConfidenceIntervalAnimation({
       let correlationFactor = 0;
 
       const animate = () => {
-        frameId = requestAnimationFrame(animate);
-        const delta = clock.getDelta();
         const elapsedTime = clock.getElapsedTime();
 
         const targetCorrelation = isMouseOver.current ? 1 : 0;
@@ -155,54 +128,30 @@ export function ConfidenceIntervalAnimation({
 
         renderer.render(scene, camera);
       };
-
-      animate();
-
+      
       const handleMouseMove = (event: MouseEvent) => {
-        if (currentMount) {
-          const rect = currentMount.getBoundingClientRect();
+        if (mountRef.current) {
+          const rect = mountRef.current.getBoundingClientRect();
           mouse.current.x = (event.clientX - rect.left) / rect.width - 0.5;
           mouse.current.y = (event.clientY - rect.top) / rect.height - 0.5;
         }
       };
       
-      currentMount.addEventListener('mousemove', handleMouseMove);
+      if(mountRef.current) mountRef.current.addEventListener('mousemove', handleMouseMove);
 
-      const handleResize = () => {
-        if (currentMount) {
-          camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-        }
-      };
-      window.addEventListener('resize', handleResize);
-
-      return () => {
-        cancelAnimationFrame(frameId);
-        window.removeEventListener('resize', handleResize);
-        if (currentMount) {
-          currentMount.removeEventListener('mousemove', handleMouseMove);
-          if (renderer.domElement) currentMount.removeChild(renderer.domElement);
-        }
-        renderer.dispose();
-        particleMaterial.dispose();
-        axisMaterial.dispose();
-        particlesGeometry.dispose();
-        axisGeometry.dispose();
+      return {
+        animate,
+        cleanup: () => {
+          if(mountRef.current) mountRef.current.removeEventListener('mousemove', handleMouseMove);
+          particlesGeometry.dispose();
+          axisGeometry.dispose();
+        },
+        materials: [particleMaterial, axisMaterial]
       };
     }
-    
-    animationFrameId = requestAnimationFrame(main);
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-      while (currentMount.firstChild) {
-        currentMount.removeChild(currentMount.firstChild);
-      }
-    }
-  }, [theme]);
+  });
+  
+  isMouseOver.current = isHovered;
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }

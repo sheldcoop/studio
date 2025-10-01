@@ -1,10 +1,11 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
+import { useThreeAnimation } from '@/hooks/useThreeAnimation';
 
 interface DiceAnimationProps {
   className?: string;
@@ -39,30 +40,10 @@ export function DiceAnimation({
   const isMouseOver = useRef(isHovered);
   const { theme } = useTheme();
 
-  useEffect(() => {
-    isMouseOver.current = isHovered;
-  }, [isHovered]);
-
-  useEffect(() => {
-    if (!mountRef.current) return;
-    const currentMount = mountRef.current;
-    let animationFrameId: number;
-
-    const main = () => {
-      let frameId: number;
-
-      const computedStyle = getComputedStyle(currentMount);
-      const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const primaryColor = new THREE.Color(primaryColorValue);
-      
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+  useThreeAnimation(mountRef, {
+    theme,
+    onSetup: ({ scene, camera, renderer, primaryColor }) => {
       camera.position.z = 5;
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      currentMount.appendChild(renderer.domElement);
 
       const light = new THREE.DirectionalLight(0xffffff, 2.5);
       light.position.set(2, 5, 3);
@@ -76,8 +57,7 @@ export function DiceAnimation({
       const [h, s, l] = backgroundColorValue.split(' ').map(parseFloat);
       const faceColor = new THREE.Color(`hsl(${h}, ${s}%, ${l}%)`).getStyle();
 
-
-      const materials = [
+      const faceMaterials = [
         createDieFaceMaterial([{ x: 64, y: 64 }], dotColor, faceColor), // 1
         createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }], dotColor, faceColor), // 2
         createDieFaceMaterial([{ x: 32, y: 32 }, { x: 64, y: 64 }, { x: 96, y: 96 }], dotColor, faceColor), // 3
@@ -87,13 +67,12 @@ export function DiceAnimation({
       ];
 
       const dieGeometry = new THREE.BoxGeometry(2, 2, 2);
-      const die = new THREE.Mesh(dieGeometry, materials);
+      const die = new THREE.Mesh(dieGeometry, faceMaterials);
       scene.add(die);
 
       const clock = new THREE.Clock();
 
       const animate = () => {
-        frameId = requestAnimationFrame(animate);
         const delta = clock.getDelta();
         
         const rotationSpeed = isMouseOver.current ? 1.5 : 0.2;
@@ -103,43 +82,24 @@ export function DiceAnimation({
         renderer.render(scene, camera);
       };
 
-      animate();
-
-      const handleResize = () => {
-        if (currentMount) {
-          camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-        }
+      return {
+        animate,
+        cleanup: () => {
+            dieGeometry.dispose();
+            faceMaterials.forEach(m => {
+                m.map?.dispose();
+                m.dispose();
+            });
+        },
+        materials: [] // No materials to update on theme change
       };
-      window.addEventListener('resize', handleResize);
-
-      return () => {
-        cancelAnimationFrame(frameId);
-        window.removeEventListener('resize', handleResize);
-        if (currentMount) {
-          if(renderer.domElement) currentMount.removeChild(renderer.domElement);
-        }
-        renderer.dispose();
-        dieGeometry.dispose();
-        materials.forEach(m => {
-          m.map?.dispose();
-          m.dispose();
-        });
-      };
-    };
-    
-    animationFrameId = requestAnimationFrame(main);
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-      while (currentMount.firstChild) {
-        currentMount.removeChild(currentMount.firstChild);
-      }
     }
-  }, [theme]);
+  });
+
+  useEffect(() => {
+    isMouseOver.current = isHovered;
+  }, [isHovered]);
+
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
 }
