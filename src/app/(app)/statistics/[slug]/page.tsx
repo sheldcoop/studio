@@ -4,13 +4,13 @@ import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
-type TopicPageProps = {
+type PageProps = {
   params: { slug: string };
 };
 
 
 // This function MUST be in a server component.
-export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const path = `/statistics/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
 
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 
 // This is now a Server Component.
 // It fetches the data on the server and passes it to the client component.
-export default function TopicPage({ params }: TopicPageProps) {
+export default function TopicPage({ params }: PageProps) {
   const path = `/statistics/${params.slug}`;
   const topicInfo = allTopics.find((t) => t.href === path);
   
