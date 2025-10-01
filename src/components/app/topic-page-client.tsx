@@ -104,11 +104,8 @@ export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
                         {subTopics.map(sub => (
                             <section key={sub.id} id={sub.id} className="scroll-mt-24">
                                 <h2 className="font-headline text-2xl font-semibold">{sub.title}</h2>
-                                <p className="text-muted-foreground">
-                                    Placeholder content for {sub.title}. In a real application, this section would contain detailed explanations, examples, and interactive components related to this specific sub-topic. This structure allows for a rich, comprehensive guide on a single page, which is great for user experience and SEO.
-                                </p>
                                 <div className="my-8 flex h-60 items-center justify-center rounded-lg border border-dashed">
-                                    <p className="text-sm text-muted-foreground/50">Visual or interactive element</p>
+                                    <p className="text-sm text-muted-foreground/50">Content for this section is under construction.</p>
                                 </div>
                             </section>
                         ))}

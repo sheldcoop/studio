@@ -16,7 +16,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { CheckCircle, Network, TrendingUp, Cpu } from 'lucide-react';
 import { allTopics } from '@/lib/curriculum';

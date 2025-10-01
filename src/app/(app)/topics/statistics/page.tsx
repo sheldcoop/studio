@@ -1,8 +1,7 @@
-
-// This page has been consolidated into /topics/statistics.
-// This file is kept to avoid breaking links, but its content is no longer used directly.
+// This page's content has been moved to /stat-toolkit
+// This file is kept to avoid breaking links during transition, but it can be safely deleted in the future.
 import { redirect } from 'next/navigation';
 
-export default function DeprecatedPage() {
-    redirect('/stat-toolkit');
+export default function DeprecatedStatisticsPage() {
+  redirect('/stat-toolkit');
 }
