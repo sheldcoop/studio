@@ -189,7 +189,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'descriptive-statistics-explorer',
     title: 'Descriptive Statistics Explorer',
-    href: '/topics/statistics/descriptive-statistics-explorer',
+    href: '/topics/descriptive-statistics-explorer',
     icon: 'FunctionSquare',
     description: 'Interactive guide to mean, median, mode, variance, skewness, and kurtosis.',
     category: 'sub-topic',
@@ -198,7 +198,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'normal-distribution',
     title: 'The Normal Distribution',
-    href: '/topics/statistics/normal-distribution',
+    href: '/topics/normal-distribution',
     icon: 'FunctionSquare',
     description: 'The ubiquitous "bell curve."',
     category: 'sub-topic',
@@ -225,7 +225,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'correlation-vs-causation',
     title: 'Correlation vs. Causation',
-    href: '/correlation-vs-causation',
+    href: '/topics/correlation-vs-causation',
     icon: 'FunctionSquare',
     description: "Don't confuse association with influence.",
     category: 'sub-topic',
@@ -245,7 +245,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'logistic-regression',
     title: 'Logistic Regression',
-    href: '/statistics/logistic-regression',
+    href: '/topics/logistic-regression',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
@@ -265,7 +265,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'time-series-decomposition',
     title: 'Time Series Decomposition',
-    href: '/statistics/time-series-decomposition',
+    href: '/topics/time-series-decomposition',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
@@ -274,7 +274,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'autocorrelation-acf-pacf',
     title: 'Autocorrelation (ACF & PACF)',
-    href: '/statistics/autocorrelation-acf-pacf',
+    href: '/topics/autocorrelation-acf-pacf',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
@@ -283,7 +283,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'volatility-garch',
     title: 'Volatility &amp; Standard Deviation (GARCH)',
-    href: '/statistics/volatility-garch',
+    href: '/topics/volatility-garch',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
@@ -292,7 +292,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'efficient-frontier-sharpe-ratio',
     title: 'Efficient Frontier &amp; Sharpe Ratio',
-    href: '/statistics/efficient-frontier-sharpe-ratio',
+    href: '/topics/efficient-frontier-sharpe-ratio',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
@@ -301,7 +301,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'kalman-filters',
     title: 'Kalman Filters',
-    href: '/statistics/kalman-filters',
+    href: '/topics/kalman-filters',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
@@ -310,7 +310,7 @@ export const statisticsTopics: Topic[] = [
   {
     id: 'stochastic-calculus-itos-lemma',
     title: "Stochastic Calculus &amp; Ito's Lemma",
-    href: '/statistics/stochastic-calculus-itos-lemma',
+    href: '/topics/stochastic-calculus-itos-lemma',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',

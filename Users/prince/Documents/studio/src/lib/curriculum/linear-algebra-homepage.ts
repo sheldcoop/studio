@@ -1,17 +1,21 @@
+
 import { type Topic } from './types';
 
 // Helper to create slugs from titles
 const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
-const createTopic = (module: string, title: string, description: string): Topic => ({
-    id: `la-${toSlug(title)}`,
-    title,
-    href: `/topics/${toSlug(title)}`,
-    icon: 'Waypoints',
-    description,
-    category: 'sub-topic',
-    parent: module,
-});
+const createTopic = (module: string, title: string, description: string): Topic => {
+    const slug = `la-${toSlug(title)}`;
+    return {
+        id: slug,
+        title,
+        href: `/topics/${slug}`, // Corrected href
+        icon: 'Waypoints',
+        description,
+        category: 'sub-topic',
+        parent: module,
+    };
+};
 
 export const linearAlgebraTopics: Topic[] = [
     // --- Module 1 ---
@@ -33,4 +37,15 @@ export const linearAlgebraTopics: Topic[] = [
     createTopic('la-module-4', 'Covariance & Correlation Matrices', "The cornerstone of portfolio theory."),
     createTopic('la-module-4', 'Positive Definite Matrices', "The mathematical property that makes portfolio optimization possible."),
     createTopic('la-module-4', 'Cholesky Decomposition', "The key to generating correlated random asset paths for Monte Carlo simulations."),
+
+    // Main topic entry for the hub page itself
+    {
+        id: 'linear-algebra-for-quantitative-finance',
+        title: 'Linear Algebra for Quants',
+        href: '/paths/linear-algebra-for-quantitative-finance',
+        icon: 'Waypoints',
+        description:
+        'The language of data and the backbone of modern quantitative finance.',
+        category: 'main',
+    },
 ];

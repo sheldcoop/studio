@@ -4,15 +4,18 @@ import { type Topic } from './types';
 // Helper to create slugs from titles
 const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
-const createTopic = (module: string, title: string, description: string): Topic => ({
-    id: `la-${toSlug(title)}`,
-    title,
-    href: `/topics/${toSlug(title)}`,
-    icon: 'Waypoints',
-    description,
-    category: 'sub-topic',
-    parent: module,
-});
+const createTopic = (module: string, title: string, description: string): Topic => {
+    const slug = toSlug(title);
+    return {
+        id: `la-${slug}`,
+        title,
+        href: `/topics/la-${slug}`, // Corrected href
+        icon: 'Waypoints',
+        description,
+        category: 'sub-topic',
+        parent: module,
+    };
+};
 
 export const linearAlgebraTopics: Topic[] = [
     // --- Module 1 ---
