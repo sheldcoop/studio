@@ -8,15 +8,24 @@ This document provides a comprehensive overview of the technologies and architec
 
 Our stack is centered around **Next.js** and **TypeScript**, a combination chosen for its performance, developer experience, and robust features for building modern web applications.
 
-### a. Framework: Next.js (with App Router)
+### a. Framework: Next.js 15 (with App Router)
 
-- **What it is:** Next.js is a production-grade **React framework** that provides a structured way to build applications. We specifically use its modern **App Router**.
+- **What it is:** Next.js is a production-grade **React framework**. We specifically use **version 15** and its modern **App Router**.
 - **Why we use it:**
     - **Server Components (The "Secret Sauce"):** The App Router allows us to use **React Server Components** by default. This is a revolutionary feature. It means most of our components run exclusively on the server, fetching data and rendering static content without sending any JavaScript to the user's browser. The result is a much lighter, faster experience. Only components that require user interactivity (like a button with an `onClick` handler) are marked with `'use client';` and sent to the browser. This approach gives us:
         - **Drastically Faster Load Times:** The user's browser has much less to download, parse, and execute.
         - **Better SEO:** Search engine bots can easily read the fully-formed HTML content, leading to better indexing and ranking.
     - **Simplified Routing:** The file system itself defines the website's URL structure. The folder `src/app/(app)/topics/statistics/` directly maps to the URL `/topics/statistics`.
-    - **Dynamic Routing with Slugs:** For pages that represent unique items from a dataset (like a specific learning path or topic), we use **dynamic segments**. A file named `src/app/(app)/paths/[slug]/page.tsx` automatically handles URLs like `/paths/linear-algebra` or `/paths/statistics-for-quantitative-finance`, where the `slug` is passed as a parameter to the page.
+    - **Dynamic Routing with Async Params (Next.js 15):** A key change in Next.js 15 is that props for dynamic pages (like `params`) are now **asynchronous**. This means page components must be `async` functions that `await` the props.
+      ```typescript
+      // Example for src/app/(app)/paths/[slug]/page.tsx
+      type PathPageProps = { params: Promise<{ slug: string }> };
+
+      export default async function PathPage({ params }: PathPageProps) {
+        const { slug } = await params;
+        // ...
+      }
+      ```
     - **Colocation:** All files related to a specific route—the page itself (`page.tsx`), its loading UI (`loading.tsx`), and its error UI (`error.tsx`)—can live together inside the same folder. This makes finding and managing route-specific code much easier.
 
 ### b. Language: TypeScript
@@ -60,6 +69,7 @@ Our visual identity is managed by a consistent and modern styling pipeline.
 
 ## 3. Core Architectural Decisions & Future Considerations
 
+- **Configuration File Location:** The `next.config.ts` file **must** be located in the project root directory. Placing a duplicate configuration file inside `src/` will cause build failures that are difficult to debug.
 - **Server-First Approach:** We default to using Server Components for everything unless interactivity is explicitly needed. This is a core principle for maximizing performance. Any component with hooks (`useState`, `useEffect`) must be in a file marked with `'use client';`. The ideal architecture is to push these client "islands" as deep into the component tree as possible.
 - **Performance Optimization:** For client components that rely on large third-party libraries (e.g., `recharts` for charting), we use **`next/dynamic`** to lazy-load them. This prevents the large library code from being included in the initial page bundle, significantly speeding up the initial load time. A skeleton loader is shown while the heavy component is loaded in the background.
 - **Data-Driven Content:** The curriculum, learning paths, and topic definitions are stored in structured data files (`src/lib/curriculum/`, `src/lib/learning-paths.ts`). The pages read from this data, meaning we can add or change a topic by simply updating a data file, not by creating a new page.
