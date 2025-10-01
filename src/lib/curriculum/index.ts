@@ -1,7 +1,7 @@
 
 import { type Topic } from './types';
 import { mainTopics } from './main';
-import { linearAlgebraTopics } from './linear-algebra-homepage';
+import { linearAlgebraTopics } from './linear-algebra';
 import { statisticsTopics } from './statistics';
 import { probabilityTopics } from './probability';
 import { statisticsHomepageTopics } from './statistics-homepage';
@@ -16,4 +16,3 @@ export const allTopics: Topic[] = [
 
 export { mainTopics };
 export * from './types';
-
