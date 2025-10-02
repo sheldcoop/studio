@@ -80,14 +80,14 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
                 <ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${(-absZScore).toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 <ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
             </>
-        ) : typeof zScore === 'number' && zScore !== null ? (
+        ) : typeof zScore === 'number' ? (
             <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         ) : null}
 
-        {typeof zScore1 === 'number' && zScore1 !== null && (
+        {typeof zScore1 === 'number' && (
             <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
-        {typeof zScore2 === 'number' && zScore2 !== null && (
+        {typeof zScore2 === 'number' && (
             <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
 
