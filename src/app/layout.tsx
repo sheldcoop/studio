@@ -5,7 +5,7 @@ import { Inter, Space_Grotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import './globals.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
-import { AuthProvider } from './auth-provider';
+import { AuthProvider } from '@/app/auth-provider';
 import { OrientationBanner } from '@/components/app/orientation-banner';
 
 const fontBody = Inter({
@@ -50,7 +50,7 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          themes={['light', 'dark', 'slate', 'nocturne']}
+          themes={['light', 'dark', 'slate', 'nocturne', 'quant']}
           disableTransitionOnChange
         >
           <AuthProvider>
