@@ -38,7 +38,7 @@ export default function StatisticsPage() {
       />
       <Accordion type="single" collapsible className="w-full space-y-4" defaultValue={modulesWithLessons[1].id}>
         {modulesWithLessons.map((module) => (
-          <LearningPathCard key={module.id} module={module} icon="BarChart3" />
+          <LearningPathCard key={module.id} module={module} iconName="BarChart3" />
         ))}
       </Accordion>
     </>

@@ -4,7 +4,6 @@ import { PageHeader } from '@/components/app/page-header';
 import { allTopics, type Topic, type Module } from '@/lib/data';
 import { Accordion } from '@/components/ui/accordion';
 import { LearningPathCard } from '@/components/app/learning-path-card';
-import { Calculator } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Linear Algebra for Quants',
@@ -37,7 +36,7 @@ export default function LinearAlgebraPage() {
       />
       <Accordion type="single" collapsible className="w-full space-y-4" defaultValue={modulesWithLessons[0].id}>
         {modulesWithLessons.map((module) => (
-          <LearningPathCard key={module.id} module={module} icon={Calculator} />
+          <LearningPathCard key={module.id} module={module} iconName="Calculator" />
         ))}
       </Accordion>
     </>
