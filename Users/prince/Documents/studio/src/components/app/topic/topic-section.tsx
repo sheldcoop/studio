@@ -1,7 +1,6 @@
 
 import type { SubTopic } from '@/lib/curriculum';
 import { TopicSectionCard } from './topic-section-card';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen, Code, BrainCircuit, BarChart } from 'lucide-react';
 
 interface TopicSectionProps {
