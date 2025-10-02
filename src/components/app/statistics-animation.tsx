@@ -54,14 +54,10 @@ export function StatisticsAnimation({
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
-    let animationFrameId: number;
+    let animationFrameId: number | undefined;
 
-    // FIX: Defer the main logic to the next animation frame.
-    // This ensures that the component has mounted and CSS variables are available.
     const animationTimeoutId = setTimeout(() => {
-      let frameId: number; // Declare frameId inside this scope
-
-      const computedStyle = getComputedStyle(document.documentElement); // Read from documentElement
+      const computedStyle = getComputedStyle(document.documentElement);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
       const primaryColor = new THREE.Color(primaryColorValue);
@@ -118,7 +114,7 @@ export function StatisticsAnimation({
       const targetPosition = new THREE.Vector3(0, 0, 0);
 
       const animate = () => {
-        frameId = requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
 
         if (isMouseOver.current) {
@@ -162,24 +158,8 @@ export function StatisticsAnimation({
           }
       };
       window.addEventListener('resize', handleResize);
-
-      // --- Cleanup ---
-      animationFrameId = frameId; // Store frameId for cleanup
       
-      return () => {
-        cancelAnimationFrame(frameId);
-        window.removeEventListener('resize', handleResize);
-        if (currentMount) {
-          currentMount.removeEventListener('mousemove', handleMouseMove);
-          if (renderer.domElement) currentMount.removeChild(renderer.domElement);
-        }
-        renderer.dispose();
-        surfaceGeometry.dispose();
-        surfaceMaterial.dispose();
-        grid.geometry.dispose();
-        (grid.material as THREE.Material).dispose();
-      };
-    }, 10); // A small delay is sufficient
+    }, 10); 
 
     return () => {
       clearTimeout(animationTimeoutId);
