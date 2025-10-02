@@ -9,11 +9,17 @@ const createAdvancedStatTopic = (module: string, title: string, description: str
     return {
         id: slug,
         title,
-        href: `/topics/${slug}`, // Use the unified /topics/ route
+        href: `/statistics/${slug}`, // Use the /statistics/ route
         icon: 'FunctionSquare',
         description,
         category: 'sub-topic',
         parent: module,
+        subTopics: [
+            { id: `${slug}-theory`, title: 'Core Theory' },
+            { id: `${slug}-application`, title: 'Financial Application' },
+            { id: `${slug}-interactive`, title: 'Interactive Demo' },
+            { id: `${slug}-problems`, title: 'Practice Problems' },
+        ]
     };
 };
 
