@@ -50,8 +50,8 @@ export const learningPaths: Omit<LearningPath, 'modules'>[] = [
     description: 'Apply ML algorithms to trading, risk, and asset management.',
   },
   {
-    id: 'probability-lab',
-    title: 'Probability Lab',
+    id: 'probability-toolkit',
+    title: 'Probability Toolkit',
     icon: 'FlaskConical',
     description: 'Interactive tools for hands-on probability analysis.',
   },
@@ -74,10 +74,10 @@ export const getPathById = (id: string): LearningPath | undefined => {
     { id: 'stats-mod-4', parent: 'statistics-for-quantitative-finance', title: 'Module 4: Linear Modeling & Econometrics', status: 'not-started', duration: 240 },
     { id: 'stats-mod-5', parent: 'statistics-for-quantitative-finance', title: 'Module 5: Time Series Analysis & Computational Methods', status: 'not-started', duration: 180 },
     { id: 'stats-mod-6', parent: 'statistics-for-quantitative-finance', title: 'Module 6: Advanced Quant Modeling & Numerical Methods', status: 'not-started', duration: 210 },
-    // Probability Lab
-    { id: 'prob-core-tools', parent: 'probability-lab', title: 'Core Probability Concepts', status: 'in-progress', duration: 40 },
-    { id: 'prob-dist-discrete', parent: 'probability-lab', title: 'Discrete Distributions', status: 'in-progress', duration: 30},
-    { id: 'prob-dist-continuous', parent: 'probability-lab', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
+    // Probability Toolkit
+    { id: 'prob-core-tools', parent: 'probability-toolkit', title: 'Core Probability Concepts', status: 'in-progress', duration: 40 },
+    { id: 'prob-dist-discrete', parent: 'probability-toolkit', title: 'Discrete Distributions', status: 'in-progress', duration: 30},
+    { id: 'prob-dist-continuous', parent: 'probability-toolkit', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
     // Probability for Quants
     { id: 'prob-quant-mod-1', parent: 'probability-for-quants', title: 'Module 1: Foundations of Probability', status: 'not-started', duration: 85 },
     { id: 'prob-quant-mod-2', parent: 'probability-for-quants', title: 'Module 2: Random Variables & Distributions', status: 'not-started', duration: 100 },
