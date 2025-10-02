@@ -1,12 +1,15 @@
 
 import { type Topic } from './types';
 
+// Helper to create slugs from titles
+const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
 const createTopic = (module: string, title: string, description: string): Topic => {
-    const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const slug = `la-${toSlug(title)}`;
     return {
-        id: `la-${slug}`,
+        id: slug,
         title,
-        href: `/topics/la-${slug}`,
+        href: `/linear-algebra-for-quantitative-finance/${slug}`, 
         icon: 'Waypoints',
         description,
         category: 'sub-topic',
@@ -16,7 +19,21 @@ const createTopic = (module: string, title: string, description: string): Topic 
 
 export const linearAlgebraTopics: Topic[] = [
     // --- Module 1 ---
-    createTopic('la-module-1', 'Vectors & Vector Spaces', "Representing asset returns or portfolio weights."),
+    {
+        id: 'la-vectors-vector-spaces',
+        title: 'Vectors & Vector Spaces',
+        href: '/linear-algebra-for-quantitative-finance/la-vectors-vector-spaces',
+        icon: 'Waypoints',
+        description: "Representing asset returns or portfolio weights.",
+        category: 'sub-topic',
+        parent: 'la-module-1',
+        subTopics: [
+            { id: 'vector-basics', title: 'Vector Basics' },
+            { id: 'vector-operations', title: 'Vector Operations' },
+            { id: 'linear-combinations', title: 'Linear Combinations & Span' },
+            { id: 'vector-spaces', title: 'Defining a Vector Space' },
+        ]
+    },
     createTopic('la-module-1', 'Matrix Operations', "Aggregating data across assets and time."),
     createTopic('la-module-1', 'Linear Independence', "Crucial for diversification and factor models."),
 
