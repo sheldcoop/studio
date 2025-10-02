@@ -1,6 +1,7 @@
 
 import type { SubTopic } from '@/lib/curriculum';
 import { TopicSectionCard } from './topic-section-card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen, Code, BrainCircuit, BarChart } from 'lucide-react';
 
 interface TopicSectionProps {
@@ -19,35 +20,4 @@ export function TopicSection({ subTopic }: TopicSectionProps) {
             </div>
         </section>
     );
-}
-
-// Reusable empty state component
-function EmptyState({ message }: { message: string }) {
-    return (
-        <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
-            <p className="text-sm text-muted-foreground">{message}</p>
-        </div>
-    );
-}
-
-interface TopicSectionCardProps {
-    icon: React.ElementType;
-    title: string;
-    children?: React.ReactNode;
-    isEmpty?: boolean;
-}
-
-function TopicSectionCard({ icon: Icon, title, children, isEmpty = false }: TopicSectionCardProps) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Icon className="text-primary"/> {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isEmpty ? <EmptyState message={`${title} content coming soon.`} /> : children}
-      </CardContent>
-    </Card>
-  );
 }
