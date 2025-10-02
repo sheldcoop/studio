@@ -56,10 +56,12 @@ export function StatisticsAnimation({
     const currentMount = mountRef.current;
     let animationFrameId: number;
 
-    const main = () => {
+    // FIX: Defer the main logic to the next animation frame.
+    // This ensures that the component has mounted and CSS variables are available.
+    const animationTimeoutId = setTimeout(() => {
       let frameId: number;
 
-      const computedStyle = getComputedStyle(currentMount);
+      const computedStyle = getComputedStyle(document.documentElement); // Read from documentElement
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
       const primaryColor = new THREE.Color(primaryColorValue);
@@ -87,8 +89,9 @@ export function StatisticsAnimation({
 
       // Grid
       const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
-      grid.material.transparent = true;
-      grid.material.opacity = 0.4;
+      const gridMaterial = grid.material as THREE.Material;
+      gridMaterial.transparent = true;
+      gridMaterial.opacity = 0.4;
       group.add(grid);
 
       // Surface
@@ -161,12 +164,13 @@ export function StatisticsAnimation({
       window.addEventListener('resize', handleResize);
 
       // --- Cleanup ---
+      animationFrameId = frameId; // Store frameId for cleanup
+      
       return () => {
         cancelAnimationFrame(frameId);
         window.removeEventListener('resize', handleResize);
         if (currentMount) {
           currentMount.removeEventListener('mousemove', handleMouseMove);
-          // eslint-disable-next-line react-hooks/exhaustive-deps
           if (renderer.domElement) currentMount.removeChild(renderer.domElement);
         }
         renderer.dispose();
@@ -175,15 +179,15 @@ export function StatisticsAnimation({
         grid.geometry.dispose();
         (grid.material as THREE.Material).dispose();
       };
-    }
-    
-    animationFrameId = requestAnimationFrame(main);
+    }, 10); // A small delay is sufficient
 
     return () => {
+      clearTimeout(animationTimeoutId);
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
-      while (currentMount.firstChild) {
+      // Ensure the mount point is cleared on re-render or unmount
+      while (currentMount?.firstChild) {
         currentMount.removeChild(currentMount.firstChild);
       }
     }
