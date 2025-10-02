@@ -1,7 +1,7 @@
 
 import { MetadataRoute } from 'next'
 
-const URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
+const URL = process.env.SITE_URL || 'https://quantfinancelab.com';
  
 export default function robots(): MetadataRoute.Robots {
   return {
