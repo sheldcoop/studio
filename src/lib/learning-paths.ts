@@ -86,12 +86,21 @@ export const getPathById = (id: string): LearningPath | undefined => {
     { id: 'prob-quant-mod-5', parent: 'probability-for-quants', title: 'Module 5: Stochastic Processes', status: 'not-started', duration: 120 },
     { id: 'prob-quant-mod-6', parent: 'probability-for-quants', title: 'Module 6: Advanced & Measure-Theoretic Probability', status: 'not-started', duration: 150 },
     // Machine Learning in Finance
+<<<<<<< HEAD
+    { id: 'ml-module-0', parent: 'machine-learning-for-quantitative-finance', title: 'Module 0: The Absolute Basics of Machine Learning', status: 'not-started', duration: 120 },
+    { id: 'ml-module-1', parent: 'machine-learning-for-quantitative-finance', title: 'Module 1: Foundations of ML in Finance', status: 'not-started', duration: 110 },
+    { id: 'ml-module-2', parent: 'machine-learning-for-quantitative-finance', title: 'Module 2: Time-Series Forecasting for Trading', status: 'not-started', duration: 130 },
+    { id: 'ml-module-3', parent: 'machine-learning-for-quantitative-finance', title: 'Module 3: Machine Learning for Risk Management', status: 'not-started', duration: 125 },
+    { id: 'ml-module-4', parent: 'machine-learning-for-quantitative-finance', title: 'Module 4: NLP for Alpha Generation', status: 'not-started', duration: 115 },
+    { id: 'ml-module-5', parent: 'machine-learning-for-quantitative-finance', title: 'Module 5: Advanced Topics & Modern Frontiers', status: 'not-started', duration: 140 },
+=======
     { id: 'ml-mod-0', parent: 'machine-learning-for-quantitative-finance', title: 'Module 0: The Absolute Basics of Machine Learning', status: 'not-started', duration: 120 },
     { id: 'ml-mod-1', parent: 'machine-learning-for-quantitative-finance', title: 'Module 1: Foundations of ML in Finance', status: 'not-started', duration: 110 },
     { id: 'ml-mod-2', parent: 'machine-learning-for-quantitative-finance', title: 'Module 2: Time-Series Forecasting for Trading', status: 'not-started', duration: 130 },
     { id: 'ml-mod-3', parent: 'machine-learning-for-quantitative-finance', title: 'Module 3: Machine Learning for Risk Management', status: 'not-started', duration: 125 },
     { id: 'ml-mod-4', parent: 'machine-learning-for-quantitative-finance', title: 'Module 4: NLP for Alpha Generation', status: 'not-started', duration: 115 },
     { id: 'ml-mod-5', parent: 'machine-learning-for-quantitative-finance', title: 'Module 5: Advanced Topics & Modern Frontiers', status: 'not-started', duration: 140 },
+>>>>>>> working-3.0
   ];
 
   const pathModules: Module[] = allModules.filter(m => m.parent === id).map(module => {
