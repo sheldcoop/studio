@@ -7,8 +7,11 @@ import { type Topic, type SubTopic } from '@/lib/curriculum';
 import { cn } from '@/lib/utils';
 import { InteractiveTestWrapper } from '@/components/app/interactive-test-wrapper';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, Code, BrainCircuit, BarChart, CheckCircle, Clock, PlayCircle } from 'lucide-react';
+import { BookOpen, Code, BrainCircuit, BarChart, CheckCircle, Clock, PlayCircle, Book, FileText, Send } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 function TableOfContents({ subTopics }: { subTopics: SubTopic[] }) {
     const [activeId, setActiveId] = useState<string | null>(null);
@@ -193,15 +196,78 @@ export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
                             </section>
                         ))}
                     </article>
-                    {/* 5. Bottom Section */}
-                    <div className="mt-16">
-                        <h3 className="font-headline text-2xl mb-4">Further Learning</h3>
-                         <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
-                            <p className="text-sm text-muted-foreground">Related topics and resources coming soon.</p>
-                        </div>
+                    
+                    {/* 4. Additional Resources & Q&A */}
+                    <div className="mt-16 space-y-12">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="font-headline text-2xl">Additional Resources</CardTitle>
+                                <p className="text-muted-foreground">Dive deeper with these recommended books and papers.</p>
+                            </CardHeader>
+                            <CardContent>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start gap-4">
+                                        <Book className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                                        <div>
+                                            <h4 className="font-semibold">"Options, Futures, and Other Derivatives" by John C. Hull</h4>
+                                            <p className="text-sm text-muted-foreground">The bible of derivatives pricing. A must-have on any quant's bookshelf.</p>
+                                        </div>
+                                    </li>
+                                    <li className="flex items-start gap-4">
+                                        <FileText className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                                        <div>
+                                            <h4 className="font-semibold">Original Black-Scholes Paper (1973)</h4>
+                                            <p className="text-sm text-muted-foreground">"The Pricing of Options and Corporate Liabilities" - a foundational paper in finance.</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                             <CardHeader>
+                                <CardTitle className="font-headline text-2xl">Community Q&amp;A</CardTitle>
+                                <p className="text-muted-foreground">Have a question? Ask the community!</p>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Textarea placeholder="Type your question about this topic..." />
+                                    <div className="flex justify-end">
+                                        <Button><Send className="h-4 w-4 mr-2" /> Submit Question</Button>
+                                    </div>
+                                </div>
+                                <div className="space-y-6 border-t pt-6">
+                                    {/* Mock Q&A Item 1 */}
+                                    <div className="flex items-start gap-4">
+                                        <Avatar>
+                                            <AvatarFallback>Q</AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-semibold">QuantAspirant</p>
+                                            <p className="text-sm text-foreground/90">How does this concept apply in a high-volatility environment?</p>
+                                        </div>
+                                    </div>
+                                    {/* Mock Q&A Item 2 */}
+                                     <div className="flex items-start gap-4 pl-8">
+                                        <Avatar>
+                                            <AvatarFallback>A</AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1 border-l-2 border-primary/50 pl-4">
+                                            <p className="text-sm font-semibold">SeniorQuant</p>
+                                            <p className="text-sm text-foreground/90">Great question. In high-volatility regimes, the assumptions often break down. You need to be cautious about model parameters and consider using more robust, non-parametric approaches.</p>
+                                            <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
+                                                <button className="hover:text-primary">Reply</button>
+                                                <span>2 hours ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
+
                 </div>
-                {/* 4. Sticky Sidebar */}
+                {/* 5. Sticky Sidebar */}
                 <TableOfContents subTopics={subTopics} />
             </div>
         </div>
