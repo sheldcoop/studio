@@ -14,7 +14,7 @@ export const mainTopics: Topic[] = [
    {
     id: 'probability-toolkit',
     title: 'Probability Toolkit',
-    description: 'An interactive journey through the key distributions in probability theory.',
+    description: 'Interactive tools for hands-on probability analysis.',
     icon: 'FlaskConical',
     href: '/paths/probability-toolkit',
     category: 'main',
@@ -49,8 +49,8 @@ export const mainTopics: Topic[] = [
   },
   {
     id: 'probability',
-    title: 'Probability',
-    description: 'The mathematical foundation for understanding randomness and uncertainty.',
+    title: 'Probability for Quants',
+    description: 'Master random variables, distributions, and stochastic processes.',
     icon: 'Percent',
     href: '/probability',
     category: 'main',
