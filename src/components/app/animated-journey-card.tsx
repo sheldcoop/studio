@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Topic } from '@/lib/curriculum';
 import {
   Card,
@@ -24,12 +25,22 @@ interface AnimatedJourneyCardProps {
 export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useIsMobile();
+  const router = useRouter();
 
-  // On mobile devices, we want the animation to be interactive on tap,
-  // not just hover. So we treat a tap as a "hover" to show the animation.
-  const handleInteraction = () => {
-    if(isMobile) {
-        setIsHovered(!isHovered);
+  const handleInteraction = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // On mobile, we want the animation to be interactive on tap.
+    // We delay navigation to allow the animation to be seen.
+    if (isMobile) {
+      // Prevent the link from navigating immediately
+      e.preventDefault();
+      
+      // Trigger the animation
+      setIsHovered(!isHovered);
+
+      // Wait for the animation to be visible, then navigate
+      setTimeout(() => {
+        router.push(item.href);
+      }, 800); // 800ms delay
     }
   };
 
@@ -40,7 +51,7 @@ export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
       onPointerEnter={() => !isMobile && setIsHovered(true)}
       onPointerLeave={() => !isMobile && setIsHovered(false)}
       onClick={handleInteraction}
-      onKeyDown={(e) => { if (e.key === 'Enter') handleInteraction() }}
+      onKeyDown={(e) => { if (e.key === 'Enter') handleInteraction(e as any) }}
       aria-label={`Navigate to ${item.title}`}
     >
       <Card className="relative flex h-full min-h-[250px] transform-gpu flex-col justify-between overflow-hidden bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
