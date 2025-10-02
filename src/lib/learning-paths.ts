@@ -50,8 +50,8 @@ export const learningPaths: Omit<LearningPath, 'modules'>[] = [
     description: 'Apply ML algorithms to trading, risk, and asset management.',
   },
   {
-    id: 'probability-toolkit',
-    title: 'Probability Toolkit',
+    id: 'probability-lab',
+    title: 'Probability Lab',
     icon: 'FlaskConical',
     description: 'Interactive tools for hands-on probability analysis.',
   },
@@ -74,17 +74,24 @@ export const getPathById = (id: string): LearningPath | undefined => {
     { id: 'stats-mod-4', parent: 'statistics-for-quantitative-finance', title: 'Module 4: Linear Modeling & Econometrics', status: 'not-started', duration: 240 },
     { id: 'stats-mod-5', parent: 'statistics-for-quantitative-finance', title: 'Module 5: Time Series Analysis & Computational Methods', status: 'not-started', duration: 180 },
     { id: 'stats-mod-6', parent: 'statistics-for-quantitative-finance', title: 'Module 6: Advanced Quant Modeling & Numerical Methods', status: 'not-started', duration: 210 },
-    // Probability Toolkit
-    { id: 'prob-core-tools', parent: 'probability-toolkit', title: 'Core Probability Concepts', status: 'in-progress', duration: 40 },
-    { id: 'prob-dist-discrete', parent: 'probability-toolkit', title: 'Discrete Distributions', status: 'in-progress', duration: 30},
-    { id: 'prob-dist-continuous', parent: 'probability-toolkit', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
-    // Probability for Quants (NEW)
+    // Probability Lab
+    { id: 'prob-core-tools', parent: 'probability-lab', title: 'Core Probability Concepts', status: 'in-progress', duration: 40 },
+    { id: 'prob-dist-discrete', parent: 'probability-lab', title: 'Discrete Distributions', status: 'in-progress', duration: 30},
+    { id: 'prob-dist-continuous', parent: 'probability-lab', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
+    // Probability for Quants
     { id: 'prob-quant-mod-1', parent: 'probability-for-quants', title: 'Module 1: Foundations of Probability', status: 'not-started', duration: 85 },
     { id: 'prob-quant-mod-2', parent: 'probability-for-quants', title: 'Module 2: Random Variables & Distributions', status: 'not-started', duration: 100 },
     { id: 'prob-quant-mod-3', parent: 'probability-for-quants', title: 'Module 3: Multivariate Probability & Core Theorems', status: 'not-started', duration: 105 },
     { id: 'prob-quant-mod-4', parent: 'probability-for-quants', title: 'Module 4: Intermediate Topics & Generating Functions', status: 'not-started', duration: 90 },
     { id: 'prob-quant-mod-5', parent: 'probability-for-quants', title: 'Module 5: Stochastic Processes', status: 'not-started', duration: 120 },
     { id: 'prob-quant-mod-6', parent: 'probability-for-quants', title: 'Module 6: Advanced & Measure-Theoretic Probability', status: 'not-started', duration: 150 },
+    // Machine Learning in Finance
+    { id: 'ml-module-0', parent: 'machine-learning-for-quantitative-finance', title: 'Module 0: The Absolute Basics of Machine Learning', status: 'not-started', duration: 120 },
+    { id: 'ml-module-1', parent: 'machine-learning-for-quantitative-finance', title: 'Module 1: Foundations of ML in Finance', status: 'not-started', duration: 110 },
+    { id: 'ml-module-2', parent: 'machine-learning-for-quantitative-finance', title: 'Module 2: Time-Series Forecasting for Trading', status: 'not-started', duration: 130 },
+    { id: 'ml-module-3', parent: 'machine-learning-for-quantitative-finance', title: 'Module 3: Machine Learning for Risk Management', status: 'not-started', duration: 125 },
+    { id: 'ml-module-4', parent: 'machine-learning-for-quantitative-finance', title: 'Module 4: NLP for Alpha Generation', status: 'not-started', duration: 115 },
+    { id: 'ml-module-5', parent: 'machine-learning-for-quantitative-finance', title: 'Module 5: Advanced Topics & Modern Frontiers', status: 'not-started', duration: 140 },
   ];
 
   const pathModules: Module[] = allModules.filter(m => m.parent === id).map(module => {
