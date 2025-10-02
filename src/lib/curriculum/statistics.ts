@@ -14,6 +14,12 @@ const createAdvancedStatTopic = (module: string, title: string, description: str
         description,
         category: 'sub-topic',
         parent: module,
+        subTopics: [
+            { id: `${slug}-theory`, title: 'Core Theory' },
+            { id: `${slug}-application`, title: 'Financial Application' },
+            { id: `${slug}-interactive`, title: 'Interactive Demo' },
+            { id: `${slug}-problems`, title: 'Practice Problems' },
+        ]
     };
 };
 

@@ -22,9 +22,12 @@ export default function RootPage() {
         </div>
         <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {quantJourney.map((item) => {
+            // The AnimatedJourneyCard now handles its own navigation.
+            // We no longer wrap it in a <Link> component here.
             if (item.animation) {
                return <AnimatedJourneyCard key={item.id} item={item} />
             }
+            // The StaticJourneyCard is still wrapped in a Link as it has no complex interaction.
             return <StaticJourneyCard key={item.id} item={item} />
           })}
         </div>

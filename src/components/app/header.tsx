@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -12,13 +12,19 @@ import { MainNav } from './main-nav';
 import { UserNav } from './user-nav';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './theme-toggle';
+import { useScrollDirection } from '@/hooks/use-scroll-direction';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
+  const scrollDirection = useScrollDirection();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      className={cn(
+        'sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-transform duration-300',
+        scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
+      )}
+    >
       <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6">

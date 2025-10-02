@@ -86,6 +86,7 @@ export function TimeSeriesAnimation({
       // --- Animation & Interaction ---
       const clock = new THREE.Clock();
       let targetVolatility = 0.5;
+      let currentVolatility = 0.5;
 
       const animate = () => {
         frameId = requestAnimationFrame(animate);
@@ -94,13 +95,14 @@ export function TimeSeriesAnimation({
         if (isMouseOver.current) {
           targetVolatility = (mouse.current.y + 1) * 1.5; // Map mouse Y to volatility (0 to 3)
         } else {
-          targetVolatility += (0.5 - targetVolatility) * 0.1; // Ease back to default
+          targetVolatility = 0.5; // Ease back to default
         }
+        currentVolatility += (targetVolatility - currentVolatility) * 0.1;
 
         const positions = line.geometry.attributes.position.array as Float32Array;
         for (let i = 0; i <= lineSegments; i++) {
           const x = (i / lineSegments - 0.5) * 20;
-          const y = Math.sin(i * 0.2 + elapsedTime * 2) * targetVolatility;
+          const y = Math.sin(i * 0.2 + elapsedTime * 2) * currentVolatility;
           positions[i * 3] = x;
           positions[i * 3 + 1] = y;
           positions[i * 3 + 2] = 0;

@@ -15,7 +15,7 @@ Our stack is centered around **Next.js** and **TypeScript**, a combination chose
     - **Server Components (The "Secret Sauce"):** The App Router allows us to use **React Server Components** by default. This is a revolutionary feature. It means most of our components run exclusively on the server, fetching data and rendering static content without sending any JavaScript to the user's browser. The result is a much lighter, faster experience. Only components that require user interactivity (like a button with an `onClick` handler) are marked with `'use client';` and sent to the browser. This approach gives us:
         - **Drastically Faster Load Times:** The user's browser has much less to download, parse, and execute.
         - **Better SEO:** Search engine bots can easily read the fully-formed HTML content, leading to better indexing and ranking.
-    - **Simplified Routing:** The file system itself defines the website's URL structure. The folder `src/app/(app)/topics/statistics/` directly maps to the URL `/topics/statistics`.
+    - **Simplified Routing:** The file system itself defines the website's URL structure. For example, the folder `src/app/(app)/paths/` directly maps to the URL `/paths`. Topic pages are organized under multiple routes like `/topics/[slug]`, `/statistics/[slug]`, and `/linear-algebra-for-quantitative-finance/[slug]` to create a logical content hierarchy.
     - **Dynamic Routing with Async Params (Next.js 15):** A key change in Next.js 15 is that props for dynamic pages (like `params`) are now **asynchronous**. This means page components must be `async` functions that `await` the props.
       ```typescript
       // Example for src/app/(app)/paths/[slug]/page.tsx
@@ -72,7 +72,7 @@ Our visual identity is managed by a consistent and modern styling pipeline.
 - **Configuration File Location:** The `next.config.ts` file **must** be located in the project root directory. Placing a duplicate configuration file inside `src/` will cause build failures that are difficult to debug.
 - **Server-First Approach:** We default to using Server Components for everything unless interactivity is explicitly needed. This is a core principle for maximizing performance. Any component with hooks (`useState`, `useEffect`) must be in a file marked with `'use client';`. The ideal architecture is to push these client "islands" as deep into the component tree as possible.
 - **Performance Optimization:** For client components that rely on large third-party libraries (e.g., `recharts` for charting), we use **`next/dynamic`** to lazy-load them. This prevents the large library code from being included in the initial page bundle, significantly speeding up the initial load time. A skeleton loader is shown while the heavy component is loaded in the background.
-- **Data-Driven Content:** The curriculum, learning paths, and topic definitions are stored in structured data files (`src/lib/curriculum/`, `src/lib/learning-paths.ts`). The pages read from this data, meaning we can add or change a topic by simply updating a data file, not by creating a new page.
+- **Data-Driven Content:** The curriculum, learning paths, and topic definitions are stored in structured data files (`src/lib/curriculum/`, `src/lib/learning-paths.ts`). The pages read from this data and generate routes dynamically, meaning we can add or change a topic by simply updating a data file, not by creating a new page.
 - **Reusable "Cookie-Cutter" Components:** Instead of repeatedly building the same UI with primitive `<div>` and `<Card>` elements, we create dedicated, reusable components (e.g., `<LessonItem />`, `<LearningPathCard />`). This follows the **DRY (Don't Repeat Yourself)** principle, making the codebase cleaner, more consistent, and much easier to maintain.
 - **(Future) Decouple Content with a Headless CMS:** Currently, our content lives in TypeScript files. For long-term scalability, we should consider moving this content into a headless CMS. This would allow non-developers to manage and publish content without requiring a code deployment, dramatically speeding up our content production pipeline.
 
@@ -80,7 +80,7 @@ Our visual identity is managed by a consistent and modern styling pipeline.
 
 ## 4. Testing Strategy
 
-Our application uses a multi-layered testing strategy to ensure code quality and prevent regressions. The configuration for this is located in `jest.config.mjs` and `jest.setup.js`.
+Our application uses a multi-layered testing strategy to ensure code quality and prevent regressions. The configuration for this is located in `jest.config.ts` and `jest.setup.js`.
 
 - **Unit Testing (Jest):**
   - **Purpose:** To test small, isolated pieces of pure logic, primarily our utility and calculation functions in `src/lib/math.ts`.

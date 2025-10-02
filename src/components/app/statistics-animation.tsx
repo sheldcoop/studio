@@ -122,8 +122,9 @@ export function StatisticsAnimation({
           targetPosition.x = mouse.current.x * 5;
           targetPosition.z = mouse.current.y * 5; // Map mouse Y to Z-axis movement
         } else {
-          targetPosition.x = 0;
-          targetPosition.z = 0;
+          // Add a subtle ambient motion
+          targetPosition.x = Math.sin(elapsedTime * 0.3) * 2;
+          targetPosition.z = Math.cos(elapsedTime * 0.3) * 2;
         }
         
         // Easing / Smoothing for the surface position (mean)
