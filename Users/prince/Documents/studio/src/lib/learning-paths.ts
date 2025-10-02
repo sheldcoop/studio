@@ -1,13 +1,5 @@
 
-import {
-  Calculator,
-  BarChart3,
-  AreaChart,
-  BrainCircuit,
-  CandlestickChart,
-  type LucideIcon,
-  FlaskConical
-} from 'lucide-react';
+import { type LucideIcon } from 'lucide-react';
 import { allTopics, type Topic } from '@/lib/curriculum';
 
 export type Module = {
@@ -21,7 +13,7 @@ export type Module = {
 export type LearningPath = {
   id: string;
   title: string;
-  icon: LucideIcon;
+  icon: string;
   description: string;
   modules: Module[];
 };
@@ -30,31 +22,31 @@ export const learningPaths: Omit<LearningPath, 'modules'>[] = [
   {
     id: 'linear-algebra-for-quantitative-finance',
     title: 'Linear Algebra for Quants',
-    icon: Calculator,
+    icon: 'Calculator',
     description: 'Master vectors, matrices, and eigenvalues for financial modeling.',
   },
   {
     id: 'statistics-for-quantitative-finance',
     title: 'Advanced Statistics',
-    icon: BarChart3,
+    icon: 'BarChart3',
     description: 'Deep dive into probability, distributions, and hypothesis testing.',
   },
   {
     id: 'time-series-analysis-for-quantitative-finance',
     title: 'Time Series Analysis',
-    icon: AreaChart,
+    icon: 'AreaChart',
     description: 'Learn to model and forecast financial time series data.',
   },
   {
     id: 'machine-learning-for-quantitative-finance',
     title: 'Machine Learning in Finance',
-    icon: BrainCircuit,
+    icon: 'BrainCircuit',
     description: 'Apply ML algorithms to trading, risk, and asset management.',
   },
   {
     id: 'probability-toolkit',
     title: 'Probability Toolkit',
-    icon: FlaskConical,
+    icon: 'FlaskConical',
     description: 'Interactive tools for hands-on probability analysis.',
   },
 ];
@@ -93,5 +85,3 @@ export const getPathById = (id: string): LearningPath | undefined => {
     modules: pathModules,
   }
 }
-
-    
