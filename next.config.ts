@@ -32,12 +32,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-   // This function prevents the build from failing on a missing favicon.ico
-   // by explicitly telling Next.js to not generate any static params for this route.
-  generateStaticParams: async () => {
-    return [];
-  },
 };
 
 export default nextConfig;
-
