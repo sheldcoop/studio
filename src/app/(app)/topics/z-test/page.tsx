@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -182,7 +183,8 @@ export default function ZTestPage() {
                   The main requirements are a{' '}
                   <strong className="text-foreground">
                     large sample size
-                  </strong> (n &gt; 30), approximately{' '}
+                  </strong>{' '}
+                  (n &gt; 30), approximately{' '}
                    <strong className="text-foreground">
                     normally distributed
                   </strong> data, and critically, a{' '}
