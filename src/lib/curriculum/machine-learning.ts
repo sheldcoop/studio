@@ -19,6 +19,12 @@ const createMachineLearningTopic = (
     parent: module,
     duration,
     status: 'not-started',
+    subTopics: [
+      { id: `${slug}-theory`, title: 'Core Theory' },
+      { id: `${slug}-application`, title: 'Financial Application' },
+      { id: `${slug}-interactive`, title: 'Interactive Demo' },
+      { id: `${slug}-problems`, title: 'Practice Problems' },
+    ]
   };
 };
 

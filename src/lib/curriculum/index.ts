@@ -5,6 +5,7 @@ import { linearAlgebraTopics } from './linear-algebra';
 import { statisticsTopics } from './statistics';
 import { probabilityTopics } from './probability';
 import { probabilityAdvancedTopics } from './probability-advanced';
+import { machineLearningTopics } from './machine-learning';
 
 export const allTopics: Topic[] = [
     ...mainTopics,
@@ -12,6 +13,7 @@ export const allTopics: Topic[] = [
     ...statisticsTopics,
     ...probabilityTopics,
     ...probabilityAdvancedTopics,
+    ...machineLearningTopics,
 ];
 
 export { mainTopics };
