@@ -1,7 +1,7 @@
 
 import { type Topic } from './types';
 
-const createMLTopic = (moduleId: string, title: string, description: string, duration: number, icon: string, subTopics?: { id: string; title: string }[]): Topic => {
+const createMLTopic = (moduleId: string, title: string, description: string, duration: number, icon: string): Topic => {
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return {
         id: `ml-${slug}`,
@@ -12,7 +12,7 @@ const createMLTopic = (moduleId: string, title: string, description: string, dur
         category: 'sub-topic',
         parent: moduleId,
         duration,
-        subTopics: subTopics || [
+        subTopics: [
             { id: `ml-${slug}-theory`, title: 'Core Theory' },
             { id: `ml-${slug}-application`, title: 'Financial Application' },
             { id: `ml-${slug}-interactive`, title: 'Interactive Demo' },

@@ -50,7 +50,7 @@ export const machineLearningTopics: Topic[] = [
     // --- Module 4: NLP for Alpha Generation ---
     createMLTopic('ml-module-4', 'Financial Sentiment Analysis', 'News, Earnings Reports, Tweets', 35, 'Newspaper'),
     createMLTopic('ml-module-4', 'Information Extraction', 'NER, Topic Modeling', 30, 'Search'),
-    createMLTofic('ml-module-4', 'Advanced Text Representation', 'Word2Vec, Transformers - BERT', 25, 'Speech'),
+    createMLTopic('ml-module-4', 'Advanced Text Representation', 'Word2Vec, Transformers - BERT', 25, 'Speech'),
     createMLTopic('ml-module-4', 'Integrating NLP Signals into Trading Models', '', 25, 'Waypoints'),
 
     // --- Module 5: Advanced Topics & Modern Frontiers ---
