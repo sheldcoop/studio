@@ -6,6 +6,8 @@ import { PageHeader } from '@/components/app/page-header';
 import { type Topic, type SubTopic } from '@/lib/curriculum';
 import { cn } from '@/lib/utils';
 import { InteractiveTestWrapper } from '@/components/app/interactive-test-wrapper';
+import { Card, CardContent } from '@/components/ui/card';
+import { BookOpen, Code, BrainCircuit, BarChart } from 'lucide-react';
 
 function TableOfContents({ subTopics }: { subTopics: SubTopic[] }) {
     const [activeId, setActiveId] = useState<string | null>(null);
@@ -100,12 +102,43 @@ export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
             <div className="flex flex-col lg:flex-row lg:gap-16">
                 <div className="flex-1 min-w-0">
                     <PageHeader title={title} description={description} variant="aligned-left" />
-                    <article className="prose prose-invert max-w-none space-y-12">
+                    <article className="space-y-16">
                         {subTopics.map(sub => (
                             <section key={sub.id} id={sub.id} className="scroll-mt-24">
-                                <h2 className="font-headline text-2xl font-semibold">{sub.title}</h2>
-                                <div className="my-8 flex h-60 items-center justify-center rounded-lg border border-dashed">
-                                    <p className="text-sm text-muted-foreground/50">Content for this section is under construction.</p>
+                                <h2 className="font-headline text-3xl font-bold border-b pb-2 mb-8">{sub.title}</h2>
+                                <div className="space-y-8">
+                                    <Card>
+                                        <CardContent className="p-6">
+                                            <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><BookOpen className="text-primary"/> Theory</h3>
+                                            <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
+                                                <p className="text-sm text-muted-foreground">Theory explanation coming soon.</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                     <Card>
+                                        <CardContent className="p-6">
+                                            <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><Code className="text-primary"/> Interactive Demo</h3>
+                                            <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
+                                                <p className="text-sm text-muted-foreground">Interactive demo coming soon.</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                     <Card>
+                                        <CardContent className="p-6">
+                                            <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><BrainCircuit className="text-primary"/> Practice Problems</h3>
+                                            <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
+                                                <p className="text-sm text-muted-foreground">Practice problems coming soon.</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                    <Card>
+                                        <CardContent className="p-6">
+                                            <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><BarChart className="text-primary"/> Quant Finance Application</h3>
+                                            <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
+                                                <p className="text-sm text-muted-foreground">Application examples coming soon.</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
                                 </div>
                             </section>
                         ))}
@@ -118,6 +151,5 @@ export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
   }
 
   // If there are no sub-topics and no interactive examples, treat it as a simple content page.
-  // This will now correctly render the placeholder.
   return <SimpleContentPage topicInfo={topicInfo} />;
 }
