@@ -64,7 +64,7 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
         <XAxis type="number" dataKey="x" domain={[-4, 4]} ticks={[-4, -3, -2, -1, 0, 1, 2, 3, 4]} name="Z-Score" />
         <YAxis tick={false} axisLine={false} domain={[0, 0.45]} />
         <Tooltip
-          content={<ChartTooltipContent indicator="line" labelFormatter={(value: number) => `Z: ${Number(value).toFixed(2)}`} formatter={(value: number, name: string) => [Number(value).toFixed(4), 'Density']} />}
+          content={<ChartTooltipContent indicator="line" labelFormatter={(value: number) => `Z: ${Number(value).toFixed(2)}`} formatter={(value: string | number) => [Number(value).toFixed(4), 'Density']} />}
         />
         <defs>
           <linearGradient id="fillShaded" x1="0" y1="0" x2="0" y2="1">
