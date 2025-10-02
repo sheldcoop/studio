@@ -12,16 +12,14 @@ Our stack is centered around **Next.js** and **TypeScript**, a combination chose
 
 - **What it is:** Next.js is a production-grade **React framework**. We specifically use **version 15** and its modern **App Router**.
 - **Why we use it:**
-    - **Server Components (The "Secret Sauce"):** The App Router allows us to use **React Server Components** by default. This is a revolutionary feature. It means most of our components run exclusively on the server, fetching data and rendering static content without sending any JavaScript to the user's browser. The result is a much lighter, faster experience. Only components that require user interactivity (like a button with an `onClick` handler) are marked with `'use client';` and sent to the browser. This approach gives us:
-        - **Drastically Faster Load Times:** The user's browser has much less to download, parse, and execute.
-        - **Better SEO:** Search engine bots can easily read the fully-formed HTML content, leading to better indexing and ranking.
-    - **Simplified Routing:** The file system itself defines the website's URL structure. For example, the folder `src/app/(app)/paths/` directly maps to the URL `/paths`. Topic pages are organized under multiple routes like `/topics/[slug]`, `/statistics/[slug]`, and `/linear-algebra-for-quantitative-finance/[slug]` to create a logical content hierarchy.
+    - **Server Components (The "Secret Sauce"):** The App Router allows us to use **React Server Components** by default. This is a revolutionary feature. It means most of our components run exclusively on the server, fetching data and rendering static content without sending any JavaScript to the user's browser. The result is a much lighter, faster experience. Only components that require user interactivity (like a button with an `onClick` handler) are marked with `'use client';` and sent to the browser.
+    - **Simplified Routing:** The file system itself defines the website's URL structure. For example, the folder `src/app/(app)/learning-paths/` directly maps to the URL `/learning-paths`.
     - **Dynamic Routing with Async Params (Next.js 15):** A key change in Next.js 15 is that props for dynamic pages (like `params`) are now **asynchronous**. This means page components must be `async` functions that `await` the props.
       ```typescript
-      // Example for src/app/(app)/paths/[slug]/page.tsx
-      type PathPageProps = { params: Promise<{ slug: string }> };
+      // Example for src/app/(app)/topics/[slug]/page.tsx
+      type TopicPageProps = { params: Promise<{ slug: string }> };
 
-      export default async function PathPage({ params }: PathPageProps) {
+      export default async function TopicPage({ params }: TopicPageProps) {
         const { slug } = await params;
         // ...
       }
@@ -67,14 +65,38 @@ Our visual identity is managed by a consistent and modern styling pipeline.
 
 ---
 
-## 3. Core Architectural Decisions & Future Considerations
+## 3. Core Architectural Decisions: Routing and Content
 
-- **Configuration File Location:** The `next.config.ts` file **must** be located in the project root directory. Placing a duplicate configuration file inside `src/` will cause build failures that are difficult to debug.
-- **Server-First Approach:** We default to using Server Components for everything unless interactivity is explicitly needed. This is a core principle for maximizing performance. Any component with hooks (`useState`, `useEffect`) must be in a file marked with `'use client';`. The ideal architecture is to push these client "islands" as deep into the component tree as possible.
-- **Performance Optimization:** For client components that rely on large third-party libraries (e.g., `recharts` for charting), we use **`next/dynamic`** to lazy-load them. This prevents the large library code from being included in the initial page bundle, significantly speeding up the initial load time. A skeleton loader is shown while the heavy component is loaded in the background.
-- **Data-Driven Content:** The curriculum, learning paths, and topic definitions are stored in structured data files (`src/lib/curriculum/`, `src/lib/learning-paths.ts`). The pages read from this data and generate routes dynamically, meaning we can add or change a topic by simply updating a data file, not by creating a new page.
-- **Reusable "Cookie-Cutter" Components:** Instead of repeatedly building the same UI with primitive `<div>` and `<Card>` elements, we create dedicated, reusable components (e.g., `<LessonItem />`, `<LearningPathCard />`). This follows the **DRY (Don't Repeat Yourself)** principle, making the codebase cleaner, more consistent, and much easier to maintain.
-- **(Future) Decouple Content with a Headless CMS:** Currently, our content lives in TypeScript files. For long-term scalability, we should consider moving this content into a headless CMS. This would allow non-developers to manage and publish content without requiring a code deployment, dramatically speeding up our content production pipeline.
+The application's routing and content architecture is designed to be scalable, maintainable, and prevent common "404 Not Found" errors. This is achieved through a **Unified Dynamic Routing Pattern**.
+
+### a. The "Slug" Pattern: One Page to Rule Them All
+
+Instead of creating a separate static file for every single topic (e.g., `/topics/t-test.tsx`), we use a single dynamic file that acts as a template for all similar pages. This is the **only** correct way to structure content pages in this project.
+
+-   **All Topic Pages:** Handled exclusively by `src/app/(app)/topics/[slug]/page.tsx`.
+    -   When a user visits `/topics/t-test`, Next.js uses this dynamic file. The `slug` ("t-test") is passed as a parameter to the page component, which then uses it to fetch and display the correct topic data.
+-   **All Learning Path Pages:** Handled exclusively by `src/app/(app)/learning-paths/[slug]/page.tsx`.
+    -   This follows the same pattern for URLs like `/learning-paths/linear-algebra-for-quantitative-finance`.
+
+**Why this is critical:** In the past, having redundant static page files (e.g., `topics/t-test/page.tsx`) alongside the dynamic `[slug]` page created routing conflicts. Next.js would get confused about which file to serve, leading to unpredictable 404 errors. The unified dynamic route pattern eliminates this ambiguity entirely.
+
+### b. Data-Driven Content: The Single Source of Truth
+
+The content for every topic and learning path is not stored in the page components themselves. Instead, it is defined in structured TypeScript files located in `src/lib/curriculum/` and `src/lib/learning-paths.ts`.
+
+-   **The `href` Property is Key:** For this system to work, the `href` property within each topic object in our data files **must** match the dynamic file structure defined above.
+    -   **Correct:** A topic with `id: 't-test'` **must** have `href: '/topics/t-test'`.
+    -   **Incorrect:** `href: '/t-test'` or `href: '/statistics/t-test'`.
+-   **Adding New Content:** To add a new topic, a developer only needs to add a new object to the appropriate array in the `src/lib/curriculum/` directory. No new page files need to be created.
+
+### c. Index Pages for Discoverability
+
+To complement the dynamic routes, we have dedicated index pages that list all available content:
+
+-   `src/app/(app)/topics/page.tsx`: This file is responsible for rendering the main `/topics` page, which displays a grid of **all** available topics defined in the curriculum.
+-   `src/app/(app)/learning-paths/page.tsx`: This file renders the main `/learning-paths` page, which displays a grid of all available learning paths.
+
+This architecture ensures a robust, scalable, and easy-to-maintain content system.
 
 ---
 

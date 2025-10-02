@@ -9,7 +9,7 @@ const createAdvancedStatTopic = (module: string, title: string, description: str
     return {
         id: slug,
         title,
-        href: `/statistics/${slug}`, // Use the /statistics/ route
+        href: `/topics/${slug}`, // CORRECTED
         icon: 'FunctionSquare',
         description,
         category: 'sub-topic',
@@ -32,7 +32,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'The detective work of data science.',
     category: 'sub-topic',
-    parent: 'statistics-lab',
+    parent: 'stat-toolkit',
   },
 
   // Parametric Tests (sub-topics of hypothesis testing)
