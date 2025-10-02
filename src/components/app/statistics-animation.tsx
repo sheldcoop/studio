@@ -59,7 +59,7 @@ export function StatisticsAnimation({
     // FIX: Defer the main logic to the next animation frame.
     // This ensures that the component has mounted and CSS variables are available.
     const animationTimeoutId = setTimeout(() => {
-      let frameId: number;
+      let frameId: number; // Declare frameId inside this scope
 
       const computedStyle = getComputedStyle(document.documentElement); // Read from documentElement
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
