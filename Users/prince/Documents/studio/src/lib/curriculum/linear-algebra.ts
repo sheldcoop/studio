@@ -1,22 +1,6 @@
 
 import { type Topic } from './types';
 
-// Helper to create slugs from titles
-const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-
-const createTopic = (module: string, title: string, description: string): Topic => {
-    const slug = `la-${toSlug(title)}`;
-    return {
-        id: slug,
-        title,
-        href: `/linear-algebra-for-quantitative-finance/${slug}`, 
-        icon: 'Waypoints',
-        description,
-        category: 'sub-topic',
-        parent: module,
-    };
-};
-
 export const linearAlgebraTopics: Topic[] = [
     // --- Module 1 ---
     {
@@ -34,21 +18,109 @@ export const linearAlgebraTopics: Topic[] = [
             { id: 'vector-spaces', title: 'Defining a Vector Space' },
         ]
     },
-    createTopic('la-module-1', 'Matrix Operations', "Aggregating data across assets and time."),
-    createTopic('la-module-1', 'Linear Independence', "Crucial for diversification and factor models."),
+    {
+        id: 'la-matrix-operations',
+        title: 'Matrix Operations',
+        href: '/linear-algebra-for-quantitative-finance/la-matrix-operations',
+        icon: 'Waypoints',
+        description: "Aggregating data across assets and time.",
+        category: 'sub-topic',
+        parent: 'la-module-1',
+    },
+    {
+        id: 'la-linear-independence',
+        title: 'Linear Independence',
+        href: '/linear-algebra-for-quantitative-finance/la-linear-independence',
+        icon: 'Waypoints',
+        description: "Crucial for diversification and factor models.",
+        category: 'sub-topic',
+        parent: 'la-module-1',
+    },
 
     // --- Module 2 ---
-    createTopic('la-module-2', 'Systems of Linear Equations', "The mathematical basis for linear regression."),
-    createTopic('la-module-2', 'Orthogonality & Projections', "The core of Ordinary Least Squares (OLS) regression."),
-    createTopic('la-module-2', 'The Four Fundamental Subspaces', "Understand the complete picture of a matrix."),
+     {
+        id: 'la-systems-of-linear-equations',
+        title: 'Systems of Linear Equations',
+        href: '/linear-algebra-for-quantitative-finance/la-systems-of-linear-equations',
+        icon: 'Waypoints',
+        description: "The mathematical basis for linear regression.",
+        category: 'sub-topic',
+        parent: 'la-module-2',
+    },
+     {
+        id: 'la-orthogonality-projections',
+        title: 'Orthogonality & Projections',
+        href: '/linear-algebra-for-quantitative-finance/la-orthogonality-projections',
+        icon: 'Waypoints',
+        description: "The core of Ordinary Least Squares (OLS) regression.",
+        category: 'sub-topic',
+        parent: 'la-module-2',
+    },
+     {
+        id: 'la-the-four-fundamental-subspaces',
+        title: 'The Four Fundamental Subspaces',
+        href: '/linear-algebra-for-quantitative-finance/la-the-four-fundamental-subspaces',
+        icon: 'Waypoints',
+        description: "Understand the complete picture of a matrix.",
+        category: 'sub-topic',
+        parent: 'la-module-2',
+    },
 
     // --- Module 3 ---
-    createTopic('la-module-3', 'Eigenvalues & Eigenvectors', "Find the 'axes of greatest variance' in your data."),
-    createTopic('la-module-3', 'Diagonalization', "Simplify complex systems for long-term modeling."),
-    createTopic('la-module-3', 'Singular Value Decomposition (SVD)', "The master decomposition for any matrix."),
+     {
+        id: 'la-eigenvalues-eigenvectors',
+        title: 'Eigenvalues & Eigenvectors',
+        href: '/linear-algebra-for-quantitative-finance/la-eigenvalues-eigenvectors',
+        icon: 'Waypoints',
+        description: "Find the 'axes of greatest variance' in your data.",
+        category: 'sub-topic',
+        parent: 'la-module-3',
+    },
+     {
+        id: 'la-diagonalization',
+        title: 'Diagonalization',
+        href: '/linear-algebra-for-quantitative-finance/la-diagonalization',
+        icon: 'Waypoints',
+        description: "Simplify complex systems for long-term modeling.",
+        category: 'sub-topic',
+        parent: 'la-module-3',
+    },
+     {
+        id: 'la-singular-value-decomposition-svd',
+        title: 'Singular Value Decomposition (SVD)',
+        href: '/linear-algebra-for-quantitative-finance/la-singular-value-decomposition-svd',
+        icon: 'Waypoints',
+        description: "The master decomposition for any matrix.",
+        category: 'sub-topic',
+        parent: 'la-module-3',
+    },
 
     // --- Module 4 ---
-    createTopic('la-module-4', 'Covariance & Correlation Matrices', "The cornerstone of portfolio theory."),
-    createTopic('la-module-4', 'Positive Definite Matrices', "The mathematical property that makes portfolio optimization possible."),
-    createTopic('la-module-4', 'Cholesky Decomposition', "The key to generating correlated random asset paths for Monte Carlo simulations."),
+     {
+        id: 'la-covariance-correlation-matrices',
+        title: 'Covariance & Correlation Matrices',
+        href: '/linear-algebra-for-quantitative-finance/la-covariance-correlation-matrices',
+        icon: 'Waypoints',
+        description: "The cornerstone of portfolio theory.",
+        category: 'sub-topic',
+        parent: 'la-module-4',
+    },
+     {
+        id: 'la-positive-definite-matrices',
+        title: 'Positive Definite Matrices',
+        href: '/linear-algebra-for-quantitative-finance/la-positive-definite-matrices',
+        icon: 'Waypoints',
+        description: "The mathematical property that makes portfolio optimization possible.",
+        category: 'sub-topic',
+        parent: 'la-module-4',
+    },
+     {
+        id: 'la-cholesky-decomposition',
+        title: 'Cholesky Decomposition',
+        href: '/linear-algebra-for-quantitative-finance/la-cholesky-decomposition',
+        icon: 'Waypoints',
+        description: "The key to generating correlated random asset paths for Monte Carlo simulations.",
+        category: 'sub-topic',
+        parent: 'la-module-4',
+    },
 ];
