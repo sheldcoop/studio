@@ -12,6 +12,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-1',
         duration: 20,
+        subTopics: [
+            { id: 'prob-sample-space-def', title: 'Defining a Sample Space' },
+            { id: 'prob-events-sets', title: 'Events as Subsets' },
+            { id: 'prob-set-operations', title: 'Set Operations on Events' },
+        ]
     },
     {
         id: 'prob-foundations-combinatorics',
@@ -22,6 +27,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-1',
         duration: 25,
+        subTopics: [
+            { id: 'prob-permutations', title: 'Permutations' },
+            { id: 'prob-combinations', title: 'Combinations' },
+            { id: 'prob-sampling', title: 'Sampling with/without Replacement' },
+        ]
     },
     {
         id: 'prob-foundations-conditional',
@@ -32,6 +42,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-1',
         duration: 20,
+        subTopics: [
+            { id: 'prob-conditional-def', title: 'Definition of Conditional Probability' },
+            { id: 'prob-independence', title: 'Independence of Events' },
+            { id: 'prob-multiplication-rule', title: 'The Multiplication Rule' },
+        ]
     },
     {
         id: 'prob-foundations-bayes',
@@ -42,6 +57,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-1',
         duration: 20,
+        subTopics: [
+            { id: 'bayes-formula', title: 'The Formula' },
+            { id: 'bayes-prior-posterior', title: 'Priors, Likelihood, and Posteriors' },
+            { id: 'bayes-application', title: 'Application: The Disease Test' },
+        ]
     },
 
     // --- Module 2: Random Variables & Distributions ---
@@ -54,6 +74,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-2',
         duration: 20,
+        subTopics: [
+            { id: 'rv-discrete', title: 'Discrete Random Variables' },
+            { id: 'rv-continuous', title: 'Continuous Random Variables' },
+            { id: 'rv-cdf', title: 'Cumulative Distribution Function (CDF)' },
+        ]
     },
     {
         id: 'prob-rv-expectation',
@@ -64,6 +89,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-2',
         duration: 25,
+        subTopics: [
+            { id: 'rv-expected-value', title: 'Expected Value' },
+            { id: 'rv-variance-stddev', title: 'Variance and Standard Deviation' },
+            { id: 'rv-moments', title: 'Higher-Order Moments' },
+        ]
     },
     {
         id: 'prob-rv-discrete-dist',
@@ -74,6 +104,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-2',
         duration: 30,
+        subTopics: [
+            { id: 'dist-bernoulli', title: 'Bernoulli Distribution' },
+            { id: 'dist-binomial', title: 'Binomial Distribution' },
+            { id: 'dist-poisson', title: 'Poisson Distribution' },
+        ]
     },
     {
         id: 'prob-rv-continuous-dist',
@@ -84,6 +119,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-2',
         duration: 25,
+        subTopics: [
+            { id: 'dist-uniform', title: 'Uniform Distribution' },
+            { id: 'dist-normal', title: 'Normal Distribution' },
+            { id: 'dist-exponential', title: 'Exponential Distribution' },
+        ]
     },
 
     // --- Module 3: Multivariate Probability & Core Theorems ---
@@ -96,6 +136,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-3',
         duration: 30,
+        subTopics: [
+            { id: 'multi-joint-pdf', title: 'Joint Probability Distributions' },
+            { id: 'multi-marginal', title: 'Marginal Distributions' },
+            { id: 'multi-conditional', title: 'Conditional Distributions' },
+        ]
     },
     {
         id: 'prob-multi-covariance',
@@ -106,6 +151,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-3',
         duration: 25,
+        subTopics: [
+            { id: 'multi-covariance-def', title: 'Defining Covariance' },
+            { id: 'multi-correlation-def', title: 'Defining Correlation' },
+            { id: 'multi-portfolio-app', title: 'Application in Portfolio Theory' },
+        ]
     },
     {
         id: 'prob-multi-lln',
@@ -116,6 +166,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-3',
         duration: 20,
+        subTopics: [
+            { id: 'lln-weak', title: 'Weak Law (WLLN)' },
+            { id: 'lln-strong', title: 'Strong Law (SLLN)' },
+            { id: 'lln-implications', title: 'Implications for Sampling' },
+        ]
     },
     {
         id: 'prob-multi-clt',
@@ -126,6 +181,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-3',
         duration: 30,
+        subTopics: [
+            { id: 'clt-statement', title: 'The Theorem' },
+            { id: 'clt-conditions', title: 'Conditions for CLT' },
+            { id: 'clt-application', title: 'Applications in Inference' },
+        ]
     },
 
     // --- Module 4: Intermediate Topics & Generating Functions ---
@@ -138,6 +198,10 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-4',
         duration: 30,
+        subTopics: [
+            { id: 'trans-one-var', title: 'Functions of One Variable' },
+            { id: 'trans-two-vars', title: 'Functions of Two Variables' },
+        ]
     },
     {
         id: 'prob-inter-mgf',
@@ -148,6 +212,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-4',
         duration: 30,
+        subTopics: [
+            { id: 'mgf-definition', title: 'Definition and Properties' },
+            { id: 'mgf-moments', title: 'Generating Moments' },
+            { id: 'mgf-sums', title: 'Sums of Independent R.V.s' },
+        ]
     },
     {
         id: 'prob-inter-info-theory',
@@ -158,6 +227,10 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-4',
         duration: 30,
+        subTopics: [
+            { id: 'info-entropy', title: 'Entropy' },
+            { id: 'info-kl-divergence', title: 'KL Divergence' },
+        ]
     },
 
     // --- Module 5: Stochastic Processes ---
@@ -170,6 +243,10 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-5',
         duration: 20,
+        subTopics: [
+            { id: 'stochastic-def', title: 'Defining a Stochastic Process' },
+            { id: 'stochastic-stationarity', title: 'Stationarity' },
+        ]
     },
     {
         id: 'prob-stochastic-markov',
@@ -180,6 +257,11 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-5',
         duration: 40,
+        subTopics: [
+            { id: 'markov-property', title: 'The Markov Property' },
+            { id: 'markov-transition-matrix', title: 'Transition Matrices' },
+            { id: 'markov-steady-state', title: 'Steady-State Distributions' },
+        ]
     },
     {
         id: 'prob-stochastic-poisson',
@@ -190,6 +272,10 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-5',
         duration: 30,
+        subTopics: [
+            { id: 'poisson-process-def', title: 'Definition' },
+            { id: 'poisson-inter-arrival', title: 'Inter-arrival Times' },
+        ]
     },
     {
         id: 'prob-stochastic-brownian',
@@ -200,6 +286,10 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-5',
         duration: 30,
+        subTopics: [
+            { id: 'brownian-random-walk', title: 'From Random Walks to Brownian Motion' },
+            { id: 'brownian-properties', title: 'Properties of Brownian Motion' },
+        ]
     },
 
     // --- Module 6: Advanced & Measure-Theoretic Probability ---
@@ -212,6 +302,10 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-6',
         duration: 35,
+        subTopics: [
+            { id: 'sigma-algebra-def', title: 'Sigma-Algebras' },
+            { id: 'prob-measure-def', title: 'Probability Measures' },
+        ]
     },
     {
         id: 'prob-advanced-lebesgue',
@@ -222,6 +316,10 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-6',
         duration: 35,
+        subTopics: [
+            { id: 'lebesgue-intro', title: 'Motivation for Lebesgue' },
+            { id: 'lebesgue-expectation', title: 'Expectation via Lebesgue' },
+        ]
     },
     {
         id: 'prob-advanced-martingales',
@@ -232,6 +330,10 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-6',
         duration: 40,
+        subTopics: [
+            { id: 'martingale-def', title: 'Definition of a Martingale' },
+            { id: 'martingale-stopping-times', title: 'Optional Stopping Theorem' },
+        ]
     },
     {
         id: 'prob-advanced-ito',
@@ -242,5 +344,9 @@ export const probabilityAdvancedTopics: Topic[] = [
         category: 'sub-topic',
         parent: 'prob-quant-mod-6',
         duration: 40,
+        subTopics: [
+            { id: 'ito-integral', title: 'The Itô Integral' },
+            { id: 'ito-lemma', title: "Itô's Lemma" },
+        ]
     },
 ];
