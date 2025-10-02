@@ -66,9 +66,9 @@ export const getPathById = (id: string): LearningPath | undefined => {
     { id: 'stats-mod-4', parent: 'statistics-for-quantitative-finance', title: 'Module 4: Linear Modeling & Econometrics', status: 'not-started', duration: 240 },
     { id: 'stats-mod-5', parent: 'statistics-for-quantitative-finance', title: 'Module 5: Time Series Analysis & Computational Methods', status: 'not-started', duration: 180 },
     { id: 'stats-mod-6', parent: 'statistics-for-quantitative-finance', title: 'Module 6: Advanced Quant Modeling & Numerical Methods', status: 'not-started', duration: 210 },
-    { id: 'prob-core-tools', parent: 'probability-toolkit', title: 'Core Probability Concepts', status: 'in-progress', duration: 40 },
-    { id: 'prob-dist-discrete', parent: 'probability-toolkit', title: 'Discrete Distributions', status: 'in-progress', duration: 30},
-    { id: 'prob-dist-continuous', parent: 'probability-toolkit', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
+    { id: 'prob-core-tools', parent: 'probability-toolkit', title: 'Module 1: Core Probability Concepts', status: 'in-progress', duration: 40 },
+    { id: 'prob-dist-discrete', parent: 'probability-toolkit', title: 'Module 2: Discrete Distributions', status: 'in-progress', duration: 30},
+    { id: 'prob-dist-continuous', parent: 'probability-toolkit', title: 'Module 3: Continuous Distributions', status: 'in-progress', duration: 90},
   ];
 
   const pathModules: Module[] = allModules.filter(m => m.parent === id).map(module => {
