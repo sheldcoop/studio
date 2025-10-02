@@ -9,7 +9,7 @@ export function AnimatedTagline() {
   const [animatedText, setAnimatedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [isComplete, setIsComplete] = useState(false); // New state to track completion
+  const [isComplete, setIsComplete] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
 
@@ -67,10 +67,22 @@ export function AnimatedTagline() {
     return () => clearTimeout(typingTimeout);
   }, [animatedText, isDeleting, taglineIndex, isPaused, isComplete]);
 
-  // Determine which text to show based on the animation state
-  const staticPart = isComplete ? 'Journey to ' : taglines[taglineIndex][0];
-  const dynamicPart = isComplete ? 'Quant' : animatedText;
+  // If the animation is complete, render the final static text.
+  if (isComplete) {
+    return (
+        <div
+        aria-hidden="true"
+        className="font-headline text-5xl font-bold tracking-tight md:text-6xl"
+        >
+        <span className="inline-block h-14">
+            <span>Journey to </span>
+            <span className="text-primary">Quant</span>
+        </span>
+        </div>
+    )
+  }
 
+  // Otherwise, render the animation.
   return (
     <div ref={ref}>
       {/* This h2 is for SEO and screen readers, providing a stable, non-animated version */}
@@ -80,15 +92,12 @@ export function AnimatedTagline() {
         className="font-headline text-5xl font-bold tracking-tight md:text-6xl"
       >
         <span className="inline-block h-14">
-          <span>{staticPart}</span>
-          <span className="text-primary">{dynamicPart}</span>
-          {/* Only show the blinking cursor when the animation is not complete */}
-          {!isComplete && (
-            <span
-              className="animate-blink border-r-2 border-foreground align-bottom"
-              aria-hidden="true"
-            ></span>
-          )}
+          <span>{taglines[taglineIndex][0]}</span>
+          <span className="text-primary">{animatedText}</span>
+          <span
+            className="animate-blink border-r-2 border-foreground align-bottom"
+            aria-hidden="true"
+          ></span>
         </span>
       </div>
     </div>
