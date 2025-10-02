@@ -1,12 +1,15 @@
 
 import { type Topic } from './types';
 
+// Helper to create slugs from titles
+const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
 const createTopic = (module: string, title: string, description: string): Topic => {
-    const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const slug = `la-${toSlug(title)}`;
     return {
-        id: `la-${slug}`,
+        id: slug,
         title,
-        href: `/linear-algebra-for-quantitative-finance/la-${slug}`,
+        href: `/linear-algebra-for-quantitative-finance/${slug}`, 
         icon: 'Waypoints',
         description,
         category: 'sub-topic',
