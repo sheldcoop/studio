@@ -12,8 +12,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 const AnimatedJourneyCard = dynamic(
   () => import('@/components/app/animated-journey-card').then(mod => mod.AnimatedJourneyCard),
   { 
-    loading: () => <Skeleton className="h-[250px] w-full" />,
-    ssr: false 
+    ssr: false,
+    loading: () => <Skeleton className="h-full min-h-[250px] w-full" />
   }
 );
 
