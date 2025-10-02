@@ -9,7 +9,7 @@ const createAdvancedStatTopic = (module: string, title: string, description: str
     return {
         id: slug,
         title,
-        href: `/topics/${slug}`, // Use the unified /topics/ route
+        href: `/statistics/${slug}`, // Use the /statistics/ route
         icon: 'FunctionSquare',
         description,
         category: 'sub-topic',
@@ -37,7 +37,6 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'Compares the means of two groups, assuming normal distribution.',
     category: 'parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'z-test',
@@ -47,7 +46,6 @@ export const statisticsTopics: Topic[] = [
     description:
       'Compares means of large samples (n>30) with known population variance.',
     category: 'parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'anova',
@@ -56,7 +54,6 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'Compares the averages of three or more groups.',
     category: 'parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'f-test',
@@ -65,7 +62,6 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'Compares the variances (spread) of two or more groups.',
     category: 'parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'pearson-correlation',
@@ -75,7 +71,6 @@ export const statisticsTopics: Topic[] = [
     description:
       'Measures the linear relationship between two continuous variables.',
     category: 'parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'chi-squared-test',
@@ -85,7 +80,6 @@ export const statisticsTopics: Topic[] = [
     description:
       'Analyzes categorical data to find significant relationships.',
     category: 'non-parametric',
-    parent: 'hypothesis-testing',
   },
 
   // Non-Parametric Tests (sub-topics of hypothesis testing)
@@ -97,7 +91,6 @@ export const statisticsTopics: Topic[] = [
     description:
       'Alternative to the T-Test when data is not normally distributed.',
     category: 'non-parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'kruskal-wallis-test',
@@ -106,7 +99,6 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'Alternative to ANOVA for comparing three or more groups.',
     category: 'non-parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'wilcoxon-signed-rank-test',
@@ -116,7 +108,6 @@ export const statisticsTopics: Topic[] = [
     description:
       'Alternative to the paired T-Test for repeated measurements.',
     category: 'non-parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'spearmans-rank-correlation',
@@ -126,7 +117,6 @@ export const statisticsTopics: Topic[] = [
     description:
       'Measures the monotonic relationship between two ranked variables.',
     category: 'non-parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'friedman-test',
@@ -136,7 +126,6 @@ export const statisticsTopics: Topic[] = [
     description:
       'The non-parametric alternative to a repeated-measures ANOVA.',
     category: 'non-parametric',
-    parent: 'hypothesis-testing',
   },
   {
     id: 'kolmogorov-smirnov-k-s-test',
@@ -145,7 +134,6 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'Tests if a sample is drawn from a specific distribution.',
     category: 'non-parametric',
-    parent: 'hypothesis-testing',
   },
 
   // Stat Toolkit Parent Categories
