@@ -6,10 +6,20 @@ import { getPathById } from '@/lib/learning-paths';
 import { Accordion } from '@/components/ui/accordion';
 import { LearningPathCard } from '@/components/app/learning-path-card';
 
-export const metadata: Metadata = {
-  title: 'Probability for Quants & Data Scientists',
-  description: 'Master random variables, distributions, and stochastic processes for modeling and analysis.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const path = getPathById('probability-for-quants');
+
+  if (!path) {
+    return {
+      title: 'Probability Path Not Found',
+    };
+  }
+
+  return {
+    title: path.title,
+    description: path.description,
+  };
+}
 
 export default function ProbabilityPage() {
     const path = getPathById('probability-for-quants');
