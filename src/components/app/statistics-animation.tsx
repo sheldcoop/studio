@@ -112,7 +112,7 @@ export function StatisticsAnimation({
       
       // --- Animation & Interaction ---
       const clock = new THREE.Clock();
-      let targetPosition = new THREE.Vector3(0, 0, 0);
+      const targetPosition = new THREE.Vector3(0, 0, 0);
 
       const animate = () => {
         frameId = requestAnimationFrame(animate);

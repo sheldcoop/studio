@@ -112,7 +112,7 @@ export const generatePoissonData = (lambda: number, n: number) => {
     if (lambda < 0 || n <= 0) return [];
     const data = [];
     for (let i = 0; i < n; i++) {
-        let L = Math.exp(-lambda);
+        const L = Math.exp(-lambda);
         let k = 0;
         let p = 1;
         do {

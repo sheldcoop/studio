@@ -22,7 +22,7 @@ import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis
  * @returns An array of normally distributed numbers.
  */
 const generateNormalData = (mean: number, stdDev: number, n: number) => {
-  let data = [];
+  const data = [];
   for (let i = 0; i < n; i++) {
     let u = 0,
       v = 0;
@@ -30,7 +30,7 @@ const generateNormalData = (mean: number, stdDev: number, n: number) => {
     while (u === 0) u = Math.random();
     while (v === 0) v = Math.random();
     // The Box-Muller transform formula
-    let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    const num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     // Scale and shift the standard normal number to the desired mean and stdDev
     data.push(mean + stdDev * num);
   }
