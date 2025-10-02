@@ -1,4 +1,3 @@
-
 import { type Topic } from './types';
 import { mainTopics } from './main';
 import { linearAlgebraTopics } from './linear-algebra';
