@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 import { allTopics } from '@/lib/curriculum';
 import { learningPaths } from '@/lib/learning-paths';
 
-const URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
+const URL = process.env.SITE_URL || 'https://quantfinancelab.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
