@@ -5,12 +5,12 @@ import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 type TopicPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 // This function generates metadata for the page based on the slug.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const topicInfo = allTopics.find((t) => t.id === slug);
 
   if (!topicInfo) {
@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 }
 
 // This is the main server component for the page.
-export default function TopicPage({ params }: TopicPageProps) {
-  const { slug } = params;
+export default async function TopicPage({ params }: TopicPageProps) {
+  const { slug } = await params;
   const topicInfo = allTopics.find((t) => t.id === slug);
   
   if (!topicInfo) {
