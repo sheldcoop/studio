@@ -98,7 +98,7 @@ export function DiceAnimation({
         
         const rotationSpeed = isMouseOver.current ? 1.5 : 0.2;
         die.rotation.x += rotationSpeed * delta;
-        die.rotation.y += rotationSpeed * delta;
+        die.rotation.y += rotationSpeed * delta * 0.8; // Vary speed for more interest
 
         renderer.render(scene, camera);
       };

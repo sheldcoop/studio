@@ -94,7 +94,7 @@ export function PlinkoAnimation({
           const dist = Math.sqrt(x * x + y * y);
           
           const baseHeight = 3 * Math.exp(-(dist * dist) / 20);
-          const ripple = Math.sin(time * 2 - dist * 0.8) * rippleAmplitude;
+          const ripple = Math.sin(time * (isMouseOver.current ? 4 : 2) - dist * 0.8) * rippleAmplitude;
           
           positions[i + 2] = baseHeight + ripple;
         }

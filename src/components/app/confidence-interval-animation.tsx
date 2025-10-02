@@ -146,9 +146,14 @@ export function ConfidenceIntervalAnimation({
           currentPositions.setXYZ(i, currentVec.x, currentVec.y, currentVec.z);
         }
         currentPositions.needsUpdate = true;
-
-        targetRotation.y = -mouse.current.x * 0.5;
-        targetRotation.x = mouse.current.y * 0.5;
+        
+        if (isMouseOver.current) {
+            targetRotation.y = -mouse.current.x * 0.5;
+            targetRotation.x = mouse.current.y * 0.5;
+        } else {
+            targetRotation.y = elapsedTime * 0.1;
+            targetRotation.x = elapsedTime * 0.08;
+        }
         
         orbGroup.rotation.x += (targetRotation.x - orbGroup.rotation.x) * 0.05;
         orbGroup.rotation.y += (targetRotation.y - orbGroup.rotation.y) * 0.05;
