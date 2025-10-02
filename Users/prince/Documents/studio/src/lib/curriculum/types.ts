@@ -24,7 +24,7 @@ export type Topic = {
   id: string;
   title: string;
   href: string;
-  icon?: string; // Changed from LucideIcon to string
+  icon?: string;
   description: string;
   category: 'main' | 'sub-topic' | 'parametric' | 'non-parametric' | 'parent' | 'probability';
   parent?: string; // id of parent topic
