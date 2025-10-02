@@ -1,15 +1,12 @@
 
 import { type Topic } from './types';
 
-// Helper to create slugs from titles
-const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-
 const createTopic = (module: string, title: string, description: string): Topic => {
-    const slug = toSlug(title);
+    const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     return {
         id: `la-${slug}`,
         title,
-        href: `/topics/la-${slug}`, // Corrected href
+        href: `/topics/la-${slug}`,
         icon: 'Waypoints',
         description,
         category: 'sub-topic',

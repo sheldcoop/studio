@@ -11,8 +11,7 @@ type TopicPageProps = {
 // This function generates metadata for the page based on the slug.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const path = `/linear-algebra-for-quantitative-finance/${slug}`;
-  const topicInfo = allTopics.find((t) => t.href === path);
+  const topicInfo = allTopics.find((t) => t.id === slug);
 
   if (!topicInfo) {
     return {
@@ -29,8 +28,7 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 // This is the main server component for the page.
 export default async function TopicPage({ params }: TopicPageProps) {
   const { slug } = await params;
-  const path = `/linear-algebra-for-quantitative-finance/${slug}`;
-  const topicInfo = allTopics.find((t) => t.href === path);
+  const topicInfo = allTopics.find((t) => t.id === slug);
   
   if (!topicInfo) {
     notFound();
