@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "default": "quantprep-31a1a"
+  },
+  "hosting": [
+    {
+      "target": "quantprep",
+      "public": "out",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ]
+}
