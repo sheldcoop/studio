@@ -27,31 +27,29 @@ export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
 
-  const handleInteraction = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // On mobile, we want the animation to be interactive on tap.
-    // We delay navigation to allow the animation to be seen.
-    if (isMobile) {
-      // Prevent the link from navigating immediately
-      e.preventDefault();
-      
-      // Trigger the animation
-      setIsHovered(!isHovered);
+  const handleInteraction = (e: React.MouseEvent) => {
+    // Prevent any default behavior, especially if a child element is a link in the future.
+    e.preventDefault();
+    
+    // Trigger the animation
+    setIsHovered(true);
 
-      // Wait for the animation to be visible, then navigate
-      setTimeout(() => {
-        router.push(item.href);
-      }, 800); // 800ms delay
-    }
+    // Wait for the animation to be visible, then navigate
+    setTimeout(() => {
+      router.push(item.href);
+    }, 800); // 800ms delay
   };
 
   return (
-    <Link
-      href={item.href}
-      className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    // The Card itself is now the clickable element to trigger navigation.
+    <div
+      className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
       onPointerEnter={() => !isMobile && setIsHovered(true)}
       onPointerLeave={() => !isMobile && setIsHovered(false)}
       onClick={handleInteraction}
       onKeyDown={(e) => { if (e.key === 'Enter') handleInteraction(e as any) }}
+      role="link"
+      tabIndex={0}
       aria-label={`Navigate to ${item.title}`}
     >
       <Card className="relative flex h-full min-h-[250px] transform-gpu flex-col justify-between overflow-hidden bg-gradient-to-br from-card to-card/60 text-left transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-primary/20">
@@ -87,7 +85,7 @@ export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
             </CardContent>
         </div>
       </Card>
-    </Link>
+    </div>
   );
 }
 
