@@ -55,7 +55,7 @@ const generateCurveData = (shadeFrom: number | null, shadeTo: number | null, zTo
 // Chart Component for Visualization
 const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }: { shadeFrom: number | null, shadeTo: number | null, zToPType?: ZToPType, zScore?: number | null, zScore1?: number | null, zScore2?: number | null }) => {
   const chartData = useMemo(() => generateCurveData(shadeFrom, shadeTo, zToPType, zScore), [shadeFrom, shadeTo, zToPType, zScore]);
-  const absZScore = zScore != null ? Math.abs(zScore) : null;
+  const absZScore = zScore !== null && typeof zScore === 'number' ? Math.abs(zScore) : null;
 
   return (
     <ChartContainer config={{}} className="h-[250px] w-full">
@@ -80,14 +80,14 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
                 <ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${(-absZScore).toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
                 <ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
             </>
-        ) : zScore !== null ? (
+        ) : zScore !== null && typeof zScore === 'number' ? (
             <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         ) : null}
 
-        {zScore1 !== null && (
+        {zScore1 !== null && typeof zScore1 === 'number' && (
             <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
-        {zScore2 !== null && (
+        {zScore2 !== null && typeof zScore2 === 'number' && (
             <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2!.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
 
@@ -298,7 +298,7 @@ export default function ZTablePage() {
                             <AlertCircle className="h-5 w-5 mt-1 flex-shrink-0" />
                             <div>
                                 <h4 className="font-semibold">Normality or Large Sample Size</h4>
-                                <p className="text-sm mt-1">The data should either be drawn from a normally distributed population or the sample size must be large enough (typically n &gt; 30) for the Central Limit Theorem to apply. This theorem guarantees that the distribution of sample means will be approximately normal, even if the original population is not.</p>
+                                <p className="text-sm mt-1">The data should either be drawn from a normally distributed population or the sample size must be large enough (typically n > 30) for the Central Limit Theorem to apply. This theorem guarantees that the distribution of sample means will be approximately normal, even if the original population is not.</p>
                             </div>
                         </div>
                     </div>
@@ -436,7 +436,7 @@ export default function ZTablePage() {
                             <div className="flex gap-4">
                                 <div className="space-y-2 w-full">
                                     <Label htmlFor="z-score-1">Z-Score 1</Label>
-                                    <Input id="z-score-1" type="text" value={zScore1 ?? ''} onChange={handleNumericInput(setZScore1)} placeholder="e.g., -1.96" />
+                                    <Input id="z-score-1" type="number" value={zScore1 ?? ''} onChange={handleNumericInput(setZScore1)} placeholder="e.g., -1.96" />
                                 </div>
                                 <div className="space-y-2 w-full">
                                     <Label htmlFor="z-score-2">Z-Score 2</Label>
@@ -481,7 +481,7 @@ export default function ZTablePage() {
                             <p><strong className="text-primary">The Question:</strong> After a week of intense social media hype, the stock is trading $9.50 above its 50-day moving average. Is the stock now "overbought" and due for a fall back to its average?</p>
                             <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
                             <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, the rubber band is stretched very tight.</p>
-                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z &gt; +2.0, consider short-selling; if Z &lt; -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
+                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z > +2.0, consider short-selling; if Z < -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
