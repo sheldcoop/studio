@@ -23,6 +23,18 @@
       "description": "A placeholder user avatar.",
       "imageUrl": "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg3ODg5NzR8MA&ixlib=rb-4.1.0&q=75&w=80",
       "imageHint": "person portrait"
+    },
+    {
+      "id": "blog-single-die",
+      "description": "A single die showing a six.",
+      "imageUrl": "https://picsum.photos/seed/dice1/600/300",
+      "imageHint": "single die"
+    },
+    {
+      "id": "blog-two-dice",
+      "description": "Two dice showing a sum of seven.",
+      "imageUrl": "https://picsum.photos/seed/dice2/600/300",
+      "imageHint": "two dice"
     }
   ]
 }
