@@ -6,9 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   BookOpenCheck,
-  Users,
   FolderKanban,
-  Sigma,
   BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -24,21 +22,6 @@ const links = [
     href: '/paths',
     label: 'Learning Paths',
     icon: 'BookOpenCheck',
-  },
-  {
-    href: '/statistics',
-    label: 'Advanced Statistics',
-    icon: 'BarChart3',
-  },
-  {
-    href: '/hypothesis-testing-p-values',
-    label: 'Statistical Tests',
-    icon: 'Sigma',
-  },
-  {
-    href: '/community',
-    label: 'Community',
-    icon: 'Users',
   },
   {
     href: '/topics',
