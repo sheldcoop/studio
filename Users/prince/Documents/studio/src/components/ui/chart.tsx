@@ -1,10 +1,10 @@
+
 "use client"
 
 import * as React from "react"
 import {
   Chart as ChartJS,
   Tooltip as ChartJSTooltip,
-  type TooltipItem,
 } from "chart.js"
 import {
   Area,
