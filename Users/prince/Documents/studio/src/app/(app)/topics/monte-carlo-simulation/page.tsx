@@ -21,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Lightbulb, TrendingDown, ShieldCheck, Play, Pause, Plus, RefreshCw } from 'lucide-react';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import { BlockMath, InlineMath } from 'react-katex';
+import { BlockMath } from 'react-katex';
 import Link from 'next/link';
 
 
@@ -124,7 +124,7 @@ export default function MonteCarloSimulationPage() {
   const [varResult, setVarResult] = useState<{ value: number; loss: number } | null>(null);
 
   const [isSimulating, setIsSimulating] = useState(false);
-  const simulationRef = useRef<NodeJS.Timeout | null>(null);
+  const simulationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const SIMULATION_CAP = 50000;
 
   const addSimulations = (count: number) => {
@@ -144,9 +144,10 @@ export default function MonteCarloSimulationPage() {
   // Live simulation effect
   useEffect(() => {
     if (isSimulating && simulationResults.length < SIMULATION_CAP) {
-        simulationRef.current = setInterval(() => {
+        const intervalId = setInterval(() => {
             addSimulations(250);
         }, 50);
+        simulationRef.current = intervalId;
     } else if (simulationRef.current) {
         clearInterval(simulationRef.current);
         if (isSimulating) setIsSimulating(false);
@@ -194,7 +195,7 @@ export default function MonteCarloSimulationPage() {
                 The future is uncertain. You can't give a single, definitive answer. This is where Monte Carlo simulation comes in. Instead of predicting one future, you simulate thousands of possible futures.
             </p>
             <p>
-                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or <InlineMath math="\\mu" />) and its annual volatility (the 'randomness' or <InlineMath math="\\sigma" />). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
+                First, you analyze historical data to determine the portfolio's overall characteristics: its average annual return (the 'drift' or $\\mu$) and its annual volatility (the 'randomness' or $\\sigma$). Then, you use these two numbers to run a simulation that "walks" the portfolio's value forward thousands of times, generating a distribution of all the possible outcomes. This is exactly what the tool below does.
             </p>
           </CardContent>
         </Card>
@@ -207,10 +208,10 @@ export default function MonteCarloSimulationPage() {
                  <p className="text-muted-foreground">Each simulated path follows a model called Geometric Brownian Motion, a standard way to model stock prices. The formula for the portfolio's value at the end of the period is:</p>
                 <div className="rounded-lg border bg-muted/50 p-4 text-center">
                     <BlockMath
-                        math="S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right)"
+                        math="\begin{aligned} S_T = S_0 \\exp\\left( \\left(\\mu - \\frac{\\sigma^2}{2}\\right)T + \\sigma Z \\sqrt{T} \\right) \\end{aligned}"
                     />
                 </div>
-                 <p className="text-muted-foreground">Once we have thousands of simulated final values (<InlineMath math="S_T" />), we can calculate the 95% VaR by finding the 5th percentile of our results. This is the value that separates the worst 5% of outcomes from the best 95%.</p>
+                 <p className="text-muted-foreground">Once we have thousands of simulated final values ($S_T$), we can calculate the 95% VaR by finding the 5th percentile of our results. This is the value that separates the worst 5% of outcomes from the best 95%.</p>
             </CardContent>
         </Card>
 
@@ -226,11 +227,11 @@ export default function MonteCarloSimulationPage() {
                         <Input type="number" value={initialValue} onChange={e => setInitialValue(Number(e.target.value))} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Expected Annual Return (<InlineMath math="\\mu" />): {(mu * 100).toFixed(1)}%</Label>
+                        <Label>Expected Annual Return ($\mu$): {(mu * 100).toFixed(1)}%</Label>
                         <Slider value={[mu]} onValueChange={v => setMu(v[0])} min={-0.10} max={0.25} step={0.005} disabled={isSimulating} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Expected Annual Volatility (<InlineMath math="\\sigma" />): {(sigma * 100).toFixed(1)}%</Label>
+                        <Label>Expected Annual Volatility ($\sigma$): {(sigma * 100).toFixed(1)}%</Label>
                         <Slider value={[sigma]} onValueChange={v => setSigma(v[0])} min={0.05} max={0.60} step={0.005} disabled={isSimulating}/>
                     </div>
                 </div>
