@@ -124,7 +124,7 @@ export default function MonteCarloSimulationPage() {
   const [varResult, setVarResult] = useState<{ value: number; loss: number } | null>(null);
 
   const [isSimulating, setIsSimulating] = useState(false);
-  const simulationRef = useRef<NodeJS.Timeout | null>(null);
+  const simulationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const SIMULATION_CAP = 50000;
 
   const addSimulations = (count: number) => {

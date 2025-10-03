@@ -80,7 +80,7 @@ export default function LawOfLargeNumbersPage() {
     const [rolls, setRolls] = useState<number[]>([]);
     const [chartData, setChartData] = useState<RollData[]>([]);
     const [isSimulating, setIsSimulating] = useState(false);
-    const simulationRef = useRef<NodeJS.Timeout | null>(null);
+    const simulationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const SIMULATION_CAP = 10000;
 
     const addRolls = (count: number) => {
@@ -123,9 +123,10 @@ export default function LawOfLargeNumbersPage() {
 
     useEffect(() => {
         if (isSimulating && rolls.length < SIMULATION_CAP) {
-            simulationRef.current = setInterval(() => {
+            const intervalId = setInterval(() => {
                 addRolls(100);
             }, 100);
+            simulationRef.current = intervalId;
         } else {
             if (simulationRef.current) {
                 clearInterval(simulationRef.current);

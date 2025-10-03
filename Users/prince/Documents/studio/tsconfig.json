@@ -27,7 +27,8 @@
     },
     "types": [
       "jest",
-      "@testing-library/jest-dom"
+      "@testing-library/jest-dom",
+      "node"
     ],
     "noUnusedLocals": true,
     "noUnusedParameters": true
