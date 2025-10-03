@@ -3,22 +3,13 @@ import type { Topic } from './types';
 
 export const mainTopics: Topic[] = [
   {
-    id: 'statistics-lab',
-    title: "Statistics Lab",
-    description: 'Explore and understand the core concepts of statistics for quantitative analysis.',
-    icon: 'Wrench',
-    href: '/statistics-lab',
+    id: 'python-for-quants',
+    title: 'Python for Quants',
+    description: 'Master Python for financial analysis, from data manipulation to advanced modeling.',
+    icon: 'Code',
+    href: '/paths/python-for-quants',
     category: 'main',
-    animation: 'stat-toolkit',
-  },
-   {
-    id: 'probability-lab',
-    title: 'Probability Lab',
-    description: 'Interactive tools for hands-on probability analysis.',
-    icon: 'FlaskConical',
-    href: '/paths/probability-lab',
-    category: 'main',
-    animation: 'probability-lab',
+    animation: 'python-lab',
   },
   {
     id: 'mental-math',
@@ -34,7 +25,7 @@ export const mainTopics: Topic[] = [
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
     icon: 'Pi',
-    href: '/linear-algebra-for-quantitative-finance',
+    href: '/paths/linear-algebra-for-quantitative-finance',
     category: 'main',
     animation: 'linear-algebra',
   },
@@ -46,15 +37,6 @@ export const mainTopics: Topic[] = [
     href: '/paths/statistics-for-quantitative-finance',
     category: 'main',
     animation: 'statistics',
-  },
-  {
-    id: 'probability',
-    title: 'Probability for Quants',
-    description: 'Master random variables, distributions, and stochastic processes.',
-    icon: 'Percent',
-    href: '/probability',
-    category: 'main',
-    animation: 'probability',
   },
   {
     id: 'time-series-analysis',
