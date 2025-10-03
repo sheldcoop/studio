@@ -87,8 +87,8 @@ export function StatisticsAnimation({
 
       // Grid
       const grid = new THREE.GridHelper(20, 20, primaryColor, primaryColor);
-      grid.material.transparent = true;
-      grid.material.opacity = 0.4;
+      (grid.material as THREE.Material).transparent = true;
+      (grid.material as THREE.Material).opacity = 0.4;
       group.add(grid);
 
       // Surface

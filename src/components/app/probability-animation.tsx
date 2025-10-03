@@ -114,7 +114,7 @@ export function ProbabilityAnimation({
           p.mesh.position.add(p.velocity.clone().multiplyScalar(delta));
 
           // Bounce off pegs
-          pegGroup.children.forEach(peg => {
+          pegGroup.children.forEach((peg: any) => {
               const dist = p.mesh.position.distanceTo(peg.position);
               if (dist < 0.3) { // Collision radius
                   const normal = p.mesh.position.clone().sub(peg.position).normalize();
@@ -173,7 +173,7 @@ export function ProbabilityAnimation({
         particleMaterial.dispose();
       };
     };
-
+    
     animationFrameId = requestAnimationFrame(main);
 
     return () => {
