@@ -1,0 +1,28 @@
+{
+  "placeholderImages": [
+    {
+      "id": "learning-path",
+      "description": "A person studying complex diagrams on a glass wall.",
+      "imageUrl": "https://images.unsplash.com/photo-1741795746271-a628868490df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxsZWFybmluZyUyMGRhdGF8ZW58MHx8fHwxNzU4ODE5NjE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "learning data"
+    },
+    {
+      "id": "interview-prep",
+      "description": "An AI robot thinking about questions.",
+      "imageUrl": "https://images.unsplash.com/photo-1745203933152-19f27ed7a147?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyb2JvdCUyMHRoaW5raW5nfGVufDB8fHx8MTc1ODcxNTY1Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "robot thinking"
+    },
+    {
+      "id": "community-forum",
+      "description": "A group of people having a discussion in a modern office.",
+      "imageUrl": "https://images.unsplash.com/photo-1590650046871-92c887180603?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwZW9wbGUlMjB0YWxraW5nfGVufDB8fHx8MTc1ODgxNTcwN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "people talking"
+    },
+    {
+      "id": "user-avatar",
+      "description": "A placeholder user avatar.",
+      "imageUrl": "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg3ODg5NzR8MA&ixlib=rb-4.1.0&q=75&w=80",
+      "imageHint": "person portrait"
+    }
+  ]
+}
