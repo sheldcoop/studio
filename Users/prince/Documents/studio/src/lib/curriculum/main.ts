@@ -3,22 +3,22 @@ import type { Topic } from './types';
 
 export const mainTopics: Topic[] = [
   {
-    id: 'statistics-lab',
+    id: 'stat-toolkit',
     title: "Statistics Lab",
     description: 'Explore and understand the core concepts of statistics for quantitative analysis.',
     icon: 'Wrench',
-    href: '/statistics-lab',
+    href: '/stat-toolkit',
     category: 'main',
     animation: 'stat-toolkit',
   },
    {
-    id: 'probability-lab',
-    title: 'Probability Lab',
+    id: 'probability-toolkit',
+    title: 'Probability Toolkit',
     description: 'Interactive tools for hands-on probability analysis.',
     icon: 'FlaskConical',
-    href: '/paths/probability-lab',
+    href: '/paths/probability-toolkit',
     category: 'main',
-    animation: 'probability-lab',
+    animation: 'probability-toolkit',
   },
   {
     id: 'mental-math',
