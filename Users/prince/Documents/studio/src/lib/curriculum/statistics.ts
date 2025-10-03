@@ -32,7 +32,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'The detective work of data science.',
     category: 'sub-topic',
-    parent: 'statistics-lab',
+    parent: 'stat-toolkit',
   },
 
   // Parametric Tests (sub-topics of hypothesis testing)

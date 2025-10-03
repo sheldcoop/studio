@@ -114,14 +114,12 @@ export function ProbabilityAnimation({
           p.mesh.position.add(p.velocity.clone().multiplyScalar(delta));
 
           // Bounce off pegs
-          pegGroup.children.forEach((peg) => {
-              if (peg instanceof THREE.Mesh) {
-                const dist = p.mesh.position.distanceTo(peg.position);
-                if (dist < 0.3) { // Collision radius
-                    const normal = p.mesh.position.clone().sub(peg.position).normalize();
-                    p.velocity.reflect(normal).multiplyScalar(0.6);
-                    p.velocity.x += (Math.random() - 0.5) * 2; // Add randomness
-                }
+          pegGroup.children.forEach(peg => {
+              const dist = p.mesh.position.distanceTo(peg.position);
+              if (dist < 0.3) { // Collision radius
+                  const normal = p.mesh.position.clone().sub(peg.position).normalize();
+                  p.velocity.reflect(normal).multiplyScalar(0.6);
+                  p.velocity.x += (Math.random() - 0.5) * 2; // Add randomness
               }
           });
           
@@ -159,7 +157,7 @@ export function ProbabilityAnimation({
       window.addEventListener('resize', handleResize);
 
       return () => {
-        if(frameId) cancelAnimationFrame(frameId);
+        cancelAnimationFrame(frameId);
         window.removeEventListener('resize', handleResize);
         if (currentMount) {
           currentMount.removeEventListener('mouseenter', handleMouseEnter);

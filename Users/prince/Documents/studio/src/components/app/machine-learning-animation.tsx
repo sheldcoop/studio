@@ -228,7 +228,7 @@ export function MachineLearningAnimation({
       
       cleanupFunctions.push(() => {
           window.removeEventListener('resize', handleResize);
-          if (animationFrameId) cancelAnimationFrame(animationFrameId);
+          cancelAnimationFrame(animationFrameId);
       });
     });
 

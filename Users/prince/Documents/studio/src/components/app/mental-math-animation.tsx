@@ -204,7 +204,7 @@ export function MentalMathAnimation({
       window.addEventListener('resize', handleResize);
       cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
       
-      cleanupFunctions.push(() => { if(animationFrameId) cancelAnimationFrame(animationFrameId) });
+      cleanupFunctions.push(() => cancelAnimationFrame(animationFrameId));
 
     }, 10);
 

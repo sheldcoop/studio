@@ -80,7 +80,7 @@ export default function LawOfLargeNumbersPage() {
     const [rolls, setRolls] = useState<number[]>([]);
     const [chartData, setChartData] = useState<RollData[]>([]);
     const [isSimulating, setIsSimulating] = useState(false);
-    const simulationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const simulationRef = useRef<NodeJS.Timeout | null>(null);
     const SIMULATION_CAP = 10000;
 
     const addRolls = (count: number) => {

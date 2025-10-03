@@ -97,7 +97,7 @@ export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
 
   // If there ARE sub-topics, render the new, detailed structure.
   if (subTopics && subTopics.length > 0) {
-    const completedConcepts = 1; // Simulate some progress
+    const completedConcepts = subTopics.length > 3 ? 1 : 0; // Simulate some progress
     const totalConcepts = subTopics.length;
     const progress = (completedConcepts / totalConcepts) * 100;
     const estimatedTime = totalConcepts * 15; // Placeholder time

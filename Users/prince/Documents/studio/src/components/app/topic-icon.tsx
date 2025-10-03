@@ -24,6 +24,7 @@ export function TopicIcon({ iconName, className }: TopicIconProps) {
         return <IconComponent className={className} />;
     }
     
+    // If it's not a string, assume it's a LucideIcon component
     const IconComponent = iconName as LucideIcon;
     return <IconComponent className={className} />;
 }

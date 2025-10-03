@@ -205,7 +205,7 @@ export function CLT_Interactive_Dashboard() {
   const [currentSampleMean, setCurrentSampleMean] = useState<number | null>(null);
 
   const [isSampling, setIsSampling] = useState(false);
-  const simulationIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const simulationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const stopSimulation = () => {
       if (simulationIntervalRef.current) {

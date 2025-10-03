@@ -120,7 +120,7 @@ export function PlinkoAnimation({
       cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
       
       cleanupFunctions.push(() => {
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        cancelAnimationFrame(animationFrameId);
       });
     });
 

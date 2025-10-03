@@ -33,7 +33,7 @@ export default function StatToolkitPage() {
   return (
     <>
       <PageHeader
-        title="Statistics Lab"
+        title="Statistician's Toolkit"
         description="Explore and understand the core concepts of statistics for quantitative analysis."
       />
 
