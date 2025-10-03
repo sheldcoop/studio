@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${URL}/stat-toolkit`, lastModified: new Date() },
     { url: `${URL}/topics`, lastModified: new Date() },
     { url: `${URL}/probability`, lastModified: new Date() },
+    { url: `${URL}/blog`, lastModified: new Date() },
   ];
 
   // Create routes for the learning path pages
