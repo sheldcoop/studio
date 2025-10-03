@@ -56,12 +56,14 @@ export function StatisticsAnimation({
     const currentMount = mountRef.current;
     let animationFrameId: number | undefined;
 
-    const animationTimeoutId = setTimeout(() => {
+    // Use requestAnimationFrame to ensure CSS variables are applied before we read them
+    animationFrameId = requestAnimationFrame(() => {
+      if (!currentMount) return;
+      
       const computedStyle = getComputedStyle(document.documentElement);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
       const primaryColor = new THREE.Color(primaryColorValue);
-
 
       // --- Scene setup ---
       const scene = new THREE.Scene();
@@ -158,19 +160,35 @@ export function StatisticsAnimation({
           }
       };
       window.addEventListener('resize', handleResize);
+
+       // --- Cleanup ---
+      const cleanup = () => {
+        window.removeEventListener('resize', handleResize);
+        currentMount.removeEventListener('mousemove', handleMouseMove);
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+        if (renderer.domElement) {
+          currentMount.removeChild(renderer.domElement);
+        }
+        renderer.dispose();
+        surfaceGeometry.dispose();
+        surfaceMaterial.dispose();
+        grid.geometry.dispose();
+        (grid.material as THREE.Material).dispose();
+      };
       
-    }, 10); 
+      return cleanup;
+    });
 
     return () => {
-      clearTimeout(animationTimeoutId);
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
-      // Ensure the mount point is cleared on re-render or unmount
-      while (currentMount?.firstChild) {
+       while (currentMount?.firstChild) {
         currentMount.removeChild(currentMount.firstChild);
       }
-    }
+    };
   }, [theme]);
 
   return <div ref={mountRef} className={cn('h-full w-full', className)} />;
