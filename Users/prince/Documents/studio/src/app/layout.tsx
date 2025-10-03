@@ -49,7 +49,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="quant"
+          defaultTheme="dark"
           themes={['light', 'dark', 'slate', 'nocturne', 'quant']}
           disableTransitionOnChange
         >

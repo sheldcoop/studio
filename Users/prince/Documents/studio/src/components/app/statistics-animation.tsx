@@ -54,11 +54,9 @@ export function StatisticsAnimation({
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
-    let animationFrameId: number;
+    let animationFrameId: number | undefined;
 
     const animationTimeoutId = setTimeout(() => {
-      let frameId: number; 
-
       const computedStyle = getComputedStyle(document.documentElement);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
@@ -161,7 +159,6 @@ export function StatisticsAnimation({
       };
       window.addEventListener('resize', handleResize);
       
-      // This is not the useEffect cleanup, so it doesn't return a function
     }, 10); 
 
     return () => {

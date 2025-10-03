@@ -9,7 +9,7 @@ const createAdvancedStatTopic = (module: string, title: string, description: str
     return {
         id: slug,
         title,
-        href: `/topics/${slug}`, // CORRECTED
+        href: `/statistics/${slug}`, // Use the /statistics/ route
         icon: 'FunctionSquare',
         description,
         category: 'sub-topic',

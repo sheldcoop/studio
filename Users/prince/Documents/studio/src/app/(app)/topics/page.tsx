@@ -34,7 +34,7 @@ export default function AllTopicsPage() {
   }, {} as Record<string, typeof displayableTopics>);
 
   const categoryTitles: Record<string, string> = {
-    'stat-toolkit': 'Statistician\'s Toolkit',
+    'stat-toolkit': "Statistician's Toolkit",
     'stats-foundations': 'Statistical Foundations',
     'parametric': 'Parametric Tests',
     'non-parametric': 'Non-Parametric Tests',
@@ -70,7 +70,7 @@ export default function AllTopicsPage() {
                   <Card className="flex h-full transform-gpu flex-col text-left transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20">
                     <CardHeader>
                       <div className="mb-3 flex items-center justify-between">
-                         <TopicIcon iconName={topic.icon} className="h-6 w-6 text-primary" />
+                         <TopicIcon iconName={topic.icon || 'HelpCircle'} className="h-6 w-6 text-primary" />
                          {topic.category && <Badge variant="secondary">{topic.category}</Badge>}
                       </div>
                       <CardTitle className="text-lg leading-tight">

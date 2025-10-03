@@ -127,37 +127,6 @@
     --animation-primary-color: hsl(40, 20%, 85%);
     --animation-opacity: 0.7;
   }
-
-  .quant {
-    --background: 220 30% 7%;           /* Deep navy-black for sophistication */
-    --foreground: 200 15% 92%;          /* Cool white for readability */
-    --card: 220 25% 10%;
-    --card-foreground: 200 15% 92%;
-    --popover: 220 30% 7%;
-    --popover-foreground: 200 15% 92%;
-    --primary: 180 85% 50%;             /* Teal - data/analytics vibe */
-    --primary-foreground: 220 30% 7%;
-    --secondary: 220 20% 15%;
-    --secondary-foreground: 200 15% 92%;
-    --muted: 220 20% 15%;
-    --muted-foreground: 200 10% 55%;
-    --accent: 280 70% 60%;              /* Purple - algorithmic/tech accent */
-    --accent-foreground: 200 15% 92%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 200 15% 92%;
-    --border: 220 20% 18%;
-    --input: 220 20% 18%;
-    --ring: 180 85% 50%;
-    --chart-1: 180 85% 50%;             /* Teal for primary data */
-    --chart-2: 280 70% 60%;             /* Purple for secondary */
-    --chart-3: 200 80% 55%;             /* Blue variant */
-    --chart-4: 160 75% 55%;             /* Green-teal */
-    --chart-5: 260 65% 60%;             /* Deep purple */
-  
-    /* Animation Theme Variables */
-    --animation-primary-color: hsl(180, 85%, 50%);
-    --animation-opacity: 0.9;
-  }
 }
 
 @layer base {

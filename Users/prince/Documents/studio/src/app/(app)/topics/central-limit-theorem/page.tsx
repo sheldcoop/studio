@@ -1,20 +1,10 @@
 
-'use client';
-
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-
-const CLTInteractiveDashboard = dynamic(
-  () => import('@/components/app/clt-interactive-dashboard').then(mod => mod.CLT_Interactive_Dashboard),
-  {
-    ssr: false,
-    loading: () => <Skeleton className="h-[600px] w-full" />,
-  }
-);
+import { CLT_Interactive_Dashboard } from '@/components/app/clt-interactive-dashboard';
 
 export default function CentralLimitTheoremPage() {
+
   return (
     <>
       <PageHeader
@@ -41,8 +31,10 @@ export default function CentralLimitTheoremPage() {
           </CardContent>
         </Card>
         
-        <CLTInteractiveDashboard />
+        <CLT_Interactive_Dashboard />
       </div>
     </>
   );
 }
+
+    

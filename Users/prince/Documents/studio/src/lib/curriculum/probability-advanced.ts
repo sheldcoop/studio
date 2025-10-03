@@ -51,7 +51,7 @@ export const probabilityAdvancedTopics: Topic[] = [
     {
         id: 'prob-foundations-bayes',
         title: "Bayes' Theorem",
-        href: '/topics/bayes-theorem', // CORRECTED
+        href: '/probability/bayes-theorem',
         icon: 'BrainCircuit',
         description: "Updating beliefs in the face of new evidence.",
         category: 'sub-topic',
@@ -266,7 +266,7 @@ export const probabilityAdvancedTopics: Topic[] = [
     {
         id: 'prob-stochastic-poisson',
         title: 'The Poisson Process',
-        href: '/topics/poisson-distribution', // CORRECTED
+        href: '/probability/poisson-distribution',
         icon: 'Zap',
         description: "Modeling the timing of random events.",
         category: 'sub-topic',

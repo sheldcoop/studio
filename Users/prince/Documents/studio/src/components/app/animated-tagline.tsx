@@ -2,102 +2,136 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { taglines } from '@/lib/site';
+import { cn } from '@/lib/utils';
+
+const taglines = [
+  ['From ', 'Data', ' to ', 'Insight'],
+  ['From ', 'Insight', ' to ', 'Strategy'],
+  ['From ', 'Strategy', ' to ', 'Alpha'],
+  ['From ', 'Alpha', ' to ', 'Quant'],
+  ['', 'Journey', ' to ', 'Quant'],
+] as const;
+
+type AnimationPhase = 'typing-second' | 'typing-fourth' | 'waiting' | 'deleting-fourth' | 'deleting-second' | 'finished';
 
 export function AnimatedTagline() {
   const [taglineIndex, setTaglineIndex] = useState(0);
-  const [animatedText, setAnimatedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
+  const [charCount, setCharCount] = useState(0);
+  const [phase, setPhase] = useState<AnimationPhase>('typing-second');
+  
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsPaused(!entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-    if(ref.current) {
-      observer.observe(ref.current);
-    }
-    return () => {
-      if(ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
-  }, []);
+    if (phase === 'finished') return;
 
-  useEffect(() => {
-    if (isPaused || isComplete) {
-      return;
-    }
+    const isLastTagline = taglineIndex === taglines.length - 1;
+    const typeSpeed = 80;
+    const deleteSpeed = 30;
+    const pauseDuration = 1000;
 
-    const currentAnimatedPart = taglines[taglineIndex][1];
-    const typeSpeed = 100;
-    const deleteSpeed = 50;
-    const delayAfterTyping = 1500;
+    const animate = () => {
+      const secondWord = taglines[taglineIndex][1];
+      const fourthWord = taglines[taglineIndex][3];
 
-    const handleTyping = () => {
-      if (isDeleting) {
-        if (animatedText.length > 0) {
-          setAnimatedText((prev) => prev.substring(0, prev.length - 1));
-        } else {
-          setIsDeleting(false);
-          // Check if we are at the end of the animation cycle
-          if (taglineIndex === taglines.length - 1) {
-            setIsComplete(true); // Stop the animation
+      let nextTimeout = typeSpeed;
+
+      switch (phase) {
+        case 'typing-second':
+          if (charCount < secondWord.length) {
+            setCharCount(c => c + 1);
           } else {
-            setTaglineIndex((prev) => prev + 1);
+            setPhase('typing-fourth');
+            setCharCount(0);
           }
-        }
-      } else {
-        if (animatedText !== currentAnimatedPart) {
-          setAnimatedText(currentAnimatedPart.substring(0, animatedText.length + 1));
-        } else {
-          setTimeout(() => setIsDeleting(true), delayAfterTyping);
-        }
+          break;
+
+        case 'typing-fourth':
+          if (charCount < fourthWord.length) {
+            setCharCount(c => c + 1);
+          } else {
+            if (isLastTagline) {
+              setPhase('finished');
+              return; // Stop animation
+            } else {
+              setPhase('waiting');
+              nextTimeout = pauseDuration;
+            }
+          }
+          break;
+
+        case 'waiting':
+          setPhase('deleting-fourth');
+          nextTimeout = deleteSpeed;
+          break;
+
+        case 'deleting-fourth':
+          if (charCount > 0) {
+            setCharCount(c => c - 1);
+            nextTimeout = deleteSpeed;
+          } else {
+            setPhase('deleting-second');
+            setCharCount(secondWord.length);
+            nextTimeout = deleteSpeed;
+          }
+          break;
+
+        case 'deleting-second':
+          if (charCount > 0) {
+            setCharCount(c => c - 1);
+            nextTimeout = deleteSpeed;
+          } else {
+            setTaglineIndex(i => i + 1);
+            setPhase('typing-second');
+          }
+          break;
       }
+      timeoutRef.current = setTimeout(animate, nextTimeout);
     };
 
-    const typingTimeout = setTimeout(handleTyping, isDeleting ? deleteSpeed : typeSpeed);
+    // Initial call
+    timeoutRef.current = setTimeout(animate, typeSpeed);
 
-    return () => clearTimeout(typingTimeout);
-  }, [animatedText, isDeleting, taglineIndex, isPaused, isComplete]);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [charCount, phase, taglineIndex]);
 
-  // If the animation is complete, render the final static text.
-  if (isComplete) {
-    return (
-        <div
-        aria-hidden="true"
-        className="font-headline text-5xl font-bold tracking-tight md:text-6xl"
-        >
-        <span className="inline-block h-14">
-            <span>Journey to </span>
-            <span className="text-primary">Quant</span>
-        </span>
-        </div>
-    )
-  }
+  const prefix = taglines[taglineIndex][0];
+  const secondWord = taglines[taglineIndex][1];
+  const connector = taglines[taglineIndex][2];
+  const fourthWord = taglines[taglineIndex][3];
 
-  // Otherwise, render the animation.
+  const displaySecond = phase === 'deleting-second' 
+    ? secondWord.substring(0, charCount)
+    : secondWord;
+    
+  const displayFourth = (phase === 'typing-fourth' || phase === 'deleting-fourth' || phase === 'waiting' || phase === 'finished')
+    ? fourthWord.substring(0, charCount)
+    : '';
+
   return (
-    <div ref={ref}>
-      {/* This h2 is for SEO and screen readers, providing a stable, non-animated version */}
-      <h2 className="sr-only">From Data to Insight, From Model to Alpha. Journey to Quant.</h2>
+    <div>
+      <h2 className="sr-only">
+        From Data to Insight, From Insight to Strategy, From Strategy to Alpha, From Alpha to Quant, Journey to Quant
+      </h2>
       <div
         aria-hidden="true"
         className="font-headline text-5xl font-bold tracking-tight md:text-6xl"
       >
         <span className="inline-block h-14">
-          <span>{taglines[taglineIndex][0]}</span>
-          <span className="text-primary">{animatedText}</span>
-          <span
-            className="animate-blink border-r-2 border-foreground align-bottom"
-            aria-hidden="true"
-          ></span>
+          <span className="text-foreground">{prefix}</span>
+          <span className="text-primary/90">
+            {displaySecond}
+          </span>
+          <span className="text-foreground">{connector}</span>
+          <span className="text-primary">
+            {displayFourth}
+          </span>
+          {phase !== 'finished' && (
+            <span
+              className="animate-blink border-r-2 border-primary align-bottom"
+            />
+          )}
         </span>
       </div>
     </div>
