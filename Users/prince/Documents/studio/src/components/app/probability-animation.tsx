@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Scene, PerspectiveCamera, WebGLRenderer, Group, MeshBasicMaterial, CylinderGeometry, Mesh, BoxGeometry, Color, SphereGeometry, Vector3, Clock } from 'three';
+import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
@@ -26,27 +26,27 @@ export function ProbabilityAnimation({
     const currentMount = mountRef.current;
     let animationFrameId: number;
 
-    const main = async () => {
+    const main = () => {
       let frameId: number;
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const primaryColor = new Color(primaryColorValue);
+      const primaryColor = new THREE.Color(primaryColorValue);
       
-      const scene = new Scene();
-      const camera = new PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
       camera.position.z = 20;
 
-      const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
       renderer.setPixelRatio(window.devicePixelRatio);
       currentMount.appendChild(renderer.domElement);
       
       // --- Pegs for Galton Board ---
-      const pegGroup = new Group();
-      const pegMaterial = new MeshBasicMaterial({ opacity: 0.7, transparent: true });
+      const pegGroup = new THREE.Group();
+      const pegMaterial = new THREE.MeshBasicMaterial({ opacity: 0.7, transparent: true });
       pegMaterial.color.set(primaryColor);
-      const pegGeometry = new CylinderGeometry(0.15, 0.15, 0.5, 16);
+      const pegGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 16);
       pegGeometry.rotateX(Math.PI / 2); // Orient cylinders correctly
       const rows = 10;
       const rowSpacing = 1.5;
@@ -55,7 +55,7 @@ export function ProbabilityAnimation({
       for (let row = 0; row < rows; row++) {
           const numPegs = row + 1;
           for (let col = 0; col < numPegs; col++) {
-              const peg = new Mesh(pegGeometry, pegMaterial);
+              const peg = new THREE.Mesh(pegGeometry, pegMaterial);
               peg.position.set(
                   (col - (numPegs - 1) / 2) * colSpacing,
                   (rows / 2 - row) * rowSpacing,
@@ -67,13 +67,13 @@ export function ProbabilityAnimation({
       scene.add(pegGroup);
 
       // --- Bins ---
-      const binGroup = new Group();
-      const binMaterial = new MeshBasicMaterial({ opacity: 0.5, transparent: true });
+      const binGroup = new THREE.Group();
+      const binMaterial = new THREE.MeshBasicMaterial({ opacity: 0.5, transparent: true });
       binMaterial.color.set(primaryColor);
-      const binGeometry = new BoxGeometry(colSpacing * 0.9, 0.2, 0.5);
+      const binGeometry = new THREE.BoxGeometry(colSpacing * 0.9, 0.2, 0.5);
       const numBins = rows + 1;
       for (let i = 0; i < numBins; i++) {
-          const bin = new Mesh(binGeometry, binMaterial);
+          const bin = new THREE.Mesh(binGeometry, binMaterial);
           bin.position.set(
               (i - (numBins - 1) / 2) * colSpacing,
               (rows / 2 - rows - 1) * rowSpacing,
@@ -85,19 +85,19 @@ export function ProbabilityAnimation({
 
       // --- Particles ---
       const particleCount = 200;
-      const particles: { mesh: Mesh; velocity: Vector3, life: number }[] = [];
-      const particleGeometry = new SphereGeometry(0.1, 8, 8);
-      const particleMaterial = new MeshBasicMaterial({ color: new Color(0x818cf8) });
+      const particles: { mesh: THREE.Mesh; velocity: THREE.Vector3, life: number }[] = [];
+      const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+      const particleMaterial = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x818cf8) });
 
       function createParticle() {
-          const mesh = new Mesh(particleGeometry, particleMaterial);
+          const mesh = new THREE.Mesh(particleGeometry, particleMaterial);
           mesh.position.set((Math.random() - 0.5) * 0.5, (rows / 2 + 1) * rowSpacing, 0);
-          const velocity = new Vector3(0, -2, 0);
+          const velocity = new THREE.Vector3(0, -2, 0);
           particles.push({ mesh, velocity, life: 0 });
           scene.add(mesh);
       }
 
-      const clock = new Clock();
+      const clock = new THREE.Clock();
 
       const animate = () => {
         frameId = requestAnimationFrame(animate);
@@ -115,11 +115,13 @@ export function ProbabilityAnimation({
 
           // Bounce off pegs
           pegGroup.children.forEach((peg) => {
-              const dist = p.mesh.position.distanceTo(peg.position);
-              if (dist < 0.3) { // Collision radius
-                  const normal = p.mesh.position.clone().sub(peg.position).normalize();
-                  p.velocity.reflect(normal).multiplyScalar(0.6);
-                  p.velocity.x += (Math.random() - 0.5) * 2; // Add randomness
+              if (peg instanceof THREE.Mesh) {
+                const dist = p.mesh.position.distanceTo(peg.position);
+                if (dist < 0.3) { // Collision radius
+                    const normal = p.mesh.position.clone().sub(peg.position).normalize();
+                    p.velocity.reflect(normal).multiplyScalar(0.6);
+                    p.velocity.x += (Math.random() - 0.5) * 2; // Add randomness
+                }
               }
           });
           
@@ -157,7 +159,7 @@ export function ProbabilityAnimation({
       window.addEventListener('resize', handleResize);
 
       return () => {
-        cancelAnimationFrame(frameId);
+        if(frameId) cancelAnimationFrame(frameId);
         window.removeEventListener('resize', handleResize);
         if (currentMount) {
           currentMount.removeEventListener('mouseenter', handleMouseEnter);
@@ -174,7 +176,7 @@ export function ProbabilityAnimation({
       };
     };
 
-    main();
+    animationFrameId = requestAnimationFrame(main);
 
     return () => {
       if (animationFrameId) {

@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Scene, PerspectiveCamera, WebGLRenderer, Group, PointsMaterial, BufferGeometry, Vector3, Points, Euler, Clock } from 'three';
+import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
@@ -29,18 +29,18 @@ export function LinearAlgebraAnimation({
     const currentMount = mountRef.current;
     let animationFrameId: number;
 
-    const main = async () => {
+    const main = () => {
       let frameId: number;
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
-      const primaryColor = new (await import('three')).Color(primaryColorValue);
+      const primaryColor = new THREE.Color(primaryColorValue);
 
 
       // --- Scene setup ---
-      const scene = new Scene();
-      const camera = new PerspectiveCamera(
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
         75,
         currentMount.clientWidth / currentMount.clientHeight,
         0.1,
@@ -48,19 +48,19 @@ export function LinearAlgebraAnimation({
       );
       camera.position.z = 15;
 
-      const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       currentMount.appendChild(renderer.domElement);
 
       // --- Grid creation ---
-      const gridGroup = new Group();
+      const gridGroup = new THREE.Group();
       scene.add(gridGroup);
       
-      const pointCloudMaterial = new PointsMaterial({
+      const pointCloudMaterial = new THREE.PointsMaterial({
           size: 0.25,
           transparent: true,
-          blending: (await import('three')).AdditiveBlending,
+          blending: THREE.AdditiveBlending,
       });
       pointCloudMaterial.color.set(primaryColor);
       pointCloudMaterial.opacity = opacityValue;
@@ -73,19 +73,19 @@ export function LinearAlgebraAnimation({
       for (let i = -gridSize / 2; i <= gridSize / 2; i += step) {
           for (let j = -gridSize / 2; j <= gridSize / 2; j += step) {
               for (let k = -gridSize / 2; k <= gridSize/2; k += step) {
-                   points.push(new Vector3(i, j, k));
+                   points.push(new THREE.Vector3(i, j, k));
               }
           }
       }
       
-      const pointCloudGeometry = new BufferGeometry().setFromPoints(points);
-      const pointCloud = new Points(pointCloudGeometry, pointCloudMaterial);
+      const pointCloudGeometry = new THREE.BufferGeometry().setFromPoints(points);
+      const pointCloud = new THREE.Points(pointCloudGeometry, pointCloudMaterial);
       gridGroup.add(pointCloud);
 
       // --- Animation & Interaction ---
-      const clock = new Clock();
-      const targetRotation = new Euler(0, 0, 0);
-      const targetScale = new Vector3(1, 1, 1);
+      const clock = new THREE.Clock();
+      const targetRotation = new THREE.Euler(0, 0, 0);
+      const targetScale = new THREE.Vector3(1, 1, 1);
 
       const animate = () => {
         frameId = requestAnimationFrame(animate);
@@ -149,7 +149,7 @@ export function LinearAlgebraAnimation({
       };
     };
     
-    main();
+    animationFrameId = requestAnimationFrame(main);
 
     return () => {
       if (animationFrameId) {

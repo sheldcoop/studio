@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Scene, PerspectiveCamera, WebGLRenderer, Group, PointsMaterial, BufferGeometry, Float32BufferAttribute, Points, LineBasicMaterial, Vector3, Line, Clock } from 'three';
+import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
@@ -35,12 +35,12 @@ export function ConfidenceIntervalAnimation({
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
-      const primaryColor = new (await import('three')).Color(primaryColorValue);
+      const primaryColor = new THREE.Color(primaryColorValue);
 
 
-      const particleMaterial = new PointsMaterial({
+      const particleMaterial = new THREE.PointsMaterial({
           size: 0.2,
-          blending: (await import('three')).AdditiveBlending,
+          blending: THREE.AdditiveBlending,
           transparent: true,
           sizeAttenuation: true,
         });
@@ -48,11 +48,11 @@ export function ConfidenceIntervalAnimation({
       particleMaterial.opacity = opacityValue;
 
 
-      const axisMaterial = new LineBasicMaterial({ transparent: true, opacity: 0 });
+      const axisMaterial = new THREE.LineBasicMaterial({ transparent: true, opacity: 0 });
       axisMaterial.color.set(primaryColor);
 
-      const scene = new Scene();
-      const camera = new PerspectiveCamera(
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
         75,
         currentMount.clientWidth / currentMount.clientHeight,
         0.1,
@@ -60,17 +60,17 @@ export function ConfidenceIntervalAnimation({
       );
       camera.position.set(0, 0, 15);
 
-      const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
       renderer.setPixelRatio(window.devicePixelRatio);
       currentMount.appendChild(renderer.domElement);
 
-      const orbGroup = new Group();
+      const orbGroup = new THREE.Group();
       scene.add(orbGroup);
 
       // --- Particles ---
       const particleCount = 1500;
-      const particlesGeometry = new BufferGeometry();
+      const particlesGeometry = new THREE.BufferGeometry();
       const positions = new Float32Array(particleCount * 3);
       const particleData: { theta: number; phi: number; randomPhase: number; randomSpeed: number }[] = [];
 
@@ -90,19 +90,19 @@ export function ConfidenceIntervalAnimation({
         positions[i * 3 + 1] = sphereRadius * Math.sin(phi) * Math.sin(theta);
         positions[i * 3 + 2] = sphereRadius * Math.cos(phi);
       }
-      particlesGeometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
-      const particleSystem = new Points(particlesGeometry, particleMaterial);
+      particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const particleSystem = new THREE.Points(particlesGeometry, particleMaterial);
       orbGroup.add(particleSystem);
 
       // --- Axis Line ---
-      const axisGeometry = new BufferGeometry().setFromPoints([
-        new Vector3(0, -12, 0),
-        new Vector3(0, 12, 0),
+      const axisGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, -12, 0),
+        new THREE.Vector3(0, 12, 0),
       ]);
-      const axisLine = new Line(axisGeometry, axisMaterial);
+      const axisLine = new THREE.Line(axisGeometry, axisMaterial);
       orbGroup.add(axisLine);
 
-      const clock = new Clock();
+      const clock = new THREE.Clock();
       const targetRotation = { x: 0, y: 0 };
       let correlationFactor = 0;
 
@@ -114,9 +114,9 @@ export function ConfidenceIntervalAnimation({
         const targetCorrelation = isMouseOver.current ? 1 : 0;
         correlationFactor += (targetCorrelation - correlationFactor) * 0.1;
 
-        (axisLine.material as LineBasicMaterial).opacity = correlationFactor * 0.9;
+        (axisLine.material as THREE.LineBasicMaterial).opacity = correlationFactor * 0.9;
 
-        const currentPositions = particleSystem.geometry.getAttribute('position') as Float32BufferAttribute;
+        const currentPositions = particleSystem.geometry.getAttribute('position') as THREE.BufferAttribute;
         for (let i = 0; i < particleCount; i++) {
           const { theta, phi, randomSpeed } = particleData[i];
 
@@ -128,16 +128,16 @@ export function ConfidenceIntervalAnimation({
           const ellipseRadiusX = sphereRadius * Math.sin(phi);
           const ellipseRadiusY = sphereRadius * Math.sin(phi) * 0.2;
           
-          const axis = new Vector3(0.5, 1, 0).normalize();
-          const ellipsePoint = new Vector3(
+          const axis = new THREE.Vector3(0.5, 1, 0).normalize();
+          const ellipsePoint = new THREE.Vector3(
             ellipseRadiusX * Math.cos(ellipseAngle),
             ellipseRadiusY * Math.sin(ellipseAngle),
             sphereRadius * Math.cos(phi)
           );
           ellipsePoint.applyAxisAngle(axis, Math.PI / 4);
 
-          const currentVec = new Vector3(currentPositions.getX(i), currentPositions.getY(i), currentPositions.getZ(i));
-          const randomVec = new Vector3(randomX, randomY, randomZ);
+          const currentVec = new THREE.Vector3(currentPositions.getX(i), currentPositions.getY(i), currentPositions.getZ(i));
+          const randomVec = new THREE.Vector3(randomX, randomY, randomZ);
           const correlatedVec = ellipsePoint;
 
           const targetVec = randomVec.lerp(correlatedVec, correlationFactor);
@@ -197,7 +197,7 @@ export function ConfidenceIntervalAnimation({
       };
     }
     
-    main();
+    animationFrameId = requestAnimationFrame(main);
 
     return () => {
       if (animationFrameId) {

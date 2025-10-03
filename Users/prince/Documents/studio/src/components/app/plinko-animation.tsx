@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Scene, PerspectiveCamera, WebGLRenderer, PlaneGeometry, MeshBasicMaterial, Mesh, Clock } from 'three';
+import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
@@ -29,19 +29,19 @@ export function PlinkoAnimation({
     let animationFrameId: number;
     const cleanupFunctions: (() => void)[] = [];
 
-    animationFrameId = requestAnimationFrame(async () => {
+    animationFrameId = requestAnimationFrame(() => {
       if (!currentMount) return;
 
       const computedStyle = getComputedStyle(document.documentElement);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const primaryColor = new (await import('three')).Color(primaryColorValue);
+      const primaryColor = new THREE.Color(primaryColorValue);
 
-      const scene = new Scene();
-      const camera = new PerspectiveCamera(60, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
       camera.position.set(0, 8, 10);
       camera.lookAt(0, 2, 0);
 
-      const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       currentMount.appendChild(renderer.domElement);
@@ -55,7 +55,7 @@ export function PlinkoAnimation({
       // Create surface
       const size = 20;
       const segments = 50;
-      const geometry = new PlaneGeometry(size, size, segments, segments);
+      const geometry = new THREE.PlaneGeometry(size, size, segments, segments);
       const positions = geometry.attributes.position.array as Float32Array;
       cleanupFunctions.push(() => geometry.dispose());
 
@@ -67,18 +67,18 @@ export function PlinkoAnimation({
       }
       geometry.computeVertexNormals();
 
-      const material = new MeshBasicMaterial({
+      const material = new THREE.MeshBasicMaterial({
         wireframe: true,
         transparent: true,
       });
       material.color.set(primaryColor);
-      const surface = new Mesh(geometry, material);
+      const surface = new THREE.Mesh(geometry, material);
       surface.rotation.x = -Math.PI / 2;
       surface.position.y = 2; // Move the whole surface up
       scene.add(surface);
       cleanupFunctions.push(() => material.dispose());
 
-      const clock = new Clock();
+      const clock = new THREE.Clock();
       let rippleAmplitude = 0.5;
 
       const animate = () => {
@@ -120,7 +120,7 @@ export function PlinkoAnimation({
       cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
       
       cleanupFunctions.push(() => {
-        cancelAnimationFrame(animationFrameId);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
       });
     });
 

@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Scene, PerspectiveCamera, WebGLRenderer, DirectionalLight, AmbientLight, BoxGeometry, Mesh, MeshStandardMaterial, CanvasTexture, Color, Clock } from 'three';
+import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
@@ -16,7 +16,7 @@ const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string
   canvas.width = 128;
   canvas.height = 128;
   const context = canvas.getContext('2d');
-  if (!context) return new MeshStandardMaterial({ color: 0x111111 });
+  if (!context) return new THREE.MeshStandardMaterial({ color: 0x111111 });
 
   context.fillStyle = bgColor;
   context.fillRect(0, 0, 128, 128);
@@ -27,7 +27,7 @@ const createDieFaceMaterial = (dots: { x: number; y: number }[], fgColor: string
     context.fill();
   });
 
-  return new MeshStandardMaterial({ map: new CanvasTexture(canvas) });
+  return new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(canvas) });
 };
 
 
@@ -53,28 +53,28 @@ export function DiceAnimation({
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
-      const primaryColor = new Color(primaryColorValue);
+      const primaryColor = new THREE.Color(primaryColorValue);
       
-      const scene = new Scene();
-      const camera = new PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
       camera.position.z = 5;
 
-      const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
       renderer.setPixelRatio(window.devicePixelRatio);
       currentMount.appendChild(renderer.domElement);
 
-      const light = new DirectionalLight(0xffffff, 2.5);
+      const light = new THREE.DirectionalLight(0xffffff, 2.5);
       light.position.set(2, 5, 3);
       scene.add(light);
-      const ambientLight = new AmbientLight(0xffffff, 0.8);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
 
       const dotColor = primaryColor.getStyle();
       
       const backgroundColorValue = getComputedStyle(document.documentElement).getPropertyValue('--card').trim();
       const [h, s, l] = backgroundColorValue.split(' ').map(parseFloat);
-      const faceColor = new Color(`hsl(${h}, ${s}%, ${l}%)`).getStyle();
+      const faceColor = new THREE.Color(`hsl(${h}, ${s}%, ${l}%)`).getStyle();
 
 
       const materials = [
@@ -86,11 +86,11 @@ export function DiceAnimation({
         createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 32 }], dotColor, faceColor), // 6
       ];
 
-      const dieGeometry = new BoxGeometry(2, 2, 2);
-      const die = new Mesh(dieGeometry, materials);
+      const dieGeometry = new THREE.BoxGeometry(2, 2, 2);
+      const die = new THREE.Mesh(dieGeometry, materials);
       scene.add(die);
 
-      const clock = new Clock();
+      const clock = new THREE.Clock();
 
       const animate = () => {
         frameId = requestAnimationFrame(animate);
@@ -129,7 +129,7 @@ export function DiceAnimation({
       };
     };
     
-    main();
+    animationFrameId = requestAnimationFrame(main);
 
     return () => {
       if (animationFrameId) {

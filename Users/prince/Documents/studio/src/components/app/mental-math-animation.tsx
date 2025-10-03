@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Scene, PerspectiveCamera, WebGLRenderer, Sprite, CanvasTexture, SpriteMaterial, Vector3, Clock } from 'three';
+import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
@@ -38,8 +38,8 @@ export function MentalMathAnimation({
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
       const opacityValue = parseFloat(computedStyle.getPropertyValue('--animation-opacity').trim());
 
-      const scene = new Scene();
-      const camera = new PerspectiveCamera(
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
         75,
         currentMount.clientWidth / currentMount.clientHeight,
         0.1,
@@ -47,7 +47,7 @@ export function MentalMathAnimation({
       );
       camera.position.z = 12;
 
-      const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       currentMount.appendChild(renderer.domElement);
@@ -58,7 +58,7 @@ export function MentalMathAnimation({
         renderer.dispose();
       });
 
-      const sprites: Sprite[] = [];
+      const sprites: THREE.Sprite[] = [];
       const symbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '−', '×', '÷', '='];
       const particleCount = 100;
 
@@ -76,13 +76,13 @@ export function MentalMathAnimation({
           ctx.fillText(symbols[Math.floor(Math.random() * symbols.length)], 64, 64);
         }
 
-        const texture = new CanvasTexture(canvas);
-        const material = new SpriteMaterial({
+        const texture = new THREE.CanvasTexture(canvas);
+        const material = new THREE.SpriteMaterial({
           map: texture,
           transparent: true,
           opacity: opacityValue * 0.7,
         });
-        const sprite = new Sprite(material);
+        const sprite = new THREE.Sprite(material);
 
         sprite.position.set(
           (Math.random() - 0.5) * 25,
@@ -94,7 +94,7 @@ export function MentalMathAnimation({
         sprite.scale.set(size, size, 1);
 
         sprite.userData = {
-          velocity: new Vector3(
+          velocity: new THREE.Vector3(
             (Math.random() - 0.5) * 0.04,
             (Math.random() - 0.5) * 0.04,
             (Math.random() - 0.5) * 0.04
@@ -113,7 +113,7 @@ export function MentalMathAnimation({
         });
       });
 
-      const clock = new Clock();
+      const clock = new THREE.Clock();
       let interactionStrength = 0;
 
       const animate = () => {
@@ -130,7 +130,7 @@ export function MentalMathAnimation({
           sprite.position.add(sprite.userData.velocity);
 
           if (isMouseOver.current && interactionStrength > 0.1) {
-            const mousePos = new Vector3(
+            const mousePos = new THREE.Vector3(
               mouse.current.x * 12,
               mouse.current.y * 7,
               0
@@ -204,7 +204,7 @@ export function MentalMathAnimation({
       window.addEventListener('resize', handleResize);
       cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
       
-      cleanupFunctions.push(() => cancelAnimationFrame(animationFrameId));
+      cleanupFunctions.push(() => { if(animationFrameId) cancelAnimationFrame(animationFrameId) });
 
     }, 10);
 
