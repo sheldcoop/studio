@@ -1,77 +1,74 @@
+quantprep3-38268892:~/studio{working-3.5}$ npm run typecheck
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+> nextn@0.1.0 typecheck
+> tsc --noEmit
 
-@layer base {
-  :root {
-    --background: 220 30% 7%;           /* Deep navy-black for sophistication */
-    --foreground: 200 15% 92%;          /* Cool white for readability */
-    --card: 220 25% 10%;
-    --card-foreground: 200 15% 92%;
-    --popover: 220 30% 7%;
-    --popover-foreground: 200 15% 92%;
-    --primary: 259 60% 60%;
-    --primary-foreground: 200 15% 92%;
-    --secondary: 220 20% 15%;
-    --secondary-foreground: 200 15% 92%;
-    --muted: 220 20% 15%;
-    --muted-foreground: 200 10% 55%;
-    --accent: 280 70% 60%;              /* Purple - algorithmic/tech accent */
-    --accent-foreground: 200 15% 92%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 200 15% 92%;
-    --border: 220 20% 18%;
-    --input: 220 20% 18%;
-    --ring: 259 60% 60%;
-    --chart-1: 259 60% 60%;             /* Primary for charts */
-    --chart-2: 180 85% 50%;             /* Teal for secondary data */
-    --chart-3: 200 80% 55%;             /* Blue variant */
-    --chart-4: 160 75% 55%;             /* Green-teal */
-    --chart-5: 280 70% 70%;             /* Lighter purple */
+Users/prince/Documents/studio/__tests__/confidence-intervals.test.tsx:1:18 - error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
 
-    /* Animation Theme Variables */
-    --animation-primary-color: hsl(259, 60%, 60%);
-    --animation-opacity: 0.9;
-  }
+1 import { render, screen, fireEvent } from '@testing-library/react';
+                   ~~~~~~
 
-  .dark {
-    --background: 220 30% 7%;
-    --foreground: 200 15% 92%;
-    --card: 220 25% 10%;
-    --card-foreground: 200 15% 92%;
-    --popover: 220 30% 7%;
-    --popover-foreground: 200 15% 92%;
-    --primary: 259 70% 75%;
-    --primary-foreground: 220 30% 7%;
-    --secondary: 220 20% 15%;
-    --secondary-foreground: 200 15% 92%;
-    --muted: 220 20% 15%;
-    --muted-foreground: 200 10% 55%;
-    --accent: 280 70% 60%;
-    --accent-foreground: 200 15% 92%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 200 15% 92%;
-    --border: 220 20% 18%;
-    --input: 220 20% 18%;
-    --ring: 259 70% 75%;
-    --chart-1: 259 70% 75%;
-    --chart-2: 180 85% 50%;
-    --chart-3: 200 80% 55%;
-    --chart-4: 160 75% 55%;
-    --chart-5: 280 70% 70%;
+Users/prince/Documents/studio/__tests__/confidence-intervals.test.tsx:1:26 - error TS2305: Module '"@testing-library/react"' has no exported member 'fireEvent'.
 
-    /* Animation Theme Variables */
-    --animation-primary-color: hsl(259, 70%, 75%);
-    --animation-opacity: 0.9;
-  }
-}
+1 import { render, screen, fireEvent } from '@testing-library/react';
+                           ~~~~~~~~~
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+Users/prince/Documents/studio/__tests__/logo.test.tsx:1:18 - error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
+
+1 import { render, screen } from '@testing-library/react';
+                   ~~~~~~
+
+Users/prince/Documents/studio/__tests__/page-header.test.tsx:1:18 - error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
+
+1 import { render, screen } from '@testing-library/react';
+                   ~~~~~~
+
+__tests__/confidence-intervals.test.tsx:1:18 - error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
+
+1 import { render, screen, fireEvent } from '@testing-library/react';
+                   ~~~~~~
+
+__tests__/confidence-intervals.test.tsx:1:26 - error TS2305: Module '"@testing-library/react"' has no exported member 'fireEvent'.
+
+1 import { render, screen, fireEvent } from '@testing-library/react';
+                           ~~~~~~~~~
+
+__tests__/logo.test.tsx:1:18 - error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
+
+1 import { render, screen } from '@testing-library/react';
+                   ~~~~~~
+
+__tests__/page-header.test.tsx:1:18 - error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
+
+1 import { render, screen } from '@testing-library/react';
+                   ~~~~~~
+
+src/components/app/theme-provider.tsx:6:41 - error TS2307: Cannot find module 'next-themes/dist/types' or its corresponding type declarations.
+
+6 import { type ThemeProviderProps } from "next-themes/dist/types"
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+
+tailwind.config.ts:4:3 - error TS2322: Type '["class"]' is not assignable to type 'DarkModeStrategy | undefined'.
+  Type '["class"]' is not assignable to type '["class", string]'.
+    Source has 1 element(s) but target requires 2.
+
+4   darkMode: ['class'],
+    ~~~~~~~~
+
+  node_modules/tailwindcss/dist/types-WlZgYgM8.d.mts:110:5
+    110     darkMode?: DarkModeStrategy;
+            ~~~~~~~~
+    The expected type comes from property 'darkMode' which is declared here on type 'UserConfig'
+
+
+Found 10 errors in 8 files.
+
+Errors  Files
+     2  Users/prince/Documents/studio/__tests__/confidence-intervals.test.tsx:1
+     1  Users/prince/Documents/studio/__tests__/logo.test.tsx:1
+     1  Users/prince/Documents/studio/__tests__/page-header.test.tsx:1
+     2  __tests__/confidence-intervals.test.tsx:1
+     1  __tests__/logo.test.tsx:1
+     1  __tests__/page-header.test.tsx:1
+     1  src/components/app/theme-provider.tsx:6
+     1  tailwind.config.ts:4
