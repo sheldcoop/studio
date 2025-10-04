@@ -1,8 +1,5 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
-
-# Allow all user agents to crawl the site
+# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
 
-# Point to the sitemap
 Sitemap: https://quantfinancelab.com/sitemap.xml
