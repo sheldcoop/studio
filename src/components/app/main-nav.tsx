@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -10,6 +9,7 @@ import {
   FolderKanban,
   Sigma,
   BarChart3,
+  Newspaper,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TopicIcon } from './topic-icon';
@@ -34,6 +34,11 @@ const links = [
     href: '/hypothesis-testing-p-values',
     label: 'Statistical Tests',
     icon: 'Sigma',
+  },
+  {
+    href: '/blog',
+    label: 'Blog',
+    icon: 'Newspaper',
   },
   {
     href: '/community',
