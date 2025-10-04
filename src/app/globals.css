@@ -59,7 +59,92 @@
     --animation-opacity: 0.85;
   }
 
-  /* Copy all your other theme classes: .slate, .nocturne, .quant */
+  .slate {
+    --background: 223 24% 10%;
+    --foreground: 220 13% 91%;
+    --card: 223 24% 10%;
+    --card-foreground: 220 13% 91%;
+    --popover: 223 24% 10%;
+    --popover-foreground: 220 13% 91%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 38 100% 10%;
+    --secondary: 226 24% 16%;
+    --secondary-foreground: 220 13% 91%;
+    --muted: 226 24% 16%;
+    --muted-foreground: 226 12% 46%;
+    --accent: 226 24% 16%;
+    --accent-foreground: 38 92% 50%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 220 13% 91%;
+    --border: 226 24% 20%;
+    --input: 226 24% 20%;
+    --ring: 38 92% 50%;
+    --chart-1: 38 92% 50%;
+    --chart-2: 259 44% 80%;
+    --chart-3: 0 72.2% 50.6%;
+    --chart-4: 43.2 95.5% 53.1%;
+    --chart-5: 270 95.5% 53.1%;
+    --animation-primary-color: hsl(38, 92%, 50%);
+    --animation-opacity: 0.85;
+  }
+  
+  .nocturne {
+    --background: 220 10% 12%;
+    --foreground: 40 20% 85%;
+    --card: 220 10% 12%;
+    --card-foreground: 40 20% 85%;
+    --popover: 220 10% 12%;
+    --popover-foreground: 40 20% 85%;
+    --primary: 40 20% 85%;
+    --primary-foreground: 220 10% 12%;
+    --secondary: 220 10% 20%;
+    --secondary-foreground: 40 20% 85%;
+    --muted: 220 10% 20%;
+    --muted-foreground: 40 10% 55%;
+    --accent: 220 10% 20%;
+    --accent-foreground: 40 20% 85%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 40 20% 85%;
+    --border: 220 10% 25%;
+    --input: 220 10% 25%;
+    --ring: 40 20% 85%;
+    --chart-1: 40 20% 85%;
+    --chart-2: 40 20% 65%;
+    --chart-3: 40 20% 55%;
+    --chart-4: 40 20% 45%;
+    --chart-5: 40 20% 35%;
+    --animation-primary-color: hsl(40, 20%, 85%);
+    --animation-opacity: 0.7;
+  }
+
+  .quant {
+    --background: 220 30% 7%;
+    --foreground: 200 15% 92%;
+    --card: 220 25% 10%;
+    --card-foreground: 200 15% 92%;
+    --popover: 220 30% 7%;
+    --popover-foreground: 200 15% 92%;
+    --primary: 180 85% 50%;
+    --primary-foreground: 220 30% 7%;
+    --secondary: 220 20% 15%;
+    --secondary-foreground: 200 15% 92%;
+    --muted: 220 20% 15%;
+    --muted-foreground: 200 10% 55%;
+    --accent: 280 70% 60%;
+    --accent-foreground: 200 15% 92%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 200 15% 92%;
+    --border: 220 20% 18%;
+    --input: 220 20% 18%;
+    --ring: 180 85% 50%;
+    --chart-1: 180 85% 50%;
+    --chart-2: 280 70% 60%;
+    --chart-3: 200 80% 55%;
+    --chart-4: 160 75% 55%;
+    --chart-5: 260 65% 60%;
+    --animation-primary-color: hsl(180, 85%, 50%);
+    --animation-opacity: 0.9;
+  }
 }
 
 @layer base {
@@ -75,5 +160,27 @@
 @layer utilities {
   @keyframes blink {
     50% { border-color: transparent; }
+  }
+
+  .container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 80rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
   }
 }
