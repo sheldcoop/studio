@@ -1,5 +1,4 @@
-import { render } from '@testing-library/react';
-import { screen } from '@testing-library/dom';
+import { render, screen } from '@testing-library/react';
 import { Logo } from '@/components/app/logo';
 
 describe('Logo', () => {
