@@ -1,5 +1,4 @@
-import { render } from '@testing-library/react';
-import { screen, fireEvent } from '@testing-library/dom';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ConfidenceIntervalsPage from '@/app/(app)/topics/confidence-intervals/page';
 
 describe('ConfidenceIntervalsPage', () => {
