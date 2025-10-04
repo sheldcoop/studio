@@ -1,4 +1,3 @@
-
 {
   "compilerOptions": {
     "target": "esnext",
@@ -27,10 +26,9 @@
     },
     "types": [
       "jest",
-      "@testing-library/jest-dom"
-    ],
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
+      "@testing-library/jest-dom",
+      "node"
+    ]
   },
   "include": [
     "next-env.d.ts",
