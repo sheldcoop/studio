@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { screen } from '@testing-library/dom';
 import { PageHeader } from '@/components/app/page-header';
 
 describe('PageHeader', () => {
