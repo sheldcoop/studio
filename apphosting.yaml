@@ -5,3 +5,14 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+
+# Automatically redirect all HTTP traffic to HTTPS.
+# It is recommended to keep this enabled.
+redirects:
+  - type: 301
+    regex: "^(.*)$"
+    destination: "https://quantprep.firerun.app{R:1}"
+    condition:
+      header:
+        name: "X-Forwarded-Proto"
+        value: "http"
