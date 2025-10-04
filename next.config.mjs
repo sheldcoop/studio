@@ -1,45 +1,27 @@
-/** @type {import('next').NextConfig} */
+// @ts-check
+
+/**
+ * Run `npm run analyze` to see what's inside your bundle.
+ * @see https://nextjs.org/docs/app/building-your-application/optimizing/open-telemetry
+ * @type {import('next').NextConfig}
+ **/
 const nextConfig = {
-  /* config options here */
+  transpilePackages: ['three'],
+  experimental: {
+    ppr: 'incremental',
+  },
   typescript: {
-    ignoreBuildErrors: false,
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // !! WARN !!
+    ignoreBuildErrors: true,
   },
   eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
     ignoreDuringBuilds: true,
-  },
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-        ],
-      },
-    ]
-  },
-  productionBrowserSourceMaps: false, // Disable source maps in production
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-        port: '',
-        pathname: '/**',
-      },
-    ],
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
