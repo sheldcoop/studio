@@ -27,7 +27,7 @@ import WeibullDistributionPage from '@/app/(app)/quantlab/weibull-distribution/p
 import CLTPage from '@/app/(app)/quantlab/central-limit-theorem/page';
 import DescriptiveStatsPage from '@/app/(app)/quantlab/descriptive-statistics-explorer/page';
 import ZTablePage from '@/app/(app)/quantlab/z-table/page';
-import ConfidenceIntervalsPage from '@/app/(app)/quantlab/confidence-intervals/page';
+import ConfidenceIntervalsPage from '@/app/(app)/quantlab/confidence-intervals/component';
 import MentalMathPage from '@/app/(app)/topics/mental-math/page';
 import MonteCarloPage from '@/app/(app)/quantlab/monte-carlo-simulation/page';
 import TimeSeriesDecompositionPage from '@/app/(app)/quantlab/time-series-decomposition/page';
