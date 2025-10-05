@@ -13,26 +13,6 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'central-limit-theorem',
-    title: 'The Central Limit Theorem (CLT)',
-    icon: 'Bell',
-    description: 'Discover how order emerges from chaos.',
-    category: 'probability',
-    parent: 'prob-core-tools',
-    pathPrefix: 'statistics-for-quantitative-finance', // Stays in stats path for now
-    href: '/paths/statistics-for-quantitative-finance/central-limit-theorem'
-  }),
-  createTopic({
-    id: 'descriptive-statistics-explorer',
-    title: 'Descriptive Statistics Explorer',
-    icon: 'BarChartHorizontal',
-    description: 'Interactive guide to mean, median, skewness, and kurtosis.',
-    category: 'probability',
-    parent: 'prob-core-tools',
-    pathPrefix: 'quantlab',
-    href: '/quantlab/descriptive-statistics-explorer'
-  }),
-  createTopic({
     id: 'bernoulli-distribution',
     title: 'Bernoulli Distribution',
     icon: 'ToggleRight',

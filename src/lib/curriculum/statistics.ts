@@ -249,12 +249,11 @@ export const statisticsTopics: Topic[] = [
   createTopic({
     id: 'descriptive-statistics-explorer',
     title: 'Descriptive Statistics Explorer',
-    icon: 'FunctionSquare',
-    description: 'Interactive guide to mean, median, mode, variance, skewness, and kurtosis.',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
-    pathPrefix: 'probability-for-quants',
-    href: '/paths/probability-for-quants'
+    icon: 'BarChartHorizontal',
+    description: 'Interactive guide to mean, median, skewness, and kurtosis.',
+    category: 'probability',
+    parent: 'prob-core-tools',
+    pathPrefix: 'quantlab',
   }),
   createTopic({
     id: 'normal-distribution',
@@ -268,10 +267,10 @@ export const statisticsTopics: Topic[] = [
   createTopic({
     id: 'central-limit-theorem',
     title: 'The Central Limit Theorem (CLT)',
-    icon: 'FunctionSquare',
+    icon: 'Bell',
     description: 'Discover how order emerges from chaos.',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
+    category: 'probability',
+    parent: 'prob-core-tools',
     pathPrefix: 'statistics-for-quantitative-finance',
   }),
   createTopic({

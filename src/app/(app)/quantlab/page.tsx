@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 const getTopicsForParent = (parentId: string): Topic[] => {
-  return allTopics.filter((topic) => topic.parent === parentId && topic.category === 'probability');
+  return allTopics.filter((topic) => topic.parent === parentId);
 };
 
 const coreConcepts = getTopicsForParent('prob-core-tools');
