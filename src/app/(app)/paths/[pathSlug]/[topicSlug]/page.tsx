@@ -1,7 +1,8 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { allTopics, getPathById } from '@/lib/data';
+import { allTopics } from '@/lib/data';
+import { getPathById } from '@/lib/learning-paths';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 // Dynamically import all the content components for our topics
