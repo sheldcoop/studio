@@ -1,47 +1,41 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-import { allTopics } from './src/lib/curriculum/index.ts';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-/**
- * @param {string[]} slugs - An array of previous slugs.
- * @param {string} destination - The new canonical path.
- * @returns {import('next').Redirect[]} An array of redirect objects.
- */
-function createRedirects(slugs, destination) {
-  return slugs.map(slug => ({
-    source: `/topics/${slug}`,
-    destination: destination,
-    permanent: true,
-  }));
+// Helper function to read the generated redirects
+function readRedirects() {
+  const redirectsPath = path.join(__dirname, 'public', 'redirects.json');
+  if (fs.existsSync(redirectsPath)) {
+    const redirectsData = fs.readFileSync(redirectsPath, 'utf-8');
+    return JSON.parse(redirectsData);
+  }
+  return [];
 }
-
-// Generate all redirects from the curriculum data
-const allRedirects = allTopics.flatMap(topic => {
-    if (topic.previousSlugs && topic.previousSlugs.length > 0) {
-        return createRedirects(topic.previousSlugs, topic.href);
-    }
-    return [];
-});
-
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enforce lowercase URLs and handle trailing slashes.
+  // Enforce lowercase URLs and remove trailing slashes for canonical SEO.
   async redirects() {
+    const manualRedirects = readRedirects();
     return [
-      // Add the programmatically generated redirects for old slugs
-      ...allRedirects,
-      // Rule to remove trailing slashes
+      ...manualRedirects,
       {
         source: '/:path*/',
-        permanent: true,
         destination: '/:path*',
+        permanent: true,
       },
     ];
   },
-  // Adding experimental flag to suppress warning about unsupported `edge-runtime-webpack`
-  experimental: {
-    serverComponentsExternalPackages: ['@vercel/analytics'],
-  },
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"]
+    });
+    return config;
+  }
 };
 
 export default nextConfig;
