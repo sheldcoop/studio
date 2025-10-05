@@ -2,15 +2,16 @@
 import { type Topic, type SubTopic } from './types';
 
 // Slug generation utility
-const toSlug = (title: string, prefix = ''): string => {
-  const baseSlug = title
+const toSlug = (title: string): string => {
+  return title
     .toLowerCase()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-    .replace(/\-\-+/g, '-') // Replace multiple - with single -
-    .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, ''); // Trim - from end of text
-  return prefix ? `${prefix}-${baseSlug}` : baseSlug;
+    .replace(/\(.*\)|\[.*\]/g, '') // Remove content in parentheses or brackets
+    .replace(/&/g, 'and')         // Replace & with 'and'
+    .replace(/\s+/g, '-')         // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')     // Remove all non-word chars except -
+    .replace(/\-\-+/g, '-')       // Replace multiple - with single -
+    .replace(/^-+/, '')           // Trim - from start of text
+    .replace(/-+$/, '');          // Trim - from end of text
 };
 
 
@@ -28,6 +29,8 @@ interface CreateTopicOptions {
     interactiveExamples?: Topic['interactiveExamples'];
     animation?: string;
     pathPrefix?: string; // e.g., 'statistics' or 'probability'
+    previousSlugs?: string[];
+    href?: string; // Allow manual href override
 }
 
 
@@ -40,13 +43,14 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
         id, 
         title, 
         pathPrefix,
+        href: manualHref,
         ...rest 
     } = options;
 
     const slug = id || toSlug(title);
     
-    // Construct the href based on whether a pathPrefix is provided
-    const href = pathPrefix ? `/${pathPrefix}/${slug}` : `/topics/${slug}`;
+    // Construct the href based on whether a pathPrefix is provided, unless manually overridden
+    const href = manualHref || (pathPrefix ? `/${pathPrefix}/${slug}` : `/topics/${slug}`);
 
     return {
         id: slug,

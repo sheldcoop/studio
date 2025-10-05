@@ -18,7 +18,7 @@ const fontHeadline = Space_Grotesk({
   variable: '--font-headline',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantprep.firerun.app';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -29,7 +29,29 @@ export const metadata: Metadata = {
   description: 'Master the core concepts of quantitative finance with AI-powered tools, interactive guides, and a community of learners.',
   alternates: {
     canonical: '/',
-  }
+  },
+  openGraph: {
+    title: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
+    description: 'Master the core concepts of quantitative finance with AI-powered tools, interactive guides, and a community of learners.',
+    url: siteUrl,
+    siteName: 'QuantPrep',
+    locale: 'en_US',
+    type: 'website',
+    images: [
+      {
+        url: `${siteUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: 'QuantPrep Logo and Tagline',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
+    description: 'Master the core concepts of quantitative finance with AI-powered tools, interactive guides, and a community of learners.',
+    images: [`${siteUrl}/og-image.png`],
+  },
 };
 
 export default function RootLayout({

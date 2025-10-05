@@ -1,44 +1,46 @@
+import { allTopics } from './src/lib/curriculum/index.js';
+
 /**
- * @type {import('next').NextConfig}
+ * @returns {import('next').NextConfig}
  */
-const nextConfig = {
-  // Your Next.js configuration options go here.
-  // For example, you can add environment variables, redirects, etc.
-  
-  // Example of adding an environment variable:
-  // env: {
-  //   CUSTOM_ENV_VAR: process.env.CUSTOM_ENV_VAR,
-  // },
+function nextConfig() {
+  const config = {
+    // Enforce a single canonical URL format by removing trailing slashes.
+    // This is crucial for preventing duplicate content issues with search engines.
+    trailingSlash: false,
 
-  // Example of setting up redirects:
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: '/old-path',
-  //       destination: '/new-path',
-  //       permanent: true,
-  //     },
-  //   ];
-  // },
+    // Programmatically generate permanent (301) redirects for any slugs that
+    // have been changed. This preserves SEO value and prevents broken links.
+    async redirects() {
+      const redirects = [];
 
-  // By default, Next.js will handle TypeScript and Sass compilation.
-  // You can customize webpack configuration if needed, but it's often not necessary.
-  // webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-  //   // Important: return the modified config
-  //   return config;
-  // },
+      for (const topic of allTopics) {
+        if (topic.previousSlugs && topic.previousSlugs.length > 0) {
+          for (const oldSlug of topic.previousSlugs) {
+            // Determine the correct source path based on the old prefix.
+            // This logic is based on the migration analysis.
+            let sourcePath;
+            if (oldSlug.includes('deep-dive') || oldSlug.includes('itos-lemma')) {
+              sourcePath = `/topics/${oldSlug}`;
+            } else {
+              // Fallback for any other potential previous slugs
+              sourcePath = `/${topic.pathPrefix || 'topics'}/${oldSlug}`;
+            }
+            
+            redirects.push({
+              source: sourcePath,
+              destination: topic.href,
+              permanent: true,
+            });
+          }
+        }
+      }
 
-  // The `pageExtensions` option allows you to specify which file extensions
-  // should be considered as pages.
-  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
+      return redirects;
+    },
+  };
 
-  // Setting this to false can be useful in some advanced scenarios,
-  // but it's generally recommended to keep it enabled for React 18 features.
-  reactStrictMode: true,
-
-  // This configuration is for the Next.js App Router, which is the default in Next.js 13.4+
-  // All pages and layouts should be inside the `src/app` directory.
-  // Note: There is no `appDir` boolean to set here anymore. If an `app` directory exists, it is used.
-};
+  return config;
+}
 
 export default nextConfig;

@@ -3,48 +3,39 @@ import { MetadataRoute } from 'next';
 import { allTopics } from '@/lib/curriculum';
 import { learningPaths } from '@/lib/learning-paths';
 
-const URL = process.env.SITE_URL || 'https://quantfinancelab.com';
+const URL = process.env.SITE_URL || 'https://quantprep.firerun.app';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = [
-    { url: `${URL}/`, lastModified: new Date() },
-    { url: `${URL}/paths`, lastModified: new Date() },
-    { url: `${URL}/interview-prep`, lastModified: new Date() },
-    { url: `${URL}/community`, lastModified: new Date() },
-    { url: `${URL}/stat-toolkit`, lastModified: new Date() },
-    { url: `${URL}/topics`, lastModified: new Date() },
-    { url: `${URL}/probability`, lastModified: new Date() },
+  // Higher priority for main navigation and path pages
+  const primaryPages: MetadataRoute.Sitemap = [
+    { url: `${URL}/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 1.0 },
+    { url: `${URL}/paths`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${URL}/topics`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${URL}/community`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${URL}/interview-prep`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
   ];
 
-  // Create routes for the learning path pages
-  const pathRoutes = learningPaths.map((path) => ({
+  // Learning path landing pages
+  const pathRoutes: MetadataRoute.Sitemap = learningPaths.map((path) => ({
     url: `${URL}/paths/${path.id}`,
     lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
   }));
 
-  // Create routes for individual topic pages, filtering out only non-visitable placeholder topics.
-  const topicRoutes = allTopics
-    .filter(topic => {
-        // A topic is a real page if it's not just a parent category and has a real URL.
-        const isCategory = topic.category === 'parent';
-        const hasNoPage = topic.href === '#';
-        
-        return !isCategory && !hasNoPage;
-    })
+  // Individual topic pages
+  const topicRoutes: MetadataRoute.Sitemap = allTopics
+    .filter(topic => !topic.category.includes('parent') && topic.href !== '#') // Filter out non-visitable parent categories
     .map((topic) => ({
       url: `${URL}${topic.href}`,
       lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.6,
   }));
   
-  // Use a Set to automatically handle any duplicates
-  const allUrls = new Set([
-      ...staticRoutes.map(r => r.url), 
-      ...pathRoutes.map(r => r.url), 
-      ...topicRoutes.map(r => r.url)
-  ]);
-
-  return Array.from(allUrls).map(url => ({
-      url,
-      lastModified: new Date(),
-  }));
+  return [
+      ...primaryPages,
+      ...pathRoutes,
+      ...topicRoutes
+  ];
 }

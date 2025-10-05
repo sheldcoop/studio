@@ -30,10 +30,12 @@ export type Topic = {
   status?: 'completed' | 'in-progress' | 'not-started';
   duration?: number; // in minutes
   subTopics?: SubTopic[];
-   content?: string; // Added for simple content pages
+  content?: string; // Added for simple content pages
   interactiveExamples?: {
     coreConcepts: CoreConcept[];
     examples: InteractiveExample[];
   };
   animation?: string; // ID for the animation component
+  pathPrefix?: string; // The prefix used for the URL path
+  previousSlugs?: string[]; // For handling redirects from old slugs
 };
