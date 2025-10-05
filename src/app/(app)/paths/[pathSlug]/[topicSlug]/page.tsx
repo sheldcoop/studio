@@ -35,7 +35,6 @@ import AcfPacfPage from '@/app/(app)/quantlab/autocorrelation-acf-pacf/component
 import GarchPage from '@/app/(app)/quantlab/volatility-garch/component';
 import EfficientFrontierPage from '@/app/(app)/quantlab/efficient-frontier-sharpe-ratio/component';
 import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/component';
-import ItosLemmaPage from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/component';
 
 
 type TopicPageProps = {
@@ -130,7 +129,6 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'volatility-garch': GarchPage,
   'efficient-frontier-sharpe-ratio': EfficientFrontierPage,
   'kalman-filters': KalmanFilterPage,
-  'stochastic-calculus-itos-lemma': ItosLemmaPage,
 };
 
 
