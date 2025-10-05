@@ -30,7 +30,7 @@ export function ConfidenceIntervalAnimation({
     let animationFrameId: number;
 
     const main = () => {
-      const frameId: number;
+      let frameId: number;
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
@@ -196,11 +196,11 @@ export function ConfidenceIntervalAnimation({
       };
     }
     
-    const frameId = requestAnimationFrame(main);
+    animationFrameId = requestAnimationFrame(main);
 
     return () => {
-      if (frameId) {
-        cancelAnimationFrame(frameId);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
       while (currentMount.firstChild) {
         currentMount.removeChild(currentMount.firstChild);
