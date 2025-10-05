@@ -107,7 +107,7 @@ export function ConfidenceIntervalAnimation({
       let correlationFactor = 0;
 
       const animate = () => {
-        animationFrameId = requestAnimationFrame(animate);
+        frameId = requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
 
         const targetCorrelation = isMouseOver.current ? 1 : 0;

@@ -49,7 +49,7 @@ const TimeSeriesChart = ({ data }: { data: number[] }) => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="index" />
         <YAxis />
-        <Tooltip content={<ChartTooltipContent formatter={(value: number) => [Number(value).toFixed(2), "Value"]} />} />
+        <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
         <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" dot={false} />
       </LineChart>
     </ChartContainer>
@@ -65,7 +65,7 @@ const ACFChart = ({ data, maxLag }: { data: number[], maxLag: number }) => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="lag" />
             <YAxis domain={[-1, 1]}/>
-            <Tooltip content={<ChartTooltipContent formatter={(value: number) => [Number(value).toFixed(2), "ACF"]} />} />
+            <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "ACF"]} />} />
             <ReferenceLine y={confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
             <ReferenceLine y={-confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
             <ReferenceLine y={0} stroke="hsl(var(--border))" />

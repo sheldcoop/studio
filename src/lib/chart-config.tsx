@@ -7,7 +7,7 @@ import { type ChartConfig } from "@/components/ui/chart"
 import { type TooltipProps } from 'recharts';
 import { type Payload } from 'recharts/types/component/DefaultTooltipContent';
 
-export const ChartTooltipContent = ({ active, payload, label, className, indicator = "dot", hideLabel=false, hideIndicator=false, labelFormatter, labelClassName, formatter, color, nameKey, ...props }: TooltipProps<number, string> & { indicator?: "dot" | "line" | "dashed", hideLabel?: boolean, hideIndicator?: boolean, labelClassName?: string, color?: string, nameKey?: string, labelKey?: string }) => {
+export const ChartTooltipContent = ({ active, payload, label, indicator = "dot", hideLabel=false, hideIndicator=false, labelFormatter, labelClassName, formatter, color, nameKey, ...props }: TooltipProps<number, string> & { indicator?: "dot" | "line" | "dashed", hideLabel?: boolean, hideIndicator?: boolean, labelClassName?: string, color?: string, nameKey?: string, labelKey?: string }) => {
   const { config } = { config: {} as ChartConfig }
 
   const tooltipLabel = React.useMemo(() => {
@@ -55,8 +55,7 @@ export const ChartTooltipContent = ({ active, payload, label, className, indicat
   return (
     <div
       className={cn(
-        "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
-        className
+        "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl"
       )}
     >
       {!nestLabel ? tooltipLabel : null}

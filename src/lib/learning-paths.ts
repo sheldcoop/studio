@@ -1,5 +1,5 @@
 
-import { type Topic } from '@/lib/curriculum';
+import { type Topic, allTopics } from '@/lib/curriculum';
 
 export type Module = {
   id: string;

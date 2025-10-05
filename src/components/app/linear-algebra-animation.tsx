@@ -27,10 +27,10 @@ export function LinearAlgebraAnimation({
   useEffect(() => {
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
-    let animationFrameId: number;
+    let animationFrameId: number | undefined;
 
     const main = () => {
-      let frameId: number;
+      let frameId: number | undefined;
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
@@ -88,7 +88,7 @@ export function LinearAlgebraAnimation({
       const targetScale = new THREE.Vector3(1, 1, 1);
 
       const animate = () => {
-        animationFrameId = requestAnimationFrame(animate);
+        frameId = requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
 
         if (isMouseOver.current) {
@@ -136,7 +136,7 @@ export function LinearAlgebraAnimation({
 
       // --- Cleanup ---
       return () => {
-        cancelAnimationFrame(frameId);
+        if (frameId) cancelAnimationFrame(frameId);
         window.removeEventListener('resize', handleResize);
         if (currentMount) {
           currentMount.removeEventListener('mousemove', handleMouseMove);
