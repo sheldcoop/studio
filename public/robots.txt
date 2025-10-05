@@ -1,5 +1,6 @@
-# https://www.robotstxt.org/robotstxt.html
+# Allow all user-agents to crawl the entire site
 User-agent: *
 Allow: /
 
-Sitemap: https://quantfinancelab.com/sitemap.xml
+# Point crawlers to the sitemap
+Sitemap: https://quantprep.firerun.app/sitemap.xml
