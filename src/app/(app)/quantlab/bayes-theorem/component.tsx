@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -15,67 +15,172 @@ import { Label } from '@/components/ui/label';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
+const PopulationGrid = ({
+  prevalence,
+  sensitivity,
+  specificity,
+}: {
+  prevalence: number;
+  sensitivity: number;
+  specificity: number;
+}) => {
+  const POPULATION_SIZE = 10000;
+  const GRID_SIZE = 100;
+
+  const results = useMemo(() => {
+    const numDiseased = Math.round(POPULATION_SIZE * prevalence);
+    const numHealthy = POPULATION_SIZE - numDiseased;
+
+    const truePositives = Math.round(numDiseased * sensitivity);
+    const falseNegatives = numDiseased - truePositives;
+
+    const trueNegatives = Math.round(numHealthy * specificity);
+    const falsePositives = numHealthy - trueNegatives;
+
+    const totalPositive = truePositives + falsePositives;
+    const posterior = totalPositive > 0 ? (truePositives / totalPositive) : 0;
+
+    return {
+        numDiseased, numHealthy, truePositives, falseNegatives, trueNegatives, falsePositives, totalPositive, posterior
+    };
+  }, [prevalence, sensitivity, specificity]);
+
+  const dots = useMemo(() => {
+    const dotArray = [];
+    let tp = results.truePositives;
+    let fp = results.falsePositives;
+    let tn = results.trueNegatives;
+    
+    for (let i = 0; i < POPULATION_SIZE; i++) {
+        let status = 'healthyNoTest';
+        if (tp > 0) {
+            status = 'truePositive';
+            tp--;
+        } else if (fp > 0) {
+            status = 'falsePositive';
+            fp--;
+        } else if (tn > 0) {
+            status = 'trueNegative';
+            tn--;
+        } else {
+            status = 'falseNegative';
+        }
+        dotArray.push(status);
+    }
+    // Shuffle for better visual mixing
+    return dotArray.sort(() => Math.random() - 0.5);
+  }, [results]);
+
+  const getDotColor = (status: string) => {
+    switch (status) {
+        case 'truePositive': return 'bg-destructive'; // Sick & Tested Positive
+        case 'falsePositive': return 'bg-destructive/50'; // Healthy & Tested Positive
+        case 'trueNegative': return 'bg-green-500/20'; // Healthy & Tested Negative
+        case 'falseNegative': return 'bg-yellow-500/50'; // Sick & Tested Negative
+        default: return 'bg-muted';
+    }
+  }
+
+  return (
+    <div className="flex flex-col md:flex-row gap-6 items-center">
+        <div className="flex-1 space-y-4">
+             <div className="grid grid-cols-2 gap-4">
+                <Card className="bg-muted/50 p-4 text-center">
+                    <div className="font-bold text-2xl">{results.numDiseased.toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">Have Disease</div>
+                </Card>
+                 <Card className="bg-muted/50 p-4 text-center">
+                    <div className="font-bold text-2xl">{results.numHealthy.toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">Are Healthy</div>
+                </Card>
+             </div>
+             <Card className="p-4">
+                 <h4 className="font-semibold text-center mb-2">Test Results</h4>
+                 <div className="grid grid-cols-2 gap-2 text-center text-xs">
+                    <div className="bg-destructive text-destructive-foreground p-2 rounded">
+                        <div>True Positives</div>
+                        <div className="font-bold text-lg">{results.truePositives}</div>
+                    </div>
+                     <div className="bg-destructive/50 p-2 rounded">
+                        <div>False Positives</div>
+                        <div className="font-bold text-lg">{results.falsePositives}</div>
+                    </div>
+                     <div className="bg-green-500/20 p-2 rounded">
+                        <div>True Negatives</div>
+                        <div className="font-bold text-lg">{results.trueNegatives}</div>
+                    </div>
+                     <div className="bg-yellow-500/50 p-2 rounded">
+                        <div>False Negatives</div>
+                        <div className="font-bold text-lg">{results.falseNegatives}</div>
+                    </div>
+                 </div>
+             </Card>
+
+             <Card className="bg-muted p-4 text-center">
+                <p className="text-sm text-muted-foreground">Given a POSITIVE test result, the probability of actually having the disease is:</p>
+                <p className="font-headline text-5xl font-bold tracking-tight text-primary mt-2">
+                    {(results.posterior * 100).toFixed(2)}%
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">(True Positives / All Positives)</p>
+             </Card>
+        </div>
+
+        <div className="flex-shrink-0 w-full max-w-sm md:w-auto">
+            <div className="relative border p-2 rounded-lg aspect-square">
+                 <div className={`grid grid-cols-100 gap-px`} style={{ gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
+                    {dots.map((status, i) => (
+                        <div key={i} className={`aspect-square rounded-full ${getDotColor(status)}`}></div>
+                    ))}
+                </div>
+            </div>
+             <div className="flex justify-around text-xs mt-2">
+                 <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-destructive"></div>Sick & Positive</div>
+                 <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-destructive/50"></div>Healthy & Positive</div>
+             </div>
+        </div>
+    </div>
+  );
+};
+
 
 const BayesTheoremCalculator = () => {
   const [prevalence, setPrevalence] = useState(0.01); // P(D) - Prior
   const [sensitivity, setSensitivity] = useState(0.99); // P(Pos|D) - True Positive Rate
   const [specificity, setSpecificity] = useState(0.95); // P(Neg|~D) - True Negative Rate
 
-  const [posterior, setPosterior] = useState(0);
-
-  useEffect(() => {
-    // Bayes' Theorem calculation
-    const pD = prevalence;
-    const pNotD = 1 - prevalence;
-    const pPosGivenD = sensitivity;
-    const pPosGivenNotD = 1 - specificity; // False Positive Rate
-
-    // P(Pos) = P(Pos|D)*P(D) + P(Pos|~D)*P(~D)
-    const pPos = pPosGivenD * pD + pPosGivenNotD * pNotD;
-
-    // P(D|Pos) = (P(Pos|D) * P(D)) / P(Pos)
-    const pDGivenPos = (pPosGivenD * pD) / pPos;
-
-    setPosterior(pDGivenPos);
-  }, [prevalence, sensitivity, specificity]);
-
   return (
     <Card>
       <CardHeader>
         <CardTitle className="font-headline">Interactive Calculator: The Disease Test</CardTitle>
         <CardDescription>
-            A person tests positive for a rare disease. What's the real probability they have it? Adjust the sliders to see how the base rate and test accuracy dramatically change the outcome. This demonstrates the "base rate fallacy".
+            A person tests positive for a rare disease. What's the real probability they have it? This visualization shows how a low base rate can produce many false positives. This is the "base rate fallacy".
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div className="space-y-3">
               <Label>Disease Prevalence (Base Rate): {(prevalence * 100).toFixed(2)}%</Label>
               <Slider min={0.001} max={0.2} step={0.001} value={[prevalence]} onValueChange={v => setPrevalence(v[0])} />
-              <p className="text-xs text-muted-foreground">How common is the disease in the general population? (P(Disease))</p>
+              <p className="text-xs text-muted-foreground">P(Disease)</p>
             </div>
              <div className="space-y-3">
               <Label>Test Sensitivity (True Positive Rate): {(sensitivity * 100).toFixed(1)}%</Label>
               <Slider min={0.80} max={0.999} step={0.001} value={[sensitivity]} onValueChange={v => setSensitivity(v[0])} />
-               <p className="text-xs text-muted-foreground">If you have the disease, how likely is the test to be positive? (P(Positive|Disease))</p>
+               <p className="text-xs text-muted-foreground">P(Positive | Disease)</p>
             </div>
              <div className="space-y-3">
               <Label>Test Specificity (True Negative Rate): {(specificity * 100).toFixed(1)}%</Label>
               <Slider min={0.80} max={0.999} step={0.001} value={[specificity]} onValueChange={v => setSpecificity(v[0])} />
-               <p className="text-xs text-muted-foreground">If you DON'T have the disease, how likely is the test to be negative? (P(Negative|No Disease))</p>
+               <p className="text-xs text-muted-foreground">P(Negative | No Disease)</p>
             </div>
-          </div>
-          <div className="flex items-center justify-center">
-             <div className="rounded-lg bg-muted p-6 text-center w-full">
-                <p className="text-sm text-muted-foreground">Given a POSITIVE test result, the actual probability of having the disease is:</p>
-                <p className="font-headline text-5xl font-bold tracking-tight text-primary mt-2">
-                    {(posterior * 100).toFixed(2)}%
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">(Posterior Probability P(Disease|Positive))</p>
-             </div>
-          </div>
         </div>
+        
+        <PopulationGrid 
+            prevalence={prevalence}
+            sensitivity={sensitivity}
+            specificity={specificity}
+        />
+        
       </CardContent>
     </Card>
   )
