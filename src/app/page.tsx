@@ -1,36 +1,42 @@
-
-'use client';
-
-import { quantJourney } from '@/lib/site';
-import { AnimatedTagline } from '@/components/app/animated-tagline';
-import { AnimatedJourneyCard, StaticJourneyCard } from '@/components/app/animated-journey-card';
+import dynamic from 'next/dynamic';
 import { Header } from '@/components/app/header';
 import { Footer } from '@/components/app/footer';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Dynamically import the client-side heavy component
+const HomePageClient = dynamic(
+  () => import('@/components/app/home-page-client'),
+  {
+    ssr: false, // This component will only be rendered on the client
+    loading: () => (
+      // Provide a loading skeleton that matches the structure of the client component
+      <div className="flex flex-1 flex-col items-center p-4 md:p-8">
+        <div className="my-12 max-w-3xl text-center">
+          <Skeleton className="h-14 w-96 mb-4" />
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-3/4 mt-2" />
+        </div>
+        <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Skeleton className="h-[250px] w-full" />
+          <Skeleton className="h-[250px] w-full" />
+          <Skeleton className="h-[250px] w-full" />
+          <Skeleton className="h-[250px] w-full" />
+          <Skeleton className="h-[250px] w-full" />
+          <Skeleton className="h-[250px] w-full" />
+        </div>
+      </div>
+    ),
+  }
+);
+
 
 export default function RootPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex flex-1 flex-col items-center p-4 md:p-8">
-        <div className="my-12 max-w-3xl text-center">
-          <AnimatedTagline />
-          <p className="mt-4 text-lg text-muted-foreground">
-            Master the core pillars of quantitative finance and data science,
-            from foundational theory to practical application.
-          </p>
-        </div>
-        <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {quantJourney.map((item) => {
-            // The AnimatedJourneyCard now handles its own navigation.
-            // We no longer wrap it in a <Link> component here.
-            if (item.animation) {
-               return <AnimatedJourneyCard key={item.id} item={item} />
-            }
-            // The StaticJourneyCard is still wrapped in a Link as it has no complex interaction.
-            return <StaticJourneyCard key={item.id} item={item} />
-          })}
-        </div>
+      <main className="flex-1">
+        <HomePageClient />
       </main>
       <Footer />
     </div>
