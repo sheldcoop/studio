@@ -18,7 +18,7 @@ const fontHeadline = Space_Grotesk({
   variable: '--font-headline',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantprep.firerun.app';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -43,6 +43,14 @@ export const metadata: Metadata = {
   },
 };
 
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'QuantPrep',
+  url: siteUrl,
+  logo: new URL('/logo.png', siteUrl).toString(),
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,7 +58,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+         <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+      </head>
       <body 
         className={cn(
           'font-body antialiased',

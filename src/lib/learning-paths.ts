@@ -16,6 +16,7 @@ export type LearningPath = {
   icon: string;
   description: string;
   modules: Module[];
+  href: string; // Add href to LearningPath type
 };
 
 export const learningPaths: Omit<LearningPath, 'modules'>[] = [
@@ -24,36 +25,42 @@ export const learningPaths: Omit<LearningPath, 'modules'>[] = [
     title: 'Linear Algebra for Quants',
     icon: 'Calculator',
     description: 'Master vectors, matrices, and eigenvalues for financial modeling.',
+    href: '/paths/linear-algebra-for-quantitative-finance',
   },
   {
     id: 'statistics-for-quantitative-finance',
     title: 'Advanced Statistics',
     icon: 'BarChart3',
     description: 'Deep dive into probability, distributions, and hypothesis testing.',
+    href: '/paths/statistics-for-quantitative-finance',
   },
   {
     id: 'probability-for-quants',
     title: 'Probability for Quants',
     icon: 'Percent',
     description: 'Master random variables, distributions, and stochastic processes for modeling and analysis.',
+    href: '/paths/probability-for-quants',
   },
   {
     id: 'time-series-analysis-for-quantitative-finance',
     title: 'Time Series Analysis',
     icon: 'AreaChart',
     description: 'Learn to model and forecast financial time series data.',
+    href: '/paths/time-series-analysis-for-quantitative-finance',
   },
   {
     id: 'machine-learning-for-quantitative-finance',
     title: 'Machine Learning in Finance',
     icon: 'BrainCircuit',
     description: 'Apply ML algorithms to trading, risk, and asset management.',
+    href: '/paths/machine-learning-for-quantitative-finance',
   },
   {
     id: 'quantlab',
     title: 'QuantLab',
     icon: 'FlaskConical',
     description: 'Interactive tools for hands-on probability and statistics analysis.',
+    href: '/quantlab',
   },
 ];
 

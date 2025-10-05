@@ -1,12 +1,12 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { allTopics } from '@/lib/curriculum';
+import { allTopics, learningPaths } from '@/lib/data';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 // Dynamically import all the content components for our topics
 import BayesTheoremPage from '@/app/(app)/quantlab/bayes-theorem/component';
-import BernoulliDistributionPage from '@/app/(app)/quantlab/bernoulli-distribution/component';
+import BernoulliDistributionPage from '@/app//(app)/quantlab/bernoulli-distribution/component';
 import BetaDistributionPage from '@/app/(app)/quantlab/beta-distribution/component';
 import BinomialDistributionPage from '@/app/(app)/quantlab/binomial-distribution/component';
 import CauchyDistributionPage from '@/app/(app)/quantlab/cauchy-distribution/component';
@@ -64,8 +64,9 @@ export async function generateStaticParams() {
 
 // This function generates metadata for the page based on the slug.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const { topicSlug } = await params;
+  const { pathSlug, topicSlug } = await params;
   const topicInfo = allTopics.find((t) => t.id === topicSlug);
+  const pathInfo = learningPaths.find(p => p.id === pathSlug);
 
   if (!topicInfo) {
     return {
@@ -74,6 +75,57 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
   }
   
   const pageUrl = new URL(topicInfo.href, SITE_URL).toString();
+
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': pageUrl,
+    },
+    headline: topicInfo.seoTitle || topicInfo.title,
+    description: topicInfo.metaDescription || topicInfo.description,
+    author: {
+        '@type': 'Organization',
+        name: 'QuantPrep',
+        url: SITE_URL
+    },
+    publisher: {
+        '@type': 'Organization',
+        name: 'QuantPrep',
+        logo: {
+            '@type': 'ImageObject',
+            url: new URL('/logo.png', SITE_URL).toString(),
+        },
+    },
+    datePublished: new Date().toISOString(),
+    dateModified: new Date().toISOString(),
+  };
+
+  const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: SITE_URL,
+        },
+        pathInfo ? {
+          '@type': 'ListItem',
+          position: 2,
+          name: pathInfo.title,
+          item: new URL(pathInfo.href, SITE_URL).toString(),
+        } : null,
+        {
+          '@type': 'ListItem',
+          position: pathInfo ? 3 : 2,
+          name: topicInfo.title,
+          item: pageUrl,
+        },
+      ].filter(Boolean),
+  };
 
   return {
     title: topicInfo.seoTitle || topicInfo.title,
@@ -94,6 +146,10 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
           alt: topicInfo.title,
         },
       ],
+    },
+    other: {
+      'article-schema': JSON.stringify(articleSchema),
+      'breadcrumb-schema': JSON.stringify(breadcrumbSchema),
     },
   };
 }
@@ -144,15 +200,51 @@ export default async function TopicPage({ params }: TopicPageProps) {
   if (!topicInfo) {
     notFound();
   }
+  
+  const metadata = await generateMetadata({ params });
+  const articleSchema = metadata.other?.['article-schema'] as string | undefined;
+  const breadcrumbSchema = metadata.other?.['breadcrumb-schema'] as string | undefined;
 
   // Look up the component in our map.
   const TopicComponent = topicComponentMap[topicSlug];
   
   // If we find a specific component for this topic, render it.
   if (TopicComponent) {
-    return <TopicComponent />;
+    return (
+      <>
+        {articleSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: articleSchema }}
+          />
+        )}
+        {breadcrumbSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: breadcrumbSchema }}
+          />
+        )}
+        <TopicComponent />
+      </>
+    );
   }
 
   // Otherwise, fall back to the generic TopicPageClient for structured content.
-  return <TopicPageClient topicInfo={topicInfo} />;
+  return (
+    <>
+      {articleSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: articleSchema }}
+        />
+      )}
+      {breadcrumbSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: breadcrumbSchema }}
+        />
+      )}
+      <TopicPageClient topicInfo={topicInfo} />
+    </>
+  );
 }
