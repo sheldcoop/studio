@@ -1,7 +1,8 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { allTopics, learningPaths } from '@/lib/data';
+import { allTopics } from '@/lib/data';
+import { learningPaths } from '@/lib/learning-paths';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 // Dynamically import all the content components for our topics
@@ -58,7 +59,7 @@ export async function generateStaticParams() {
           };
       }
       return null;
-    }).filter(Boolean) as { pathSlug: string; topicSlug: string }[];
+    }).filter((p: any) => p) as { pathSlug: string; topicSlug: string }[];
 }
 
 
