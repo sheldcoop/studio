@@ -26,12 +26,7 @@ const links = [
     icon: 'BookOpenCheck',
   },
   {
-    href: '/statistics',
-    label: 'Advanced Statistics',
-    icon: 'BarChart3',
-  },
-  {
-    href: '/hypothesis-testing-p-values',
+    href: '/stat-toolkit',
     label: 'Statistical Tests',
     icon: 'Sigma',
   },
@@ -44,11 +39,6 @@ const links = [
     href: '/community',
     label: 'Community',
     icon: 'Users',
-  },
-  {
-    href: '/topics',
-    label: 'All Topics',
-    icon: 'FolderKanban',
   },
 ];
 
