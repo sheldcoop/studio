@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { allTopics, type Topic } from '@/lib/curriculum';
-import { Chef, Campfire } from 'lucide-react';
+import { Scaling, Flame } from 'lucide-react';
 
 const TestCard = ({ test }: { test: Topic }) => {
   return (
@@ -37,7 +37,7 @@ export default function HypothesisTestingGuidePage() {
         {/* Parametric Tests Column */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <Chef className="h-8 w-8 text-primary" />
+            <Scaling className="h-8 w-8 text-primary" />
             <div>
               <h2 className="font-headline text-2xl font-bold">Parametric Tests</h2>
               <p className="text-muted-foreground">
@@ -55,7 +55,7 @@ export default function HypothesisTestingGuidePage() {
         {/* Non-Parametric Tests Column */}
         <div className="space-y-4">
            <div className="flex items-center gap-3">
-            <Campfire className="h-8 w-8 text-primary" />
+            <Flame className="h-8 w-8 text-primary" />
             <div>
               <h2 className="font-headline text-2xl font-bold">Non-Parametric Tests</h2>
               <p className="text-muted-foreground">
