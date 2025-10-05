@@ -44,7 +44,7 @@ const KalmanChart = ({ data }: { data: { time: number; true: number; measurement
         <CartesianGrid />
         <XAxis dataKey="time" />
         <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
-        <Tooltip content={<ChartTooltipContent formatter={(value, name) => [Number(value).toFixed(2), name.charAt(0).toUpperCase() + name.slice(1)]} />} />
+        <Tooltip content={<ChartTooltipContent formatter={(value, name) => [Number(value).toFixed(2), String(name).charAt(0).toUpperCase() + String(name).slice(1)]} />} />
         <Line type="monotone" dataKey="true" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" dot={false} name="True Value" />
         <Scatter dataKey="measurement" fill="hsla(var(--primary), 0.5)" shape="cross" name="Noisy Measurement" />
         <Line type="monotone" dataKey="estimate" stroke="hsl(var(--destructive))" dot={false} name="Kalman Estimate" strokeWidth={2} />
@@ -92,7 +92,7 @@ export default function KalmanFilterComponent() {
                 <CardDescription>
                     Adjust the noise parameters to see how the Kalman filter performs. A high measurement noise means your observations are unreliable, forcing the filter to trust its own predictions more.
                 </CardDescription>
-            </CardHeader>
+            </Header>
             <CardContent>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
                     <div className="space-y-3">
