@@ -8,9 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, Line, LineChart, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
+import { Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BlockMath, InlineMath } from 'react-katex';
+import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 // --- Math & Simulation Logic ---
@@ -49,7 +49,7 @@ const TimeSeriesChart = ({ data }: { data: number[] }) => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="index" />
         <YAxis />
-        <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
+        <Tooltip content={<ChartTooltipContent formatter={(value: number) => [Number(value).toFixed(2), "Value"]} />} />
         <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" dot={false} />
       </LineChart>
     </ChartContainer>
@@ -65,7 +65,7 @@ const ACFChart = ({ data, maxLag }: { data: number[], maxLag: number }) => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="lag" />
             <YAxis domain={[-1, 1]}/>
-            <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "ACF"]} />} />
+            <Tooltip content={<ChartTooltipContent formatter={(value: number) => [Number(value).toFixed(2), "ACF"]} />} />
             <ReferenceLine y={confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
             <ReferenceLine y={-confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
             <ReferenceLine y={0} stroke="hsl(var(--border))" />
@@ -105,10 +105,10 @@ export default function ACF_PACF_Page() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              Autocorrelation is the correlation of a time series with a delayed copy of itself. It's a measure of how much the value of the series at one point in time is related to its value at a previous point in time. 
+              Autocorrelation is the correlation of a time series with a delayed copy of itself. It&apos;s a measure of how much the value of the series at one point in time is related to its value at a previous point in time. 
             </p>
             <p>
-              In finance, this is a critical concept. If a stock's return today is positively autocorrelated with its return yesterday, it suggests momentum. If it's negatively correlated, it suggests mean reversion. The ACF and PACF plots are the primary tools quants use to diagnose this "memory" in a time series.
+              In finance, this is a critical concept. If a stock&apos;s return today is positively autocorrelated with its return yesterday, it suggests momentum. If it&apos;s negatively correlated, it suggests mean reversion. The ACF and PACF plots are the primary tools quants use to diagnose this &quot;memory&quot; in a time series.
             </p>
           </CardContent>
         </Card>
@@ -134,7 +134,7 @@ export default function ACF_PACF_Page() {
             <CardTitle className="font-headline">Interactive AR(1) Process</CardTitle>
             <CardDescription>
                 Below is a simulated Autoregressive process of order 1 (AR(1)), defined as <InlineMath math="X_t = \phi X_{t-1} + \epsilon_t" />. Adjust the autoregressive parameter (<InlineMath math="\phi" />) to see how it impacts the time series and its ACF plot. 
-                A high <InlineMath math="\phi" /> means the series has strong "memory".
+                A high <InlineMath math="\phi" /> means the series has strong &quot;memory&quot;.
             </CardDescription>
           </CardHeader>
           <CardContent>

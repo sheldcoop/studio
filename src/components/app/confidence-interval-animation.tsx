@@ -30,7 +30,7 @@ export function ConfidenceIntervalAnimation({
     let animationFrameId: number;
 
     const main = () => {
-      let frameId: number;
+      const frameId: number;
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
@@ -107,8 +107,7 @@ export function ConfidenceIntervalAnimation({
       let correlationFactor = 0;
 
       const animate = () => {
-        frameId = requestAnimationFrame(animate);
-        const delta = clock.getDelta();
+        animationFrameId = requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
 
         const targetCorrelation = isMouseOver.current ? 1 : 0;
@@ -197,11 +196,11 @@ export function ConfidenceIntervalAnimation({
       };
     }
     
-    animationFrameId = requestAnimationFrame(main);
+    const frameId = requestAnimationFrame(main);
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      if (frameId) {
+        cancelAnimationFrame(frameId);
       }
       while (currentMount.firstChild) {
         currentMount.removeChild(currentMount.firstChild);

@@ -30,7 +30,7 @@ export function LinearAlgebraAnimation({
     let animationFrameId: number;
 
     const main = () => {
-      let frameId: number;
+      const frameId: number;
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
@@ -88,7 +88,7 @@ export function LinearAlgebraAnimation({
       const targetScale = new THREE.Vector3(1, 1, 1);
 
       const animate = () => {
-        frameId = requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
 
         if (isMouseOver.current) {

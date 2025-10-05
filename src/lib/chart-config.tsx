@@ -4,8 +4,10 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { type ChartConfig } from "@/components/ui/chart"
+import { type TooltipProps } from 'recharts';
+import { type Payload } from 'recharts/types/component/DefaultTooltipContent';
 
-export const ChartTooltipContent = ({ active, payload, label, className, indicator = "dot", hideLabel=false, hideIndicator=false, labelFormatter, labelClassName, formatter, color, nameKey, ...props }: any) => {
+export const ChartTooltipContent = ({ active, payload, label, className, indicator = "dot", hideLabel=false, hideIndicator=false, labelFormatter, labelClassName, formatter, color, nameKey, ...props }: TooltipProps<number, string> & { indicator?: "dot" | "line" | "dashed", hideLabel?: boolean, hideIndicator?: boolean, labelClassName?: string, color?: string, nameKey?: string, labelKey?: string }) => {
   const { config } = { config: {} as ChartConfig }
 
   const tooltipLabel = React.useMemo(() => {
@@ -59,7 +61,7 @@ export const ChartTooltipContent = ({ active, payload, label, className, indicat
     >
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
-        {payload.map((item: any, index: number) => {
+        {payload.map((item: Payload<number, string>, index: number) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
           const indicatorColor = color || item.payload.fill || item.color

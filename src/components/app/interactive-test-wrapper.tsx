@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { type Topic, type CoreConcept, type InteractiveExample } from '@/lib/curriculum';
+import { type Topic } from '@/lib/curriculum';
 
 interface InteractiveTestWrapperProps {
     topic: Topic;

@@ -52,7 +52,7 @@ function ActionHandler() {
             setMessage({ type: 'error', text: 'Unsupported action. The link is invalid.' });
             break;
         }
-      } catch (error) {
+      } catch {
         setIsProcessing(false);
         setMessage({ type: 'error', text: 'This link is invalid or has expired. Please request a new one.' });
       }

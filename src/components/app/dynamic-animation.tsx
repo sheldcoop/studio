@@ -4,7 +4,7 @@
 import dynamic from 'next/dynamic';
 import { useInView } from 'react-intersection-observer';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ComponentType, useState } from 'react';
+import { ComponentType } from 'react';
 
 type AnimationProps = {
   isHovered: boolean;

@@ -9,8 +9,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -78,7 +76,7 @@ function ResetPasswordComponent() {
       await confirmPasswordReset(auth, oobCode, newPassword);
       setSuccessMessage('Your password has been successfully reset. You can now log in with your new password.');
       setTimeout(() => router.push('/login'), 4000);
-    } catch (err) {
+    } catch {
       setError('An error occurred. The link may have expired. Please try again.');
     } finally {
         setIsResetting(false);

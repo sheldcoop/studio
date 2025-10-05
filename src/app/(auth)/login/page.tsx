@@ -86,7 +86,7 @@ export default function LoginPage() {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         handleSuccessfulLogin(userCredential.user);
       }
-    } catch (err: any) {
+    } catch (err) {
       setError(getFriendlyErrorMessage(err as AuthError));
     }
   };
@@ -102,7 +102,7 @@ export default function LoginPage() {
         await sendPasswordResetEmail(auth, email);
         setInfoMessage('A password reset link has been sent to your email address.');
         // Don't switch back immediately, let the user see the success message
-    } catch (err: any) {
+    } catch (err) {
         setError(getFriendlyErrorMessage(err as AuthError));
     }
   };
@@ -113,7 +113,7 @@ export default function LoginPage() {
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
       handleSuccessfulLogin(userCredential.user);
-    } catch (err: any) {
+    } catch (err) {
       setError(getFriendlyErrorMessage(err as AuthError));
     }
   }

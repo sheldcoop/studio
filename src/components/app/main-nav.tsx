@@ -3,14 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  LayoutDashboard,
-  BookOpenCheck,
-  Users,
-  FlaskConical,
-  Newspaper,
-  BrainCircuit,
-} from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { TopicIcon } from './topic-icon';
 

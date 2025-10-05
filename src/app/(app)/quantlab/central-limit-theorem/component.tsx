@@ -1,7 +1,6 @@
 
 'use client';
 
-import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
 import { CLT_Interactive_Dashboard } from '@/components/app/clt-interactive-dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,7 +54,7 @@ export default function CentralLimitTheoremComponent() {
                 </p>
                 <ul className="list-disc pl-6 space-y-2 text-sm">
                     <li>The mean of the sample means will be the same as the original population mean (<InlineMath math="\mu" />).</li>
-                    <li>The standard deviation of the sample means (called the "standard error") will be the original population's standard deviation divided by the square root of the sample size (<InlineMath math="\sigma/\sqrt{n}" />).</li>
+                    <li>The standard deviation of the sample means (called the &quot;standard error&quot;) will be the original population&apos;s standard deviation divided by the square root of the sample size (<InlineMath math="\sigma/\sqrt{n}" />).</li>
                 </ul>
             </CardContent>
         </Card>
@@ -66,4 +65,3 @@ export default function CentralLimitTheoremComponent() {
     </div>
   );
 }
-

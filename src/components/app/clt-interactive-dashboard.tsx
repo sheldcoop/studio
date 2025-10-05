@@ -8,9 +8,8 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { BarChart, Bar, ResponsiveContainer, ReferenceLine, Line } from 'recharts';
-import { generateUniformData, generateExponentialData, getMean, getStdDev, generateLogNormalData } from '@/lib/math';
+import { generateExponentialData, getMean, getStdDev, generateLogNormalData } from '@/lib/math';
 import { Loader2 } from 'lucide-react';
-import { ChartContainer } from '@/components/ui/chart';
 import { XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { InlineMath } from 'react-katex';
 
@@ -90,13 +89,13 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
 const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: number | null }) => {
     const data = useMemo(() => {
         if (!sample || sample.length === 0) return [];
-        const min = 0;
-        const max = Math.max(...sample, 1);
+        const minVal = 0;
+        const maxVal = Math.max(...sample, 1);
         const bins = 15;
-        const binWidth = max / bins;
+        const binWidth = maxVal / bins;
         const histogram = Array(bins).fill(0);
         sample.forEach(d => {
-            const binIndex = Math.floor(d / binWidth);
+            const binIndex = Math.floor((d - minVal) / binWidth);
             if (binIndex >= 0 && binIndex < bins) {
                 histogram[binIndex]++;
             }
@@ -299,7 +298,7 @@ export function CLT_Interactive_Dashboard() {
                   <CardContent className="space-y-6">
                       <div className="space-y-3">
                           <Label>1. Choose the Population Distribution</Label>
-                          <RadioGroup value={distribution} onValueChange={(val: any) => handleDistributionChange(val)}>
+                          <RadioGroup value={distribution} onValueChange={(val: string) => handleDistributionChange(val as DistributionType)}>
                               <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="uniform" id="uniform" />
                                   <Label htmlFor="uniform">Uniform</Label>
@@ -348,7 +347,7 @@ export function CLT_Interactive_Dashboard() {
                <Card>
                   <CardHeader>
                       <CardTitle>1. Population Distribution</CardTitle>
-                      <CardDescription>This is the shape of the original barrel of tickets. We'll draw samples from here.</CardDescription>
+                      <CardDescription>This is the shape of the original barrel of tickets. We&apos;ll draw samples from here.</CardDescription>
                   </CardHeader>
                   <CardContent>
                       <PopulationChart distribution={distribution} />

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -48,7 +49,7 @@ const testForHomogeneityChartConfig = {
 // --- Chart Components ---
 
 const GoodnessOfFitChart = () => {
-  const [chartData, setChartData] = useState<any>([]);
+  const [chartData, setChartData] = useState<{name: string; observed: number; expected: number}[]>([]);
   const totalTrades = 250;
 
   const generateData = () => {
@@ -99,7 +100,7 @@ const GoodnessOfFitChart = () => {
 
 
 const TestForIndependenceChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{name: string; observed: number; expected: number}[]>([]);
 
   const generateData = () => {
     const observed = {
@@ -157,7 +158,7 @@ const TestForIndependenceChart = () => {
 };
 
 const TestForHomogeneityChart = () => {
-    const [chartData, setChartData] = useState<any>([]);
+    const [chartData, setChartData] = useState<{name: string, ny: number, london: number}[]>([]);
 
     const generateData = () => {
         const ny_traders = {
@@ -260,7 +261,7 @@ export default function ChiSquaredTestPage() {
                   <span className="font-semibold text-foreground">
                     Example:
                   </span>{' '}
-                  A quant analyst tracks profitable trades for three strategies across different market conditions. They want to know if "Strategy Type" and "Market Condition" are independent. The test compares the observed counts to what we'd expect if no relationship existed.
+                  A quant analyst tracks profitable trades for three strategies across different market conditions. They want to know if &quot;Strategy Type&quot; and &quot;Market Condition&quot; are independent. The test compares the observed counts to what we&apos;d expect if no relationship existed.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
                   <DynamicTestForIndependenceChart />

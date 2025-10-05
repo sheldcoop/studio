@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,7 +12,6 @@ import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts';
-import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 // Helper function to generate normally distributed data
@@ -109,7 +109,7 @@ const OneSampleZTestChart = () => {
 };
 
 const TwoSampleZTestChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{month: string; Stock_A: number; Stock_B: number}[]>([]);
 
   const generateData = () => {
     const dataA = generateNormalData(1.8, 0.7, 1260);
@@ -206,7 +206,7 @@ export default function ZTestPage() {
               <TabsContent value="one-sample" className="mt-6">
                 <h3 className="text-xl font-bold">One-Sample Z-Test</h3>
                 <p className="mt-2 text-muted-foreground">
-                  This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It's useful for seeing if a recent change has had a statistically significant effect.
+                  This test compares the mean of a single, large sample from one timeframe against its known, long-term population average. It&apos;s useful for seeing if a recent change has had a statistically significant effect.
                 </p>
                 <p className="mt-4 text-sm">
                   <span className="font-semibold text-foreground">

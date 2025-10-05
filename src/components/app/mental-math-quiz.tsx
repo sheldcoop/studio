@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -214,8 +215,8 @@ export function MentalMathQuiz() {
       )}
       {quizState === 'finished' && (
         <CardContent className="p-6 text-center">
-          <CardTitle className="font-headline mb-2">Time's Up!</CardTitle>
-          <CardDescription className="mb-4">Here's how you did.</CardDescription>
+          <CardTitle className="font-headline mb-2">Time&apos;s Up!</CardTitle>
+          <CardDescription className="mb-4">Here&apos;s how you did.</CardDescription>
           <div className="text-4xl font-bold mb-4">
             {score} <span className="text-2xl text-muted-foreground">/ {problemsAnswered}</span>
           </div>

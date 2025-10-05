@@ -2,11 +2,6 @@
 import Link from 'next/link';
 import { type Topic } from '@/lib/curriculum';
 import { cn } from '@/lib/utils';
-import {
-  CheckCircle,
-  PlayCircle,
-  Clock,
-} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { TopicIcon } from './topic-icon';
 

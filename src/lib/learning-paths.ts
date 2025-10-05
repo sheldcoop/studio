@@ -1,6 +1,5 @@
 
-import { type LucideIcon } from 'lucide-react';
-import { allTopics, type Topic } from '@/lib/curriculum';
+import { type Topic } from '@/lib/curriculum';
 
 export type Module = {
   id: string;

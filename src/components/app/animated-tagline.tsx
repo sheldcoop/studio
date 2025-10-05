@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
 
 const taglines = [
   ['From ', 'Data', ' to ', 'Insight'],

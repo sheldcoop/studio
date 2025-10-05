@@ -91,10 +91,10 @@ function SimpleContentPage({ topicInfo }: { topicInfo: Topic }) {
 
 
 export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
-  const { title, description, subTopics, interactiveExamples, content } = topicInfo;
+  const { title, description, subTopics } = topicInfo;
 
   // Render interactive test page if examples are available
-  if (interactiveExamples) {
+  if (topicInfo.interactiveExamples) {
       return <InteractiveTestWrapper topic={topicInfo} />;
   }
 
@@ -209,15 +209,15 @@ export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
                                     <li className="flex items-start gap-4">
                                         <Book className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                                         <div>
-                                            <h4 className="font-semibold">"Options, Futures, and Other Derivatives" by John C. Hull</h4>
-                                            <p className="text-sm text-muted-foreground">The bible of derivatives pricing. A must-have on any quant's bookshelf.</p>
+                                            <h4 className="font-semibold">&quot;Options, Futures, and Other Derivatives&quot; by John C. Hull</h4>
+                                            <p className="text-sm text-muted-foreground">The bible of derivatives pricing. A must-have on any quant&apos;s bookshelf.</p>
                                         </div>
                                     </li>
                                     <li className="flex items-start gap-4">
                                         <FileText className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
                                         <div>
                                             <h4 className="font-semibold">Original Black-Scholes Paper (1973)</h4>
-                                            <p className="text-sm text-muted-foreground">"The Pricing of Options and Corporate Liabilities" - a foundational paper in finance.</p>
+                                            <p className="text-sm text-muted-foreground">&quot;The Pricing of Options and Corporate Liabilities&quot; - a foundational paper in finance.</p>
                                         </div>
                                     </li>
                                 </ul>

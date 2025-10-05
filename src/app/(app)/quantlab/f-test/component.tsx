@@ -8,6 +8,8 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
+import { type TooltipProps } from 'recharts';
+import { type Payload } from 'recharts/types/component/DefaultTooltipContent';
 
 /**
  * Generates normally distributed random data using the Box-Muller transform.
@@ -61,7 +63,7 @@ const fTestChartConfig = {
 } satisfies ChartConfig;
 
 const FTestChart = () => {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{name: string, value: number}[]>([]);
   const [fStat, setFStat] = useState(0);
 
   const generateData = () => {
@@ -84,7 +86,7 @@ const FTestChart = () => {
     generateData();
   }, []);
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       const configKey = label as keyof typeof fTestChartConfig;
       const displayName = fTestChartConfig[configKey]?.label || label;
@@ -102,7 +104,7 @@ const FTestChart = () => {
                 Variance
               </span>
               <span className="font-bold">
-                {payload[0].value.toFixed(4)}
+                {payload[0].value?.toFixed(4)}
               </span>
             </div>
           </div>
@@ -196,11 +198,11 @@ export default function FTestPage() {
             <p className="text-sm text-muted-foreground mb-4">
               <span className="font-semibold text-foreground">Example:</span> An
               investor wants to compare the risk profiles of two stocks: a
-              well-established utility company ('StableStock') and a new tech
-              startup ('GrowthStock'). They collect 100 days of return data for
+              well-established utility company (&apos;StableStock&apos;) and a new tech
+              startup (&apos;GrowthStock&apos;). They collect 100 days of return data for
               each and use an F-Test to determine if the variance of
-              'GrowthStock's' returns is statistically greater than that of
-              'StableStock', indicating higher volatility and risk.
+              &apos;GrowthStock&apos;s&apos; returns is statistically greater than that of
+              &apos;StableStock&apos;, indicating higher volatility and risk.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
               <DynamicFTestChart />

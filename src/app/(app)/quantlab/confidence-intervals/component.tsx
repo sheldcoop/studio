@@ -19,7 +19,6 @@ import { inverseStandardNormalCdf } from '@/lib/math';
 import { AlertTriangle, Calculator } from 'lucide-react';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-import { cn } from '@/lib/utils';
 
 function ConfidenceIntervalCalculator() {
   const [sampleMean, setSampleMean] = useState(100);
@@ -141,16 +140,16 @@ export default function ConfidenceIntervalsComponent() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              It's often impossible to survey an entire population (like every stock in the market). Instead, we take a smaller sample (like the S&P 500) and calculate its mean (average) return.
+              It&apos;s often impossible to survey an entire population (like every stock in the market). Instead, we take a smaller sample (like the S&P 500) and calculate its mean (average) return.
             </p>
             <p>
-              A confidence interval uses this sample mean to construct a range of values and says, "We are X% confident that the true average of the entire population falls within this range." It's a way of putting boundaries on uncertainty.
+              A confidence interval uses this sample mean to construct a range of values and says, &quot;We are X% confident that the true average of the entire population falls within this range.&quot; It&apos;s a way of putting boundaries on uncertainty.
             </p>
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>A Common Misconception</AlertTitle>
               <AlertDescription>
-                A 95% confidence interval does **not** mean there is a 95% probability that the true population mean falls within that specific interval. The true mean is fixed. It either is or isn't in our calculated interval. Instead, it means that if we were to repeat our sampling process many times, 95% of the confidence intervals we construct would contain the true population mean.
+                A 95% confidence interval does **not** mean there is a 95% probability that the true population mean falls within that specific interval. The true mean is fixed. It either is or isn&apos;t in our calculated interval. Instead, it means that if we were to repeat our sampling process many times, 95% of the confidence intervals we construct would contain the true population mean.
               </AlertDescription>
             </Alert>
           </CardContent>

@@ -27,7 +27,7 @@ export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
 
-  const handleInteraction = (e: React.MouseEvent) => {
+  const handleInteraction = (e: React.MouseEvent | React.KeyboardEvent) => {
     // Prevent any default behavior, especially if a child element is a link in the future.
     e.preventDefault();
     
@@ -47,7 +47,7 @@ export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
       onPointerEnter={() => !isMobile && setIsHovered(true)}
       onPointerLeave={() => !isMobile && setIsHovered(false)}
       onClick={handleInteraction}
-      onKeyDown={(e) => { if (e.key === 'Enter') handleInteraction(e as any) }}
+      onKeyDown={(e) => { if (e.key === 'Enter') handleInteraction(e) }}
       role="link"
       tabIndex={0}
       aria-label={`Navigate to ${item.title}`}
