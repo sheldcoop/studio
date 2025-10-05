@@ -20,7 +20,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'Beaker',
     description: "A comprehensive guide to choosing the right statistical test.",
     category: 'sub-topic',
-    parent: 'stats-advanced',
+    parent: 'prob-core-tools',
     pathPrefix: 'quantlab',
   }),
 
