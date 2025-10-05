@@ -29,6 +29,13 @@ import DescriptiveStatsPage from '@/app/quantlab/descriptive-statistics-explorer
 import ZTablePage from '@/app/quantlab/z-table/component';
 import ConfidenceIntervalsPage from '@/app/quantlab/confidence-intervals/component';
 import MentalMathPage from '@/app/(app)/topics/mental-math/page';
+import MonteCarloPage from '@/app/(app)/quantlab/monte-carlo-simulation/page';
+import TimeSeriesDecompositionPage from '@/app/(app)/quantlab/time-series-decomposition/page';
+import AcfPacfPage from '@/app/(app)/quantlab/autocorrelation-acf-pacf/page';
+import GarchPage from '@/app/(app)/quantlab/volatility-garch/page';
+import EfficientFrontierPage from '@/app/(app)/quantlab/efficient-frontier-sharpe-ratio/page';
+import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/page';
+import ItosLemmaPage from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/page';
 
 
 type TopicPageProps = {
@@ -123,6 +130,13 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'z-table': ZTablePage,
   'confidence-intervals': ConfidenceIntervalsPage,
   'mental-math': MentalMathPage,
+  'monte-carlo-simulation': MonteCarloPage,
+  'time-series-decomposition': TimeSeriesDecompositionPage,
+  'autocorrelation-acf-pacf': AcfPacfPage,
+  'volatility-garch': GarchPage,
+  'efficient-frontier-sharpe-ratio': EfficientFrontierPage,
+  'kalman-filters': KalmanFilterPage,
+  'stochastic-calculus-itos-lemma': ItosLemmaPage,
 };
 
 
