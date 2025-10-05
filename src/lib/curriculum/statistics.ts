@@ -60,13 +60,8 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'Compares the averages of three or more groups.',
     category: 'parametric',
-    pathPrefix: 'statistics-for-quantitative-finance',
-     subTopics: [
-        { id: 'anova-theory', title: 'Core Theory' },
-        { id: 'anova-application', title: 'Financial Application' },
-        { id: 'anova-interactive', title: 'Interactive Demo' },
-        { id: 'anova-problems', title: 'Practice Problems' },
-    ]
+    pathPrefix: 'quantlab',
+    href: '/quantlab/anova'
   }),
   createTopic({
     id: 'f-test',

@@ -38,6 +38,7 @@ import EfficientFrontierPage from '@/app/(app)/quantlab/efficient-frontier-sharp
 import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/component';
 import ItosLemmaComponent from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/page';
 import HypothesisTestingGuidePage from '@/app/(app)/quantlab/hypothesis-testing-guide/component';
+import AnovaPage from '@/app/(app)/quantlab/anova/component';
 
 
 type TopicPageProps = {
@@ -196,6 +197,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'kalman-filters-interactive-guide': KalmanFilterPage,
   'stochastic-calculus-itos-lemma-interactive-guide': ItosLemmaComponent,
   'hypothesis-testing-guide': HypothesisTestingGuidePage,
+  'anova': AnovaPage,
 };
 
 
