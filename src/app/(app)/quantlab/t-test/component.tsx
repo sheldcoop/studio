@@ -93,7 +93,7 @@ const IndependentTestChart = () => {
   }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer
           config={independentTestChartConfig}
@@ -157,7 +157,7 @@ const PairedTestChart = () => {
   }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer
           config={pairedTestChartConfig}
@@ -207,7 +207,7 @@ const OneSampleTestChart = () => {
   const chartData = [{ name: 'Avg. Return', value: meanValue }];
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer
           config={oneSampleTestChartConfig}

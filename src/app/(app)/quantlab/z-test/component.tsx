@@ -57,7 +57,7 @@ const OneSampleZTestChart = () => {
   const chartData = [{ name: "Stock_A_Recent_Avg", value: meanValue }];
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={oneSampleZTestChartConfig} className="h-full w-full">
           <RechartsBarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
@@ -128,7 +128,7 @@ const TwoSampleZTestChart = () => {
   }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={twoSampleZTestChartConfig} className="h-full w-full">
             <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>

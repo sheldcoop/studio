@@ -42,7 +42,7 @@ const SpearmanCorrelationChart = () => {
 
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={spearmanCorrelationChartConfig} className="h-full w-full">
           <RechartsScatterChart
@@ -100,7 +100,7 @@ export default function SpearmansRankCorrelationPage() {
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
-                  Spearman's correlation is Pearson's flexible cousin. Instead of checking for a straight-line relationship, it checks for a **monotonic** one—does one variable consistently increase or decrease as the other does, even if not at a constant rate? It works by converting values to ranks first.
+                  Spearman&apos;s correlation is Pearson&apos;s flexible cousin. Instead of checking for a straight-line relationship, it checks for a **monotonic** one—does one variable consistently increase or decrease as the other does, even if not at a constant rate? It works by converting values to ranks first.
                 </p>
               </div>
               <div>
@@ -108,7 +108,7 @@ export default function SpearmansRankCorrelationPage() {
                   When to Use It
                 </h3>
                 <p className="text-muted-foreground">
-                  Use Spearman's when the relationship between your variables is not linear, or when your data has significant outliers that would skew a Pearson correlation. It's perfect for capturing relationships that "level off" or accelerate.
+                  Use Spearman&apos;s when the relationship between your variables is not linear, or when your data has significant outliers that would skew a Pearson correlation. It&apos;s perfect for capturing relationships that &quot;level off&quot; or accelerate.
                 </p>
               </div>
             </div>
@@ -121,10 +121,10 @@ export default function SpearmansRankCorrelationPage() {
           </CardHeader>
           <CardContent>
             <p className="mb-4 text-muted-foreground">
-              A scatter plot can reveal relationships that aren't linear. Spearman's can detect a strong relationship even if the points form a curve.
+              A scatter plot can reveal relationships that aren&apos;t linear. Spearman&apos;s can detect a strong relationship even if the points form a curve.
             </p>
             <p className="text-sm text-muted-foreground mb-4">
-              <span className="font-semibold text-foreground">Example:</span> Let's say we're analyzing the relationship between a custom 'Market Sentiment Score' and a stock's daily return. The return might increase faster as sentiment gets very high. A linear model (Pearson) would miss this, but Spearman's would capture the strong monotonic trend.
+              <span className="font-semibold text-foreground">Example:</span> Let&apos;s say we&apos;re analyzing the relationship between a custom 'Market Sentiment Score' and a stock's daily return. The return might increase faster as sentiment gets very high. A linear model (Pearson) would miss this, but Spearman&apos;s would capture the strong monotonic trend.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
               <DynamicSpearmanCorrelationChart />

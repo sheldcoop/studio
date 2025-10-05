@@ -123,7 +123,7 @@ const FTestChart = () => {
   };
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={fTestChartConfig} className="h-full w-full">
           <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>

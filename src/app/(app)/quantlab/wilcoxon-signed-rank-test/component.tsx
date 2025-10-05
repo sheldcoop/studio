@@ -51,7 +51,7 @@ const WilcoxonSignedRankChart = () => {
   }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={wilcoxonChartConfig} className="h-full w-full">
             <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
@@ -93,7 +93,7 @@ export default function WilcoxonSignedRankTestPage() {
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
-                  This test is the non-parametric version of the Paired T-Test. It's designed for comparing two related measurements from the same subject. Instead of using raw data, it ranks the differences between pairs to see if there's a significant change.
+                  This test is the non-parametric version of the Paired T-Test. It&apos;s designed for comparing two related measurements from the same subject. Instead of using raw data, it ranks the differences between pairs to see if there&apos;s a significant change.
                 </p>
               </div>
               <div>
@@ -101,7 +101,7 @@ export default function WilcoxonSignedRankTestPage() {
                   When to Use It
                 </h3>
                 <p className="text-muted-foreground">
-                  Use this for "before and after" scenarios when your data is **not normally distributed**. It's perfect for measuring the impact of an intervention on the same group of subjects, like testing if a new risk model reduced portfolio drawdown.
+                  Use this for &quot;before and after&quot; scenarios when your data is **not normally distributed**. It&apos;s perfect for measuring the impact of an intervention on the same group of subjects, like testing if a new risk model reduced portfolio drawdown.
                 </p>
               </div>
             </div>

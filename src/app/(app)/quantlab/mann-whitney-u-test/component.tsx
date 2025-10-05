@@ -72,7 +72,7 @@ const MannWhitneyChart = () => {
   }, []);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full">
         <ChartContainer config={mannWhitneyChartConfig} className="h-full w-full">
           <RechartsBarChart accessibilityLayer data={chartData} barCategoryGap="0%" margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -114,7 +114,7 @@ export default function MannWhitneyUPage() {
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
-                  The Mann-Whitney U Test is the non-parametric version of the independent T-Test. Instead of comparing means, it compares the **ranks** of the data from two groups. Think of it as lining up all data points from both groups and checking if one group's values are consistently ranked higher than the other's.
+                  The Mann-Whitney U Test is the non-parametric version of the independent T-Test. Instead of comparing means, it compares the **ranks** of the data from two groups. Think of it as lining up all data points from both groups and checking if one group&apos;s values are consistently ranked higher than the other&apos;s.
                 </p>
               </div>
               <div>
@@ -122,7 +122,7 @@ export default function MannWhitneyUPage() {
                   When to Use It
                 </h3>
                 <p className="text-muted-foreground">
-                  Use this test when you want to compare two independent groups but your data **does not follow a normal distribution**. This is common with financial data like trade returns, which are often skewed and have "fat tails" (more extreme outcomes than a normal distribution would suggest).
+                  Use this test when you want to compare two independent groups but your data **does not follow a normal distribution**. This is common with financial data like trade returns, which are often skewed and have &quot;fat tails&quot; (more extreme outcomes than a normal distribution would suggest).
                 </p>
               </div>
             </div>
