@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -26,7 +27,7 @@ const factorial = (n: number): number => {
 };
 
 const multinomialProbability = (n: number, x: number[], p: number[]): number => {
-    if (x.reduce((a, b) => a + b, 0) !== n || p.reduce((a, b) => a + b, 0) !== 1) {
+    if (x.reduce((a, b) => a + b, 0) !== n || Math.abs(p.reduce((a, b) => a + b, 0) - 1) > 1e-9) {
         return 0; // Invalid parameters
     }
 
@@ -57,10 +58,19 @@ export default function MultinomialDistributionPage() {
         newOutcomes[index].prob = newProb;
         
         // Normalize probabilities
-        const currentSum = newOutcomes.reduce((acc, o) => acc + o.prob, 0);
-        const scale = currentSum > 0 ? 1 / currentSum : 0;
-        newOutcomes.forEach(o => o.prob = o.prob * scale);
-
+        const totalProb = newOutcomes.reduce((sum, o, i) => i !== index ? sum + o.prob : sum, newProb);
+        if (totalProb > 1) {
+            const excess = totalProb - 1;
+            const otherSum = totalProb - newProb;
+            if (otherSum > 0) {
+                 newOutcomes.forEach((o, i) => {
+                    if (i !== index) {
+                        o.prob -= excess * (o.prob / otherSum);
+                    }
+                });
+            }
+        }
+        
         setOutcomes(newOutcomes);
     }
     

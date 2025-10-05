@@ -1,14 +1,9 @@
-import type { Metadata } from 'next';
-import { PageHeader } from '@/components/app/page-header';
+
 import { CLT_Interactive_Dashboard } from '@/components/app/clt-interactive-dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/app/page-header';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-export const metadata: Metadata = {
-  title: 'The Central Limit Theorem (CLT)',
-  description: 'An interactive exploration of the Central Limit Theorem, one of the most fundamental concepts in statistics and probability.',
-};
 
 export default function CentralLimitTheoremPage() {
   return (
