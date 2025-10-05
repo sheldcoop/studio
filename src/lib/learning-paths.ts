@@ -68,6 +68,7 @@ export const getPathById = (id: string): LearningPath | undefined => {
     { id: 'la-module-3', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 3: Eigen-everything', status: 'not-started', duration: 75 },
     { id: 'la-module-4', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 4: Applications in Finance', status: 'not-started', duration: 90 },
     // Advanced Statistics
+    { id: 'stats-foundations', parent: 'statistics-for-quantitative-finance', title: 'Tier 1: The Absolute Foundations', status: 'in-progress', duration: 135 },
     { id: 'stats-mod-1', parent: 'statistics-for-quantitative-finance', title: 'Module 1: Foundations in Probability & Random Variables', status: 'completed', duration: 180 },
     { id: 'stats-mod-2', parent: 'statistics-for-quantitative-finance', title: 'Module 2: Key Distributions & Asymptotic Theory', status: 'in-progress', duration: 150 },
     { id: 'stats-mod-3', parent: 'statistics-for-quantitative-finance', title: 'Module 3: Statistical Inference & Estimation Theory', status: 'not-started', duration: 200 },

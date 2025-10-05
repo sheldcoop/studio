@@ -10,12 +10,12 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { allTopics } from '@/lib/curriculum';
+import { allTopics, Topic } from '@/lib/curriculum';
 import Link from 'next/link';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, FolderKanban } from 'lucide-react';
 
 type Goal = 'compare_means' | 'test_relationship';
 type Groups = 'two' | 'more_than_two';
@@ -62,6 +62,8 @@ function TestCard({ testId }: { testId: string }) {
     );
 }
 
+const foundationsTopic = allTopics.find(t => t.id === 'stats-foundations');
+
 
 export default function StatToolkitPage() {
   const [goal, setGoal] = useState<Goal | null>(null);
@@ -75,8 +77,8 @@ export default function StatToolkitPage() {
     return null;
   }, [goal, groups, dataType]);
   
-  const parametricTests = allTopics.filter(t => t.category === 'parametric' && testMap.compare_means.two.parametric === t.id || testMap.compare_means.more_than_two.parametric === t.id || testMap.test_relationship.two.parametric === t.id);
-  const nonParametricTests = allTopics.filter(t => t.category === 'non-parametric' && testMap.compare_means.two.non_parametric === t.id || testMap.compare_means.more_than_two.non_parametric === t.id || testMap.test_relationship.two.non_parametric === t.id || testMap.test_relationship.more_than_two.non_parametric === t.id);
+  const parametricTests = allTopics.filter(t => t.category === 'parametric' && (testMap.compare_means.two.parametric === t.id || testMap.compare_means.more_than_two.parametric === t.id || testMap.test_relationship.two.parametric === t.id));
+  const nonParametricTests = allTopics.filter(t => t.category === 'non-parametric' && (testMap.compare_means.two.non_parametric === t.id || testMap.compare_means.more_than_two.non_parametric === t.id || testMap.test_relationship.two.non_parametric === t.id || testMap.test_relationship.more_than_two.non_parametric === t.id));
 
   return (
     <>
@@ -174,45 +176,60 @@ export default function StatToolkitPage() {
 
         <section>
             <div className="mb-8 text-center">
-                <h2 className="font-headline text-3xl font-bold">Or, Browse All Tests</h2>
-                <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">If you already know what you're looking for, you can browse all available tests below.</p>
+                <h2 className="font-headline text-3xl font-bold">Or, Browse All Tests & Concepts</h2>
+                <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">If you already know what you're looking for, you can browse all available tests and foundational concepts below.</p>
             </div>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                <Card className="flex flex-col">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+                 <Card className="flex flex-col md:col-span-1">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">👨‍🍳 Parametric Tests</CardTitle>
-                        <CardDescription>Assumes data meets certain standards (e.g., normal distribution). Precise and powerful when assumptions are met.</CardDescription>
+                        <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary"><FolderKanban/> Foundational Concepts</CardTitle>
+                        <CardDescription>The building blocks of statistical inference. Start here if you're new.</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1">
                         <ul className="space-y-3">
-                            {parametricTests.map(test => (
-                                <li key={test.id}>
-                                    <Link href={test.href} className="block rounded-lg border p-4 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20">
-                                        <h4 className="font-semibold">{test.title}</h4>
-                                        <p className="text-sm text-muted-foreground">{test.description}</p>
+                             {foundationsTopic && (
+                                <li>
+                                    <Link href="/paths/statistics-for-quantitative-finance" className="block rounded-lg border bg-background p-4 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20">
+                                        <h4 className="font-semibold">{foundationsTopic.title}</h4>
+                                        <p className="text-sm text-muted-foreground">Learn the core concepts of statistical analysis.</p>
                                     </Link>
                                 </li>
-                            ))}
+                            )}
                         </ul>
                     </CardContent>
                 </Card>
-
-                <Card className="flex flex-col">
+                <Card className="flex flex-col md:col-span-2">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">🏕️ Non-Parametric Tests</CardTitle>
-                        <CardDescription>Makes no strict assumptions. More flexible and robust with unusual, ranked, or non-normal data.</CardDescription>
+                        <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">👨‍🍳 Statistical Tests</CardTitle>
+                        <CardDescription>Specific tools for hypothesis testing.</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1">
-                        <ul className="space-y-3">
-                            {nonParametricTests.map(test => (
-                                 <li key={test.id}>
-                                    <Link href={test.href} className="block rounded-lg border p-4 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20">
-                                        <h4 className="font-semibold">{test.title}</h4>
-                                        <p className="text-sm text-muted-foreground">{test.description}</p>
-                                    </Link>
-                                 </li>
-                            ))}
-                        </ul>
+                    <CardContent className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div>
+                             <h3 className="font-semibold text-lg mb-2">Parametric Tests</h3>
+                            <p className="text-xs text-muted-foreground mb-4">Assume data meets certain standards (e.g., normal distribution). Precise and powerful when assumptions are met.</p>
+                            <ul className="space-y-3">
+                                {parametricTests.map(test => (
+                                    <li key={test.id}>
+                                        <Link href={test.href} className="block rounded-lg border p-3 transition-all duration-300 ease-in-out hover:bg-muted/50">
+                                            <h4 className="font-semibold text-sm">{test.title}</h4>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                         <div>
+                             <h3 className="font-semibold text-lg mb-2">Non-Parametric Tests</h3>
+                            <p className="text-xs text-muted-foreground mb-4">Make no strict assumptions. More flexible and robust with unusual, ranked, or non-normal data.</p>
+                            <ul className="space-y-3">
+                                {nonParametricTests.map(test => (
+                                    <li key={test.id}>
+                                        <Link href={test.href} className="block rounded-lg border p-3 transition-all duration-300 ease-in-out hover:bg-muted/50">
+                                            <h4 className="font-semibold text-sm">{test.title}</h4>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
