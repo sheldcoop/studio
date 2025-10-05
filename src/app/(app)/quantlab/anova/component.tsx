@@ -221,7 +221,7 @@ export default function AnovaPage() {
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
-                  ANOVA checks if there's a significant difference somewhere among the means of several groups. Think of it as a "group chaperone": instead of doing many t-tests, it first tells you if any group is behaving differently from the others overall.
+                  ANOVA checks if there's a significant difference somewhere among the means of several groups. Think of it as a &quot;group chaperone&quot;: instead of doing many t-tests, it first tells you if any group is behaving differently from the others overall.
                 </p>
               </div>
               <div>

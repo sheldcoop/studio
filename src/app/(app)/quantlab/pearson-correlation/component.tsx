@@ -73,7 +73,7 @@ const PearsonCorrelationChart = () => {
   }, [correlation]);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={pearsonCorrelationChartConfig} className="h-full w-full">
           <RechartsScatterChart
@@ -129,7 +129,7 @@ export default function PearsonCorrelationPage() {
               <div>
                 <h3 className="mb-1 font-semibold text-primary">Purpose & Analogy</h3>
                 <p className="text-muted-foreground">
-                  Pearson Correlation measures how well two assets move in relation to each other. It gives a value between -1 (perfectly opposite movement) and +1 (perfectly identical movement). A value of 0 means no linear relationship. Think of it as a "dance partner" score for stocks.
+                  Pearson Correlation measures how well two assets move in relation to each other. It gives a value between -1 (perfectly opposite movement) and +1 (perfectly identical movement). A value of 0 means no linear relationship. Think of it as a &quot;dance partner&quot; score for stocks.
                 </p>
               </div>
               <div>

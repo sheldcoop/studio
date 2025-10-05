@@ -82,7 +82,7 @@ const KSTestChart = () => {
   }, [dataType]);
 
   return (
-    <div className="flex h-[420px] w-full flex-col">
+    <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={ksTestChartConfig} className="h-full w-full">
             <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -127,7 +127,7 @@ export default function KolmogorovSmirnovTestPage() {
                   Purpose & Analogy
                 </h3>
                 <p className="text-muted-foreground">
-                  The K-S test acts like a "goodness-of-fit" ruler. It measures the maximum distance between the shape of your sample data (the Empirical CDF) and the shape of a theoretical distribution (the Theoretical CDF). If the distance is too large, you conclude your data doesn't fit that theoretical shape.
+                  The K-S test acts like a &quot;goodness-of-fit&quot; ruler. It measures the maximum distance between the shape of your sample data (the Empirical CDF) and the shape of a theoretical distribution (the Theoretical CDF). If the distance is too large, you conclude your data doesn&apos;t fit that theoretical shape.
                 </p>
               </div>
               <div>
