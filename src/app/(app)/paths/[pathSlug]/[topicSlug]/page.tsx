@@ -50,6 +50,7 @@ import SpearmansRankCorrelationPage from '@/app/(app)/quantlab/spearmans-rank-co
 import TTestPage from '@/app/(app)/quantlab/t-test/component';
 import WilcoxonSignedRankTestPage from '@/app/(app)/quantlab/wilcoxon-signed-rank-test/component';
 import ZTestPage from '@/app/(app)/quantlab/z-test/component';
+import IntroductionToHypothesisTestingPage from '@/app/(app)/quantlab/introduction-to-hypothesis-testing/component';
 
 
 type TopicPageProps = {
@@ -220,6 +221,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   't-test': TTestPage,
   'wilcoxon-signed-rank-test': WilcoxonSignedRankTestPage,
   'z-test': ZTestPage,
+  'introduction-to-hypothesis-testing': IntroductionToHypothesisTestingPage,
 };
 
 
