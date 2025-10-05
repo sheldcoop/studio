@@ -25,7 +25,7 @@ import PoissonDistributionPage from '@/app/quantlab/poisson-distribution/compone
 import TDistributionPage from '@/app/quantlab/students-t-distribution/component';
 import WeibullDistributionPage from '@/app/quantlab/weibull-distribution/component';
 import CLTPage from '@/app/quantlab/central-limit-theorem/component';
-import DescriptiveStatsPage from '@/components/app/probability-distribution-page-client';
+import DescriptiveStatsPage from '@/app/quantlab/descriptive-statistics-explorer/page';
 import ZTablePage from '@/app/quantlab/z-table/component';
 import ConfidenceIntervalsPage from '@/app/quantlab/confidence-intervals/component';
 import MentalMathPage from '@/app/(app)/topics/mental-math/page';

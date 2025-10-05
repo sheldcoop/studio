@@ -1,7 +1,9 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
   CardContent,
@@ -10,27 +12,18 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  generateNormalData,
-  generateLogNormalData,
-  getMean,
-  getMedian,
-  getMode,
-  getStdDev,
-  getSkewness,
-  getKurtosis,
-} from '@/lib/math';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine, Label, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { InlineMath } from 'react-katex';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine, Label } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
+import { generateNormalData, generateLogNormalData, getMean, getMedian, getMode, getStdDev, getSkewness, getKurtosis } from '@/lib/math';
 import 'katex/dist/katex.min.css';
 
 type DistributionType = 'normal' | 'skewed-right' | 'skewed-left';
 
 // --- Chart Component ---
 const DescriptiveStatsChart = ({ data }: { data: number[] }) => {
-  const { histogramData, mean, median } = useMemo(() => {
-    if (data.length === 0) return { histogramData: [], mean: 0, median: 0 };
+  const { histogramData, mean, median, mode } = useMemo(() => {
+    if (data.length === 0) return { histogramData: [], mean: 0, median: 0, mode: 0 };
     
     const min = Math.min(...data);
     const max = Math.max(...data);
@@ -53,11 +46,16 @@ const DescriptiveStatsChart = ({ data }: { data: number[] }) => {
         histogramData: hist,
         mean: getMean(data),
         median: getMedian(data),
+        mode: getMode(data),
     };
   }, [data]);
   
+  if (histogramData.length === 0) {
+    return <Skeleton className="h-[300px] w-full" />;
+  }
+
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ChartContainer config={{}} className="h-[300px] w-full">
         <BarChart data={histogramData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" tick={{ fontSize: 12 }} />
@@ -76,12 +74,18 @@ const DescriptiveStatsChart = ({ data }: { data: number[] }) => {
                 <Label value={`Median: ${median.toFixed(2)}`} position="top" fill="hsl(var(--chart-2))" fontSize={12} dy={10} />
              </ReferenceLine>
         </BarChart>
-    </ResponsiveContainer>
+    </ChartContainer>
   )
 };
 
+const DynamicDescriptiveStatsChart = dynamic(() => Promise.resolve(DescriptiveStatsChart), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[300px] w-full" />,
+});
+
+
 // --- Main Page Component ---
-export default function ProbabilityDistributionPageClient() {
+export default function DescriptiveStatisticsExplorerPage() {
     const [distributionType, setDistributionType] = useState<DistributionType>('normal');
     const [data, setData] = useState<number[]>([]);
     const [stats, setStats] = useState({
@@ -112,10 +116,12 @@ export default function ProbabilityDistributionPageClient() {
         setDistributionType(type);
     }
     
+    useEffect(() => {
+        generateData('normal');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useEffect(() => { generateData('normal'); }, []);
+    }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (data.length > 0) {
             setStats({
                 mean: getMean(data),
@@ -130,7 +136,13 @@ export default function ProbabilityDistributionPageClient() {
     
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <>
+      <PageHeader
+        title="Descriptive Statistics Explorer"
+        description="An interactive guide to the fundamental metrics used to describe a dataset."
+        variant="aligned-left"
+      />
+      <div className="mx-auto max-w-5xl space-y-8">
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">What Are Descriptive Statistics?</CardTitle>
@@ -157,9 +169,7 @@ export default function ProbabilityDistributionPageClient() {
                     <Button onClick={() => generateData('skewed-left')} variant={distributionType === 'skewed-left' ? 'default' : 'outline'}>Skewed Left</Button>
                 </div>
                 
-                <ChartContainer config={{}} className="h-[300px] w-full">
-                    <DescriptiveStatsChart data={data} />
-                </ChartContainer>
+                <DynamicDescriptiveStatsChart data={data} />
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6 text-center">
                     <Card>
@@ -214,5 +224,6 @@ export default function ProbabilityDistributionPageClient() {
             </CardContent>
         </Card>
       </div>
+    </>
   );
 }
