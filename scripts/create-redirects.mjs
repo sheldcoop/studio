@@ -1,64 +1,60 @@
-// scripts/create-redirects.mjs
-import fs from 'fs';
+
+import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-// Since we are running this script directly with Node.js, we need to simulate the environment
-// to import our TypeScript curriculum files. We'll use ts-node for this.
-// Note: This approach is for the script environment only.
-const tsNode = await import('ts-node');
-tsNode.register({
-  transpileOnly: true,
-  compilerOptions: {
-    module: 'NodeNext',
-  }
-});
+// Dynamically import all curriculum modules.
+// This is more robust than manually listing them.
+async function getAllTopics() {
+    const curriculumDir = path.resolve(process.cwd(), 'src/lib/curriculum');
+    const files = await fs.readdir(curriculumDir);
+    const topicModules = files.filter(file => file.endsWith('.ts') && !file.includes('types') && !file.includes('utils') && !file.includes('index'));
 
-const { allTopics } = await import('../src/lib/curriculum/index.ts');
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const publicDir = path.join(__dirname, '..', 'public');
-const redirectsPath = path.join(publicDir, 'redirects.json');
-
-function generateRedirects() {
-  const redirects = [];
-
-  for (const topic of allTopics) {
-    if (topic.previousSlugs && topic.previousSlugs.length > 0) {
-      for (const oldSlug of topic.previousSlugs) {
-        // Assuming all old slugs were also under the /topics/ path for simplicity
-        const sourcePath = `/topics/${oldSlug}`;
-        
-        redirects.push({
-          source: sourcePath,
-          destination: topic.href,
-          permanent: true,
-        });
-
-        // Also add a redirect for the version with a trailing slash
-        redirects.push({
-            source: `${sourcePath}/`,
-            destination: topic.href,
-            permanent: true,
-        });
-      }
+    let allTopics = [];
+    for (const file of topicModules) {
+        const modulePath = path.join(curriculumDir, file);
+        // Use a cache-busting query param for reliable dynamic imports
+        const module = await import(`file://${modulePath}?v=${Date.now()}`);
+        const topics = Object.values(module).find(Array.isArray);
+        if (topics) {
+            allTopics.push(...topics);
+        }
     }
-  }
-
-  // Ensure the public directory exists
-  if (!fs.existsSync(publicDir)) {
-    fs.mkdirSync(publicDir, { recursive: true });
-  }
-  
-  // Write the JSON file
-  fs.writeFileSync(redirectsPath, JSON.stringify(redirects, null, 2));
-  console.log(`✅ Successfully generated ${redirects.length} redirects to ${redirectsPath}`);
+    return allTopics;
 }
 
-try {
-  generateRedirects();
-} catch (error) {
-  console.error("❌ Error generating redirects:", error);
-  process.exit(1);
+async function main() {
+    try {
+        const allTopics = await getAllTopics();
+        const redirects = [];
+
+        for (const topic of allTopics) {
+            if (topic.previousSlugs && topic.previousSlugs.length > 0) {
+                for (const oldSlug of topic.previousSlugs) {
+                    // This handles redirects for the main /topics route
+                    redirects.push({
+                        source: `/topics/${oldSlug}`,
+                        destination: topic.href,
+                        permanent: true,
+                    });
+                     // This handles redirects for the old, now-deleted specific routes
+                    if (topic.pathPrefix) {
+                         redirects.push({
+                            source: `/${topic.pathPrefix}/${oldSlug}`,
+                            destination: topic.href,
+                            permanent: true,
+                        });
+                    }
+                }
+            }
+        }
+
+        const redirectsFilePath = path.resolve(process.cwd(), 'public/redirects.json');
+        await fs.writeFile(redirectsFilePath, JSON.stringify(redirects, null, 2));
+        console.log(`✓ Successfully generated ${redirects.length} redirects to public/redirects.json`);
+    } catch (error) {
+        console.error('Error generating redirects:', error);
+        process.exit(1);
+    }
 }
+
+main();

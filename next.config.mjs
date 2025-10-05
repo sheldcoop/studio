@@ -1,41 +1,31 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Helper function to read the generated redirects
-function readRedirects() {
-  const redirectsPath = path.join(__dirname, 'public', 'redirects.json');
-  if (fs.existsSync(redirectsPath)) {
-    const redirectsData = fs.readFileSync(redirectsPath, 'utf-8');
-    return JSON.parse(redirectsData);
-  }
-  return [];
-}
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enforce lowercase URLs and remove trailing slashes for canonical SEO.
   async redirects() {
-    const manualRedirects = readRedirects();
-    return [
-      ...manualRedirects,
-      {
-        source: '/:path*/',
-        destination: '/:path*',
-        permanent: true,
-      },
-    ];
+    const redirectsFile = join(process.cwd(), 'public', 'redirects.json');
+    try {
+      const redirectsJson = await readFile(redirectsFile, 'utf-8');
+      const baseRedirects = JSON.parse(redirectsJson);
+      
+      return [
+        ...baseRedirects,
+        // Add other static redirects here if needed in the future
+      ];
+
+    } catch (error) {
+      // If the file doesn't exist, return an empty array.
+      // This is important for the first run or in environments where the build script hasn't run.
+      if (error.code === 'ENOENT') {
+        console.warn("Could not find 'public/redirects.json'. Skipping redirects generation.");
+        return [];
+      }
+      // For other errors, re-throw to fail the build, as it's an unexpected issue.
+      throw error;
+    }
   },
-  webpack(config) {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"]
-    });
-    return config;
-  }
 };
 
 export default nextConfig;
