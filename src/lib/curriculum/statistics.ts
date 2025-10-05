@@ -7,7 +7,7 @@ export const statisticsTopics: Topic[] = [
   createTopic({
     id: 'hypothesis-testing',
     title: 'Hypothesis Testing & P-Values',
-    href: '/hypothesis-testing-p-values',
+    href: '/stat-toolkit',
     icon: 'FunctionSquare',
     description: 'The detective work of data science.',
     category: 'sub-topic',
@@ -182,8 +182,8 @@ export const statisticsTopics: Topic[] = [
     description: 'Interactive guide to mean, median, mode, variance, skewness, and kurtosis.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-    pathPrefix: 'probability-toolkit',
-    href: '/probability'
+    pathPrefix: 'probability-for-quants',
+    href: '/paths/probability-for-quants'
   }),
   createTopic({
     id: 'normal-distribution',

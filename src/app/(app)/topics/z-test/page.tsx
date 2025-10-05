@@ -55,7 +55,7 @@ const OneSampleZTestChart = () => {
   const [meanValue, setMeanValue] = useState(0.08);
   const target = 0.05;
 
-  const chartData = [{ name: "Stock_A_Recent_Avg", value: meanValue }];
+  const chartData = [{ name: "Stock A's Recent Avg.", value: meanValue }];
 
   return (
     <div className="flex h-[420px] w-full flex-col">
@@ -63,9 +63,9 @@ const OneSampleZTestChart = () => {
         <ChartContainer config={oneSampleZTestChartConfig} className="h-full w-full">
           <RechartsBarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
             <CartesianGrid horizontal={false} />
-            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120} tickFormatter={() => "Stock A's Recent Avg."}/>
+            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120} tickFormatter={(value) => oneSampleZTestChartConfig[value as keyof typeof oneSampleZTestChartConfig]?.label || value} />
             <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
-            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Tooltip cursor={false} content={<ChartTooltipContent />} />
             <Bar dataKey="value" radius={8} fill="var(--color-value)" />
             <ReferenceLine
               x={target}
