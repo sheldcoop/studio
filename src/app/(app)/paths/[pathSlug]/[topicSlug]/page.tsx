@@ -1,8 +1,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { allTopics } from '@/lib/data';
-import { learningPaths } from '@/lib/learning-paths';
+import { allTopics, getPathById } from '@/lib/data';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 // Dynamically import all the content components for our topics
@@ -37,6 +36,7 @@ import GarchPage from '@/app/(app)/quantlab/volatility-garch/component';
 import EfficientFrontierPage from '@/app/(app)/quantlab/efficient-frontier-sharpe-ratio/component';
 import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/component';
 import ItosLemmaComponent from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/page';
+import HypothesisTestingGuidePage from '@/app/(app)/quantlab/hypothesis-testing-guide/component';
 
 
 type TopicPageProps = {
@@ -58,6 +58,12 @@ export async function generateStaticParams() {
             topicSlug: parts[2],
           };
       }
+      if (parts[0] === 'quantlab' && parts.length === 2) {
+        return {
+          pathSlug: 'quantlab',
+          topicSlug: parts[1],
+        }
+      }
       return null;
     }).filter((p: any) => p) as { pathSlug: string; topicSlug: string }[];
 }
@@ -67,7 +73,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
   const { pathSlug, topicSlug } = await params;
   const topicInfo = allTopics.find((t) => t.id === topicSlug);
-  const pathInfo = learningPaths.find(p => p.id === pathSlug);
+  const pathInfo = getPathById(pathSlug);
 
   if (!topicInfo) {
     return {
@@ -188,6 +194,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'efficient-frontier-sharpe-ratio-interactive-guide': EfficientFrontierPage,
   'kalman-filters-interactive-guide': KalmanFilterPage,
   'stochastic-calculus-itos-lemma-interactive-guide': ItosLemmaComponent,
+  'hypothesis-testing-guide': HypothesisTestingGuidePage,
 };
 
 

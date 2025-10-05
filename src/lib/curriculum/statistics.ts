@@ -7,11 +7,21 @@ export const statisticsTopics: Topic[] = [
   createTopic({
     id: 'hypothesis-testing',
     title: 'Hypothesis Testing & P-Values',
-    href: '/stat-toolkit',
+    href: '/quantlab/hypothesis-testing-guide',
     icon: 'FunctionSquare',
     description: 'The detective work of data science.',
     category: 'sub-topic',
     parent: 'stat-toolkit',
+  }),
+  createTopic({
+    id: 'hypothesis-testing-guide',
+    title: 'Hypothesis Testing Guide',
+    href: '/quantlab/hypothesis-testing-guide',
+    icon: 'Beaker',
+    description: "A comprehensive guide to choosing the right statistical test.",
+    category: 'sub-topic',
+    parent: 'stats-advanced',
+    pathPrefix: 'quantlab',
   }),
 
   // Parametric Tests (sub-topics of hypothesis testing)
