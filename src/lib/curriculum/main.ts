@@ -2,15 +2,6 @@
 import type { Topic } from './types';
 
 export const mainTopics: Topic[] = [
-  {
-    id: 'stat-toolkit',
-    title: "Statistician's Toolkit",
-    description: 'Explore and understand the core concepts of statistics for quantitative analysis.',
-    icon: 'Wrench',
-    href: '/quantlab',
-    category: 'main',
-    animation: 'stat-toolkit',
-  },
    {
     id: 'quantlab',
     title: 'QuantLab',
