@@ -1,31 +1,10 @@
 
 import type { Topic } from './types';
-
-// Helper to create slugs from titles
-const toSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-
-const createAdvancedStatTopic = (module: string, title: string, description: string): Topic => {
-    const slug = `stats-${toSlug(title)}`;
-    return {
-        id: slug,
-        title,
-        href: `/statistics/${slug}`, // Use the /statistics/ route
-        icon: 'FunctionSquare',
-        description,
-        category: 'sub-topic',
-        parent: module,
-        subTopics: [
-            { id: `${slug}-theory`, title: 'Core Theory' },
-            { id: `${slug}-application`, title: 'Financial Application' },
-            { id: `${slug}-interactive`, title: 'Interactive Demo' },
-            { id: `${slug}-problems`, title: 'Practice Problems' },
-        ]
-    };
-};
+import { createTopic } from './utils';
 
 export const statisticsTopics: Topic[] = [
   // Parent "topic" for Hypothesis testing
-  {
+  createTopic({
     id: 'hypothesis-testing',
     title: 'Hypothesis Testing & P-Values',
     href: '/hypothesis-testing-p-values',
@@ -33,383 +12,743 @@ export const statisticsTopics: Topic[] = [
     description: 'The detective work of data science.',
     category: 'sub-topic',
     parent: 'stat-toolkit',
-  },
+  }),
 
   // Parametric Tests (sub-topics of hypothesis testing)
-  {
+  createTopic({
     id: 't-test',
     title: 'T-Test',
-    href: '/topics/t-test',
     icon: 'FunctionSquare',
     description: 'Compares the means of two groups, assuming normal distribution.',
     category: 'parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'z-test',
     title: 'Z-Test',
-    href: '/topics/z-test',
     icon: 'FunctionSquare',
     description:
       'Compares means of large samples (n>30) with known population variance.',
     category: 'parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'anova',
     title: 'ANOVA',
-    href: '/topics/anova',
     icon: 'FunctionSquare',
     description: 'Compares the averages of three or more groups.',
     category: 'parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'f-test',
     title: 'F-Test',
-    href: '/topics/f-test',
     icon: 'FunctionSquare',
     description: 'Compares the variances (spread) of two or more groups.',
     category: 'parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'pearson-correlation',
     title: 'Pearson Correlation',
-    href: '/topics/pearson-correlation',
     icon: 'FunctionSquare',
     description:
       'Measures the linear relationship between two continuous variables.',
     category: 'parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'chi-squared-test',
     title: 'Chi-Squared Test',
-    href: '/topics/chi-squared-test',
     icon: 'FunctionSquare',
     description:
       'Analyzes categorical data to find significant relationships.',
     category: 'non-parametric',
-  },
+    pathPrefix: 'topics'
+  }),
 
   // Non-Parametric Tests (sub-topics of hypothesis testing)
-  {
+  createTopic({
     id: 'mann-whitney-u-test',
     title: 'Mann-Whitney U Test',
-    href: '/topics/mann-whitney-u-test',
     icon: 'FunctionSquare',
     description:
       'Alternative to the T-Test when data is not normally distributed.',
     category: 'non-parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'kruskal-wallis-test',
     title: 'Kruskal-Wallis Test',
-    href: '/topics/kruskal-wallis-test',
     icon: 'FunctionSquare',
     description: 'Alternative to ANOVA for comparing three or more groups.',
     category: 'non-parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'wilcoxon-signed-rank-test',
     title: 'Wilcoxon Signed-Rank Test',
-    href: '/topics/wilcoxon-signed-rank-test',
     icon: 'FunctionSquare',
     description:
       'Alternative to the paired T-Test for repeated measurements.',
     category: 'non-parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'spearmans-rank-correlation',
     title: "Spearman's Rank Correlation",
-    href: '/topics/spearmans-rank-correlation',
     icon: 'FunctionSquare',
     description:
       'Measures the monotonic relationship between two ranked variables.',
     category: 'non-parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'friedman-test',
     title: 'Friedman Test',
-    href: '/topics/friedman-test',
     icon: 'FunctionSquare',
     description:
       'The non-parametric alternative to a repeated-measures ANOVA.',
     category: 'non-parametric',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'kolmogorov-smirnov-k-s-test',
     title: 'Kolmogorov-Smirnov (K-S) Test',
-    href: '/topics/kolmogorov-smirnov-k-s-test',
     icon: 'FunctionSquare',
     description: 'Tests if a sample is drawn from a specific distribution.',
     category: 'non-parametric',
-  },
+    pathPrefix: 'topics'
+  }),
 
   // Stat Toolkit Parent Categories
-  {
+  createTopic({
     id: 'stats-foundations',
     title: 'Tier 1: The Absolute Foundations',
     href: '#',
     icon: 'FolderKanban',
     description: '',
     category: 'parent',
-  },
-  {
+  }),
+  createTopic({
     id: 'stats-intermediate',
     title: 'Tier 2: Intermediate & Specialized Tools',
     href: '#',
     icon: 'FolderKanban',
     description: '',
     category: 'parent',
-  },
-  {
+  }),
+  createTopic({
     id: 'stats-advanced',
     title: 'Tier 3: Advanced & Quant-Specific Concepts',
     href: '#',
     icon: 'FolderKanban',
     description: '',
     category: 'parent',
-  },
+  }),
     
   // Stat Toolkit Tier 1
-  {
+  createTopic({
     id: 'demystifying-hypothesis-testing',
     title: "Demystifying Hypothesis Testing: A Beginner's Guide",
-    href: '/topics/demystifying-hypothesis-testing',
     icon: 'FunctionSquare',
     description: 'A step-by-step guide to making decisions from data.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'confidence-intervals',
     title: 'Confidence Intervals',
-    href: '/topics/confidence-intervals',
     icon: 'FunctionSquare',
     description: 'Understanding the range where a true value likely lies.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'z-table',
     title: 'Z-Table Calculator',
-    href: '/topics/z-table',
     icon: 'FunctionSquare',
     description: 'Calculate probabilities from Z-scores and vice-versa.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'descriptive-statistics-explorer',
     title: 'Descriptive Statistics Explorer',
-    href: '/topics/descriptive-statistics-explorer',
     icon: 'FunctionSquare',
     description: 'Interactive guide to mean, median, mode, variance, skewness, and kurtosis.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-  {
+    pathPrefix: 'statistics'
+  }),
+  createTopic({
     id: 'normal-distribution',
     title: 'The Normal Distribution',
-    href: '/topics/normal-distribution',
     icon: 'FunctionSquare',
     description: 'The ubiquitous "bell curve."',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-  {
+    pathPrefix: 'statistics'
+  }),
+  createTopic({
     id: 'central-limit-theorem',
     title: 'The Central Limit Theorem (CLT)',
-    href: '/topics/central-limit-theorem',
     icon: 'FunctionSquare',
     description: 'Discover how order emerges from chaos.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'type-i-and-type-ii-errors',
     title: 'Type I & Type II Errors',
-    href: '/topics/type-i-and-type-ii-errors',
     icon: 'FunctionSquare',
     description: 'The trade-off between false alarms and missed signals.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'correlation-vs-causation',
     title: 'Correlation vs. Causation',
-    href: '/topics/correlation-vs-causation',
     icon: 'FunctionSquare',
     description: "Don't confuse association with influence.",
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'linear-regression',
     title: 'Linear Regression',
-    href: '/topics/linear-regression',
     icon: 'FunctionSquare',
     description: 'Modeling the relationship between variables.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-  },
+    pathPrefix: 'topics'
+  }),
 
   // Stat Toolkit Tier 2
-  {
+  createTopic({
     id: 'logistic-regression',
     title: 'Logistic Regression',
-    href: '/topics/logistic-regression',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
     parent: 'stats-intermediate',
-  },
+    pathPrefix: 'topics'
+  }),
 
   // Stat Toolkit Tier 3
-  {
+  createTopic({
     id: 'monte-carlo-simulation',
     title: 'Monte Carlo Simulation',
-    href: '/topics/monte-carlo-simulation',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
     parent: 'stats-advanced',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'time-series-decomposition',
     title: 'Time Series Decomposition',
-    href: '/topics/time-series-decomposition',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
     parent: 'stats-advanced',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'autocorrelation-acf-pacf',
     title: 'Autocorrelation (ACF & PACF)',
-    href: '/topics/autocorrelation-acf-pacf',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
     parent: 'stats-advanced',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'volatility-garch',
     title: 'Volatility &amp; Standard Deviation (GARCH)',
-    href: '/topics/volatility-garch',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
     parent: 'stats-advanced',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'efficient-frontier-sharpe-ratio',
     title: 'Efficient Frontier &amp; Sharpe Ratio',
-    href: '/topics/efficient-frontier-sharpe-ratio',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
     parent: 'stats-advanced',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'kalman-filters',
     title: 'Kalman Filters',
-    href: '/topics/kalman-filters',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
     parent: 'stats-advanced',
-  },
-  {
+    pathPrefix: 'topics'
+  }),
+  createTopic({
     id: 'stochastic-calculus-itos-lemma',
     title: "Stochastic Calculus &amp; Ito's Lemma",
-    href: '/topics/stochastic-calculus-itos-lemma',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
     parent: 'stats-advanced',
-  },
+    pathPrefix: 'topics'
+  }),
   
   // --- Advanced Statistics Learning Path Modules ---
   
   // Module 1: Foundations in Probability & Random Variables
-  createAdvancedStatTopic('stats-mod-1', 'Set Theory, Sample Spaces, and Events', 'Understanding the building blocks of probability.'),
-  createAdvancedStatTopic('stats-mod-1', "Axioms of Probability (Kolmogorov)", 'The three fundamental rules that govern all of probability.'),
-  createAdvancedStatTopic('stats-mod-1', 'Conditional Probability and Independence', 'How the occurrence of one event affects another.'),
-  createAdvancedStatTopic('stats-mod-1', "Law of Total Probability and Bayes' Theorem", 'Updating your beliefs in the face of new evidence.'),
-  createAdvancedStatTopic('stats-mod-1', 'Probability Mass Functions (PMF) and Cumulative Distribution Functions (CDF)', 'Describing the probabilities of discrete outcomes.'),
-  createAdvancedStatTopic('stats-mod-1', 'Expected Value E[X], Variance Var[X], and Standard Deviation', 'Calculating the center and spread of a random variable.'),
-  createAdvancedStatTopic('stats-mod-1', 'Common Discrete Distributions (Binomial, Poisson, Geometric)', 'Exploring key models for discrete random events.'),
-  createAdvancedStatTopic('stats-mod-1', 'Moment Generating Functions (MGFs) for Discrete R.V.s', 'A powerful tool for analyzing distributions.'),
-  createAdvancedStatTopic('stats-mod-1', 'Probability Density Functions (PDF) and CDF', 'Describing the probabilities of continuous outcomes.'),
-  createAdvancedStatTopic('stats-mod-1', 'Expected Value and Variance via Integration', 'Applying calculus to find the moments of continuous variables.'),
-  createAdvancedStatTopic('stats-mod-1', 'Common Continuous Distributions (Uniform, Exponential, Gamma)', 'Exploring key models for continuous random events.'),
-  createAdvancedStatTopic('stats-mod-1', 'MGFs for Continuous R.V.s', 'Extending moment generating functions to continuous cases.'),
-  createAdvancedStatTopic('stats-mod-1', 'Joint PMFs and Joint PDFs', 'Modeling the behavior of multiple random variables at once.'),
-  createAdvancedStatTopic('stats-mod-1', 'Marginal and Conditional Distributions', "Isolating one variable's behavior from a joint distribution."),
-  createAdvancedStatTopic('stats-mod-1', 'Covariance Cov(X, Y) and Correlation ρ', 'Measuring how two random variables move together.'),
-  createAdvancedStatTopic('stats-mod-1', 'Independence of Random Variables', 'Defining when two variables have no influence on each other.'),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Set Theory, Sample Spaces, and Events',
+    description: 'Understanding the building blocks of probability.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: "Axioms of Probability (Kolmogorov)",
+    description: 'The three fundamental rules that govern all of probability.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Conditional Probability and Independence',
+    description: 'How the occurrence of one event affects another.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: "Law of Total Probability and Bayes' Theorem",
+    description: 'Updating your beliefs in the face of new evidence.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Probability Mass Functions (PMF) and Cumulative Distribution Functions (CDF)',
+    description: 'Describing the probabilities of discrete outcomes.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Expected Value E[X], Variance Var[X], and Standard Deviation',
+    description: 'Calculating the center and spread of a random variable.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Common Discrete Distributions (Binomial, Poisson, Geometric)',
+    description: 'Exploring key models for discrete random events.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Moment Generating Functions (MGFs) for Discrete R.V.s',
+    description: 'A powerful tool for analyzing distributions.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Probability Density Functions (PDF) and CDF',
+    description: 'Describing the probabilities of continuous outcomes.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Expected Value and Variance via Integration',
+    description: 'Applying calculus to find the moments of continuous variables.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Common Continuous Distributions (Uniform, Exponential, Gamma)',
+    description: 'Exploring key models for continuous random events.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'MGFs for Continuous R.V.s',
+    description: 'Extending moment generating functions to continuous cases.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Joint PMFs and Joint PDFs',
+    description: 'Modeling the behavior of multiple random variables at once.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Marginal and Conditional Distributions',
+    description: "Isolating one variable's behavior from a joint distribution.",
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Covariance Cov(X, Y) and Correlation ρ',
+    description: 'Measuring how two random variables move together.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-1',
+    title: 'Independence of Random Variables',
+    description: 'Defining when two variables have no influence on each other.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
 
   // Module 2: Key Distributions & Asymptotic Theory
-  createAdvancedStatTopic('stats-mod-2', 'Properties of the Normal Distribution and the Z-Score', 'Mastering the bell curve and standardization.'),
-  createAdvancedStatTopic('stats-mod-2', 'Linear Combinations of Independent Normal Random Variables', 'Understanding how normal variables combine.'),
-  createAdvancedStatTopic('stats-mod-2', 'Multivariate Normal Distribution', 'The cornerstone of modern portfolio theory.'),
-  createAdvancedStatTopic('stats-mod-2', 'Marginal and Conditional Distributions of Multivariate Normal', 'Dissecting multi-asset models.'),
-  createAdvancedStatTopic('stats-mod-2', 'Applications in Portfolio Theory and Financial Modeling', 'Putting the multivariate normal to practical use.'),
-  createAdvancedStatTopic('stats-mod-2', "The t-Distribution (Student's t)", 'The essential tool for inference with small samples.'),
-  createAdvancedStatTopic('stats-mod-2', 'The χ² (Chi-Squared) Distribution', 'The basis for tests of variance and goodness-of-fit.'),
-  createAdvancedStatTopic('stats-mod-2', 'The F-Distribution (Fisher–Snedecor)', 'The key to comparing variances between two groups (ANOVA).'),
-  createAdvancedStatTopic('stats-mod-2', 'Convergence in Probability and the Weak Law of Large Numbers (WLLN)', 'Why casino averages are so stable.'),
-  createAdvancedStatTopic('stats-mod-2', 'Convergence in Distribution and the Central Limit Theorem (CLT)', 'Why the normal distribution is everywhere.'),
-  createAdvancedStatTopic('stats-mod-2', "Slutsky's Theorem and the Delta Method", 'Tools for approximating the distribution of functions of random variables.'),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'Properties of the Normal Distribution and the Z-Score',
+    description: 'Mastering the bell curve and standardization.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'Linear Combinations of Independent Normal Random Variables',
+    description: 'Understanding how normal variables combine.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'Multivariate Normal Distribution',
+    description: 'The cornerstone of modern portfolio theory.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'Marginal and Conditional Distributions of Multivariate Normal',
+    description: 'Dissecting multi-asset models.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'Applications in Portfolio Theory and Financial Modeling',
+    description: 'Putting the multivariate normal to practical use.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: "The t-Distribution (Student's t)",
+    description: 'The essential tool for inference with small samples.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'The χ² (Chi-Squared) Distribution',
+    description: 'The basis for tests of variance and goodness-of-fit.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'The F-Distribution (Fisher–Snedecor)',
+    description: 'The key to comparing variances between two groups (ANOVA).',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'Convergence in Probability and the Weak Law of Large Numbers (WLLN)',
+    description: 'Why casino averages are so stable.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: 'Convergence in Distribution and the Central Limit Theorem (CLT)',
+    description: 'Why the normal distribution is everywhere.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-2',
+    title: "Slutsky's Theorem and the Delta Method",
+    description: 'Tools for approximating the distribution of functions of random variables.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
   
   // Module 3: Statistical Inference & Estimation Theory
-  createAdvancedStatTopic('stats-mod-3', 'Definition of a Statistic and an Estimator', 'Distinguishing between a function of data and a guess for a parameter.'),
-  createAdvancedStatTopic('stats-mod-3', 'Unbiasedness, Bias, and Asymptotic Unbiasedness', 'Evaluating the accuracy of estimators.'),
-  createAdvancedStatTopic('stats-mod-3', 'Efficiency and the Cramér-Rao Lower Bound (CRLB)', 'Finding the "best" possible unbiased estimator.'),
-  createAdvancedStatTopic('stats-mod-3', 'Consistency and Sufficiency', 'Properties of estimators that improve with more data.'),
-  createAdvancedStatTopic('stats-mod-3', 'Method of Moments (MoM) Estimation', 'A straightforward technique for finding estimators.'),
-  createAdvancedStatTopic('stats-mod-3', 'Maximum Likelihood Estimation (MLE)', 'The most important method for parameter estimation in finance.'),
-  createAdvancedStatTopic('stats-mod-3', 'Finding MLE Estimates via Optimization', 'The practical side of implementing MLE.'),
-  createAdvancedStatTopic('stats-mod-3', 'General Construction of Confidence Intervals (CIs)', 'A framework for creating intervals for any parameter.'),
-  createAdvancedStatTopic('stats-mod-3', 'Deriving CIs for Mean and Variance', 'Using t, χ², and Z pivotal quantities to build intervals.'),
-  createAdvancedStatTopic('stats-mod-3', 'Null vs. Alternative Hypotheses, Type I and II Errors', 'The fundamental setup of all hypothesis tests.'),
-  createAdvancedStatTopic('stats-mod-3', 'Neyman-Pearson Lemma for Optimal Tests', 'Finding the most powerful test for a given significance level.'),
-  createAdvancedStatTopic('stats-mod-3', "Likelihood Ratio Tests (LRT) and Wilks' Theorem", 'A general method for comparing nested models.'),
-  createAdvancedStatTopic('stats-mod-3', 'Testing with p-values and Critical Regions', 'The two equivalent approaches to making a statistical decision.'),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Definition of a Statistic and an Estimator',
+    description: 'Distinguishing between a function of data and a guess for a parameter.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Unbiasedness, Bias, and Asymptotic Unbiasedness',
+    description: 'Evaluating the accuracy of estimators.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Efficiency and the Cramér-Rao Lower Bound (CRLB)',
+    description: 'Finding the "best" possible unbiased estimator.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Consistency and Sufficiency',
+    description: 'Properties of estimators that improve with more data.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Method of Moments (MoM) Estimation',
+    description: 'A straightforward technique for finding estimators.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Maximum Likelihood Estimation (MLE)',
+    description: 'The most important method for parameter estimation in finance.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Finding MLE Estimates via Optimization',
+    description: 'The practical side of implementing MLE.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'General Construction of Confidence Intervals (CIs)',
+    description: 'A framework for creating intervals for any parameter.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Deriving CIs for Mean and Variance',
+    description: 'Using t, χ², and Z pivotal quantities to build intervals.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Null vs. Alternative Hypotheses, Type I and II Errors',
+    description: 'The fundamental setup of all hypothesis tests.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Neyman-Pearson Lemma for Optimal Tests',
+    description: 'Finding the most powerful test for a given significance level.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: "Likelihood Ratio Tests (LRT) and Wilks' Theorem",
+    description: 'A general method for comparing nested models.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-3',
+    title: 'Testing with p-values and Critical Regions',
+    description: 'The two equivalent approaches to making a statistical decision.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
   
   // Module 4: Linear Modeling & Econometrics
-  createAdvancedStatTopic('stats-mod-4', 'Simple Linear Regression (SLR)', 'Modeling the relationship between two variables.'),
-  createAdvancedStatTopic('stats-mod-4', 'Derivation of the OLS Estimators', 'The calculus behind finding the "best fit" line.'),
-  createAdvancedStatTopic('stats-mod-4', 'Properties of the Fitted Model (R-Squared, Residuals)', 'Assessing how well your linear model fits the data.'),
-  createAdvancedStatTopic('stats-mod-4', 'Multiple Linear Regression (MLR) in Matrix Form', 'Extending SLR to multiple predictors using linear algebra.'),
-  createAdvancedStatTopic('stats-mod-4', 'Derivation of the MLR OLS Estimator', 'The matrix algebra for solving a multiple regression problem.'),
-  createAdvancedStatTopic('stats-mod-4', 'Gauss-Markov Theorem and the BLUE Property', 'The theoretical justification for using OLS.'),
-  createAdvancedStatTopic('stats-mod-4', 't-tests for Individual Coefficients', 'Testing the significance of a single predictor.'),
-  createAdvancedStatTopic('stats-mod-4', 'F-tests for Joint Hypotheses and Overall Model Significance', 'Testing the significance of a group of predictors or the entire model.'),
-  createAdvancedStatTopic('stats-mod-4', 'Model Assumptions (Linearity, Exogeneity, Homoskedasticity)', 'The critical assumptions that must hold for OLS to be valid.'),
-  createAdvancedStatTopic('stats-mod-4', 'Multicollinearity and Variance Inflation Factor (VIF)', 'Diagnosing when predictors are too correlated with each other.'),
-  createAdvancedStatTopic('stats-mod-4', 'Heteroskedasticity: Detection and Robust Standard Errors', 'Handling non-constant variance in the error terms.'),
-  createAdvancedStatTopic('stats-mod-4', 'Autocorrelation: Durbin-Watson Test', 'Detecting patterns in the error terms over time.'),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Simple Linear Regression (SLR)',
+    description: 'Modeling the relationship between two variables.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Derivation of the OLS Estimators',
+    description: 'The calculus behind finding the "best fit" line.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Properties of the Fitted Model (R-Squared, Residuals)',
+    description: 'Assessing how well your linear model fits the data.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Multiple Linear Regression (MLR) in Matrix Form',
+    description: 'Extending SLR to multiple predictors using linear algebra.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Derivation of the MLR OLS Estimator',
+    description: 'The matrix algebra for solving a multiple regression problem.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Gauss-Markov Theorem and the BLUE Property',
+    description: 'The theoretical justification for using OLS.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 't-tests for Individual Coefficients',
+    description: 'Testing the significance of a single predictor.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'F-tests for Joint Hypotheses and Overall Model Significance',
+    description: 'Testing the significance of a group of predictors or the entire model.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Model Assumptions (Linearity, Exogeneity, Homoskedasticity)',
+    description: 'The critical assumptions that must hold for OLS to be valid.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Multicollinearity and Variance Inflation Factor (VIF)',
+    description: 'Diagnosing when predictors are too correlated with each other.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Heteroskedasticity: Detection and Robust Standard Errors',
+    description: 'Handling non-constant variance in the error terms.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-4',
+    title: 'Autocorrelation: Durbin-Watson Test',
+    description: 'Detecting patterns in the error terms over time.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
 
   // Module 5: Time Series Analysis & Computational Methods
-  createAdvancedStatTopic('stats-mod-5', 'Characteristics of Time Series: Trend, Seasonality, Cycles', 'Decomposing the components of a time series.'),
-  createAdvancedStatTopic('stats-mod-5', 'Strict vs. Weak Stationarity', 'The most important property for modeling time series data.'),
-  createAdvancedStatTopic('stats-mod-5', 'Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF)', 'The key tools for identifying the structure of a time series.'),
-  createAdvancedStatTopic('stats-mod-5', 'ARIMA Models', 'A class of models for forecasting time series data.'),
-  createAdvancedStatTopic('stats-mod-5', 'GARCH Models for Volatility', 'Modeling the changing volatility of financial returns.'),
-  createAdvancedStatTopic('stats-mod-5', 'Monte Carlo Simulation for Pricing and Risk', 'Using random simulation to solve complex problems.'),
-  createAdvancedStatTopic('stats-mod-5', 'Bootstrapping for Estimating Standard Errors', 'A powerful resampling method for inference.'),
-  createAdvancedStatTopic('stats-mod-5', 'Jackknife Resampling Techniques', 'A related method for bias and variance estimation.'),
-  createAdvancedStatTopic('stats-mod-5', 'Introduction to Random Walks and Martingales', 'The mathematical foundation of efficient markets.'),
-  createAdvancedStatTopic('stats-mod-5', 'Geometric Brownian Motion (GBM)', 'The standard model for stock price paths.'),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'Characteristics of Time Series: Trend, Seasonality, Cycles',
+    description: 'Decomposing the components of a time series.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'Strict vs. Weak Stationarity',
+    description: 'The most important property for modeling time series data.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF)',
+    description: 'The key tools for identifying the structure of a time series.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'ARIMA Models',
+    description: 'A class of models for forecasting time series data.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'GARCH Models for Volatility',
+    description: 'Modeling the changing volatility of financial returns.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'Monte Carlo Simulation for Pricing and Risk',
+    description: 'Using random simulation to solve complex problems.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'Bootstrapping for Estimating Standard Errors',
+    description: 'A powerful resampling method for inference.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'Jackknife Resampling Techniques',
+    description: 'A related method for bias and variance estimation.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'Introduction to Random Walks and Martingales',
+    description: 'The mathematical foundation of efficient markets.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-5',
+    title: 'Geometric Brownian Motion (GBM)',
+    description: 'The standard model for stock price paths.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
 
   // Module 6: Advanced Quant Modeling & Numerical Methods
-  createAdvancedStatTopic('stats-mod-6', 'Generalized Linear Models (GLMs)', 'Extending linear models to non-normal data.'),
-  createAdvancedStatTopic('stats-mod-6', 'Logistic Regression for Binary Outcomes', 'Modeling probabilities, such as the probability of default.'),
-  createAdvancedStatTopic('stats-mod-6', 'Poisson Regression for Count Data', 'Modeling the frequency of events.'),
-  createAdvancedStatTopic('stats-mod-6', 'Ridge Regression (L2 Penalty)', "A technique to handle multicollinearity and prevent overfitting."),
-  createAdvancedStatTopic('stats-mod-6', 'LASSO Regression (L1 Penalty) for Feature Selection', 'A powerful method for automatically selecting important variables.'),
-  createAdvancedStatTopic('stats-mod-6', 'Cross-Validation for Hyperparameter Tuning', 'The gold standard for selecting model parameters.'),
-  createAdvancedStatTopic('stats-mod-6', 'Bayesian Inference: Priors, Likelihood, and Posteriors', 'An alternative framework for statistical inference.'),
-  createAdvancedStatTopic('stats-mod-6', 'Markov Chain Monte Carlo (MCMC)', 'The computational engine behind modern Bayesian analysis.'),
-  createAdvancedStatTopic('stats-mod-6', 'Numerical Optimization: Newton-Raphson & Gradient Descent', 'The algorithms that power MLE and machine learning.'),
-  createAdvancedStatTopic('stats-mod-6', 'Implementing OLS and MLE in Python/R', 'Practical coding examples of core statistical techniques.'),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Generalized Linear Models (GLMs)',
+    description: 'Extending linear models to non-normal data.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Logistic Regression for Binary Outcomes',
+    description: 'Modeling probabilities, such as the probability of default.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Poisson Regression for Count Data',
+    description: 'Modeling the frequency of events.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Ridge Regression (L2 Penalty)',
+    description: "A technique to handle multicollinearity and prevent overfitting.",
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'LASSO Regression (L1 Penalty) for Feature Selection',
+    description: 'A powerful method for automatically selecting important variables.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Cross-Validation for Hyperparameter Tuning',
+    description: 'The gold standard for selecting model parameters.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Bayesian Inference: Priors, Likelihood, and Posteriors',
+    description: 'An alternative framework for statistical inference.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Markov Chain Monte Carlo (MCMC)',
+    description: 'The computational engine behind modern Bayesian analysis.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Numerical Optimization: Newton-Raphson & Gradient Descent',
+    description: 'The algorithms that power MLE and machine learning.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
+  createTopic({
+    parent: 'stats-mod-6',
+    title: 'Implementing OLS and MLE in Python/R',
+    description: 'Practical coding examples of core statistical techniques.',
+    category: 'sub-topic', pathPrefix: 'statistics',
+  }),
 ];

@@ -26,6 +26,15 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
   };
 }
 
+// Statically generate all topic pages at build time
+export async function generateStaticParams() {
+  return allTopics
+    .filter(topic => topic.href.startsWith('/topics/')) // Only generate for this route segment
+    .map(topic => ({
+      slug: topic.id,
+    }));
+}
+
 // This is the main server component for the page.
 export default async function TopicPage({ params }: TopicPageProps) {
   const { slug } = await params;
