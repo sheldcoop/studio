@@ -38,6 +38,11 @@ const links = [
     label: 'Community',
     icon: 'Users',
   },
+  {
+    href: '/topics',
+    label: 'All Topics',
+    icon: 'BookCopy',
+  },
 ];
 
 type MainNavProps = {
