@@ -182,7 +182,8 @@ export const statisticsTopics: Topic[] = [
     description: 'Interactive guide to mean, median, mode, variance, skewness, and kurtosis.',
     category: 'sub-topic',
     parent: 'stats-foundations',
-    pathPrefix: 'statistics-for-quantitative-finance',
+    pathPrefix: 'probability-toolkit',
+    href: '/probability'
   }),
   createTopic({
     id: 'normal-distribution',

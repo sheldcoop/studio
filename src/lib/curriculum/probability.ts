@@ -10,7 +10,7 @@ export const probabilityTopics: Topic[] = [
     description: 'A framework for updating beliefs with new evidence.',
     category: 'probability',
     parent: 'prob-core-tools',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'law-of-large-numbers',
@@ -29,7 +29,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling a single trial with two outcomes.',
     category: 'probability',
     parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'binomial-distribution',
@@ -38,7 +38,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling a series of success/fail trials.',
     category: 'probability',
     parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'poisson-distribution',
@@ -47,7 +47,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling the frequency of rare events.',
     category: 'probability',
     parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'geometric-distribution',
@@ -56,7 +56,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling trials until the first success.',
     category: 'probability',
     parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'hypergeometric-distribution',
@@ -65,7 +65,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling sampling without replacement.',
     category: 'probability',
     parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'negative-binomial-distribution',
@@ -74,7 +74,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling trials until a set number of successes.',
     category: 'probability',
     parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'discrete-uniform-distribution',
@@ -83,7 +83,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling where all outcomes are equally likely.',
     category: 'probability',
     parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'multinomial-distribution',
@@ -92,7 +92,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Generalizing the Binomial for multiple outcomes.',
     category: 'probability',
     parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'gamma-distribution',
@@ -101,7 +101,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling waiting times and skewed data.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'beta-distribution',
@@ -110,7 +110,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling probabilities, percentages, and proportions.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'exponential-distribution',
@@ -119,7 +119,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling the time between events in a Poisson process.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'cauchy-distribution',
@@ -128,7 +128,7 @@ export const probabilityTopics: Topic[] = [
     description: "Modeling extreme events and 'fat-tailed' phenomena.",
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'laplace-distribution',
@@ -137,7 +137,7 @@ export const probabilityTopics: Topic[] = [
     description: "Modeling with a sharp peak and 'fat tails'.",
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'lognormal-distribution',
@@ -147,7 +147,6 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
     parent: 'prob-dist-continuous',
     pathPrefix: 'statistics-for-quantitative-finance',
-    href: '/paths/statistics-for-quantitative-finance/lognormal-distribution',
   }),
   createTopic({
     id: 'f-distribution',
@@ -156,7 +155,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Comparing variances between two or more samples.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'students-t-distribution',
@@ -165,7 +164,7 @@ export const probabilityTopics: Topic[] = [
     description: 'The backbone of hypothesis testing with small sample sizes.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'weibull-distribution',
@@ -174,7 +173,7 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling time-to-failure and event durations.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'logistic-distribution',
@@ -183,7 +182,7 @@ export const probabilityTopics: Topic[] = [
     description: 'A key distribution in machine learning and growth modeling.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
   createTopic({
     id: 'chi-squared-distribution',
@@ -192,6 +191,6 @@ export const probabilityTopics: Topic[] = [
     description: 'The distribution of the sum of squared standard normal deviates.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'probability',
+    pathPrefix: 'probability-toolkit',
   }),
 ];
