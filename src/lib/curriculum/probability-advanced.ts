@@ -138,21 +138,6 @@ export const probabilityAdvancedTopics: Topic[] = [
     }),
     createTopic({
         parent: 'prob-quant-mod-3',
-        id: 'covariance-and-correlation',
-        href: '/topics/pearson-correlation',
-        title: 'Covariance & Correlation',
-        icon: 'TrendingUp',
-        description: "Measuring how two random variables move together.",
-        category: 'sub-topic',
-        duration: 25,
-        subTopics: [
-            { id: 'multi-covariance-def', title: 'Defining Covariance' },
-            { id: 'multi-correlation-def', title: 'Defining Correlation' },
-            { id: 'multi-portfolio-app', title: 'Application in Portfolio Theory' },
-        ]
-    }),
-    createTopic({
-        parent: 'prob-quant-mod-3',
         id: 'law-of-large-numbers',
         title: 'The Law of Large Numbers (LLN)',
         previousSlugs: ['law-of-large-numbers-deep-dive'],
@@ -161,6 +146,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         description: "Why casino averages are so stable.",
         category: 'sub-topic',
         duration: 20,
+        parent: 'stats-foundations',
         subTopics: [
             { id: 'lln-weak', title: 'Weak Law (WLLN)' },
             { id: 'lln-strong', title: 'Strong Law (SLLN)' },
@@ -177,6 +163,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         description: "Why the normal distribution is everywhere.",
         category: 'sub-topic',
         duration: 30,
+        parent: 'stats-foundations',
         subTopics: [
             { id: 'clt-statement', title: 'The Theorem' },
             { id: 'clt-conditions', title: 'Conditions for CLT' },

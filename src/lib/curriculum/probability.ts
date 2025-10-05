@@ -21,15 +21,16 @@ export const probabilityTopics: Topic[] = [
     parent: 'prob-dist-discrete',
     pathPrefix: 'probability',
   }),
-  createTopic({
-    id: 'poisson-distribution',
-    title: 'Poisson Distribution',
-    icon: 'FunctionSquare',
-    description: 'Modeling the frequency of rare events.',
-    category: 'probability',
-    parent: 'prob-dist-discrete',
-    pathPrefix: 'probability',
-  }),
+  // Poisson is defined in advanced
+  // createTopic({
+  //   id: 'poisson-distribution',
+  //   title: 'Poisson Distribution',
+  //   icon: 'FunctionSquare',
+  //   description: 'Modeling the frequency of rare events.',
+  //   category: 'probability',
+  //   parent: 'prob-dist-discrete',
+  //   pathPrefix: 'probability',
+  // }),
   createTopic({
     id: 'geometric-distribution',
     title: 'Geometric Distribution',
@@ -93,7 +94,7 @@ export const probabilityTopics: Topic[] = [
     parent: 'prob-dist-continuous',
     pathPrefix: 'probability',
   }),
-  createTopic({
+   createTopic({
     id: 'exponential-distribution',
     title: 'Exponential Distribution',
     icon: 'FunctionSquare',
@@ -138,7 +139,7 @@ export const probabilityTopics: Topic[] = [
     parent: 'prob-dist-continuous',
     pathPrefix: 'probability',
   }),
-  createTopic({
+   createTopic({
     id: 'students-t-distribution',
     title: "Student's t-Distribution",
     icon: 'FunctionSquare',
@@ -165,7 +166,7 @@ export const probabilityTopics: Topic[] = [
     parent: 'prob-dist-continuous',
     pathPrefix: 'probability',
   }),
-  createTopic({
+   createTopic({
     id: 'chi-squared-distribution',
     title: 'Chi-Squared (χ²) Distribution',
     icon: 'FunctionSquare',

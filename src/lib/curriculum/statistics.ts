@@ -194,15 +194,6 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'statistics'
   }),
   createTopic({
-    id: 'central-limit-theorem',
-    title: 'The Central Limit Theorem (CLT)',
-    icon: 'FunctionSquare',
-    description: 'Discover how order emerges from chaos.',
-    category: 'sub-topic',
-    parent: 'stats-foundations',
-    pathPrefix: 'topics'
-  }),
-  createTopic({
     id: 'type-i-and-type-ii-errors',
     title: 'Type I & Type II Errors',
     icon: 'FunctionSquare',
@@ -323,6 +314,7 @@ export const statisticsTopics: Topic[] = [
   }),
   createTopic({
     parent: 'stats-mod-1',
+    id: 'conditional-probability-and-independence',
     title: 'Conditional Probability and Independence',
     description: 'How the occurrence of one event affects another.',
     category: 'sub-topic', pathPrefix: 'statistics',
@@ -347,6 +339,7 @@ export const statisticsTopics: Topic[] = [
   }),
   createTopic({
     parent: 'stats-mod-1',
+    id: 'common-discrete-distributions',
     title: 'Common Discrete Distributions (Binomial, Poisson, Geometric)',
     description: 'Exploring key models for discrete random events.',
     category: 'sub-topic', pathPrefix: 'statistics',
@@ -371,6 +364,7 @@ export const statisticsTopics: Topic[] = [
   }),
   createTopic({
     parent: 'stats-mod-1',
+    id: 'common-continuous-distributions',
     title: 'Common Continuous Distributions (Uniform, Exponential, Gamma)',
     description: 'Exploring key models for continuous random events.',
     category: 'sub-topic', pathPrefix: 'statistics',
