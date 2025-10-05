@@ -1,157 +1,118 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { allTopics } from '@/lib/curriculum';
-import { TopicPageClient } from '@/components/app/topic-page-client';
 
-// Dynamically import all the content components for our topics
-import BayesTheoremPage from '@/app/(app)/quantlab/bayes-theorem/component';
-import BernoulliDistributionPage from '@/app/(app)/quantlab/bernoulli-distribution/component';
-import BetaDistributionPage from '@/app/(app)/quantlab/beta-distribution/component';
-import BinomialDistributionPage from '@/app/(app)/quantlab/binomial-distribution/component';
-import CauchyDistributionPage from '@/app/(app)/quantlab/cauchy-distribution/component';
-import ChiSquaredDistributionPage from '@/app/(app)/quantlab/chi-squared-distribution/component';
-import DiscreteUniformDistributionPage from '@/app/(app)/quantlab/discrete-uniform-distribution/component';
-import ExponentialDistributionPage from '@/app/(app)/quantlab/exponential-distribution/component';
-import FDistributionPage from '@/app/(app)/quantlab/f-distribution/component';
-import GammaDistributionPage from '@/app/(app)/quantlab/gamma-distribution/component';
-import GeometricDistributionPage from '@/app/(app)/quantlab/geometric-distribution/component';
-import HypergeometricDistributionPage from '@/app/(app)/quantlab/hypergeometric-distribution/component';
-import LaplaceDistributionPage from '@/app/(app)/quantlab/laplace-distribution/component';
-import LogisticDistributionPage from '@/app/(app)/quantlab/logistic-distribution/component';
-import MultinomialDistributionPage from '@/app/(app)/quantlab/multinomial-distribution/component';
-import NegativeBinomialDistributionPage from '@/app/(app)/quantlab/negative-binomial-distribution/component';
-import PoissonDistributionPage from '@/app/(app)/quantlab/poisson-distribution/component';
-import TDistributionPage from '@/app/(app)/quantlab/students-t-distribution/component';
-import WeibullDistributionPage from '@/app/(app)/quantlab/weibull-distribution/component';
-import CLTPage from '@/app/(app)/quantlab/central-limit-theorem/component';
-import DescriptiveStatsPage from '@/app/(app)/quantlab/descriptive-statistics-explorer/component';
-import ZTablePage from '@/app/(app)/quantlab/z-table/component';
-import ConfidenceIntervalsPage from '@/app/(app)/quantlab/confidence-intervals/component';
-import MentalMathPage from '@/app/(app)/topics/mental-math/page';
-import MonteCarloPage from '@/app/(app)/quantlab/monte-carlo-simulation/component';
-import TimeSeriesDecompositionPage from '@/app/(app)/quantlab/time-series-decomposition/component';
-import AcfPacfPage from '@/app/(app)/quantlab/autocorrelation-acf-pacf/component';
-import GarchPage from '@/app/(app)/quantlab/volatility-garch/component';
-import EfficientFrontierPage from '@/app/(app)/quantlab/efficient-frontier-sharpe-ratio/component';
-import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/component';
-import ItosLemmaPage from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/component';
+'use client';
 
+import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { PageHeader } from '@/components/app/page-header';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ReferenceLine } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
+import { BlockMath, InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
-type TopicPageProps = {
-  params: Promise<{ pathSlug: string; topicSlug: string }>;
+// --- Math & Simulation Logic ---
+const generatePortfolio = (mu1: number, mu2: number, sigma1: number, sigma2: number, rho: number) => {
+  const portfolios = [];
+  for (let i = 0; i <= 100; i++) {
+    const w1 = i / 100;
+    const w2 = 1 - w1;
+    const portfolioReturn = w1 * mu1 + w2 * mu2;
+    const portfolioVolatility = Math.sqrt(
+      w1**2 * sigma1**2 + w2**2 * sigma2**2 + 2 * w1 * w2 * rho * sigma1 * sigma2
+    );
+    portfolios.push({ vol: portfolioVolatility, ret: portfolioReturn });
+  }
+  return portfolios;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
-
-// Statically generate all topic pages at build time
-export async function generateStaticParams() {
-  return allTopics
-    .filter(topic => topic.category !== 'parent' && topic.href !== '#') // Only generate real pages
-    .map(topic => {
-      const parts = topic.href.split('/').filter(Boolean);
-      // Expected format: ['paths', pathSlug, topicSlug] or ['quantlab', topicSlug] etc.
-      if (parts[0] === 'paths' && parts.length === 3) {
-          return {
-            pathSlug: parts[1],
-            topicSlug: parts[2],
-          };
-      }
-      return null;
-    }).filter(Boolean) as { pathSlug: string; topicSlug: string }[];
-}
-
-
-// This function generates metadata for the page based on the slug.
-export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const { topicSlug } = await params;
-  const topicInfo = allTopics.find((t) => t.id === topicSlug);
-
-  if (!topicInfo) {
-    return {
-      title: 'Topic Not Found',
-    };
-  }
-  
-  const pageUrl = new URL(topicInfo.href, SITE_URL).toString();
-
-  return {
-    title: topicInfo.seoTitle || topicInfo.title,
-    description: topicInfo.metaDescription || topicInfo.description,
-    alternates: {
-      canonical: pageUrl,
-    },
-    openGraph: {
-      title: topicInfo.ogTitle || topicInfo.title,
-      description: topicInfo.ogDescription || topicInfo.description,
-      url: pageUrl,
-      type: 'article',
-      images: [
-        {
-          url: topicInfo.ogImage || new URL('/og-image.png', SITE_URL).toString(),
-          width: 1200,
-          height: 630,
-          alt: topicInfo.title,
-        },
-      ],
-    },
-  };
-}
-
-// A map to associate topic slugs with their corresponding page components.
-const topicComponentMap: { [key: string]: React.ComponentType } = {
-  'bayes-theorem': BayesTheoremPage,
-  'bernoulli-distribution': BernoulliDistributionPage,
-  'beta-distribution': BetaDistributionPage,
-  'binomial-distribution': BinomialDistributionPage,
-  'cauchy-distribution': CauchyDistributionPage,
-  'chi-squared-distribution': ChiSquaredDistributionPage,
-  'discrete-uniform-distribution': DiscreteUniformDistributionPage,
-  'exponential-distribution': ExponentialDistributionPage,
-  'f-distribution': FDistributionPage,
-  'gamma-distribution': GammaDistributionPage,
-  'geometric-distribution': GeometricDistributionPage,
-  'hypergeometric-distribution': HypergeometricDistributionPage,
-  'laplace-distribution': LaplaceDistributionPage,
-  'logistic-distribution': LogisticDistributionPage,
-  'multinomial-distribution': MultinomialDistributionPage,
-  'negative-binomial-distribution': NegativeBinomialDistributionPage,
-  'poisson-distribution': PoissonDistributionPage,
-  'students-t-distribution': TDistributionPage,
-  'weibull-distribution': WeibullDistributionPage,
-  'central-limit-theorem': CLTPage,
-  'descriptive-statistics-explorer': DescriptiveStatsPage,
-  'z-table': ZTablePage,
-  'confidence-intervals': ConfidenceIntervalsPage,
-  'mental-math': MentalMathPage,
-  'monte-carlo-simulation': MonteCarloPage,
-  'time-series-decomposition': TimeSeriesDecompositionPage,
-  'autocorrelation-acf-pacf': AcfPacfPage,
-  'volatility-garch': GarchPage,
-  'efficient-frontier-sharpe-ratio': EfficientFrontierPage,
-  'kalman-filters': KalmanFilterPage,
-  'stochastic-calculus-itos-lemma': ItosLemmaPage,
+// --- Chart Component ---
+const EfficientFrontierChart = ({ portfolios }: { portfolios: { vol: number; ret: number }[] }) => {
+  return (
+    <ChartContainer config={{}} className="h-[350px] w-full">
+      <ScatterChart>
+        <CartesianGrid />
+        <XAxis type="number" dataKey="vol" name="Volatility (Std. Dev.)" label={{ value: "Volatility", position: 'insideBottom', offset: -5 }} domain={['dataMin', 'dataMax']} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
+        <YAxis type="number" dataKey="ret" name="Expected Return" label={{ value: "Return", angle: -90, position: 'insideLeft' }} domain={['dataMin', 'dataMax']} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
+        <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<ChartTooltipContent formatter={(value, name) => [`${(Number(value) * 100).toFixed(1)}%`, name === 'vol' ? 'Volatility' : 'Return']} />} />
+        <Scatter name="Portfolios" data={portfolios} fill="hsl(var(--primary))" />
+      </ScatterChart>
+    </ChartContainer>
+  );
 };
 
+const DynamicEfficientFrontierChart = dynamic(() => Promise.resolve(EfficientFrontierChart), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[350px] w-full" />,
+});
 
-// This is the main server component for the page.
-export default async function TopicPage({ params }: TopicPageProps) {
-  const { pathSlug, topicSlug } = await params;
-  
-  // Find the topic by its unique ID, which is the slug.
-  const topicInfo = allTopics.find((t) => t.id === topicSlug);
-  
-  if (!topicInfo) {
-    notFound();
-  }
 
-  // Look up the component in our map.
-  const TopicComponent = topicComponentMap[topicSlug];
-  
-  // If we find a specific component for this topic, render it.
-  if (TopicComponent) {
-    return <TopicComponent />;
-  }
+// --- Main Page Component ---
+export default function EfficientFrontierComponent() {
+    const [rho, setRho] = useState(0.2); // Correlation
+    const portfolios = useMemo(() => generatePortfolio(0.08, 0.15, 0.12, 0.25, rho), [rho]);
 
-  // Otherwise, fall back to the generic TopicPageClient for structured content.
-  return <TopicPageClient topicInfo={topicInfo} />;
+  return (
+    <>
+      <PageHeader
+        title="Efficient Frontier & Sharpe Ratio"
+        description="The cornerstone of modern portfolio theory: maximizing return for a given level of risk."
+        variant="aligned-left"
+      />
+      <div className="mx-auto max-w-5xl space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">What is the Efficient Frontier?</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
+            <p>
+              The Efficient Frontier, introduced by Harry Markowitz, is a set of optimal portfolios that offer the highest expected return for a defined level of risk or the lowest risk for a given level of expected return. Portfolios that lie below the frontier are sub-optimal because they do not provide enough return for the level of risk. Portfolios above the frontier are impossible to achieve.
+            </p>
+            <p>
+              For a quant, this is the fundamental concept behind portfolio construction. It demonstrates that the benefit of diversification (combining assets with low correlation) can lead to a portfolio with better risk-return characteristics than any single asset alone.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Sharpe Ratio</CardTitle>
+                 <CardDescription>To find the single "best" portfolio on the frontier, we use the Sharpe Ratio.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="rounded-lg border bg-muted/50 p-4 text-center">
+                  <BlockMath math="S_p = \frac{R_p - R_f}{\sigma_p}" />
+                </div>
+                 <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                    <li><InlineMath math="R_p" /> is the return of the portfolio.</li>
+                    <li><InlineMath math="R_f" /> is the risk-free rate.</li>
+                    <li><InlineMath math="\sigma_p" /> is the volatility of the portfolio.</li>
+                </ul>
+                <p className="mt-4">The portfolio with the highest Sharpe Ratio is the one that provides the best return per unit of risk. It's the point on the efficient frontier that is tangent to a line drawn from the risk-free rate (the Capital Allocation Line).</p>
+            </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">Interactive Two-Asset Frontier</CardTitle>
+            <CardDescription>
+                Observe how the correlation (<InlineMath math="\rho" />) between two assets changes the shape of the efficient frontier. A lower correlation allows for better diversification.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mx-auto max-w-md mb-6">
+                <div className="space-y-3">
+                    <Label htmlFor="rho-slider">Correlation (ρ): {rho.toFixed(2)}</Label>
+                    <Slider id="rho-slider" min={-1} max={1} step={0.01} value={[rho]} onValueChange={(val) => setRho(val[0])} />
+                </div>
+            </div>
+            
+            <DynamicEfficientFrontierChart portfolios={portfolios} />
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  );
 }

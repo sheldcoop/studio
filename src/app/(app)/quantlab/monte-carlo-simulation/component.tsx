@@ -1,157 +1,190 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { allTopics } from '@/lib/curriculum';
-import { TopicPageClient } from '@/components/app/topic-page-client';
 
-// Dynamically import all the content components for our topics
-import BayesTheoremPage from '@/app/(app)/quantlab/bayes-theorem/component';
-import BernoulliDistributionPage from '@/app/(app)/quantlab/bernoulli-distribution/component';
-import BetaDistributionPage from '@/app/(app)/quantlab/beta-distribution/component';
-import BinomialDistributionPage from '@/app/(app)/quantlab/binomial-distribution/component';
-import CauchyDistributionPage from '@/app/(app)/quantlab/cauchy-distribution/component';
-import ChiSquaredDistributionPage from '@/app/(app)/quantlab/chi-squared-distribution/component';
-import DiscreteUniformDistributionPage from '@/app/(app)/quantlab/discrete-uniform-distribution/component';
-import ExponentialDistributionPage from '@/app/(app)/quantlab/exponential-distribution/component';
-import FDistributionPage from '@/app/(app)/quantlab/f-distribution/component';
-import GammaDistributionPage from '@/app/(app)/quantlab/gamma-distribution/component';
-import GeometricDistributionPage from '@/app/(app)/quantlab/geometric-distribution/component';
-import HypergeometricDistributionPage from '@/app/(app)/quantlab/hypergeometric-distribution/component';
-import LaplaceDistributionPage from '@/app/(app)/quantlab/laplace-distribution/component';
-import LogisticDistributionPage from '@/app/(app)/quantlab/logistic-distribution/component';
-import MultinomialDistributionPage from '@/app/(app)/quantlab/multinomial-distribution/component';
-import NegativeBinomialDistributionPage from '@/app/(app)/quantlab/negative-binomial-distribution/component';
-import PoissonDistributionPage from '@/app/(app)/quantlab/poisson-distribution/component';
-import TDistributionPage from '@/app/(app)/quantlab/students-t-distribution/component';
-import WeibullDistributionPage from '@/app/(app)/quantlab/weibull-distribution/component';
-import CLTPage from '@/app/(app)/quantlab/central-limit-theorem/component';
-import DescriptiveStatsPage from '@/app/(app)/quantlab/descriptive-statistics-explorer/component';
-import ZTablePage from '@/app/(app)/quantlab/z-table/component';
-import ConfidenceIntervalsPage from '@/app/(app)/quantlab/confidence-intervals/component';
-import MentalMathPage from '@/app/(app)/topics/mental-math/page';
-import MonteCarloPage from '@/app/(app)/quantlab/monte-carlo-simulation/component';
-import TimeSeriesDecompositionPage from '@/app/(app)/quantlab/time-series-decomposition/component';
-import AcfPacfPage from '@/app/(app)/quantlab/autocorrelation-acf-pacf/component';
-import GarchPage from '@/app/(app)/quantlab/volatility-garch/component';
-import EfficientFrontierPage from '@/app/(app)/quantlab/efficient-frontier-sharpe-ratio/component';
-import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/component';
-import ItosLemmaPage from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/component';
+'use client';
 
+import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { PageHeader } from '@/components/app/page-header';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { Line, LineChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
+import { BlockMath, InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
-type TopicPageProps = {
-  params: Promise<{ pathSlug: string; topicSlug: string }>;
+// --- Math & Simulation Logic ---
+const generateGBMPath = (s0: number, mu: number, sigma: number, T: number, steps: number) => {
+  const dt = T / steps;
+  const path = [{ step: 0, price: s0 }];
+  let currentPrice = s0;
+  for (let i = 1; i <= steps; i++) {
+    const z = Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random()); // Standard normal
+    currentPrice *= Math.exp((mu - 0.5 * sigma**2) * dt + sigma * Math.sqrt(dt) * z);
+    path.push({ step: i, price: currentPrice });
+  }
+  return path;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
+// --- Chart Components ---
+const MonteCarloPathsChart = ({ paths }: { paths: { step: number; price: number }[][] }) => {
+  return (
+    <ChartContainer config={{}} className="h-[350px] w-full">
+      <LineChart>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="step" type="number" allowDuplicatedCategory={false} />
+        <YAxis domain={['dataMin', 'dataMax']} />
+        <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Price"]} />} />
+        {paths.map((path, index) => (
+          <Line key={index} data={path} type="monotone" dataKey="price" stroke="hsl(var(--primary))" opacity={0.2} dot={false} activeDot={false} />
+        ))}
+      </LineChart>
+    </ChartContainer>
+  );
+};
 
-// Statically generate all topic pages at build time
-export async function generateStaticParams() {
-  return allTopics
-    .filter(topic => topic.category !== 'parent' && topic.href !== '#') // Only generate real pages
-    .map(topic => {
-      const parts = topic.href.split('/').filter(Boolean);
-      // Expected format: ['paths', pathSlug, topicSlug] or ['quantlab', topicSlug] etc.
-      if (parts[0] === 'paths' && parts.length === 3) {
-          return {
-            pathSlug: parts[1],
-            topicSlug: parts[2],
-          };
-      }
-      return null;
-    }).filter(Boolean) as { pathSlug: string; topicSlug: string }[];
-}
+const MonteCarloDistributionChart = ({ finalPrices }: { finalPrices: number[] }) => {
+  const { histogramData, mean, stdDev } = useMemo(() => {
+    if (finalPrices.length === 0) return { histogramData: [], mean: 0, stdDev: 0 };
+    const min = Math.min(...finalPrices);
+    const max = Math.max(...finalPrices);
+    const bins = 30;
+    const binWidth = (max - min) / bins;
+    const hist = Array(bins).fill(0).map((_, i) => ({ name: (min + i * binWidth).toFixed(0), count: 0 }));
+    finalPrices.forEach(p => {
+      const binIndex = Math.floor((p - min) / binWidth);
+      if (binIndex >= 0 && binIndex < bins) hist[binIndex].count++;
+    });
+    return { histogramData: hist, mean: finalPrices.reduce((a, b) => a + b) / finalPrices.length, stdDev: Math.sqrt(finalPrices.map(x => Math.pow(x - (finalPrices.reduce((a, b) => a + b) / finalPrices.length), 2)).reduce((a, b) => a + b) / finalPrices.length) };
+  }, [finalPrices]);
 
+  return (
+    <div>
+        <ChartContainer config={{}} className="h-[300px] w-full">
+        <BarChart data={histogramData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip content={<ChartTooltipContent formatter={(value) => [value, "Frequency"]} />} />
+            <Bar dataKey="count" fill="hsl(var(--primary))" />
+        </BarChart>
+        </ChartContainer>
+        <div className="text-center text-xs text-muted-foreground mt-2">
+            Mean: {mean.toFixed(2)}, StdDev: {stdDev.toFixed(2)}
+        </div>
+    </div>
+  );
+};
 
-// This function generates metadata for the page based on the slug.
-export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const { topicSlug } = await params;
-  const topicInfo = allTopics.find((t) => t.id === topicSlug);
+const DynamicPathsChart = dynamic(() => Promise.resolve(MonteCarloPathsChart), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[350px] w-full" />,
+});
 
-  if (!topicInfo) {
-    return {
-      title: 'Topic Not Found',
+const DynamicDistributionChart = dynamic(() => Promise.resolve(MonteCarloDistributionChart), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[340px] w-full" />,
+});
+
+// --- Main Page Component ---
+export default function MonteCarloSimulationComponent() {
+    const [mu, setMu] = useState(0.08); // Drift
+    const [sigma, setSigma] = useState(0.20); // Volatility
+    const [numPaths, setNumPaths] = useState(50);
+    const [paths, setPaths] = useState<{ step: number; price: number }[][]>([]);
+    const [finalPrices, setFinalPrices] = useState<number[]>([]);
+
+    const runSimulation = () => {
+        const newPaths = [];
+        const newFinalPrices = [];
+        for (let i = 0; i < numPaths; i++) {
+            const path = generateGBMPath(100, mu, sigma, 1, 252);
+            newPaths.push(path);
+            newFinalPrices.push(path[path.length - 1].price);
+        }
+        setPaths(newPaths);
+        setFinalPrices(newFinalPrices);
     };
-  }
-  
-  const pageUrl = new URL(topicInfo.href, SITE_URL).toString();
+    
+    // Run once on load
+    useState(() => {
+        runSimulation();
+    });
 
-  return {
-    title: topicInfo.seoTitle || topicInfo.title,
-    description: topicInfo.metaDescription || topicInfo.description,
-    alternates: {
-      canonical: pageUrl,
-    },
-    openGraph: {
-      title: topicInfo.ogTitle || topicInfo.title,
-      description: topicInfo.ogDescription || topicInfo.description,
-      url: pageUrl,
-      type: 'article',
-      images: [
-        {
-          url: topicInfo.ogImage || new URL('/og-image.png', SITE_URL).toString(),
-          width: 1200,
-          height: 630,
-          alt: topicInfo.title,
-        },
-      ],
-    },
-  };
-}
+  return (
+    <>
+      <PageHeader
+        title="Monte Carlo Simulation"
+        description="Using randomness to solve complex problems, from pricing derivatives to modeling risk."
+        variant="aligned-left"
+      />
+      <div className="mx-auto max-w-5xl space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">What is Monte Carlo Simulation?</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
+            <p>
+              Monte Carlo simulation is a computational technique that uses repeated random sampling to obtain numerical results. In essence, it's about understanding the behavior of a system by simulating it a large number of times.
+            </p>
+            <p>
+              In quantitative finance, it's an indispensable tool. It's used to price complex "exotic" options that have no analytical solution, to estimate Value-at-Risk (VaR) for a portfolio, and to model the future performance of investment strategies. By simulating thousands of possible future scenarios, we can build a distribution of potential outcomes.
+            </p>
+          </CardContent>
+        </Card>
 
-// A map to associate topic slugs with their corresponding page components.
-const topicComponentMap: { [key: string]: React.ComponentType } = {
-  'bayes-theorem': BayesTheoremPage,
-  'bernoulli-distribution': BernoulliDistributionPage,
-  'beta-distribution': BetaDistributionPage,
-  'binomial-distribution': BinomialDistributionPage,
-  'cauchy-distribution': CauchyDistributionPage,
-  'chi-squared-distribution': ChiSquaredDistributionPage,
-  'discrete-uniform-distribution': DiscreteUniformDistributionPage,
-  'exponential-distribution': ExponentialDistributionPage,
-  'f-distribution': FDistributionPage,
-  'gamma-distribution': GammaDistributionPage,
-  'geometric-distribution': GeometricDistributionPage,
-  'hypergeometric-distribution': HypergeometricDistributionPage,
-  'laplace-distribution': LaplaceDistributionPage,
-  'logistic-distribution': LogisticDistributionPage,
-  'multinomial-distribution': MultinomialDistributionPage,
-  'negative-binomial-distribution': NegativeBinomialDistributionPage,
-  'poisson-distribution': PoissonDistributionPage,
-  'students-t-distribution': TDistributionPage,
-  'weibull-distribution': WeibullDistributionPage,
-  'central-limit-theorem': CLTPage,
-  'descriptive-statistics-explorer': DescriptiveStatsPage,
-  'z-table': ZTablePage,
-  'confidence-intervals': ConfidenceIntervalsPage,
-  'mental-math': MentalMathPage,
-  'monte-carlo-simulation': MonteCarloPage,
-  'time-series-decomposition': TimeSeriesDecompositionPage,
-  'autocorrelation-acf-pacf': AcfPacfPage,
-  'volatility-garch': GarchPage,
-  'efficient-frontier-sharpe-ratio': EfficientFrontierPage,
-  'kalman-filters': KalmanFilterPage,
-  'stochastic-calculus-itos-lemma': ItosLemmaPage,
-};
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Modeling Stock Prices with GBM</CardTitle>
+                 <CardDescription>A common use case is to model stock prices using Geometric Brownian Motion (GBM).</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <div className="rounded-lg border bg-muted/50 p-4 text-center">
+                  <BlockMath math="dS_t = \mu S_t dt + \sigma S_t dW_t" />
+                </div>
+                 <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                    <li><InlineMath math="S_t" /> is the stock price at time t.</li>
+                    <li><InlineMath math="\mu" /> (mu) is the "drift" or expected return.</li>
+                    <li><InlineMath math="\sigma" /> (sigma) is the volatility.</li>
+                    <li><InlineMath math="dW_t" /> is a Wiener process or Brownian motion, representing randomness.</li>
+                </ul>
+            </CardContent>
+        </Card>
 
-
-// This is the main server component for the page.
-export default async function TopicPage({ params }: TopicPageProps) {
-  const { pathSlug, topicSlug } = await params;
-  
-  // Find the topic by its unique ID, which is the slug.
-  const topicInfo = allTopics.find((t) => t.id === topicSlug);
-  
-  if (!topicInfo) {
-    notFound();
-  }
-
-  // Look up the component in our map.
-  const TopicComponent = topicComponentMap[topicSlug];
-  
-  // If we find a specific component for this topic, render it.
-  if (TopicComponent) {
-    return <TopicComponent />;
-  }
-
-  // Otherwise, fall back to the generic TopicPageClient for structured content.
-  return <TopicPageClient topicInfo={topicInfo} />;
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">Interactive GBM Simulator</CardTitle>
+            <CardDescription>Adjust the drift and volatility to see how they affect the simulated stock price paths over one year (252 trading days).</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                <div className="space-y-3">
+                    <Label htmlFor="mu-slider">Drift (μ): {(mu * 100).toFixed(1)}%</Label>
+                    <Slider id="mu-slider" min={-0.1} max={0.2} step={0.01} value={[mu]} onValueChange={(val) => setMu(val[0])} />
+                </div>
+                <div className="space-y-3">
+                    <Label htmlFor="sigma-slider">Volatility (σ): {(sigma * 100).toFixed(0)}%</Label>
+                    <Slider id="sigma-slider" min={0.05} max={0.8} step={0.01} value={[sigma]} onValueChange={(val) => setSigma(val[0])} />
+                </div>
+            </div>
+             <div className="flex justify-center mb-6">
+                 <Button onClick={runSimulation}>Run Simulation</Button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h4 className="font-semibold text-center mb-2">{paths.length} Simulated Price Paths</h4>
+                    <DynamicPathsChart paths={paths} />
+                </div>
+                <div>
+                    <h4 className="font-semibold text-center mb-2">Distribution of Final Prices</h4>
+                    <DynamicDistributionChart finalPrices={finalPrices} />
+                </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  );
 }

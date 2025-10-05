@@ -1,157 +1,113 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { allTopics } from '@/lib/curriculum';
-import { TopicPageClient } from '@/components/app/topic-page-client';
 
-// Dynamically import all the content components for our topics
-import BayesTheoremPage from '@/app/(app)/quantlab/bayes-theorem/component';
-import BernoulliDistributionPage from '@/app/(app)/quantlab/bernoulli-distribution/component';
-import BetaDistributionPage from '@/app/(app)/quantlab/beta-distribution/component';
-import BinomialDistributionPage from '@/app/(app)/quantlab/binomial-distribution/component';
-import CauchyDistributionPage from '@/app/(app)/quantlab/cauchy-distribution/component';
-import ChiSquaredDistributionPage from '@/app/(app)/quantlab/chi-squared-distribution/component';
-import DiscreteUniformDistributionPage from '@/app/(app)/quantlab/discrete-uniform-distribution/component';
-import ExponentialDistributionPage from '@/app/(app)/quantlab/exponential-distribution/component';
-import FDistributionPage from '@/app/(app)/quantlab/f-distribution/component';
-import GammaDistributionPage from '@/app/(app)/quantlab/gamma-distribution/component';
-import GeometricDistributionPage from '@/app/(app)/quantlab/geometric-distribution/component';
-import HypergeometricDistributionPage from '@/app/(app)/quantlab/hypergeometric-distribution/component';
-import LaplaceDistributionPage from '@/app/(app)/quantlab/laplace-distribution/component';
-import LogisticDistributionPage from '@/app/(app)/quantlab/logistic-distribution/component';
-import MultinomialDistributionPage from '@/app/(app)/quantlab/multinomial-distribution/component';
-import NegativeBinomialDistributionPage from '@/app/(app)/quantlab/negative-binomial-distribution/component';
-import PoissonDistributionPage from '@/app/(app)/quantlab/poisson-distribution/component';
-import TDistributionPage from '@/app/(app)/quantlab/students-t-distribution/component';
-import WeibullDistributionPage from '@/app/(app)/quantlab/weibull-distribution/component';
-import CLTPage from '@/app/(app)/quantlab/central-limit-theorem/component';
-import DescriptiveStatsPage from '@/app/(app)/quantlab/descriptive-statistics-explorer/component';
-import ZTablePage from '@/app/(app)/quantlab/z-table/component';
-import ConfidenceIntervalsPage from '@/app/(app)/quantlab/confidence-intervals/component';
-import MentalMathPage from '@/app/(app)/topics/mental-math/page';
-import MonteCarloPage from '@/app/(app)/quantlab/monte-carlo-simulation/component';
-import TimeSeriesDecompositionPage from '@/app/(app)/quantlab/time-series-decomposition/component';
-import AcfPacfPage from '@/app/(app)/quantlab/autocorrelation-acf-pacf/component';
-import GarchPage from '@/app/(app)/quantlab/volatility-garch/component';
-import EfficientFrontierPage from '@/app/(app)/quantlab/efficient-frontier-sharpe-ratio/component';
-import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/component';
-import ItosLemmaPage from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/component';
+'use client';
 
+import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { PageHeader } from '@/components/app/page-header';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { Line, LineChart, ComposedChart, Scatter, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
+import { BlockMath, InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
-type TopicPageProps = {
-  params: Promise<{ pathSlug: string; topicSlug: string }>;
+// --- Kalman Filter Simulation ---
+const simulateKalmanFilter = (processNoise: number, measurementNoise: number, n: number) => {
+  let trueValue = 0;
+  let estimate = 0;
+  let errorCovariance = 1;
+
+  const data = [];
+
+  for (let i = 0; i < n; i++) {
+    // Prediction step
+    trueValue += Math.sqrt(processNoise) * (Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random()));
+    const measurement = trueValue + Math.sqrt(measurementNoise) * (Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random()));
+
+    // Update step
+    const kalmanGain = errorCovariance / (errorCovariance + measurementNoise);
+    estimate = estimate + kalmanGain * (measurement - estimate);
+    errorCovariance = (1 - kalmanGain) * errorCovariance;
+
+    data.push({ time: i, true: trueValue, measurement, estimate });
+  }
+  return data;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
-
-// Statically generate all topic pages at build time
-export async function generateStaticParams() {
-  return allTopics
-    .filter(topic => topic.category !== 'parent' && topic.href !== '#') // Only generate real pages
-    .map(topic => {
-      const parts = topic.href.split('/').filter(Boolean);
-      // Expected format: ['paths', pathSlug, topicSlug] or ['quantlab', topicSlug] etc.
-      if (parts[0] === 'paths' && parts.length === 3) {
-          return {
-            pathSlug: parts[1],
-            topicSlug: parts[2],
-          };
-      }
-      return null;
-    }).filter(Boolean) as { pathSlug: string; topicSlug: string }[];
-}
-
-
-// This function generates metadata for the page based on the slug.
-export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const { topicSlug } = await params;
-  const topicInfo = allTopics.find((t) => t.id === topicSlug);
-
-  if (!topicInfo) {
-    return {
-      title: 'Topic Not Found',
-    };
-  }
-  
-  const pageUrl = new URL(topicInfo.href, SITE_URL).toString();
-
-  return {
-    title: topicInfo.seoTitle || topicInfo.title,
-    description: topicInfo.metaDescription || topicInfo.description,
-    alternates: {
-      canonical: pageUrl,
-    },
-    openGraph: {
-      title: topicInfo.ogTitle || topicInfo.title,
-      description: topicInfo.ogDescription || topicInfo.description,
-      url: pageUrl,
-      type: 'article',
-      images: [
-        {
-          url: topicInfo.ogImage || new URL('/og-image.png', SITE_URL).toString(),
-          width: 1200,
-          height: 630,
-          alt: topicInfo.title,
-        },
-      ],
-    },
-  };
-}
-
-// A map to associate topic slugs with their corresponding page components.
-const topicComponentMap: { [key: string]: React.ComponentType } = {
-  'bayes-theorem': BayesTheoremPage,
-  'bernoulli-distribution': BernoulliDistributionPage,
-  'beta-distribution': BetaDistributionPage,
-  'binomial-distribution': BinomialDistributionPage,
-  'cauchy-distribution': CauchyDistributionPage,
-  'chi-squared-distribution': ChiSquaredDistributionPage,
-  'discrete-uniform-distribution': DiscreteUniformDistributionPage,
-  'exponential-distribution': ExponentialDistributionPage,
-  'f-distribution': FDistributionPage,
-  'gamma-distribution': GammaDistributionPage,
-  'geometric-distribution': GeometricDistributionPage,
-  'hypergeometric-distribution': HypergeometricDistributionPage,
-  'laplace-distribution': LaplaceDistributionPage,
-  'logistic-distribution': LogisticDistributionPage,
-  'multinomial-distribution': MultinomialDistributionPage,
-  'negative-binomial-distribution': NegativeBinomialDistributionPage,
-  'poisson-distribution': PoissonDistributionPage,
-  'students-t-distribution': TDistributionPage,
-  'weibull-distribution': WeibullDistributionPage,
-  'central-limit-theorem': CLTPage,
-  'descriptive-statistics-explorer': DescriptiveStatsPage,
-  'z-table': ZTablePage,
-  'confidence-intervals': ConfidenceIntervalsPage,
-  'mental-math': MentalMathPage,
-  'monte-carlo-simulation': MonteCarloPage,
-  'time-series-decomposition': TimeSeriesDecompositionPage,
-  'autocorrelation-acf-pacf': AcfPacfPage,
-  'volatility-garch': GarchPage,
-  'efficient-frontier-sharpe-ratio': EfficientFrontierPage,
-  'kalman-filters': KalmanFilterPage,
-  'stochastic-calculus-itos-lemma': ItosLemmaPage,
+// --- Chart Component ---
+const KalmanChart = ({ data }: { data: { time: number; true: number; measurement: number; estimate: number }[] }) => {
+  return (
+    <ChartContainer config={{}} className="h-[350px] w-full">
+      <LineChart data={data}>
+        <CartesianGrid />
+        <XAxis dataKey="time" />
+        <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
+        <Tooltip content={<ChartTooltipContent formatter={(value, name) => [Number(value).toFixed(2), String(name).charAt(0).toUpperCase() + String(name).slice(1)]} />} />
+        <Line type="monotone" dataKey="true" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" dot={false} name="True Value" />
+        <Scatter dataKey="measurement" fill="hsla(var(--primary), 0.5)" shape="cross" name="Noisy Measurement" />
+        <Line type="monotone" dataKey="estimate" stroke="hsl(var(--destructive))" dot={false} name="Kalman Estimate" strokeWidth={2} />
+      </LineChart>
+    </ChartContainer>
+  );
 };
 
+const DynamicKalmanChart = dynamic(() => Promise.resolve(KalmanChart), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[350px] w-full" />,
+});
 
-// This is the main server component for the page.
-export default async function TopicPage({ params }: TopicPageProps) {
-  const { pathSlug, topicSlug } = await params;
-  
-  // Find the topic by its unique ID, which is the slug.
-  const topicInfo = allTopics.find((t) => t.id === topicSlug);
-  
-  if (!topicInfo) {
-    notFound();
-  }
+// --- Main Page Component ---
+export default function KalmanFilterComponent() {
+    const [processNoise, setProcessNoise] = useState(0.1);
+    const [measurementNoise, setMeasurementNoise] = useState(1);
+    const simulatedData = useMemo(() => simulateKalmanFilter(processNoise, measurementNoise, 100), [processNoise, measurementNoise]);
 
-  // Look up the component in our map.
-  const TopicComponent = topicComponentMap[topicSlug];
-  
-  // If we find a specific component for this topic, render it.
-  if (TopicComponent) {
-    return <TopicComponent />;
-  }
+  return (
+    <>
+      <PageHeader
+        title="Kalman Filters"
+        description="Optimally estimating the state of a system from a series of incomplete and noisy measurements."
+        variant="aligned-left"
+      />
+      <div className="mx-auto max-w-5xl space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">Finding the Signal in the Noise</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
+            <p>
+                A Kalman filter is a powerful algorithm that can estimate the internal state of a system when you can't observe it directly. It works by making a prediction, taking a noisy measurement, and then smartly combining the two to produce an optimal estimate.
+            </p>
+            <p>
+                In quantitative finance, it's used in pairs trading to estimate the "true" underlying spread between two assets, for dynamic hedging, and for creating smooth estimates of noisy indicators. It excels at finding the hidden "signal" within a stream of chaotic market data.
+            </p>
+          </CardContent>
+        </Card>
 
-  // Otherwise, fall back to the generic TopicPageClient for structured content.
-  return <TopicPageClient topicInfo={topicInfo} />;
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Interactive Kalman Filter</CardTitle>
+                <CardDescription>
+                    Adjust the noise parameters to see how the Kalman filter performs. A high measurement noise means your observations are unreliable, forcing the filter to trust its own predictions more.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                    <div className="space-y-3">
+                        <Label htmlFor="process-noise-slider">Process Noise (Q): {processNoise.toFixed(2)}</Label>
+                        <Slider id="process-noise-slider" min={0.01} max={1} step={0.01} value={[processNoise]} onValueChange={(val) => setProcessNoise(val[0])} />
+                    </div>
+                    <div className="space-y-3">
+                        <Label htmlFor="measurement-noise-slider">Measurement Noise (R): {measurementNoise.toFixed(2)}</Label>
+                        <Slider id="measurement-noise-slider" min={0.1} max={5} step={0.1} value={[measurementNoise]} onValueChange={(val) => setMeasurementNoise(val[0])} />
+                    </div>
+                </div>
+                <DynamicKalmanChart data={simulatedData} />
+            </CardContent>
+        </Card>
+      </div>
+    </>
+  );
 }

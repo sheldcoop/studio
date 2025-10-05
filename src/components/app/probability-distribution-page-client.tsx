@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -113,9 +113,9 @@ export default function ProbabilityDistributionPageClient() {
     }
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useEffect(() => { generateData('normal'); }, []);
+    useEffect(() => { generateData('normal'); }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (data.length > 0) {
             setStats({
                 mean: getMean(data),

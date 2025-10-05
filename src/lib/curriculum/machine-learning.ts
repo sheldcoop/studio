@@ -341,4 +341,13 @@ export const machineLearningTopics: Topic[] = [
         { id: 'ml-ai-ethics-regulation-in-finance-problems', title: 'Practice Problems' },
     ]
   }),
+  {
+    id: 'mental-math',
+    title: 'Mental Math for Interviews',
+    icon: 'Brain',
+    description: "Sharpen your calculation speed and accuracy for interviews.",
+    category: 'sub-topic',
+    parent: 'ml-module-0', 
+    href: '/topics/mental-math'
+  },
 ];
