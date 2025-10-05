@@ -24,7 +24,6 @@ interface AnimatedJourneyCardProps {
 
 export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const isMobile = useIsMobile();
   const router = useRouter();
 
   const handleInteraction = (e: React.MouseEvent | React.KeyboardEvent) => {
@@ -44,8 +43,8 @@ export function AnimatedJourneyCard({ item }: AnimatedJourneyCardProps) {
     // The Card itself is now the clickable element to trigger navigation.
     <div
       className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
-      onPointerEnter={() => !isMobile && setIsHovered(true)}
-      onPointerLeave={() => !isMobile && setIsHovered(false)}
+      onPointerEnter={() => setIsHovered(true)}
+      onPointerLeave={() => setIsHovered(false)}
       onClick={handleInteraction}
       onKeyDown={(e) => { if (e.key === 'Enter') handleInteraction(e) }}
       role="link"
