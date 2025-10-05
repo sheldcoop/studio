@@ -19,7 +19,8 @@ export const probabilityTopics: Topic[] = [
     description: 'How randomness converges to predictability.',
     category: 'probability',
     parent: 'prob-core-tools',
-    pathPrefix: 'topics',
+    pathPrefix: 'probability-for-quants',
+    href: '/paths/probability-for-quants/law-of-large-numbers-deep-dive',
   }),
   createTopic({
     id: 'bernoulli-distribution',
@@ -145,7 +146,8 @@ export const probabilityTopics: Topic[] = [
     description: 'Modeling variables that cannot be negative, like stock prices.',
     category: 'probability',
     parent: 'prob-dist-continuous',
-    pathPrefix: 'statistics',
+    pathPrefix: 'statistics-for-quantitative-finance',
+    href: '/paths/statistics-for-quantitative-finance/lognormal-distribution',
   }),
   createTopic({
     id: 'f-distribution',

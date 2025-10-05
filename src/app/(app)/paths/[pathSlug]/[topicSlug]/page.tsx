@@ -5,23 +5,22 @@ import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 type TopicPageProps = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ pathSlug: string; topicSlug: string }>;
 };
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
 
 // This function generates metadata for the page based on the slug.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  // Find the topic by its unique ID, which is the slug.
-  const topicInfo = allTopics.find((t) => t.id === slug);
+  const { topicSlug } = await params;
+  const topicInfo = allTopics.find((t) => t.id === topicSlug);
 
   if (!topicInfo) {
     return {
       title: 'Topic Not Found',
     };
   }
-
+  
   const pageUrl = new URL(topicInfo.href, SITE_URL).toString();
 
   return {
@@ -50,18 +49,27 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 // Statically generate all topic pages at build time
 export async function generateStaticParams() {
   return allTopics
-    .filter(topic => topic.href.startsWith('/topics/')) // Only generate for this route segment
-    .map(topic => ({
-      slug: topic.id,
-    }));
+    .filter(topic => topic.href.startsWith('/paths/')) // Only generate for this route structure
+    .map(topic => {
+      const parts = topic.href.split('/');
+      // Expected format: ['', 'paths', pathSlug, topicSlug]
+      if (parts.length === 4) {
+          return {
+            pathSlug: parts[2],
+            topicSlug: parts[3],
+          };
+      }
+      return null;
+    }).filter(Boolean);
 }
+
 
 // This is the main server component for the page.
 export default async function TopicPage({ params }: TopicPageProps) {
-  const { slug } = await params;
+  const { topicSlug } = await params;
   
-  // Find the topic by its unique ID, which is now the slug. This is the correct way.
-  const topicInfo = allTopics.find((t) => t.id === slug);
+  // Find the topic by its unique ID, which is the slug.
+  const topicInfo = allTopics.find((t) => t.id === topicSlug);
   
   if (!topicInfo) {
     notFound();

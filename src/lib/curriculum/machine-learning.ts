@@ -2,7 +2,7 @@
 import { type Topic } from './types';
 import { createTopic } from './utils';
 
-const PATH_PREFIX = 'paths/machine-learning-for-quantitative-finance';
+const PATH_PREFIX = 'machine-learning-for-quantitative-finance';
 
 export const machineLearningTopics: Topic[] = [
   // --- Module 0: The Absolute Basics of Machine Learning ---
