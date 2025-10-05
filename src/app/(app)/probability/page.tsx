@@ -1,10 +1,32 @@
-
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { PageHeader } from '@/components/app/page-header';
 import { getPathById } from '@/lib/learning-paths';
-import { Accordion } from '@/components/ui/accordion';
-import { LearningPathCard } from '@/components/app/learning-path-card';
+import { notFound } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const ProbabilityDistributionPageClient = dynamic(
+  () => import('@/components/app/probability-distribution-page-client'),
+  {
+    ssr: false,
+    loading: () => <div className="space-y-8">
+      <div className="flex justify-center gap-4 mb-6">
+        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-10 w-24" />
+      </div>
+      <Skeleton className="h-[300px] w-full" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    </div>,
+  }
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const path = getPathById('probability-for-quants');
@@ -16,30 +38,25 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: path.title,
-    description: path.description,
+    title: 'Probability Distributions Explorer',
+    description: 'An interactive guide to the fundamental probability distributions used in quantitative finance.',
   };
 }
 
 export default function ProbabilityPage() {
-    const path = getPathById('probability-for-quants');
-
-    if (!path) {
-        notFound();
-    }
+  const path = getPathById('probability-for-quants');
+  if (!path) {
+    notFound();
+  }
 
   return (
     <>
       <PageHeader
-        title={path.title}
-        description={path.description}
+        title="Probability Distributions Explorer"
+        description="An interactive guide to the fundamental probability distributions used in quantitative finance."
         variant="aligned-left"
       />
-      <Accordion type="single" collapsible className="w-full space-y-4" defaultValue={path.modules[0]?.id}>
-        {path.modules.map((module) => (
-          <LearningPathCard key={module.id} module={module} iconName={path.icon} />
-        ))}
-      </Accordion>
+      <ProbabilityDistributionPageClient />
     </>
   );
 }
