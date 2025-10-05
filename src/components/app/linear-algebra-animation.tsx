@@ -30,7 +30,7 @@ export function LinearAlgebraAnimation({
     let animationFrameId: number;
 
     const main = () => {
-      const frameId: number;
+      let frameId: number;
 
       const computedStyle = getComputedStyle(currentMount);
       const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
