@@ -12,15 +12,6 @@ export const mainTopics: Topic[] = [
     animation: 'probability-toolkit',
   },
   {
-    id: 'mental-math',
-    title: 'Mental Math',
-    description: 'Train your calculation speed and accuracy for interviews.',
-    icon: 'BrainCircuit',
-    href: '/topics/mental-math',
-    category: 'main',
-    animation: 'mental-math',
-  },
-  {
     id: 'linear-algebra',
     title: 'Linear Algebra',
     description: 'Vectors, matrices, and tensors. The language of data.',
