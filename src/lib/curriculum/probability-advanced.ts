@@ -34,6 +34,7 @@ export const probabilityAdvancedTopics: Topic[] = [
     }),
     createTopic({
         parent: 'prob-quant-mod-1',
+        id: 'conditional-probability-and-independence',
         title: 'Conditional Probability & Independence',
         icon: 'GitBranch',
         description: "How the occurrence of one event affects another.",
@@ -94,6 +95,7 @@ export const probabilityAdvancedTopics: Topic[] = [
     }),
     createTopic({
         parent: 'prob-quant-mod-2',
+        id: 'common-discrete-distributions',
         title: 'Common Discrete Distributions',
         icon: 'Component',
         description: "Exploring Bernoulli, Binomial, and Poisson distributions.",
@@ -108,6 +110,7 @@ export const probabilityAdvancedTopics: Topic[] = [
     }),
     createTopic({
         parent: 'prob-quant-mod-2',
+        id: 'common-continuous-distributions',
         title: 'Common Continuous Distributions',
         icon: 'AreaChart',
         description: "Exploring Uniform, Normal, and Exponential distributions.",
@@ -146,7 +149,6 @@ export const probabilityAdvancedTopics: Topic[] = [
         description: "Why casino averages are so stable.",
         category: 'sub-topic',
         duration: 20,
-        parent: 'stats-foundations',
         subTopics: [
             { id: 'lln-weak', title: 'Weak Law (WLLN)' },
             { id: 'lln-strong', title: 'Strong Law (SLLN)' },
@@ -163,7 +165,6 @@ export const probabilityAdvancedTopics: Topic[] = [
         description: "Why the normal distribution is everywhere.",
         category: 'sub-topic',
         duration: 30,
-        parent: 'stats-foundations',
         subTopics: [
             { id: 'clt-statement', title: 'The Theorem' },
             { id: 'clt-conditions', title: 'Conditions for CLT' },

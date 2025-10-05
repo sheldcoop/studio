@@ -314,19 +314,6 @@ export const statisticsTopics: Topic[] = [
   }),
   createTopic({
     parent: 'stats-mod-1',
-    id: 'conditional-probability-and-independence',
-    title: 'Conditional Probability and Independence',
-    description: 'How the occurrence of one event affects another.',
-    category: 'sub-topic', pathPrefix: 'statistics',
-  }),
-  createTopic({
-    parent: 'stats-mod-1',
-    title: "Law of Total Probability and Bayes' Theorem",
-    description: 'Updating your beliefs in the face of new evidence.',
-    category: 'sub-topic', pathPrefix: 'statistics',
-  }),
-  createTopic({
-    parent: 'stats-mod-1',
     title: 'Probability Mass Functions (PMF) and Cumulative Distribution Functions (CDF)',
     description: 'Describing the probabilities of discrete outcomes.',
     category: 'sub-topic', pathPrefix: 'statistics',
@@ -335,13 +322,6 @@ export const statisticsTopics: Topic[] = [
     parent: 'stats-mod-1',
     title: 'Expected Value E[X], Variance Var[X], and Standard Deviation',
     description: 'Calculating the center and spread of a random variable.',
-    category: 'sub-topic', pathPrefix: 'statistics',
-  }),
-  createTopic({
-    parent: 'stats-mod-1',
-    id: 'common-discrete-distributions',
-    title: 'Common Discrete Distributions (Binomial, Poisson, Geometric)',
-    description: 'Exploring key models for discrete random events.',
     category: 'sub-topic', pathPrefix: 'statistics',
   }),
   createTopic({
@@ -364,13 +344,6 @@ export const statisticsTopics: Topic[] = [
   }),
   createTopic({
     parent: 'stats-mod-1',
-    id: 'common-continuous-distributions',
-    title: 'Common Continuous Distributions (Uniform, Exponential, Gamma)',
-    description: 'Exploring key models for continuous random events.',
-    category: 'sub-topic', pathPrefix: 'statistics',
-  }),
-  createTopic({
-    parent: 'stats-mod-1',
     title: 'MGFs for Continuous R.V.s',
     description: 'Extending moment generating functions to continuous cases.',
     category: 'sub-topic', pathPrefix: 'statistics',
@@ -385,12 +358,6 @@ export const statisticsTopics: Topic[] = [
     parent: 'stats-mod-1',
     title: 'Marginal and Conditional Distributions',
     description: "Isolating one variable's behavior from a joint distribution.",
-    category: 'sub-topic', pathPrefix: 'statistics',
-  }),
-  createTopic({
-    parent: 'stats-mod-1',
-    title: 'Covariance Cov(X, Y) and Correlation ρ',
-    description: 'Measuring how two random variables move together.',
     category: 'sub-topic', pathPrefix: 'statistics',
   }),
   createTopic({
