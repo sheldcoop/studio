@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 // We group the topics by their parent module for better organization.
 const getQuantLabModules = () => {
     const modules: { id: string, title: string, lessons: Topic[] }[] = [];
-    const quantLabTopics = allTopics.filter(t => t.href.startsWith('/quantlab/'));
+    const quantLabTopics = allTopics.filter(t => t.href.startsWith('/paths/quantlab/'));
 
     quantLabTopics.forEach(topic => {
         if (!topic.parent) return;
@@ -37,6 +37,17 @@ const getQuantLabModules = () => {
         }
         module.lessons.push(topic);
     });
+    
+    // Sort modules by a predefined order if needed, otherwise they appear as found.
+    const moduleOrder = ['prob-core-tools', 'prob-dist-discrete', 'prob-dist-continuous', 'stats-advanced'];
+    modules.sort((a, b) => {
+        const indexA = moduleOrder.indexOf(a.id);
+        const indexB = moduleOrder.indexOf(b.id);
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+    });
+
 
     return modules;
 }
