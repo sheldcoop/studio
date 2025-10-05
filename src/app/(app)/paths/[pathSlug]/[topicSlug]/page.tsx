@@ -5,7 +5,7 @@ import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 type TopicPageProps = {
-  params: Promise<{ pathSlug: string; topicSlug: string }>;
+  params: Promise<{ slug: string; topicSlug: string }>;
 };
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
@@ -55,7 +55,7 @@ export async function generateStaticParams() {
       // Expected format: ['', 'paths', pathSlug, topicSlug]
       if (parts.length === 4) {
           return {
-            pathSlug: parts[2],
+            slug: parts[2],
             topicSlug: parts[3],
           };
       }
