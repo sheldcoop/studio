@@ -7,6 +7,7 @@ const PATH_PREFIX = 'machine-learning-for-quantitative-finance';
 export const machineLearningTopics: Topic[] = [
   // --- Module 0: The Absolute Basics of Machine Learning ---
   createTopic({
+    id: 'ml-language-of-ml',
     parent: 'ml-module-0',
     title: 'The Language of ML: Data, Features & Labels',
     duration: 20,
@@ -19,6 +20,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-three-flavors-of-learning',
     parent: 'ml-module-0',
     title: 'The Three Flavors of Learning (Supervised, Unsupervised, Reinforcement)',
     duration: 25,
@@ -31,6 +33,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-your-first-models',
     parent: 'ml-module-0',
     title: 'Your First Models: An Intuitive Look (KNN & Simple Linear Regression)',
     duration: 30,
@@ -43,6 +46,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-how-to-split-your-data',
     parent: 'ml-module-0',
     title: 'The Golden Rule: How to Split Your Data (Train, Validate, Test)',
     duration: 25,
@@ -55,6 +59,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-how-do-we-score-a-model',
     parent: 'ml-module-0',
     title: 'How Do We Score a Model? (Accuracy, Confusion Matrix, MSE)',
     duration: 20,
@@ -69,6 +74,7 @@ export const machineLearningTopics: Topic[] = [
 
   // --- Module 1: Foundations of ML in Finance ---
   createTopic({
+    id: 'ml-financial-ml-landscape',
     parent: 'ml-module-1',
     title: 'The Financial ML Landscape (Alpha, Risk, Execution)',
     duration: 20,
@@ -81,6 +87,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-feature-engineering',
     parent: 'ml-module-1',
     title: 'Feature Engineering for Financial Data (Price, Volume, Order Books)',
     duration: 35,
@@ -93,6 +100,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-core-predictive-models',
     parent: 'ml-module-1',
     title: 'Core Predictive Models (Trees, Boosting, Regularization)',
     duration: 30,
@@ -105,6 +113,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-backtesting-and-validation',
     parent: 'ml-module-1',
     title: 'Backtesting & Model Validation (Walk-Forward, Sharpe Ratio)',
     duration: 25,
@@ -119,6 +128,7 @@ export const machineLearningTopics: Topic[] = [
 
   // --- Module 2: Time-Series Forecasting for Trading ---
   createTopic({
+    id: 'ml-classical-time-series-models',
     parent: 'ml-module-2',
     title: 'Classical Time-Series Models (ARIMA, GARCH)',
     duration: 30,
@@ -131,6 +141,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-deep-learning-for-sequences',
     parent: 'ml-module-2',
     title: 'Deep Learning for Sequences (LSTMs, Transformers)',
     duration: 40,
@@ -143,6 +154,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-stationarity-and-memory',
     parent: 'ml-module-2',
     title: 'Stationarity & Memory in Markets (ADF Test, Frac. Diff.)',
     duration: 30,
@@ -155,6 +167,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-building-trading-signals',
     parent: 'ml-module-2',
     title: 'Building Trading Signals from Predictions (Meta-Labeling)',
     duration: 30,
@@ -169,6 +182,7 @@ export const machineLearningTopics: Topic[] = [
 
   // --- Module 3: Machine Learning for Risk Management ---
   createTopic({
+    id: 'ml-credit-default-prediction',
     parent: 'ml-module-3',
     title: 'Credit Default Prediction & Scoring',
     duration: 35,
@@ -181,6 +195,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-anomaly-and-fraud-detection',
     parent: 'ml-module-3',
     title: 'Anomaly & Financial Fraud Detection (Isolation Forests, Autoencoders)',
     duration: 30,
@@ -193,6 +208,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-modeling-volatility-and-var',
     parent: 'ml-module-3',
     title: 'Modeling Volatility & Value-at-Risk (VaR)',
     duration: 30,
@@ -205,6 +221,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-model-explainability',
     parent: 'ml-module-3',
     title: 'Model Explainability & Interpretability (SHAP, LIME)',
     duration: 30,
@@ -219,6 +236,7 @@ export const machineLearningTopics: Topic[] = [
 
   // --- Module 4: NLP for Alpha Generation ---
   createTopic({
+    id: 'ml-financial-sentiment-analysis',
     parent: 'ml-module-4',
     title: 'Financial Sentiment Analysis (News, Earnings Reports, Tweets)',
     duration: 35,
@@ -231,6 +249,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-information-extraction',
     parent: 'ml-module-4',
     title: 'Information Extraction (NER, Topic Modeling)',
     duration: 30,
@@ -243,6 +262,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-advanced-text-representation',
     parent: 'ml-module-4',
     title: 'Advanced Text Representation (Word2Vec, Transformers - BERT)',
     duration: 25,
@@ -255,6 +275,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-integrating-nlp-signals',
     parent: 'ml-module-4',
     title: 'Integrating NLP Signals into Trading Models',
     duration: 25,
@@ -269,6 +290,7 @@ export const machineLearningTopics: Topic[] = [
 
   // --- Module 5: Advanced Topics & Modern Frontiers ---
   createTopic({
+    id: 'ml-reinforcement-learning-for-trading',
     parent: 'ml-module-5',
     title: 'Reinforcement Learning for Optimal Trading',
     duration: 40,
@@ -281,6 +303,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-portfolio-optimization',
     parent: 'ml-module-5',
     title: 'Portfolio Optimization with ML (Covariance Estimation)',
     duration: 35,
@@ -293,6 +316,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-alternative-data',
     parent: 'ml-module-5',
     title: 'Leveraging Alternative Data (Satellite Imagery, Web Data)',
     duration: 35,
@@ -305,6 +329,7 @@ export const machineLearningTopics: Topic[] = [
     ]
   }),
   createTopic({
+    id: 'ml-ai-ethics-and-regulation',
     parent: 'ml-module-5',
     title: 'AI Ethics & Regulation in Finance',
     duration: 30,
