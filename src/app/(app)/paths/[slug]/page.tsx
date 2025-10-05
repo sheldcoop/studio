@@ -13,6 +13,9 @@ type PathPageProps = {
   }>;
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
+
+
 export async function generateMetadata({ params }: PathPageProps): Promise<Metadata> {
   const { slug } = await params;
   const path = getPathById(slug);
@@ -23,9 +26,28 @@ export async function generateMetadata({ params }: PathPageProps): Promise<Metad
     };
   }
 
+  const pageUrl = new URL(`/paths/${slug}`, SITE_URL).toString();
+
   return {
     title: path.title,
     description: path.description,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title: path.title,
+      description: path.description,
+      url: pageUrl,
+      type: 'website',
+       images: [
+        {
+          url: new URL('/og-image.png', SITE_URL).toString(),
+          width: 1200,
+          height: 630,
+          alt: path.title,
+        },
+      ],
+    },
   };
 }
 

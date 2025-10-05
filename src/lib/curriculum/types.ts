@@ -36,4 +36,11 @@ export type Topic = {
     examples: InteractiveExample[];
   };
   animation?: string; // ID for the animation component
+
+  // Explicit SEO and Open Graph metadata fields
+  seoTitle?: string;
+  metaDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
 };
