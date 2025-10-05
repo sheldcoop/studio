@@ -44,7 +44,7 @@ const KalmanChart = ({ data }: { data: { time: number; true: number; measurement
         <CartesianGrid />
         <XAxis dataKey="time" />
         <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
-        <Tooltip content={<ChartTooltipContent formatter={(value, name) => [Number(value).toFixed(2), String(name).charAt(0).toUpperCase() + String(name).slice(1)]} />} />
+        <Tooltip content={<ChartTooltipContent formatter={(value: any, name: any) => [Number(value).toFixed(2), String(name).charAt(0).toUpperCase() + String(name).slice(1)]} />} />
         <Line type="monotone" dataKey="true" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" dot={false} name="True Value" />
         <Scatter dataKey="measurement" fill="hsla(var(--primary), 0.5)" shape="cross" name="Noisy Measurement" />
         <Line type="monotone" dataKey="estimate" stroke="hsl(var(--destructive))" dot={false} name="Kalman Estimate" strokeWidth={2} />
