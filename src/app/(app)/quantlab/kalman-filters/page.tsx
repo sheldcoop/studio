@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -92,7 +91,7 @@ export default function KalmanFilterComponent() {
                 <CardDescription>
                     Adjust the noise parameters to see how the Kalman filter performs. A high measurement noise means your observations are unreliable, forcing the filter to trust its own predictions more.
                 </CardDescription>
-            </Header>
+            </CardHeader>
             <CardContent>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
                     <div className="space-y-3">
