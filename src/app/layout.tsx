@@ -7,6 +7,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
 import { AuthProvider } from '@/app/auth-provider';
 import { OrientationBanner } from '@/components/app/orientation-banner';
+import { Analytics } from '@vercel/analytics/react';
 
 const fontBody = Inter({
   subsets: ['latin'],
@@ -81,6 +82,7 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
