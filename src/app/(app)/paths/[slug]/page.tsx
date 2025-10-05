@@ -9,7 +9,7 @@ import { LearningPathCard } from '@/components/app/learning-path-card';
 
 type PathPageProps = {
   params: Promise<{
-    slug: string;
+    pathSlug: string;
   }>;
 };
 
@@ -17,8 +17,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
 
 
 export async function generateMetadata({ params }: PathPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const path = getPathById(slug);
+  const { pathSlug } = await params;
+  const path = getPathById(pathSlug);
 
   if (!path) {
     return {
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PathPageProps): Promise<Metad
     };
   }
 
-  const pageUrl = new URL(`/paths/${slug}`, SITE_URL).toString();
+  const pageUrl = new URL(`/paths/${pathSlug}`, SITE_URL).toString();
 
   return {
     title: path.title,
@@ -52,8 +52,8 @@ export async function generateMetadata({ params }: PathPageProps): Promise<Metad
 }
 
 export default async function PathPage({ params }: PathPageProps) {
-  const { slug } = await params;
-  const path = getPathById(slug);
+  const { pathSlug } = await params;
+  const path = getPathById(pathSlug);
 
   if (!path) {
     notFound();

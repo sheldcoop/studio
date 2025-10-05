@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -12,7 +13,7 @@ import {
   Newspaper,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { TopicIcon } from './topic-icon';
+import { TopicIcon } from '@/components/app/topic-icon';
 
 const links = [
   {
