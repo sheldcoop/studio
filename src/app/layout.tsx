@@ -29,7 +29,18 @@ export const metadata: Metadata = {
   description: 'Master the core concepts of quantitative finance with AI-powered tools, interactive guides, and a community of learners.',
   alternates: {
     canonical: '/',
-  }
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
