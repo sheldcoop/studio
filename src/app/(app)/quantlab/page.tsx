@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
 import {
@@ -23,6 +24,7 @@ const getTopicsForParent = (parentId: string): Topic[] => {
 const coreConcepts = getTopicsForParent('prob-core-tools');
 const discreteDistributions = getTopicsForParent('prob-dist-discrete');
 const continuousDistributions = getTopicsForParent('prob-dist-continuous');
+const advancedConcepts = getTopicsForParent('stats-advanced');
 
 function LabCard({ lab }: { lab: Topic }) {
   return (
@@ -86,6 +88,19 @@ export default function QuantLabPage() {
             <AccordionContent className="p-6 pt-0">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                  {continuousDistributions.map((lab) => (
+                  <LabCard key={lab.id} lab={lab} />
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          
+          <AccordionItem value="advanced-concepts" className="rounded-lg border bg-card text-card-foreground shadow-sm">
+            <AccordionTrigger className="p-6 text-lg font-semibold hover:no-underline">
+              Advanced & Quant-Specific Concepts
+            </AccordionTrigger>
+            <AccordionContent className="p-6 pt-0">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {advancedConcepts.map((lab) => (
                   <LabCard key={lab.id} lab={lab} />
                 ))}
               </div>

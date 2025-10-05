@@ -26,6 +26,9 @@ import TDistributionPage from '@/app/quantlab/students-t-distribution/component'
 import WeibullDistributionPage from '@/app/quantlab/weibull-distribution/component';
 import CLTPage from '@/app/quantlab/central-limit-theorem/component';
 import DescriptiveStatsPage from '@/components/app/probability-distribution-page-client';
+import ZTablePage from '@/app/quantlab/z-table/component';
+import ConfidenceIntervalsPage from '@/app/quantlab/confidence-intervals/component';
+import MentalMathPage from '@/app/(app)/topics/mental-math/page';
 
 
 type TopicPageProps = {
@@ -37,17 +40,17 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
 // Statically generate all topic pages at build time
 export async function generateStaticParams() {
   return allTopics
-    .filter(topic => topic.href.startsWith('/paths/') || topic.href.startsWith('/quantlab/')) // Only generate for this route structure
+    .filter(topic => topic.href.startsWith('/paths/') || topic.href.startsWith('/quantlab/') || topic.href.startsWith('/topics/')) // Only generate for this route structure
     .map(topic => {
       const parts = topic.href.split('/');
-      // Expected format: ['', 'paths', pathSlug, topicSlug] or ['', 'quantlab', topicSlug]
+      // Expected format: ['', 'paths', pathSlug, topicSlug] or ['', 'quantlab', topicSlug] or ['', 'topics', topicSlug]
       if (parts.length === 4 && parts[1] === 'paths') {
           return {
             pathSlug: parts[2],
             topicSlug: parts[3],
           };
       }
-      if (parts.length === 3 && parts[1] === 'quantlab') {
+      if (parts.length === 3 && (parts[1] === 'quantlab' || parts[1] === 'topics')) {
           return {
             pathSlug: 'quantlab', // Use a placeholder slug
             topicSlug: parts[2],
@@ -117,6 +120,9 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'weibull-distribution': WeibullDistributionPage,
   'central-limit-theorem': CLTPage,
   'descriptive-statistics-explorer': DescriptiveStatsPage,
+  'z-table': ZTablePage,
+  'confidence-intervals': ConfidenceIntervalsPage,
+  'mental-math': MentalMathPage,
 };
 
 

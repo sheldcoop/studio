@@ -1,3 +1,4 @@
+
 import type { Topic } from './types';
 import { createTopic } from './utils';
 
@@ -228,6 +229,15 @@ export const statisticsTopics: Topic[] = [
     parent: 'prob-core-tools',
     pathPrefix: 'quantlab',
   }),
+   createTopic({
+    id: 'mental-math',
+    title: 'Mental Math Trainer',
+    icon: 'BrainCircuit',
+    description: 'Sharpen your calculation speed for interviews.',
+    category: 'sub-topic',
+    parent: 'prob-core-tools',
+    pathPrefix: 'topics'
+  }),
   createTopic({
     id: 'central-limit-theorem',
     title: 'The Central Limit Theorem (CLT)',
@@ -306,7 +316,7 @@ export const statisticsTopics: Topic[] = [
   }),
   createTopic({
     id: 'volatility-garch',
-    title: 'Volatility &amp; Standard Deviation (GARCH)',
+    title: 'Volatility & Standard Deviation (GARCH)',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
@@ -315,7 +325,7 @@ export const statisticsTopics: Topic[] = [
   }),
   createTopic({
     id: 'efficient-frontier-sharpe-ratio',
-    title: 'Efficient Frontier &amp; Sharpe Ratio',
+    title: 'Efficient Frontier & Sharpe Ratio',
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',
@@ -333,7 +343,7 @@ export const statisticsTopics: Topic[] = [
   }),
   createTopic({
     id: 'stochastic-calculus-itos-lemma',
-    title: "Stochastic Calculus &amp; Ito's Lemma",
+    title: "Stochastic Calculus & Ito's Lemma",
     icon: 'FunctionSquare',
     description: '',
     category: 'sub-topic',

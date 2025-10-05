@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -8,6 +9,7 @@ import {
   Users,
   FlaskConical,
   Newspaper,
+  BrainCircuit,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TopicIcon } from './topic-icon';
@@ -27,6 +29,11 @@ const links = [
     href: '/quantlab',
     label: 'QuantLab',
     icon: 'FlaskConical',
+  },
+  {
+    href: '/interview-prep',
+    label: 'Interview Prep',
+    icon: 'BrainCircuit',
   },
   {
     href: '/blog',
