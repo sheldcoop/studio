@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,11 +16,10 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { inverseStandardNormalCdf } from '@/lib/math';
-import { AlertTriangle, FunctionSquare, Calculator } from 'lucide-react';
-import Link from 'next/link';
-import { allTopics } from '@/lib/curriculum';
+import { AlertTriangle, Calculator } from 'lucide-react';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import { cn } from '@/lib/utils';
 
 function ConfidenceIntervalCalculator() {
   const [sampleMean, setSampleMean] = useState(100);
@@ -28,7 +28,6 @@ function ConfidenceIntervalCalculator() {
   const [confidence, setConfidence] = useState(95);
   const [interval, setInterval] = useState<[string, string] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const zTableTopic = allTopics.find(t => t.id === 'z-table');
 
   const calculateInterval = () => {
     setError(null);
@@ -68,7 +67,7 @@ function ConfidenceIntervalCalculator() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="sample-mean">Sample Mean (μ)</Label>
+                <Label htmlFor="sample-mean">Sample Mean (x̄)</Label>
                 <Input
                   id="sample-mean"
                   type="number"
@@ -77,7 +76,7 @@ function ConfidenceIntervalCalculator() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="std-dev">Standard Deviation (σ)</Label>
+                <Label htmlFor="std-dev">Population Standard Deviation (σ)</Label>
                 <Input
                   id="std-dev"
                   type="number"
@@ -142,7 +141,7 @@ export default function ConfidenceIntervalsComponent() {
           </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
-              It's impossible to survey an entire population (like every stock in the market). Instead, we take a smaller sample (like the S&P 500) and calculate its mean (average) return.
+              It's often impossible to survey an entire population (like every stock in the market). Instead, we take a smaller sample (like the S&P 500) and calculate its mean (average) return.
             </p>
             <p>
               A confidence interval uses this sample mean to construct a range of values and says, "We are X% confident that the true average of the entire population falls within this range." It's a way of putting boundaries on uncertainty.
