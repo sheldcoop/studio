@@ -4,24 +4,6 @@ import { createTopic } from './utils';
 
 export const probabilityTopics: Topic[] = [
   createTopic({
-    id: 'bayes-theorem',
-    title: "Bayes' Theorem",
-    icon: 'FunctionSquare',
-    description: 'A framework for updating beliefs with new evidence.',
-    category: 'probability',
-    parent: 'prob-core-tools',
-    pathPrefix: 'probability',
-  }),
-  createTopic({
-    id: 'law-of-large-numbers',
-    title: 'The Law of Large Numbers',
-    icon: 'FunctionSquare',
-    description: 'How randomness converges to predictability.',
-    category: 'probability',
-    parent: 'prob-core-tools',
-    pathPrefix: 'topics',
-  }),
-  createTopic({
     id: 'bernoulli-distribution',
     title: 'Bernoulli Distribution',
     icon: 'FunctionSquare',
