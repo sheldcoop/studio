@@ -35,6 +35,7 @@ import AcfPacfPage from '@/app/(app)/quantlab/autocorrelation-acf-pacf/component
 import GarchPage from '@/app/(app)/quantlab/volatility-garch/component';
 import EfficientFrontierPage from '@/app/(app)/quantlab/efficient-frontier-sharpe-ratio/component';
 import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/component';
+import ItosLemmaComponent from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/page';
 
 
 type TopicPageProps = {
@@ -99,36 +100,37 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 
 // A map to associate topic slugs with their corresponding page components.
 const topicComponentMap: { [key: string]: React.ComponentType } = {
-  'bayes-theorem': BayesTheoremPage,
-  'bernoulli-distribution': BernoulliDistributionPage,
-  'beta-distribution': BetaDistributionPage,
-  'binomial-distribution': BinomialDistributionPage,
-  'cauchy-distribution': CauchyDistributionPage,
-  'chi-squared-distribution': ChiSquaredDistributionPage,
-  'discrete-uniform-distribution': DiscreteUniformDistributionPage,
-  'exponential-distribution': ExponentialDistributionPage,
-  'f-distribution': FDistributionPage,
-  'gamma-distribution': GammaDistributionPage,
-  'geometric-distribution': GeometricDistributionPage,
-  'hypergeometric-distribution': HypergeometricDistributionPage,
-  'laplace-distribution': LaplaceDistributionPage,
-  'logistic-distribution': LogisticDistributionPage,
-  'multinomial-distribution': MultinomialDistributionPage,
-  'negative-binomial-distribution': NegativeBinomialDistributionPage,
-  'poisson-distribution': PoissonDistributionPage,
-  'students-t-distribution': TDistributionPage,
-  'weibull-distribution': WeibullDistributionPage,
-  'central-limit-theorem': CLTPage,
-  'descriptive-statistics-explorer': DescriptiveStatsPage,
-  'z-table': ZTablePage,
-  'confidence-intervals': ConfidenceIntervalsPage,
+  'bayes-theorem-interactive-guide': BayesTheoremPage,
+  'bernoulli-distribution-interactive-guide': BernoulliDistributionPage,
+  'beta-distribution-interactive-guide': BetaDistributionPage,
+  'binomial-distribution-interactive-guide': BinomialDistributionPage,
+  'cauchy-distribution-interactive-guide': CauchyDistributionPage,
+  'chi-squared-distribution-interactive-guide': ChiSquaredDistributionPage,
+  'discrete-uniform-distribution-interactive-guide': DiscreteUniformDistributionPage,
+  'exponential-distribution-interactive-guide': ExponentialDistributionPage,
+  'f-distribution-interactive-guide': FDistributionPage,
+  'gamma-distribution-interactive-guide': GammaDistributionPage,
+  'geometric-distribution-interactive-guide': GeometricDistributionPage,
+  'hypergeometric-distribution-interactive-guide': HypergeometricDistributionPage,
+  'laplace-distribution-interactive-guide': LaplaceDistributionPage,
+  'logistic-distribution-interactive-guide': LogisticDistributionPage,
+  'multinomial-distribution-interactive-guide': MultinomialDistributionPage,
+  'negative-binomial-distribution-interactive-guide': NegativeBinomialDistributionPage,
+  'poisson-distribution-interactive-guide': PoissonDistributionPage,
+  'students-t-distribution-interactive-guide': TDistributionPage,
+  'weibull-distribution-interactive-guide': WeibullDistributionPage,
+  'central-limit-theorem-interactive-guide': CLTPage,
+  'descriptive-statistics-explorer-interactive-guide': DescriptiveStatsPage,
+  'z-table-interactive-guide': ZTablePage,
+  'confidence-intervals-interactive-guide': ConfidenceIntervalsPage,
   'mental-math': MentalMathPage,
-  'monte-carlo-simulation': MonteCarloPage,
-  'time-series-decomposition': TimeSeriesDecompositionPage,
-  'autocorrelation-acf-pacf': AcfPacfPage,
-  'volatility-garch': GarchPage,
-  'efficient-frontier-sharpe-ratio': EfficientFrontierPage,
-  'kalman-filters': KalmanFilterPage,
+  'monte-carlo-simulation-interactive-guide': MonteCarloPage,
+  'time-series-decomposition-interactive-guide': TimeSeriesDecompositionPage,
+  'autocorrelation-acf-pacf-interactive-guide': AcfPacfPage,
+  'volatility-garch-interactive-guide': GarchPage,
+  'efficient-frontier-sharpe-ratio-interactive-guide': EfficientFrontierPage,
+  'kalman-filters-interactive-guide': KalmanFilterPage,
+  'stochastic-calculus-itos-lemma-interactive-guide': ItosLemmaComponent,
 };
 
 

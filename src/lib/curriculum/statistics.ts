@@ -221,7 +221,7 @@ export const statisticsTopics: Topic[] = [
     
   // Stat Toolkit Tier 1 Lessons
   createTopic({
-    id: 'descriptive-statistics-explorer',
+    id: 'descriptive-statistics-explorer-interactive-guide',
     title: 'Descriptive Statistics Explorer',
     icon: 'BarChartHorizontal',
     description: 'Interactive guide to mean, median, skewness, and kurtosis.',
@@ -230,7 +230,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'central-limit-theorem',
+    id: 'central-limit-theorem-interactive-guide',
     title: 'The Central Limit Theorem (CLT)',
     icon: 'Bell',
     description: 'Discover how order emerges from chaos.',
@@ -239,7 +239,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
     createTopic({
-    id: 'confidence-intervals',
+    id: 'confidence-intervals-interactive-guide',
     title: 'Confidence Intervals',
     icon: 'Target',
     description: 'Understanding the range where a true value likely lies.',
@@ -248,7 +248,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'z-table',
+    id: 'z-table-interactive-guide',
     title: 'Z-Table Calculator',
     icon: 'Table',
     description: 'Calculate probabilities from Z-scores and vice-versa.',
@@ -257,7 +257,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'normal-distribution',
+    id: 'normal-distribution-interactive-guide',
     title: 'The Normal Distribution',
     icon: 'Bell',
     description: 'The ubiquitous "bell curve."',
@@ -279,7 +279,7 @@ export const statisticsTopics: Topic[] = [
 
   // Stat Toolkit Tier 3 Lessons
   createTopic({
-    id: 'monte-carlo-simulation',
+    id: 'monte-carlo-simulation-interactive-guide',
     title: 'Monte Carlo Simulation',
     icon: 'Dice',
     description: 'Using random simulation to solve complex problems.',
@@ -288,7 +288,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'time-series-decomposition',
+    id: 'time-series-decomposition-interactive-guide',
     title: 'Time Series Decomposition',
     icon: 'Layers',
     description: 'Breaking down a time series into its core components.',
@@ -297,7 +297,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'autocorrelation-acf-pacf',
+    id: 'autocorrelation-acf-pacf-interactive-guide',
     title: 'Autocorrelation (ACF & PACF)',
     icon: 'Signal',
     description: 'Measuring how a time series correlates with its past values.',
@@ -306,7 +306,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'volatility-garch',
+    id: 'volatility-garch-interactive-guide',
     title: 'Volatility & Standard Deviation (GARCH)',
     icon: 'Flame',
     description: 'Modeling the changing volatility of financial returns.',
@@ -315,7 +315,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'efficient-frontier-sharpe-ratio',
+    id: 'efficient-frontier-sharpe-ratio-interactive-guide',
     title: 'Efficient Frontier & Sharpe Ratio',
     icon: 'Target',
     description: 'Finding the optimal portfolio for a given level of risk.',
@@ -324,7 +324,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'kalman-filters',
+    id: 'kalman-filters-interactive-guide',
     title: 'Kalman Filters',
     icon: 'Filter',
     description: 'Dynamically estimating the state of a system from noisy data.',
@@ -333,7 +333,7 @@ export const statisticsTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'stochastic-calculus-itos-lemma',
+    id: 'stochastic-calculus-itos-lemma-interactive-guide',
     title: "Stochastic Calculus & Ito's Lemma",
     icon: 'Calculator',
     description: 'The calculus of random walks, essential for derivatives pricing.',
