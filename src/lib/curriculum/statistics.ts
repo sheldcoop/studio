@@ -22,6 +22,12 @@ export const statisticsTopics: Topic[] = [
     description: 'Compares the means of two groups, assuming normal distribution.',
     category: 'parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+    subTopics: [
+        { id: 't-test-theory', title: 'Core Theory' },
+        { id: 't-test-application', title: 'Financial Application' },
+        { id: 't-test-interactive', title: 'Interactive Demo' },
+        { id: 't-test-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'z-test',
@@ -31,6 +37,12 @@ export const statisticsTopics: Topic[] = [
       'Compares means of large samples (n>30) with known population variance.',
     category: 'parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+    subTopics: [
+        { id: 'z-test-theory', title: 'Core Theory' },
+        { id: 'z-test-application', title: 'Financial Application' },
+        { id: 'z-test-interactive', title: 'Interactive Demo' },
+        { id: 'z-test-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'anova',
@@ -39,6 +51,12 @@ export const statisticsTopics: Topic[] = [
     description: 'Compares the averages of three or more groups.',
     category: 'parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'anova-theory', title: 'Core Theory' },
+        { id: 'anova-application', title: 'Financial Application' },
+        { id: 'anova-interactive', title: 'Interactive Demo' },
+        { id: 'anova-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'f-test',
@@ -47,6 +65,12 @@ export const statisticsTopics: Topic[] = [
     description: 'Compares the variances (spread) of two or more groups.',
     category: 'parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'f-test-theory', title: 'Core Theory' },
+        { id: 'f-test-application', title: 'Financial Application' },
+        { id: 'f-test-interactive', title: 'Interactive Demo' },
+        { id: 'f-test-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'pearson-correlation',
@@ -56,6 +80,12 @@ export const statisticsTopics: Topic[] = [
       'Measures the linear relationship between two continuous variables.',
     category: 'parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'pearson-theory', title: 'Core Theory' },
+        { id: 'pearson-application', title: 'Financial Application' },
+        { id: 'pearson-interactive', title: 'Interactive Demo' },
+        { id: 'pearson-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'chi-squared-test',
@@ -65,6 +95,12 @@ export const statisticsTopics: Topic[] = [
       'Analyzes categorical data to find significant relationships.',
     category: 'non-parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'chi-squared-theory', title: 'Core Theory' },
+        { id: 'chi-squared-application', title: 'Financial Application' },
+        { id: 'chi-squared-interactive', title: 'Interactive Demo' },
+        { id: 'chi-squared-problems', title: 'Practice Problems' },
+    ]
   }),
 
   // Non-Parametric Tests (sub-topics of hypothesis testing)
@@ -76,6 +112,12 @@ export const statisticsTopics: Topic[] = [
       'Alternative to the T-Test when data is not normally distributed.',
     category: 'non-parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'mann-whitney-theory', title: 'Core Theory' },
+        { id: 'mann-whitney-application', title: 'Financial Application' },
+        { id: 'mann-whitney-interactive', title: 'Interactive Demo' },
+        { id: 'mann-whitney-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'kruskal-wallis-test',
@@ -84,6 +126,12 @@ export const statisticsTopics: Topic[] = [
     description: 'Alternative to ANOVA for comparing three or more groups.',
     category: 'non-parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'kruskal-wallis-theory', title: 'Core Theory' },
+        { id: 'kruskal-wallis-application', title: 'Financial Application' },
+        { id: 'kruskal-wallis-interactive', title: 'Interactive Demo' },
+        { id: 'kruskal-wallis-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'wilcoxon-signed-rank-test',
@@ -93,6 +141,12 @@ export const statisticsTopics: Topic[] = [
       'Alternative to the paired T-Test for repeated measurements.',
     category: 'non-parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'wilcoxon-theory', title: 'Core Theory' },
+        { id: 'wilcoxon-application', title: 'Financial Application' },
+        { id: 'wilcoxon-interactive', title: 'Interactive Demo' },
+        { id: 'wilcoxon-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'spearmans-rank-correlation',
@@ -102,6 +156,12 @@ export const statisticsTopics: Topic[] = [
       'Measures the monotonic relationship between two ranked variables.',
     category: 'non-parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'spearman-theory', title: 'Core Theory' },
+        { id: 'spearman-application', title: 'Financial Application' },
+        { id: 'spearman-interactive', title: 'Interactive Demo' },
+        { id: 'spearman-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'friedman-test',
@@ -111,6 +171,12 @@ export const statisticsTopics: Topic[] = [
       'The non-parametric alternative to a repeated-measures ANOVA.',
     category: 'non-parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'friedman-theory', title: 'Core Theory' },
+        { id: 'friedman-application', title: 'Financial Application' },
+        { id: 'friedman-interactive', title: 'Interactive Demo' },
+        { id: 'friedman-problems', title: 'Practice Problems' },
+    ]
   }),
   createTopic({
     id: 'kolmogorov-smirnov-k-s-test',
@@ -119,6 +185,12 @@ export const statisticsTopics: Topic[] = [
     description: 'Tests if a sample is drawn from a specific distribution.',
     category: 'non-parametric',
     pathPrefix: 'statistics-for-quantitative-finance',
+     subTopics: [
+        { id: 'ks-test-theory', title: 'Core Theory' },
+        { id: 'ks-test-application', title: 'Financial Application' },
+        { id: 'ks-test-interactive', title: 'Interactive Demo' },
+        { id: 'ks-test-problems', title: 'Practice Problems' },
+    ]
   }),
 
   // Stat Toolkit Parent Categories

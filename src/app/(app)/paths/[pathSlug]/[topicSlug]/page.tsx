@@ -24,6 +24,18 @@ import NegativeBinomialDistributionPage from '@/app/(app)/probability/negative-b
 import PoissonDistributionPage from '@/app/(app)/probability/poisson-distribution/page';
 import TDistributionPage from '@/app/(app)/probability/students-t-distribution/page';
 import WeibullDistributionPage from '@/app/(app)/probability/weibull-distribution/page';
+import TTestPage from '@/app/(app)/topics/t-test/page';
+import ZTestPage from '@/app/(app)/topics/z-test/page';
+import AnovaPage from '@/app/(app)/topics/anova/page';
+import FTestPage from '@/app/(app)/topics/f-test/page';
+import PearsonCorrelationPage from '@/app/(app)/topics/pearson-correlation/page';
+import ChiSquaredTestPage from '@/app/(app)/topics/chi-squared-test/page';
+import MannWhitneyUPage from '@/app/(app)/topics/mann-whitney-u-test/page';
+import KruskalWallisTestPage from '@/app/(app)/topics/kruskal-wallis-test/page';
+import WilcoxonSignedRankTestPage from '@/app/(app)/topics/wilcoxon-signed-rank-test/page';
+import SpearmansRankCorrelationPage from '@/app/(app)/topics/spearmans-rank-correlation/page';
+import FriedmanTestPage from '@/app/(app)/topics/friedman-test/page';
+import KolmogorovSmirnovTestPage from '@/app/(app)/topics/kolmogorov-smirnov-k-s-test/page';
 
 type TopicPageProps = {
   params: Promise<{ pathSlug: string; topicSlug: string }>;
@@ -106,6 +118,18 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'poisson-distribution': PoissonDistributionPage,
   'students-t-distribution': TDistributionPage,
   'weibull-distribution': WeibullDistributionPage,
+  't-test': TTestPage,
+  'z-test': ZTestPage,
+  'anova': AnovaPage,
+  'f-test': FTestPage,
+  'pearson-correlation': PearsonCorrelationPage,
+  'chi-squared-test': ChiSquaredTestPage,
+  'mann-whitney-u-test': MannWhitneyUPage,
+  'kruskal-wallis-test': KruskalWallisTestPage,
+  'wilcoxon-signed-rank-test': WilcoxonSignedRankTestPage,
+  'spearmans-rank-correlation': SpearmansRankCorrelationPage,
+  'friedman-test': FriedmanTestPage,
+  'kolmogorov-smirnov-k-s-test': KolmogorovSmirnovTestPage,
 };
 
 
