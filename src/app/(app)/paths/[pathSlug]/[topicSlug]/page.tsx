@@ -5,7 +5,7 @@ import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 // Dynamically import all the content components for our topics
-import BayesTheoremPage from '@/app/quantlab/bayes-theorem/page';
+import BayesTheoremPage from '@/app/quantlab/bayes-theorem/component';
 import BernoulliDistributionPage from '@/app/quantlab/bernoulli-distribution/page';
 import BetaDistributionPage from '@/app/quantlab/beta-distribution/page';
 import BinomialDistributionPage from '@/app/quantlab/binomial-distribution/page';
