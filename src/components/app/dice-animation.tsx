@@ -86,9 +86,17 @@ export function DiceAnimation({
         createDieFaceMaterial([{ x: 32, y: 32 }, { x: 96, y: 96 }, { x: 32, y: 64 }, { x: 96, y: 64 }, { x: 32, y: 96 }, { x: 96, y: 32 }], dotColor, faceColor), // 6
       ];
 
-      const dieGeometry = new THREE.BoxGeometry(2, 2, 2);
-      const die = new THREE.Mesh(dieGeometry, materials);
-      scene.add(die);
+      const dieGeometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+      const die1 = new THREE.Mesh(dieGeometry, materials);
+      const die2 = new THREE.Mesh(dieGeometry, materials);
+
+      const diceGroup = new THREE.Group();
+      die1.position.x = -1.2;
+      die2.position.x = 1.2;
+      diceGroup.add(die1);
+      diceGroup.add(die2);
+      
+      scene.add(diceGroup);
 
       const clock = new THREE.Clock();
 
@@ -97,8 +105,16 @@ export function DiceAnimation({
         const delta = clock.getDelta();
         
         const rotationSpeed = isMouseOver.current ? 1.5 : 0.2;
-        die.rotation.x += rotationSpeed * delta;
-        die.rotation.y += rotationSpeed * delta * 0.8; // Vary speed for more interest
+        
+        // Rotate the group
+        diceGroup.rotation.y += rotationSpeed * delta * 0.8;
+
+        // Rotate individual dice
+        die1.rotation.x += rotationSpeed * delta;
+        die1.rotation.y += rotationSpeed * delta * 0.5;
+        die2.rotation.x -= rotationSpeed * delta * 0.8;
+        die2.rotation.y -= rotationSpeed * delta;
+
 
         renderer.render(scene, camera);
       };
