@@ -39,6 +39,7 @@ import KalmanFilterPage from '@/app/(app)/quantlab/kalman-filters/component';
 import ItosLemmaComponent from '@/app/(app)/quantlab/stochastic-calculus-itos-lemma/page';
 import HypothesisTestingGuidePage from '@/app/(app)/quantlab/hypothesis-testing-guide/component';
 import AnovaPage from '@/app/(app)/quantlab/anova/component';
+import ChiSquaredTestPage from '@/app/(app)/quantlab/chi-squared-test/component';
 
 
 type TopicPageProps = {
@@ -198,6 +199,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'stochastic-calculus-itos-lemma-interactive-guide': ItosLemmaComponent,
   'hypothesis-testing-guide': HypothesisTestingGuidePage,
   'anova': AnovaPage,
+  'chi-squared-test': ChiSquaredTestPage,
 };
 
 
