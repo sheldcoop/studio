@@ -5,6 +5,7 @@ import { createTopic } from './utils';
 export const probabilityAdvancedTopics: Topic[] = [
     // --- Module 1: Foundations of Probability ---
     createTopic({
+        id: 'prob-the-basics-sample-spaces-events',
         parent: 'prob-quant-mod-1',
         title: 'The Basics: Sample Spaces & Events',
         icon: 'Dice3',
@@ -19,6 +20,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-combinatorics-the-art-of-counting',
         parent: 'prob-quant-mod-1',
         title: 'Combinatorics: The Art of Counting',
         icon: 'Calculator',
@@ -33,6 +35,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-conditional-probability-independence',
         parent: 'prob-quant-mod-1',
         title: 'Conditional Probability & Independence',
         icon: 'GitBranch',
@@ -48,9 +51,9 @@ export const probabilityAdvancedTopics: Topic[] = [
     }),
     createTopic({
         parent: 'prob-quant-mod-1',
-        title: "Bayes' Theorem",
         id: 'bayes-theorem-deep-dive',
         href: '/paths/probability-for-quants/bayes-theorem-deep-dive',
+        title: "Bayes' Theorem",
         icon: 'BrainCircuit',
         description: "Updating beliefs in the face of new evidence.",
         category: 'sub-topic',
@@ -64,6 +67,7 @@ export const probabilityAdvancedTopics: Topic[] = [
 
     // --- Module 2: Random Variables & Distributions ---
     createTopic({
+        id: 'prob-random-variables-discrete-continuous',
         parent: 'prob-quant-mod-2',
         title: 'Random Variables (Discrete & Continuous)',
         icon: 'BarChart3',
@@ -78,6 +82,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-expectation-variance-moments',
         parent: 'prob-quant-mod-2',
         title: 'Expectation, Variance & Moments',
         icon: 'Target',
@@ -92,6 +97,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-common-discrete-distributions',
         parent: 'prob-quant-mod-2',
         title: 'Common Discrete Distributions',
         icon: 'Component',
@@ -106,6 +112,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-common-continuous-distributions',
         parent: 'prob-quant-mod-2',
         title: 'Common Continuous Distributions',
         icon: 'AreaChart',
@@ -122,6 +129,7 @@ export const probabilityAdvancedTopics: Topic[] = [
 
     // --- Module 3: Multivariate Probability & Core Theorems ---
     createTopic({
+        id: 'prob-joint-marginal-conditional-distributions',
         parent: 'prob-quant-mod-3',
         title: 'Joint, Marginal & Conditional Distributions',
         icon: 'Users',
@@ -183,6 +191,7 @@ export const probabilityAdvancedTopics: Topic[] = [
 
     // --- Module 4: Intermediate Topics & Generating Functions ---
     createTopic({
+        id: 'prob-transformations-of-random-variables',
         parent: 'prob-quant-mod-4',
         title: 'Transformations of Random Variables',
         icon: 'Replace',
@@ -196,6 +205,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-moment-generating-functions',
         parent: 'prob-quant-mod-4',
         title: 'Moment Generating Functions (MGFs)',
         icon: 'Sun',
@@ -210,6 +220,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-introduction-to-information-theory',
         parent: 'prob-quant-mod-4',
         title: 'Introduction to Information Theory',
         icon: 'Binary',
@@ -225,6 +236,7 @@ export const probabilityAdvancedTopics: Topic[] = [
 
     // --- Module 5: Stochastic Processes ---
     createTopic({
+        id: 'prob-introduction-to-stochastic-processes-stationarity',
         parent: 'prob-quant-mod-5',
         title: 'Introduction to Stochastic Processes & Stationarity',
         icon: 'Clock',
@@ -238,6 +250,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-discrete-time-markov-chains',
         parent: 'prob-quant-mod-5',
         title: 'Discrete-Time Markov Chains',
         icon: 'Footprints',
@@ -266,6 +279,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-random-walks-brownian-motion',
         parent: 'prob-quant-mod-5',
         title: 'Random Walks & Brownian Motion',
         icon: 'TrendingDown',
@@ -281,6 +295,7 @@ export const probabilityAdvancedTopics: Topic[] = [
 
     // --- Module 6: Advanced & Measure-Theoretic Probability ---
     createTopic({
+        id: 'prob-sigma-algebras-probability-measures',
         parent: 'prob-quant-mod-6',
         title: 'Sigma-Algebras & Probability Measures',
         icon: 'Ruler',
@@ -294,6 +309,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-the-lebesgue-integral-rigorous-expectation',
         parent: 'prob-quant-mod-6',
         title: 'The Lebesgue Integral & Rigorous Expectation',
         icon: 'PenTool',
@@ -307,6 +323,7 @@ export const probabilityAdvancedTopics: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'prob-martingales',
         parent: 'prob-quant-mod-6',
         title: 'Martingales',
         icon: 'Scale',
