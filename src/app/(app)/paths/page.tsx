@@ -25,7 +25,7 @@ export default function PathsPage() {
         variant="aligned-left"
       />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {learningPaths.map((path) => (
+        {learningPaths.filter(p => p.id !== 'quantlab').map((path) => (
            <Link
             key={path.id}
             href={`/paths/${path.id}`}

@@ -24,6 +24,9 @@ import NegativeBinomialDistributionPage from '@/app/(app)/probability/negative-b
 import PoissonDistributionPage from '@/app/(app)/probability/poisson-distribution/page';
 import TDistributionPage from '@/app/(app)/probability/students-t-distribution/page';
 import WeibullDistributionPage from '@/app/(app)/probability/weibull-distribution/page';
+import CLTPage from '@/app/(app)/topics/central-limit-theorem/page';
+import DescriptiveStatsPage from '@/components/app/probability-distribution-page-client';
+
 
 type TopicPageProps = {
   params: Promise<{ pathSlug: string; topicSlug: string }>;
@@ -34,14 +37,20 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
 // Statically generate all topic pages at build time
 export async function generateStaticParams() {
   return allTopics
-    .filter(topic => topic.href.startsWith('/paths/')) // Only generate for this route structure
+    .filter(topic => topic.href.startsWith('/paths/') || topic.href.startsWith('/quantlab/')) // Only generate for this route structure
     .map(topic => {
       const parts = topic.href.split('/');
-      // Expected format: ['', 'paths', pathSlug, topicSlug]
-      if (parts.length === 4) {
+      // Expected format: ['', 'paths', pathSlug, topicSlug] or ['', 'quantlab', topicSlug]
+      if (parts.length === 4 && parts[1] === 'paths') {
           return {
             pathSlug: parts[2],
             topicSlug: parts[3],
+          };
+      }
+      if (parts.length === 3 && parts[1] === 'quantlab') {
+          return {
+            pathSlug: 'quantlab', // Use a placeholder slug
+            topicSlug: parts[2],
           };
       }
       return null;
@@ -106,12 +115,14 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'poisson-distribution': PoissonDistributionPage,
   'students-t-distribution': TDistributionPage,
   'weibull-distribution': WeibullDistributionPage,
+  'central-limit-theorem': CLTPage,
+  'descriptive-statistics-explorer': DescriptiveStatsPage,
 };
 
 
 // This is the main server component for the page.
 export default async function TopicPage({ params }: TopicPageProps) {
-  const { topicSlug } = await params;
+  const { pathSlug, topicSlug } = await params;
   
   // Find the topic by its unique ID, which is the slug.
   const topicInfo = allTopics.find((t) => t.id === topicSlug);

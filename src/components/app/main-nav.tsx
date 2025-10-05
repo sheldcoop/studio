@@ -6,9 +6,7 @@ import {
   LayoutDashboard,
   BookOpenCheck,
   Users,
-  FolderKanban,
-  Sigma,
-  BarChart3,
+  FlaskConical,
   Newspaper,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -26,9 +24,9 @@ const links = [
     icon: 'BookOpenCheck',
   },
   {
-    href: '/stat-toolkit',
-    label: 'Statistical Tests',
-    icon: 'Sigma',
+    href: '/quantlab',
+    label: 'QuantLab',
+    icon: 'FlaskConical',
   },
   {
     href: '/blog',
