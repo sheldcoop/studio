@@ -40,6 +40,16 @@ import ItosLemmaComponent from '@/app/(app)/quantlab/stochastic-calculus-itos-le
 import HypothesisTestingGuidePage from '@/app/(app)/quantlab/hypothesis-testing-guide/component';
 import AnovaPage from '@/app/(app)/quantlab/anova/component';
 import ChiSquaredTestPage from '@/app/(app)/quantlab/chi-squared-test/component';
+import FTestPage from '@/app/(app)/quantlab/f-test/component';
+import FriedmanTestPage from '@/app/(app)/quantlab/friedman-test/component';
+import KSTestPage from '@/app/(app)/quantlab/kolmogorov-smirnov-k-s-test/component';
+import KruskalWallisTestPage from '@/app/(app)/quantlab/kruskal-wallis-test/component';
+import MannWhitneyUTestPage from '@/app/(app)/quantlab/mann-whitney-u-test/component';
+import PearsonCorrelationPage from '@/app/(app)/quantlab/pearson-correlation/component';
+import SpearmansRankCorrelationPage from '@/app/(app)/quantlab/spearmans-rank-correlation/component';
+import TTestPage from '@/app/(app)/quantlab/t-test/component';
+import WilcoxonSignedRankTestPage from '@/app/(app)/quantlab/wilcoxon-signed-rank-test/component';
+import ZTestPage from '@/app/(app)/quantlab/z-test/component';
 
 
 type TopicPageProps = {
@@ -200,6 +210,16 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'hypothesis-testing-guide': HypothesisTestingGuidePage,
   'anova': AnovaPage,
   'chi-squared-test': ChiSquaredTestPage,
+  'f-test': FTestPage,
+  'friedman-test': FriedmanTestPage,
+  'kolmogorov-smirnov-k-s-test': KSTestPage,
+  'kruskal-wallis-test': KruskalWallisTestPage,
+  'mann-whitney-u-test': MannWhitneyUTestPage,
+  'pearson-correlation': PearsonCorrelationPage,
+  'spearmans-rank-correlation': SpearmansRankCorrelationPage,
+  't-test': TTestPage,
+  'wilcoxon-signed-rank-test': WilcoxonSignedRankTestPage,
+  'z-test': ZTestPage,
 };
 
 
