@@ -78,9 +78,10 @@ const allPathModules: (Omit<Module, 'lessons'> & { parent: string })[] = [
   { id: 'stats-mod-5', parent: 'statistics-for-quantitative-finance', title: 'Module 5: Time Series Analysis & Computational Methods', status: 'not-started', duration: 120 },
   { id: 'stats-mod-6', parent: 'statistics-for-quantitative-finance', title: 'Module 6: Advanced Quant Modeling & Numerical Methods', status: 'not-started', duration: 120 },
   // QuantLab
-  { id: 'prob-core-tools', parent: 'quantlab', title: 'Core Probability Concepts', status: 'in-progress', duration: 40 },
+  { id: 'prob-core-tools', parent: 'quantlab', title: 'Fundamental Tools', status: 'in-progress', duration: 40 },
   { id: 'prob-dist-discrete', parent: 'quantlab', title: 'Discrete Distributions', status: 'in-progress', duration: 30},
   { id: 'prob-dist-continuous', parent: 'quantlab', title: 'Continuous Distributions', status: 'in-progress', duration: 90},
+  { id: 'stats-advanced-tools', parent: 'quantlab', title: 'Statistics Tools', status: 'not-started', duration: 90 },
   // Probability for Quants
   { id: 'prob-quant-mod-1', parent: 'probability-for-quants', title: 'Module 1: Foundations of Probability', status: 'not-started', duration: 85 },
   { id: 'prob-quant-mod-2', parent: 'probability-for-quants', title: 'Module 2: Random Variables & Distributions', status: 'not-started', duration: 100 },
@@ -102,27 +103,7 @@ export const getPathById = (id: string): LearningPath | undefined => {
   const pathInfo = learningPaths.find(p => p.id === id);
   if (!pathInfo) return undefined;
 
-  const pathModules: Module[] = allTopics
-    .filter(t => t.parent === id && t.category === 'parent')
-    .map(moduleTopic => {
-      const lessons: Topic[] = allTopics.filter((t: Topic) => t.parent === moduleTopic.id).map((lesson: Topic) => ({
-          ...lesson,
-          status: lesson.status || 'not-started',
-          duration: lesson.duration || Math.floor(Math.random() * 15) + 5,
-      }));
-      const moduleInfo = allPathModules.find(m => m.id === moduleTopic.id);
-      return { 
-        id: moduleTopic.id,
-        title: moduleTopic.title,
-        status: moduleInfo?.status || 'not-started',
-        duration: moduleInfo?.duration || lessons.reduce((acc, l) => acc + (l.duration || 0), 0),
-        lessons 
-      };
-    });
-
-  // Fallback for paths that use the older `allPathModules` structure directly
-  if (pathModules.length === 0) {
-    const oldPathModules: Module[] = allPathModules.filter(m => m.parent === id).map(module => {
+  const pathModules: Module[] = allPathModules.filter(m => m.parent === id).map(module => {
       const lessons: Topic[] = allTopics.filter((t: Topic) => t.parent === module.id).map((lesson: Topic) => ({
           ...lesson,
           status: lesson.status || 'not-started',
@@ -130,12 +111,6 @@ export const getPathById = (id: string): LearningPath | undefined => {
       }));
       return { ...module, lessons };
     });
-    return {
-      ...pathInfo,
-      modules: oldPathModules,
-    }
-  }
-
 
   return {
     ...pathInfo,

@@ -11,7 +11,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'FunctionSquare',
     description: 'The detective work of data science.',
     category: 'sub-topic',
-    parent: 'stat-toolkit',
+    parent: 'stats-advanced-tools',
   }),
   createTopic({
     id: 'hypothesis-testing-guide',
@@ -294,7 +294,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'Dice',
     description: 'Using random simulation to solve complex problems.',
     category: 'sub-topic',
-    parent: 'stats-advanced',
+    parent: 'stats-advanced-tools',
     pathPrefix: 'quantlab',
   }),
   createTopic({
@@ -303,7 +303,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'Layers',
     description: 'Breaking down a time series into its core components.',
     category: 'sub-topic',
-    parent: 'stats-advanced',
+    parent: 'stats-advanced-tools',
     pathPrefix: 'quantlab',
   }),
   createTopic({
@@ -312,7 +312,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'Signal',
     description: 'Measuring how a time series correlates with its past values.',
     category: 'sub-topic',
-    parent: 'stats-advanced',
+    parent: 'stats-advanced-tools',
     pathPrefix: 'quantlab',
   }),
   createTopic({
@@ -321,7 +321,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'Flame',
     description: 'Modeling the changing volatility of financial returns.',
     category: 'sub-topic',
-    parent: 'stats-advanced',
+    parent: 'stats-advanced-tools',
     pathPrefix: 'quantlab',
   }),
   createTopic({
@@ -330,7 +330,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'Target',
     description: 'Finding the optimal portfolio for a given level of risk.',
     category: 'sub-topic',
-    parent: 'stats-advanced',
+    parent: 'stats-advanced-tools',
     pathPrefix: 'quantlab',
   }),
   createTopic({
@@ -339,7 +339,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'Filter',
     description: 'Dynamically estimating the state of a system from noisy data.',
     category: 'sub-topic',
-    parent: 'stats-advanced',
+    parent: 'stats-advanced-tools',
     pathPrefix: 'quantlab',
   }),
   createTopic({
@@ -348,7 +348,7 @@ export const statisticsTopics: Topic[] = [
     icon: 'Calculator',
     description: 'The calculus of random walks, essential for derivatives pricing.',
     category: 'sub-topic',
-    parent: 'stats-advanced',
+    parent: 'stats-advanced-tools',
     pathPrefix: 'quantlab',
   }),
   
