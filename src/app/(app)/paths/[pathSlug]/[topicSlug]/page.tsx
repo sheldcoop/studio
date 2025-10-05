@@ -21,6 +21,7 @@ import LaplaceDistributionPage from '@/app/(app)/probability/laplace-distributio
 import LogisticDistributionPage from '@/app/(app)/probability/logistic-distribution/page';
 import MultinomialDistributionPage from '@/app/(app)/probability/multinomial-distribution/page';
 import NegativeBinomialDistributionPage from '@/app/(app)/probability/negative-binomial-distribution/page';
+import PoissonDistributionPage from '@/app/(app)/probability/poisson-distribution/page';
 import TDistributionPage from '@/app/(app)/probability/students-t-distribution/page';
 import WeibullDistributionPage from '@/app/(app)/probability/weibull-distribution/page';
 
@@ -102,6 +103,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'logistic-distribution': LogisticDistributionPage,
   'multinomial-distribution': MultinomialDistributionPage,
   'negative-binomial-distribution': NegativeBinomialDistributionPage,
+  'poisson-distribution': PoissonDistributionPage,
   'students-t-distribution': TDistributionPage,
   'weibull-distribution': WeibullDistributionPage,
 };
