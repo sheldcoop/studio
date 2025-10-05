@@ -1,60 +1,47 @@
-
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 
-// Dynamically import all curriculum modules.
-// This is more robust than manually listing them.
-async function getAllTopics() {
-    const curriculumDir = path.resolve(process.cwd(), 'src/lib/curriculum');
-    const files = await fs.readdir(curriculumDir);
-    const topicModules = files.filter(file => file.endsWith('.ts') && !file.includes('types') && !file.includes('utils') && !file.includes('index'));
-
-    let allTopics = [];
-    for (const file of topicModules) {
-        const modulePath = path.join(curriculumDir, file);
-        // Use a cache-busting query param for reliable dynamic imports
-        const module = await import(`file://${modulePath}?v=${Date.now()}`);
-        const topics = Object.values(module).find(Array.isArray);
-        if (topics) {
-            allTopics.push(...topics);
-        }
-    }
-    return allTopics;
+// This is a dynamic import. Because the curriculum files are TypeScript,
+// we can't import them directly at the top level of an .mjs file without a loader.
+// By placing the import inside an async function, we ensure it's evaluated
+// at runtime, where Next.js's environment can handle it.
+async function getTopics() {
+  const { allTopics } = await import('../src/lib/curriculum/index.ts');
+  return allTopics;
 }
 
-async function main() {
-    try {
-        const allTopics = await getAllTopics();
-        const redirects = [];
+export async function createRedirects() {
+    const allTopics = await getTopics();
+    const redirects = [];
 
-        for (const topic of allTopics) {
-            if (topic.previousSlugs && topic.previousSlugs.length > 0) {
-                for (const oldSlug of topic.previousSlugs) {
-                    // This handles redirects for the main /topics route
-                    redirects.push({
-                        source: `/topics/${oldSlug}`,
-                        destination: topic.href,
-                        permanent: true,
-                    });
-                     // This handles redirects for the old, now-deleted specific routes
-                    if (topic.pathPrefix) {
-                         redirects.push({
-                            source: `/${topic.pathPrefix}/${oldSlug}`,
-                            destination: topic.href,
-                            permanent: true,
-                        });
-                    }
-                }
+    for (const topic of allTopics) {
+        if (topic.previousSlugs) {
+            for (const oldSlug of topic.previousSlugs) {
+                // All old slugs are assumed to be under the /topics/ route for simplicity
+                redirects.push({
+                    source: `/topics/${oldSlug}`,
+                    destination: topic.href,
+                    permanent: true, // 301 Redirect for SEO
+                });
             }
         }
-
-        const redirectsFilePath = path.resolve(process.cwd(), 'public/redirects.json');
-        await fs.writeFile(redirectsFilePath, JSON.stringify(redirects, null, 2));
-        console.log(`✓ Successfully generated ${redirects.length} redirects to public/redirects.json`);
-    } catch (error) {
-        console.error('Error generating redirects:', error);
-        process.exit(1);
     }
+
+    // Ensure the 'public' directory exists
+    const publicDir = path.join(process.cwd(), 'public');
+    if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir);
+    }
+    
+    // Write the redirects to a JSON file in the public directory
+    const redirectsPath = path.join(publicDir, 'redirects.json');
+    fs.writeFileSync(redirectsPath, JSON.stringify(redirects, null, 2));
+
+    console.log(`Generated ${redirects.length} redirects in public/redirects.json`);
 }
 
-main();
+// This allows the script to be run directly from the command line,
+// e.g., via `node scripts/create-redirects.mjs` in package.json
+if (process.argv[1] === new URL(import.meta.url).pathname) {
+    createRedirects();
+}
