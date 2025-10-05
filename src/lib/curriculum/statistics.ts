@@ -229,15 +229,6 @@ export const statisticsTopics: Topic[] = [
     parent: 'prob-core-tools',
     pathPrefix: 'quantlab',
   }),
-   createTopic({
-    id: 'mental-math',
-    title: 'Mental Math Trainer',
-    icon: 'BrainCircuit',
-    description: 'Sharpen your calculation speed for interviews.',
-    category: 'sub-topic',
-    parent: 'prob-core-tools',
-    pathPrefix: 'topics'
-  }),
   createTopic({
     id: 'central-limit-theorem',
     title: 'The Central Limit Theorem (CLT)',
