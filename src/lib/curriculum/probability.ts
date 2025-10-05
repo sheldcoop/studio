@@ -11,8 +11,6 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
     parent: 'prob-core-tools',
     pathPrefix: 'quantlab',
-    seoTitle: "Bayes' Theorem Explained: An Interactive Guide",
-    metaDescription: "Learn the intuition behind Bayes' Theorem and the base rate fallacy with an interactive calculator and visual guide for this core quantitative finance concept."
   }),
   createTopic({
     id: 'bernoulli-distribution-interactive-guide',
