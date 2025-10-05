@@ -5,26 +5,26 @@ import { allTopics } from '@/lib/curriculum';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 // Dynamically import all the content components for our topics
-import BayesTheoremPage from '@/app/(app)/probability/bayes-theorem/page';
-import BernoulliDistributionPage from '@/app/(app)/probability/bernoulli-distribution/page';
-import BetaDistributionPage from '@/app/(app)/probability/beta-distribution/page';
-import BinomialDistributionPage from '@/app/(app)/probability/binomial-distribution/page';
-import CauchyDistributionPage from '@/app/(app)/probability/cauchy-distribution/page';
-import ChiSquaredDistributionPage from '@/app/(app)/probability/chi-squared-distribution/page';
-import DiscreteUniformDistributionPage from '@/app/(app)/probability/discrete-uniform-distribution/page';
-import ExponentialDistributionPage from '@/app/(app)/probability/exponential-distribution/page';
-import FDistributionPage from '@/app/(app)/probability/f-distribution/page';
-import GammaDistributionPage from '@/app/(app)/probability/gamma-distribution/page';
-import GeometricDistributionPage from '@/app/(app)/probability/geometric-distribution/page';
-import HypergeometricDistributionPage from '@/app/(app)/probability/hypergeometric-distribution/page';
-import LaplaceDistributionPage from '@/app/(app)/probability/laplace-distribution/page';
-import LogisticDistributionPage from '@/app/(app)/probability/logistic-distribution/page';
-import MultinomialDistributionPage from '@/app/(app)/probability/multinomial-distribution/page';
-import NegativeBinomialDistributionPage from '@/app/(app)/probability/negative-binomial-distribution/page';
-import PoissonDistributionPage from '@/app/(app)/probability/poisson-distribution/page';
-import TDistributionPage from '@/app/(app)/probability/students-t-distribution/page';
-import WeibullDistributionPage from '@/app/(app)/probability/weibull-distribution/page';
-import CLTPage from '@/app/(app)/topics/central-limit-theorem/page';
+import BayesTheoremPage from '@/app/quantlab/bayes-theorem/page';
+import BernoulliDistributionPage from '@/app/quantlab/bernoulli-distribution/page';
+import BetaDistributionPage from '@/app/quantlab/beta-distribution/page';
+import BinomialDistributionPage from '@/app/quantlab/binomial-distribution/page';
+import CauchyDistributionPage from '@/app/quantlab/cauchy-distribution/page';
+import ChiSquaredDistributionPage from '@/app/quantlab/chi-squared-distribution/page';
+import DiscreteUniformDistributionPage from '@/app/quantlab/discrete-uniform-distribution/page';
+import ExponentialDistributionPage from '@/app/quantlab/exponential-distribution/page';
+import FDistributionPage from '@/app/quantlab/f-distribution/page';
+import GammaDistributionPage from '@/app/quantlab/gamma-distribution/page';
+import GeometricDistributionPage from '@/app/quantlab/geometric-distribution/page';
+import HypergeometricDistributionPage from '@/app/quantlab/hypergeometric-distribution/page';
+import LaplaceDistributionPage from '@/app/quantlab/laplace-distribution/page';
+import LogisticDistributionPage from '@/app/quantlab/logistic-distribution/page';
+import MultinomialDistributionPage from '@/app/quantlab/multinomial-distribution/page';
+import NegativeBinomialDistributionPage from '@/app/quantlab/negative-binomial-distribution/page';
+import PoissonDistributionPage from '@/app/quantlab/poisson-distribution/page';
+import TDistributionPage from '@/app/quantlab/students-t-distribution/page';
+import WeibullDistributionPage from '@/app/quantlab/weibull-distribution/page';
+import CLTPage from '@/app/quantlab/central-limit-theorem/page';
 import DescriptiveStatsPage from '@/components/app/probability-distribution-page-client';
 
 

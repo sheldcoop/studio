@@ -1,8 +1,7 @@
+import { redirect } from 'next/navigation';
 
-export default function ExponentialDistributionPage() {
-    return (
-        <div className="flex h-96 items-center justify-center rounded-lg border border-dashed mt-8">
-            <p className="text-muted-foreground">This page is temporarily unavailable while under maintenance.</p>
-        </div>
-    );
+// This page has been moved to the /quantlab directory.
+// This redirect ensures old links continue to work.
+export default function DeprecatedExponentialPage() {
+    redirect('/quantlab/exponential-distribution');
 }
