@@ -2,7 +2,16 @@
 'use client';
 
 import { PageHeader } from "@/components/app/page-header";
-import DiagonalizationVisualizer from "@/components/app/diagonalization-visualizer";
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const DiagonalizationVisualizer = dynamic(
+  () => import('@/components/app/diagonalization-visualizer'),
+  { 
+    ssr: false,
+    loading: () => <Skeleton className="h-[500px] w-full" />,
+  }
+);
 
 export default function DiagonalizationPage() {
   return (

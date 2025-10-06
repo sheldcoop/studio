@@ -2,7 +2,16 @@
 'use client';
 
 import { PageHeader } from "@/components/app/page-header";
-import LUDecompositionVisualizer from "@/components/app/lu-decomposition-visualizer";
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const LUDecompositionVisualizer = dynamic(
+  () => import('@/components/app/lu-decomposition-visualizer'),
+  { 
+    ssr: false,
+    loading: () => <Skeleton className="h-[500px] w-full" />,
+  }
+);
 
 export default function LUDecompositionPage() {
   return (
