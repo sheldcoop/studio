@@ -52,16 +52,14 @@ function EigenvalueExplanation() {
 function EigenvalueTheory() {
   return (
     <div className="prose prose-invert max-w-none p-6 text-foreground/90">
-        <h3>Level 1: The Core Intuition</h3>
         <p>Imagine you have a big, stretchy sheet of rubber with a grid drawn on it. A matrix transformation is like grabbing this sheet and stretching, rotating, or squishing it in some way. Almost every point on the grid moves to a new position, pointing in a new direction from the center.</p>
-        <p>However, there will be certain special lines of points on this sheet that, after the stretch, are still on the same line they started on. They haven't been rotated off their original path. These special directions are the **eigenvectors**.</p>
-        <p>The amount each of these special lines stretched or shrunk is its corresponding **eigenvalue**. An eigenvalue of 3 means points on that line are now three times farther from the center. An eigenvalue of 0.5 means they are twice as close.</p>
+        <p>However, there will be certain special lines of points on this sheet that, after the stretch, are still on the same line they started on. They haven't been rotated off their original path. These special directions are the <strong>eigenvectors</strong>.</p>
+        <p>The amount each of these special lines stretched or shrunk is its corresponding <strong>eigenvalue</strong>. An eigenvalue of 3 means points on that line are now three times farther from the center. An eigenvalue of 0.5 means they are twice as close.</p>
         <hr />
-
-        <h3>Level 2: The Formal Mathematics</h3>
+        
         <p>We can express this intuition with a simple but profound equation. For a given square matrix <strong className="text-primary">A</strong>, a non-zero vector <strong className="text-primary">v</strong> is an eigenvector if applying the transformation **A** to **v** results in a vector that is just a scaled version of **v**.</p>
         <div className="text-center"><BlockMath math="Av = \lambda v" /></div>
-        <ul>
+        <ul className="text-sm">
             <li><InlineMath math="A" /> is the transformation matrix.</li>
             <li><InlineMath math="v" /> is the eigenvector.</li>
             <li><InlineMath math="\lambda" /> (lambda) is the eigenvalue, which is just a scalar number.</li>
@@ -77,9 +75,9 @@ function EigenvalueTheory() {
         <p>Once we have the eigenvalues (<InlineMath math="\lambda" />), we can plug each one back into <InlineMath math="(A - \lambda I)v = 0" /> to solve for the corresponding eigenvectors (<InlineMath math="v" />).</p>
         <hr />
 
-        <h3>Level 3: Graduate-Level Connections</h3>
-        <p><strong>Spectral Theorem:</strong> For symmetric matrices (like covariance matrices in finance), the Spectral Theorem is a cornerstone. It guarantees that the eigenvalues are real numbers and the eigenvectors are orthogonal (perpendicular). This means we can form a new basis for our space made entirely of these orthogonal eigenvectors. This is the mathematical foundation of Principal Component Analysis (PCA), where we change the basis of our data to align with the directions of highest variance.</p>
-        <p><strong>Eigendecomposition:</strong> A matrix A can be decomposed into the product of its eigenvectors and eigenvalues: <InlineMath math="A = PDP^{-1}" />, where **P** is the matrix whose columns are the eigenvectors of **A**, and **D** is a diagonal matrix with the eigenvalues on its diagonal. This is incredibly useful for calculating powers of a matrix (<InlineMath math="A^k = PD^kP^{-1}" />), which is fundamental to modeling long-term behavior in dynamic systems like Markov chains.</p>
+        <p>This concept becomes even more powerful when applied to specific types of matrices common in finance. For symmetric matrices, like the **covariance matrices** used in portfolio theory, the **Spectral Theorem** provides a cornerstone guarantee: the eigenvalues will be real numbers and the eigenvectors will be orthogonal (perpendicular). This means we can form a new, more natural basis for our data space using these eigenvectors. This is the mathematical foundation of **Principal Component Analysis (PCA)**, where we change the basis of our data to align with the directions of highest variance (the eigenvectors with the largest eigenvalues).</p>
+        
+        <p>Furthermore, this leads to the idea of **eigendecomposition**, where a matrix A can be broken down into the product of its eigenvectors and eigenvalues: <InlineMath math="A = PDP^{-1}" />. Here, **P** is the matrix whose columns are the eigenvectors of **A**, and **D** is a diagonal matrix with the eigenvalues on its diagonal. This decomposition is incredibly useful for calculating powers of a matrix (<InlineMath math="A^k = PD^kP^{-1}" />), which is fundamental to modeling the long-term behavior of dynamic systems like Markov chains in credit risk modeling.</p>
     </div>
   );
 }
