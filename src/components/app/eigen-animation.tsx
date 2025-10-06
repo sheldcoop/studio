@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
@@ -65,7 +64,7 @@ export function EigenAnimation({ className }: EigenAnimationProps) {
 
     // --- Vector Objects ---
     const origin = new THREE.Vector3(0, 0, 0);
-    const userVec2D = new THREE.Vector2(2, 1); // Default position (100, 50) on a 500px canvas is (2,1) in a +/-5 world
+    const userVec2D = new THREE.Vector2(2, 1); // Default position
     
     const userArrow = new THREE.ArrowHelper(new THREE.Vector3(userVec2D.x, userVec2D.y, 0).normalize(), origin, userVec2D.length(), blueColor.getHex(), 0.5, 0.3);
     const transformedArrow = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), origin, 1, pinkColor.getHex(), 0.5, 0.3);
@@ -165,17 +164,17 @@ export function EigenAnimation({ className }: EigenAnimationProps) {
       renderer.domElement.removeEventListener('pointerleave', onPointerUp);
 
       cancelAnimationFrame(frameId);
-      currentMount.removeChild(renderer.domElement);
+      if (currentMount) {
+        currentMount.removeChild(renderer.domElement);
+      }
       
       scene.traverse(object => {
         if (object instanceof THREE.Mesh) {
           if (object.geometry) object.geometry.dispose();
-          if (object.material) {
-            if (Array.isArray(object.material)) {
-              object.material.forEach(material => material.dispose());
-            } else {
-              object.material.dispose();
-            }
+          if (Array.isArray(object.material)) {
+            object.material.forEach(material => material.dispose());
+          } else {
+            object.material.dispose();
           }
         }
       });
