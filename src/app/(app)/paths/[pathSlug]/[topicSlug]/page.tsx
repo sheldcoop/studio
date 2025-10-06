@@ -7,7 +7,7 @@ import { TopicPageClient } from '@/components/app/topic-page-client';
 
 // Dynamically import all the content components for our topics
 import BayesTheoremPage from '@/app/(app)/quantlab/bayes-theorem/component';
-import BernoulliDistributionPage from '@/app//(app)/quantlab/bernoulli-distribution/component';
+import BernoulliDistributionPage from '@/app/(app)/quantlab/bernoulli-distribution/component';
 import BetaDistributionPage from '@/app/(app)/quantlab/beta-distribution/component';
 import BinomialDistributionPage from '@/app/(app)/quantlab/binomial-distribution/component';
 import CauchyDistributionPage from '@/app/(app)/quantlab/cauchy-distribution/component';
@@ -50,6 +50,7 @@ import TTestPage from '@/app/(app)/quantlab/t-test/component';
 import WilcoxonSignedRankTestPage from '@/app/(app)/quantlab/wilcoxon-signed-rank-test/component';
 import ZTestPage from '@/app/(app)/quantlab/z-test/component';
 import IntroductionToHypothesisTestingPage from '@/app/(app)/quantlab/introduction-to-hypothesis-testing/component';
+import VectorProjectionPage from '@/app/(app)/quantlab/vector-projection/component';
 
 
 type TopicPageProps = {
@@ -220,6 +221,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'wilcoxon-signed-rank-test': WilcoxonSignedRankTestPage,
   'z-test': ZTestPage,
   'introduction-to-hypothesis-testing': IntroductionToHypothesisTestingPage,
+  'vector-projection': VectorProjectionPage,
 };
 
 

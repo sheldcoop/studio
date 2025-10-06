@@ -72,6 +72,15 @@ export const linearAlgebraPart1: Topic[] = [
             { id: 'basis-and-dimension', title: 'Basis and Dimension' },
         ]
     }),
+    createTopic({
+        parent: 'la-module-1',
+        id: 'vector-projection',
+        title: 'Vector Projection: The Story of a Shadow',
+        icon: 'Waypoints',
+        description: "Decomposing vectors into orthogonal components.",
+        category: 'sub-topic',
+        pathPrefix: 'quantlab', // To use the /quantlab/ route
+    }),
 
     // --- Module 2 ---
      createTopic({
