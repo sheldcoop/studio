@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,6 @@ const DeterminantVisualizer = () => {
     const area = Math.abs(determinant);
 
     useEffect(() => {
-        // If a sketch instance already exists, remove it before creating a new one.
         if (sketchRef.current) {
             sketchRef.current.remove();
         }
@@ -27,35 +26,31 @@ const DeterminantVisualizer = () => {
         const sketch = (p: p5) => {
             let scaleFactor: number;
 
-            // This object will hold the state that p5 needs to draw.
             const sketchState = {
                 matrix: { a: 1.0, b: 0.0, c: 0.0, d: 1.0 }
             };
 
-            // This function allows React to update the state within the p5 sketch.
             (p as any).updateWithProps = (props: { matrix: typeof matrix }) => {
                 sketchState.matrix = props.matrix;
-                p.redraw(); // Trigger a redraw whenever props change
+                p.redraw(); 
             };
 
             p.setup = () => {
                 const container = canvasRef.current!;
                 p.createCanvas(container.offsetWidth, 400).parent(container);
-                p.noLoop(); // We will manually trigger redraws
+                p.noLoop(); 
             };
 
             p.draw = () => {
-                const { a, b, c, d } = sketchState.matrix; // Use the sketch's internal state
+                const { a, b, c, d } = sketchState.matrix;
                 
-                p.background(17, 24, 39); // bg-gray-900
+                p.background(17, 24, 39); 
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
 
                 scaleFactor = Math.min(p.width, p.height) / 5;
 
-                // Use the standardized grid drawing function
                 drawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
-
 
                 const i_hat_x = a * scaleFactor;
                 const i_hat_y = c * scaleFactor;
@@ -63,12 +58,12 @@ const DeterminantVisualizer = () => {
                 const j_hat_y = d * scaleFactor;
 
                 p.noStroke();
-                let fillColor = p.color(34, 211, 238, 100); // cyan-400
+                let fillColor = p.color(34, 211, 238, 100);
                 if (calculateDeterminant(sketchState.matrix) < 0) {
-                    fillColor = p.color(250, 204, 21, 100); // yellow-400
+                    fillColor = p.color(250, 204, 21, 100);
                 }
                 if (Math.abs(calculateDeterminant(sketchState.matrix)) < 0.01) {
-                    fillColor = p.color(239, 68, 68, 150); // red-500
+                    fillColor = p.color(239, 68, 68, 150);
                 }
                 p.fill(fillColor);
                 
@@ -98,7 +93,6 @@ const DeterminantVisualizer = () => {
         };
     }, []);
 
-    // This useEffect hook is now responsible for passing the updated matrix state to the p5 sketch.
     useEffect(() => {
         if (sketchRef.current && (sketchRef.current as any).updateWithProps) {
             (sketchRef.current as any).updateWithProps({ matrix });
@@ -113,19 +107,14 @@ const DeterminantVisualizer = () => {
         setMatrix({ a: 1.0, b: 0.0, c: 0.0, d: 1.0 });
     };
     
-    // Helper to calculate determinant for local use
     const calculateDeterminant = (m: {a: number, b: number, c: number, d: number}) => m.a * m.d - m.b * m.c;
 
     return (
         <Card className="bg-background/50 overflow-hidden">
             <CardContent className="p-4 md:p-6 flex flex-col lg:flex-row gap-6">
-                {/* Controls Panel */}
                 <div className="w-full lg:w-96 flex-shrink-0 space-y-4">
                     <Card>
-                        <CardHeader className="p-4">
-                            <CardTitle>Transformation Matrix</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
+                        <CardContent className="p-4 pt-4">
                              <div className="flex items-center justify-center space-x-4 text-2xl">
                                 <div className="text-muted-foreground text-5xl">[</div>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 font-mono text-center">
@@ -181,10 +170,7 @@ const DeterminantVisualizer = () => {
                         Reset to Identity
                     </Button>
                 </div>
-
-                {/* Canvas */}
                 <div ref={canvasRef} className="flex-grow w-full min-h-[400px] rounded-lg border bg-gray-900 overflow-hidden">
-                    {/* p5.js canvas will be created here */}
                 </div>
             </CardContent>
         </Card>

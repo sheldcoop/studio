@@ -23,37 +23,32 @@ const VectorProjectionVisualizer = () => {
         if (!canvasRef.current) return;
 
         const sketch = (p: p5) => {
-            let p5a: p5.Vector, p5b: p5.Vector;
             let dragging: p5.Vector | null = null;
             let scaleFactor: number;
 
-            // This object will hold the state that p5 needs to draw.
             const sketchState = {
                 a: p.createVector(aVec.x, aVec.y),
                 b: p.createVector(bVec.x, bVec.y),
             };
 
-            // This function allows React to update the state within the p5 sketch.
             (p as any).updateWithProps = (props: { a: {x:number, y:number}, b: {x:number, y:number} }) => {
                 sketchState.a.set(props.a.x, props.a.y);
                 sketchState.b.set(props.b.x, props.b.y);
-                p.redraw(); // Trigger a redraw whenever props change
+                p.redraw(); 
             };
 
             p.setup = () => {
                 p.createCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight).parent(canvasRef.current!);
-                p5a = sketchState.a;
-                p5b = sketchState.b;
                 p.noLoop();
             };
 
             p.draw = () => {
                 scaleFactor = p.min(p.width, p.height) / 8;
-                p.background(17, 24, 39); // bg-gray-900
+                p.background(17, 24, 39);
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
 
-                drawGrid(p, p.createVector(1, 0), p.createVector(0, 1), p.color(55, 65, 81), 1, scaleFactor);
+                drawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
 
                 const b_norm = sketchState.b.copy().normalize();
                 const dot_ab_val = sketchState.a.dot(sketchState.b);
@@ -61,13 +56,12 @@ const VectorProjectionVisualizer = () => {
                 const scalar_val = dot_bb_val === 0 ? 0 : dot_ab_val / dot_bb_val;
                 const proj = sketchState.b.copy().mult(scalar_val);
 
-                // Update React state
                 setDotAB(dot_ab_val);
                 setDotBB(dot_bb_val);
                 setScalar(scalar_val);
                 setProjVector(`(${proj.x.toFixed(2)}, ${proj.y.toFixed(2)})`);
 
-                p.stroke(96, 165, 250, 50); // blue-400 with alpha
+                p.stroke(96, 165, 250, 50);
                 p.strokeWeight(2);
                 if (b_norm.magSq() > 0) {
                   p.line(-b_norm.x * p.width, -b_norm.y * p.width, b_norm.x * p.width, b_norm.y * p.width);
@@ -107,7 +101,7 @@ const VectorProjectionVisualizer = () => {
             p.touchMoved = () => {
                 if (dragging) {
                     handleDrag();
-                    return false; // Prevent page scrolling
+                    return false;
                 }
                 return true;
             };
@@ -116,8 +110,8 @@ const VectorProjectionVisualizer = () => {
             p.windowResized = () => p.resizeCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight);
         };
 
-        sketchRef.current = new p5(sketch);
-        return () => sketchRef.current?.remove();
+        sketchRef.current = new p5(sketch, canvasRef.current!);
+        return () => { sketchRef.current?.remove(); };
     }, []);
 
      useEffect(() => {
