@@ -127,7 +127,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
 
         return (
-            <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
+             <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
                 <p className="text-sm text-muted-foreground">Interactive demo coming soon.</p>
             </div>
         );

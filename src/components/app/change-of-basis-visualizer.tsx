@@ -3,17 +3,18 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Play, Pause, Sliders } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Play, Pause } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const ChangeOfBasisVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
     const sketchRef = useRef<p5 | null>(null);
 
-    const [mode, setMode] = useState('explore');
+    const [mode, setMode] = useState<'explore' | 'transform'>('explore');
     const [storyText, setStoryText] = useState("");
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -25,7 +26,7 @@ const ChangeOfBasisVisualizer = () => {
     const animationFrameId = useRef<number | null>(null);
 
     const story = {
-        explore: "Standard coordinates use the familiar î and ĵ. By dragging b₁ and b₂, you define a new language—a new basis—to describe the same vector.",
+        explore: "Standard coordinates use the familiar <b class='text-gray-400'>î</b> and <b class='text-gray-400'>ĵ</b>. By dragging <b class='text-red-400'>b₁</b> and <b class='text-blue-400'>b₂</b>, you define a new language—a new basis—to describe the same vector.",
         transform: [
             "<b>Start:</b> A vector and a transformation matrix A. Applying A gives a sheared result.",
             "<b>Act 1: Change Basis (P⁻¹)</b> We shift our view to a special basis: the eigenvectors of A. The vector itself doesn't move, but its coordinates change.",
@@ -55,21 +56,19 @@ const ChangeOfBasisVisualizer = () => {
         }
         if (!canvasRef.current) return;
 
-        const sketch = (p: p5) => {
+        const sketch = new p5((p: p5) => {
             let b1: p5.Vector, b2: p5.Vector, p_standard: p5.Vector;
             let dragging: p5.Vector | null = null;
-            let stdCoordsSpan: p5.Element | null, customCoordsSpan: p5.Element | null;
             
-            const state = {
-                mode: 'explore',
+            // Component state passed into p5
+            let componentState = {
+                mode: 'explore' as 'explore' | 'transform',
                 progress: 0,
                 matrix: { a: 1.5, b: 1, c: 0.5, d: 2 }
             };
             
             (p as any).updateWithProps = (props: any) => {
-                state.mode = props.mode;
-                state.progress = props.progress;
-                state.matrix = { a: props.matrixA, b: props.matrixB, c: props.matrixC, d: props.matrixD };
+                componentState = {...componentState, ...props};
             };
 
 
@@ -78,13 +77,10 @@ const ChangeOfBasisVisualizer = () => {
                 b1 = p.createVector(1.5, 0.5);
                 b2 = p.createVector(-0.5, 1);
                 p_standard = p.createVector(2, 1);
-                
-                stdCoordsSpan = p.select('#standard-coords');
-                customCoordsSpan = p.select('#custom-coords');
             };
 
             p.draw = () => {
-                const {mode, progress, matrix} = state;
+                const {mode, progress, matrix} = componentState;
                 const scaleFactor = p.min(p.width, p.height) / 8;
                 p.background(17, 24, 39);
                 p.translate(p.width / 2, p.height / 2);
@@ -94,8 +90,12 @@ const ChangeOfBasisVisualizer = () => {
                     drawGrid(p.createVector(1,0), p.createVector(0,1), scaleFactor, p.color(55, 65, 81));
                     drawGrid(b1, b2, scaleFactor, p.color(56, 189, 248, 80));
                     const p_custom_coords = getCustomCoords(p_standard, b1, b2);
-                    if (stdCoordsSpan) stdCoordsSpan.html(`(${p_standard.x.toFixed(2)}, ${p_standard.y.toFixed(2)})`);
-                    if (customCoordsSpan) customCoordsSpan.html(p_custom_coords ? `(${p_custom_coords.x.toFixed(2)}, ${p_custom_coords.y.toFixed(2)})` : '(Invalid)');
+                    
+                    const stdCoordsEl = document.getElementById('standard-coords');
+                    if (stdCoordsEl) stdCoordsEl.innerHTML = `(${p_standard.x.toFixed(2)}, ${p_standard.y.toFixed(2)})`;
+                    const customCoordsEl = document.getElementById('custom-coords');
+                    if (customCoordsEl) customCoordsEl.innerHTML = p_custom_coords ? `(${p_custom_coords.x.toFixed(2)}, ${p_custom_coords.y.toFixed(2)})` : '(Invalid)';
+
                     drawLinearCombination(p_custom_coords, b1, b2, scaleFactor);
                     drawPoint(p_standard, scaleFactor, 'P', p.color(255, 217, 61));
                     drawVector(p.createVector(1, 0), scaleFactor, p.color(156, 163, 175), 'î');
@@ -118,13 +118,13 @@ const ChangeOfBasisVisualizer = () => {
                         grid_b1 = eigen.v1;
                         grid_b2 = eigen.v2;
                         const local_t = p.map(t, 0.333, 0.666, 0, 1);
-                        const p_eigen_coords = getCustomCoords(p_standard, eigen.v1, eigen.v2);
+                        const p_eigen_coords = getCustomCoords(p_standard, eigen.v1, eigen.v2)!;
                         const scaled_coords_x = p.lerp(p_eigen_coords.x, p_eigen_coords.x * eigen.l1, local_t);
                         const scaled_coords_y = p.lerp(p_eigen_coords.y, p_eigen_coords.y * eigen.l2, local_t);
                         p_display = p5.Vector.add(p5.Vector.mult(eigen.v1, scaled_coords_x), p5.Vector.mult(eigen.v2, scaled_coords_y));
                     } else {
                         const local_t = p.map(t, 0.666, 1, 0, 1);
-                        const p_eigen_coords = getCustomCoords(p_standard, eigen.v1, eigen.v2);
+                        const p_eigen_coords = getCustomCoords(p_standard, eigen.v1, eigen.v2)!;
                         const v1_part_scaled = p5.Vector.mult(eigen.v1, p_eigen_coords.x * eigen.l1);
                         const v2_part_scaled = p5.Vector.mult(eigen.v2, p_eigen_coords.y * eigen.l2);
                         const p_scaled = p5.Vector.add(v1_part_scaled, v2_part_scaled);
@@ -135,8 +135,10 @@ const ChangeOfBasisVisualizer = () => {
                     }
                     
                     const live_custom_coords = getCustomCoords(p_display, grid_b1, grid_b2);
-                    if (stdCoordsSpan) stdCoordsSpan.html(`(${p_display.x.toFixed(2)}, ${p_display.y.toFixed(2)})`);
-                    if (customCoordsSpan) customCoordsSpan.html(live_custom_coords ? `(${live_custom_coords.x.toFixed(2)}, ${live_custom_coords.y.toFixed(2)})` : '(Invalid)');
+                    const stdCoordsEl = document.getElementById('standard-coords');
+                    if (stdCoordsEl) stdCoordsEl.innerHTML = `(${p_display.x.toFixed(2)}, ${p_display.y.toFixed(2)})`;
+                    const customCoordsEl = document.getElementById('custom-coords');
+                    if (customCoordsEl) customCoordsEl.innerHTML = live_custom_coords ? `(${live_custom_coords.x.toFixed(2)}, ${live_custom_coords.y.toFixed(2)})` : '(Invalid)';
                     
                     drawGrid(grid_b1, grid_b2, scaleFactor, p.color(56, 189, 248, 80));
                     drawPoint(p_display, scaleFactor, 'P', p.color(255, 217, 61));
@@ -192,8 +194,8 @@ const ChangeOfBasisVisualizer = () => {
                 }
             };
             
-            const drawVector = (v: p5.Vector, s: number, col: p5.Color, label: string) => {
-                p.stroke(col); p.strokeWeight(4); p.fill(col);
+            const drawVector = (v: p5.Vector, s: number, c: p5.Color, label: string) => {
+                p.stroke(c); p.strokeWeight(4); p.fill(c);
                 p.line(0, 0, v.x * s, v.y * s);
                 p.push(); p.translate(v.x * s, v.y * s); p.rotate(v.heading()); p.triangle(0, 0, -10, 5, -10, -5); p.pop();
                 if (label) { p.noStroke(); p.push(); p.translate(v.x * s, v.y * s); p.scale(1,-1); p.text(label, 10, -10); p.pop(); }
@@ -211,19 +213,20 @@ const ChangeOfBasisVisualizer = () => {
 
             const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
             const screenToWorld = (mx: number, my: number) => p.createVector((mx - p.width / 2) / (p.min(p.width, p.height) / 8), (p.height / 2 - my) / (p.min(p.width, p.height) / 8));
-            p.mousePressed = () => { if (state.mode === 'explore' && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) { const m = screenToWorld(p.mouseX, p.mouseY); if(p5.Vector.dist(m, b1) < 0.3) dragging = b1; else if(p5.Vector.dist(m, b2) < 0.3) dragging = b2; }};
+            p.mousePressed = () => { if (componentState.mode === 'explore' && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) { const m = screenToWorld(p.mouseX, p.mouseY); if(p5.Vector.dist(m, b1) < 0.3) dragging = b1; else if(p5.Vector.dist(m, b2) < 0.3) dragging = b2; }};
             p.mouseDragged = () => { if (dragging) dragging.set(screenToWorld(p.mouseX, p.mouseY)); };
             p.mouseReleased = () => { dragging = null; };
             p.windowResized = () => p.resizeCanvas(canvasRef.current!.offsetWidth, 500);
-        };
+        }, canvasRef.current!);
+        
+        sketchRef.current = sketch;
 
-        sketchRef.current = new p5(sketch, canvasRef.current!);
         return () => sketchRef.current?.remove();
     }, []);
 
     useEffect(() => {
         if(sketchRef.current && (sketchRef.current as any).updateWithProps) {
-            (sketchRef.current as any).updateWithProps({ mode, progress, matrixA, matrixB, matrixC, matrixD });
+            (sketchRef.current as any).updateWithProps({ mode, progress, matrix: {a: matrixA, b: matrixB, c: matrixC, d: matrixD} });
         }
     }, [mode, progress, matrixA, matrixB, matrixC, matrixD]);
     
@@ -258,8 +261,7 @@ const ChangeOfBasisVisualizer = () => {
                             <p className="text-gray-400 mt-1 text-sm h-24" dangerouslySetInnerHTML={{ __html: storyText }}></p>
                         </div>
 
-                        {mode === 'explore' ? (
-                        <div id="exploration-panel">
+                        <div id="exploration-panel" className={cn(mode !== 'explore' && 'hidden')}>
                             <div className="bg-gray-900 p-4 rounded-lg text-center space-y-2">
                                 <h3 className="text-base font-semibold text-gray-300">The Same Vector, Two Languages</h3>
                                 <p className="text-xs text-gray-400">Drag the colored vectors (<b className="text-red-400">b₁</b>, <b className="text-blue-400">b₂</b>) to define your basis.</p>
@@ -274,8 +276,9 @@ const ChangeOfBasisVisualizer = () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>) : (
-                        <div id="transformation-panel">
+                        </div>
+
+                        <div id="transformation-panel" className={cn(mode !== 'transform' && 'hidden')}>
                             <div className="bg-gray-900 p-4 rounded-lg">
                                 <h3 className="text-base font-semibold text-gray-300 mb-2">Transformation Matrix A</h3>
                                 <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-center">
@@ -286,24 +289,21 @@ const ChangeOfBasisVisualizer = () => {
                                 </div>
                             </div>
                         </div>
-                        )}
                         
                         <div className="grid grid-cols-2 gap-2">
                             <Button onClick={() => setMode('explore')} variant={mode === 'explore' ? 'default' : 'secondary'}>Basis Explorer</Button>
                             <Button onClick={() => setMode('transform')} variant={mode === 'transform' ? 'default' : 'secondary'}>Transformation Story</Button>
                         </div>
                         
-                        {mode === 'transform' && (
-                        <div className="flex items-center gap-4">
+                        <div className={cn("flex items-center gap-4", mode !== 'transform' && 'hidden')}>
                             <Button onClick={togglePlay} className="w-1/3">
                                 {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                                 <span className="ml-2">{isPlaying ? 'Pause' : 'Play'}</span>
                             </Button>
                             <Slider value={[progress]} onValueChange={(v) => setProgress(v[0])} min={0} max={1} step={0.01} />
                         </div>
-                        )}
                     </div>
-                    <div ref={canvasRef} className="flex-grow min-h-[300px] lg:min-h-0 rounded-lg border bg-gray-900 overflow-hidden" />
+                    <div ref={canvasRef} className="flex-grow min-h-[300px] lg:min-h-[500px] rounded-lg border bg-gray-900 overflow-hidden" />
                 </div>
             </CardContent>
         </Card>
