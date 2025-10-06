@@ -7,6 +7,7 @@ import { drawVector, drawParallelogram, drawGrid, drawDashedLine } from './primi
 import { drawLine } from './coordinate-system';
 import { easeInOutCubic } from './animation';
 
+
 /**
  * Applies a matrix transformation to a p5 vector.
  * @param p - The p5 instance.
@@ -118,6 +119,7 @@ export const drawColumnSpace = (p: p5, matrix: {a: number,b: number,c: number,d:
     drawVector(p, col2, scaleFactor, p.color(0, 255, 0), 'col₂', 3);
 };
 
+
 export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color, showScaling: boolean = true) => {
     // Draw the eigenspace as a dashed line through the origin
     p.stroke(color);
@@ -217,6 +219,7 @@ export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleF
 };
 
 export const drawLinearSystem = (p: p5, a1: number, b1: number, c1: number, a2: number, b2: number, c2: number, scaleFactor: number, line1Color: p5.Color, line2Color: p5.Color) => {
+    
     // Draw both lines
     drawLine(p, a1, b1, c1, scaleFactor, line1Color);
     drawLine(p, a2, b2, c2, scaleFactor, line2Color);
@@ -271,8 +274,8 @@ export const drawSVD = (p: p5, matrix: {a:number,b:number,c:number,d:number}, pr
         const scaled_v1 = v1.copy().mult(svdData.Sigma.s1);
         const scaled_v2 = v2.copy().mult(svdData.Sigma.s2);
         
-        const final_b1 = u1.copy().mult(scaled_v1.mag());
-        const final_b2 = u2.copy().mult(scaled_v2.mag());
+        const final_b1 = u1.copy().mult(svdData.Sigma.s1);
+        const final_b2 = u2.copy().mult(svdData.Sigma.s2);
 
         b1 = p5.Vector.lerp(scaled_v1, final_b1, t3);
         b2 = p5.Vector.lerp(scaled_v2, final_b2, t3);
@@ -320,6 +323,10 @@ export const drawLeastSquaresProjection = (p: p5, A_col1: p5.Vector, A_col2: p5.
 };
 
 export const drawGramSchmidt = (p: p5, v1: p5.Vector, v2: p5.Vector, progress: number, scaleFactor: number) => {
+    if (v1.magSq() < 1e-9 || v2.magSq() < 1e-9) {
+      console.warn('drawGramSchmidt: zero vector detected');
+      return;
+    }
     const t = easeInOutCubic(progress);
 
     const u1 = v1.copy();
@@ -341,6 +348,15 @@ export const drawGramSchmidt = (p: p5, v1: p5.Vector, v2: p5.Vector, progress: n
 };
 
 export const drawChangeOfBasis = (p: p5, v_std: p5.Vector, b1: p5.Vector, b2: p5.Vector, progress: number, scaleFactor: number) => {
+    const det = b1.x * b2.y - b1.y * b2.x;
+    if (Math.abs(det) < 0.01) {
+        p.push();
+        p.scale(1, -1);
+        p.fill(255, 0, 0);
+        p.text('Invalid basis: vectors are parallel', 0, 0);
+        p.pop();
+        return;
+    }
     const t = easeInOutCubic(progress);
     
     const b1_interp = p5.Vector.lerp(p.createVector(1,0), b1, t);
@@ -376,7 +392,7 @@ export const drawConditionNumber = (p: p5, matrix: {a:number,b:number,c:number,d
     const svd = calculateSVDMath(matrix);
     if (!svd) return;
 
-    const cond = svd.Sigma.s1 / svd.Sigma.s2;
+    const cond = svd.Sigma.s2 > 1e-9 ? svd.Sigma.s1 / svd.Sigma.s2 : Infinity;
     
     const b1 = p.createVector(matrix.a, matrix.c);
     const b2 = p.createVector(matrix.b, matrix.d);
@@ -390,7 +406,7 @@ export const drawConditionNumber = (p: p5, matrix: {a:number,b:number,c:number,d
     p.fill(255);
     p.textSize(24);
     p.textAlign(p.CENTER);
-    p.text(`Condition Number ≈ ${cond.toFixed(2)}`, 0, -p.height/2 + 30);
+    p.text(`Condition Number ≈ ${isFinite(cond) ? cond.toFixed(2) : '∞'}`, 0, -p.height/2 + 30);
     p.pop();
 };
 
@@ -417,6 +433,8 @@ export const drawPCA = (p: p5, dataPoints: p5.Vector[], scaleFactor: number) => 
     dataPoints.forEach(pt => p.ellipse(pt.x * scaleFactor, pt.y * scaleFactor, 5, 5));
     
     // Draw PCA vectors
-    drawVector(p, v1.mult(Math.sqrt(l1)*2), scaleFactor, p.color(255,100,100), 'PC1', 3, mean);
-    drawVector(p, v2.mult(Math.sqrt(trace - l1)*2), scaleFactor, p.color(100,255,100), 'PC2', 3, mean);
+    drawVector(p, v1.copy().mult(Math.sqrt(l1)*2), scaleFactor, p.color(255,100,100), 'PC1', 3, mean);
+    drawVector(p, v2.copy().mult(Math.sqrt(trace - l1)*2), scaleFactor, p.color(100,255,100), 'PC2', 3, mean);
 };
+
+export const drawStateTransition = (p:p5) => { /* Stub */ };

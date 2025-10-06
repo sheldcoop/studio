@@ -1,4 +1,5 @@
 
+
 /**
  * Solves a 2x2 system of linear equations Ax = b.
  * @param m - An object representing the augmented matrix [A|b].
@@ -52,21 +53,28 @@ export const calculateEigen = (a: number, b: number, c: number, d: number) => {
     }
 
     const v2 = { x: 0, y: 0 };
-    if (Math.abs(c) > 0.001) {
-        v2.x = lambda2 - d;
-        v2.y = c;
-    } else if (Math.abs(b) > 0.001) {
-        v2.x = b;
-        v2.y = lambda2 - a;
+    if (Math.abs(lambda1 - lambda2) < 0.001) {
+        // Repeated eigenvalue: any perpendicular vector works for v2
+        v2.x = -v1.y;
+        v2.y = v1.x;
     } else {
-        v2.x = 0;
-        v2.y = 1;
-    }
-
-    const len2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
-    if (len2 > 0) {
-        v2.x /= len2;
-        v2.y /= len2;
+        // Distinct eigenvalues: compute v2 normally
+        if (Math.abs(c) > 0.001) {
+            v2.x = lambda2 - d;
+            v2.y = c;
+        } else if (Math.abs(b) > 0.001) {
+            v2.x = b;
+            v2.y = lambda2 - a;
+        } else {
+            v2.x = 0;
+            v2.y = 1;
+        }
+        
+        const len2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+        if (len2 > 0) {
+            v2.x /= len2;
+            v2.y /= len2;
+        }
     }
     
     return { lambda1, lambda2, v1, v2 };
@@ -273,23 +281,43 @@ export const calculateSVD = (matrix: {a: number, b: number, c: number, d: number
     const s1 = Math.sqrt(lambda1);
     const s2 = Math.sqrt(lambda2);
 
-    let v1 = { x: AtA.b, y: lambda1 - AtA.a };
-    if (v1.x * v1.x + v1.y * v1.y < 1e-4) v1 = { x: 1, y: 0 };
-    const len1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
-    v1.x /= len1; v1.y /= len1;
+    let v1 = { x: (Math.abs(AtA.c) < 0.001) ? 1 : lambda1 - AtA.d, y: (Math.abs(AtA.c) < 0.001) ? 0 : AtA.c };
+    let len1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+    if (len1 > 1e-9) { v1.x /= len1; v1.y /= len1; }
 
     let v2 = { x: -v1.y, y: v1.x };
     
     let u1 = { x: 0, y: 0 };
-    if (s1 > 1e-4) {
+    if (s1 > 1e-9) {
         u1 = { x: (a * v1.x + b * v1.y) / s1, y: (c * v1.x + d * v1.y) / s1 };
+        const len_u1 = Math.sqrt(u1.x * u1.x + u1.y * u1.y);
+        if (len_u1 > 1e-9) { u1.x /= len_u1; u1.y /= len_u1; }
     }
 
-    let u2 = { x: -u1.y, y: u1.x };
-    // Ensure correct sign for u2
-    const check = (a*v2.x + b*v2.y) / s2;
-    if (Math.abs(check - u2.x) > 0.1) {
-        u2.x *= -1; u2.y *= -1;
+    let u2 = { x: 0, y: 0 };
+    if (s2 > 1e-9) {
+        const Av2_x = a * v2.x + b * v2.y;
+        const Av2_y = c * v2.x + d * v2.y;
+        u2 = { x: Av2_x / s2, y: Av2_y / s2 };
+        const len_u2 = Math.sqrt(u2.x*u2.x + u2.y*u2.y);
+        if (len_u2 > 1e-9) {
+            u2.x /= len_u2;
+            u2.y /= len_u2;
+        }
+    } else {
+        u2 = { x: -u1.y, y: u1.x };
+    }
+
+    // Validate orthogonality
+    const u_orthogonal = Math.abs(u1.x*u2.x + u1.y*u2.y) < 0.01;
+    const v_orthogonal = Math.abs(v1.x*v2.x + v1.y*v2.y) < 0.01;
+
+    if (!u_orthogonal || !v_orthogonal) {
+        console.error('SVD orthogonality check failed', {
+            u_dot: u1.x*u2.x + u1.y*u2.y,
+            v_dot: v1.x*v2.x + v1.y*v2.y
+        });
+        return null;
     }
     
     return {
