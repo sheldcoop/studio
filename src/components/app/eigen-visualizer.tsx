@@ -10,6 +10,7 @@ import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
 
 const EigenVisualizer = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [mode, setMode] = useState('intro'); // intro, compare, explore
@@ -93,9 +94,9 @@ const EigenVisualizer = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
-    let p5Instance: p5 | null = null;
-    
+
+    let p5Instance: p5;
+
     const sketch = (p: p5) => {
         let scale: number;
         
@@ -124,12 +125,16 @@ const EigenVisualizer = () => {
             
             p.stroke(color);
             p.strokeWeight(2);
-            p.drawingContext.setLineDash([8, 8]);
-            p.drawingContext.globalAlpha = 0.2;
+            if (p.drawingContext.setLineDash) {
+              p.drawingContext.setLineDash([8, 8]);
+              p.drawingContext.globalAlpha = 0.2;
+            }
             const extend = 6;
             p.line(-vx * scale * extend, -vy * scale * extend, vx * scale * extend, vy * scale * extend);
-            p.drawingContext.setLineDash([]);
-            p.drawingContext.globalAlpha = 1;
+            if (p.drawingContext.setLineDash) {
+              p.drawingContext.setLineDash([]);
+              p.drawingContext.globalAlpha = 1;
+            }
 
             const scaledVx = p.lerp(vx * 2, vx * 2 * lambda, t);
             const scaledVy = p.lerp(vy * 2, vy * 2 * lambda, t);
@@ -145,11 +150,15 @@ const EigenVisualizer = () => {
             p.textFont('Arial');
             p.textSize(16);
             p.fill(color);
-            p.drawingContext.shadowBlur = 10;
-            p.drawingContext.shadowColor = '#000';
+            if (p.drawingContext.shadowBlur) {
+                p.drawingContext.shadowBlur = 10;
+                p.drawingContext.shadowColor = '#000';
+            }
             p.text(label, sx + 15, -sy + 10);
             p.text(`λ=${lambda.toFixed(2)}`, sx + 15, -sy - 10);
-            p.drawingContext.shadowBlur = 0;
+            if (p.drawingContext.shadowBlur) {
+                p.drawingContext.shadowBlur = 0;
+            }
             p.pop();
         };
 
@@ -203,9 +212,15 @@ const EigenVisualizer = () => {
             }
           }
         };
+    };
 
-        p5Instance = new p5(sketch, canvas);
-    }, [progress, mode, matrixA, matrixB, matrixC, matrixD, eigenData]);
+    p5Instance = new p5(sketch, canvas);
+
+    return () => {
+        p5Instance?.remove();
+    };
+}, [progress, mode, matrixA, matrixB, matrixC, matrixD, eigenData]);
+
 
   useEffect(() => {
     if (isPlaying) {
@@ -232,7 +247,7 @@ const EigenVisualizer = () => {
     setIsPlaying(false);
   };
 
-  const modes = {
+  const modes: { [key: string]: { title: string; desc: string } } = {
     intro: {
       title: "Linear Transformations",
       desc: "Every matrix represents a transformation of space. Watch how vectors and the grid transform together. The red (î) and green (ĵ) vectors are our basis vectors."
