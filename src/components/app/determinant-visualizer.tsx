@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,7 @@ const DeterminantVisualizer = () => {
         return () => {
             sketchRef.current?.remove();
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -38,6 +39,8 @@ const DeterminantVisualizer = () => {
     }, [matrix]);
 
     const sketch = (p: p5) => {
+        let scaleFactor: number;
+
         p.setup = () => {
             const container = canvasRef.current!;
             p.createCanvas(container.offsetWidth, 400).parent(container);
@@ -51,7 +54,7 @@ const DeterminantVisualizer = () => {
             p.translate(p.width / 2, p.height / 2);
             p.scale(1, -1);
 
-            const scaleFactor = Math.min(p.width, p.height) / 5;
+            scaleFactor = Math.min(p.width, p.height) / 5;
 
             // Draw grid
             drawGrid(scaleFactor);
@@ -80,11 +83,11 @@ const DeterminantVisualizer = () => {
             p.endShape(p.CLOSE);
             
             // Draw transformed basis vectors
-            drawVector(0, 0, i_hat_x, i_hat_y, p.color(110, 231, 183), 'î'); // green-400
-            drawVector(0, 0, j_hat_x, j_hat_y, p.color(248, 113, 113), 'ĵ'); // red-400
+            drawVector(0, 0, i_hat_x, i_hat_y, p.color(110, 231, 183), 'î', scaleFactor); // green-400
+            drawVector(0, 0, j_hat_x, j_hat_y, p.color(248, 113, 113), 'ĵ', scaleFactor); // red-400
         };
 
-        const drawVector = (x1: number, y1: number, x2: number, y2: number, c: p5.Color, label: string) => {
+        const drawVector = (x1: number, y1: number, x2: number, y2: number, c: p5.Color, label: string, sf: number) => {
             p.stroke(c);
             p.strokeWeight(4);
             p.line(x1, y1, x2, y2);
@@ -104,8 +107,8 @@ const DeterminantVisualizer = () => {
             p.fill(c);
             p.textStyle(p.BOLD);
             p.textSize(18);
-            const labelX = (x2 / scaleFactor);
-            const labelY = (y2 / scaleFactor);
+            const labelX = (x2 / sf);
+            const labelY = (y2 / sf);
             // Crude text positioning to avoid overlap
             p.text(label, x2 + (labelX > 0 ? 10 : -20), -y2 - (labelY < 0 ? 10 : -20));
             p.pop();
@@ -219,5 +222,3 @@ const DeterminantVisualizer = () => {
 };
 
 export default DeterminantVisualizer;
-
-  
