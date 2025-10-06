@@ -8,9 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Line, LineChart, ComposedChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { Line, Area, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import 'katex/dist/katex.min.css';
+
+const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
+const RechartsComposedChart = dynamic(() => import('recharts').then(mod => mod.ComposedChart), { ssr: false });
 
 type ModelType = 'additive' | 'multiplicative';
 
@@ -37,13 +40,13 @@ const DecompositionChart = ({ model, data }: { model: ModelType, data: any[] }) 
       <div>
         <h4 className="text-center font-semibold mb-2">Original Time Series</h4>
         <ChartContainer config={{}} className="h-[200px] w-full">
-          <LineChart data={chartData}>
+          <RechartsLineChart data={chartData}>
             <CartesianGrid />
             <XAxis dataKey="time" />
             <YAxis />
             <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
             <Line type="monotone" dataKey="original" stroke="hsl(var(--primary))" dot={false} />
-          </LineChart>
+          </RechartsLineChart>
         </ChartContainer>
       </div>
 
@@ -51,31 +54,31 @@ const DecompositionChart = ({ model, data }: { model: ModelType, data: any[] }) 
         <div>
           <h4 className="text-center font-semibold text-sm mb-2">Trend Component</h4>
           <ChartContainer config={{}} className="h-[150px] w-full">
-            <LineChart data={chartData}>
+            <RechartsLineChart data={chartData}>
               <XAxis dataKey="time" hide />
               <YAxis />
               <Line type="monotone" dataKey="trend" stroke="hsl(var(--chart-2))" dot={false} />
-            </LineChart>
+            </RechartsLineChart>
           </ChartContainer>
         </div>
         <div>
           <h4 className="text-center font-semibold text-sm mb-2">Seasonal Component</h4>
           <ChartContainer config={{}} className="h-[150px] w-full">
-            <LineChart data={chartData}>
+            <RechartsLineChart data={chartData}>
               <XAxis dataKey="time" hide />
               <YAxis />
               <Line type="monotone" dataKey="seasonality" stroke="hsl(var(--chart-3))" dot={false} />
-            </LineChart>
+            </RechartsLineChart>
           </ChartContainer>
         </div>
         <div>
           <h4 className="text-center font-semibold text-sm mb-2">Residual (Noise)</h4>
           <ChartContainer config={{}} className="h-[150px] w-full">
-            <LineChart data={chartData}>
+            <RechartsLineChart data={chartData}>
               <XAxis dataKey="time" hide />
               <YAxis />
               <Line type="monotone" dataKey="residual" stroke="hsl(var(--muted-foreground))" dot={false} />
-            </LineChart>
+            </RechartsLineChart>
           </ChartContainer>
         </div>
       </div>

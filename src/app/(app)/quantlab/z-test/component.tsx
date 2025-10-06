@@ -11,8 +11,10 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, CartesianGrid, Legend, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts';
 import 'katex/dist/katex.min.css';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -149,8 +151,6 @@ const TwoSampleZTestChart = () => {
   );
 };
 
-const DynamicOneSampleZTestChart = dynamic(() => Promise.resolve(OneSampleZTestChart), { ssr: false });
-const DynamicTwoSampleZTestChart = dynamic(() => Promise.resolve(TwoSampleZTestChart), { ssr: false });
 
 export default function ZTestPage() {
   return (
@@ -215,7 +215,7 @@ export default function ZTestPage() {
                   After a major platform update, you analyze the daily returns of &apos;Stock A&apos; for the last 100 trading days. You want to know if its average daily return is now different from its known historical average of 0.05% over the past 10 years (with a population standard deviation of 1.2%).
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicOneSampleZTestChart />
+                  <OneSampleZTestChart />
                 </div>
               </TabsContent>
               <TabsContent value="two-sample" className="mt-6">
@@ -230,7 +230,7 @@ export default function ZTestPage() {
                   A firm compares the average daily volatility of &apos;Stock A&apos; vs. &apos;Stock B&apos; over the past five years (~1260 data points each). With known population standard deviations for both stocks&apos; volatility, they test if there is a significant difference between them.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicTwoSampleZTestChart />
+                  <TwoSampleZTestChart />
                 </div>
               </TabsContent>
             </Tabs>

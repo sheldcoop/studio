@@ -8,7 +8,9 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -80,7 +82,7 @@ const MannWhitneyChart = () => {
             <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
             <Tooltip content={<ChartTooltipContent />} wrapperStyle={{ zIndex: 1000 }} />
-            <Legend formatter={(value) => mannWhitneyChartConfig[value as keyof typeof mannWhitneyChartConfig]?.label || value} />
+            <Legend formatter={(value: string) => mannWhitneyChartConfig[value as keyof typeof mannWhitneyChartConfig]?.label || value} />
             <Bar dataKey="Algo_A" fill="var(--color-Algo_A)" />
             <Bar dataKey="Algo_B" fill="var(--color-Algo_B)" />
           </RechartsBarChart>
@@ -92,8 +94,6 @@ const MannWhitneyChart = () => {
     </div>
   );
 };
-
-const DynamicMannWhitneyChart = dynamic(() => Promise.resolve(MannWhitneyChart), { ssr: false });
 
 export default function MannWhitneyUPage() {
   return (
@@ -141,7 +141,7 @@ export default function MannWhitneyUPage() {
               <span className="font-semibold text-foreground">Example:</span> A quant firm develops a new trading algorithm ('Algo B') and wants to see if it generates significantly different profits than their old one ('Algo A'). The profit distributions are known to be skewed (not normal). They use the Mann-Whitney U Test to determine if there's a statistical difference in the distribution of profits between the two algorithms.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicMannWhitneyChart />
+              <MannWhitneyChart />
             </div>
           </CardContent>
         </Card>

@@ -8,7 +8,9 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Line, LineChart as RechartsLineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+import { Line, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+
+const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -72,7 +74,6 @@ const WilcoxonSignedRankChart = () => {
   );
 };
 
-const DynamicWilcoxonSignedRankChart = dynamic(() => Promise.resolve(WilcoxonSignedRankChart), { ssr: false });
 
 export default function WilcoxonSignedRankTestPage() {
   return (
@@ -121,7 +122,7 @@ export default function WilcoxonSignedRankTestPage() {
               risk management team implements a new model for 10 of their portfolios. They record the maximum drawdown of each portfolio for a month before the change and a month after. Since drawdown data is often skewed (many small values, few large ones), they use the Wilcoxon Signed-Rank Test to see if the new model led to a statistically significant reduction in drawdown.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicWilcoxonSignedRankChart />
+              <WilcoxonSignedRankChart />
             </div>
           </CardContent>
         </Card>

@@ -8,10 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ReferenceLine } from 'recharts';
+import { Scatter, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ReferenceLine } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+
+const RechartsScatterChart = dynamic(() => import('recharts').then(mod => mod.ScatterChart), { ssr: false, loading: () => <Skeleton className="h-[350px] w-full" /> });
 
 // --- Math & Simulation Logic ---
 const generatePortfolio = (mu1: number, mu2: number, sigma1: number, sigma2: number, rho: number) => {
@@ -32,21 +34,16 @@ const generatePortfolio = (mu1: number, mu2: number, sigma1: number, sigma2: num
 const EfficientFrontierChart = ({ portfolios }: { portfolios: { vol: number; ret: number }[] }) => {
   return (
     <ChartContainer config={{}} className="h-[350px] w-full">
-      <ScatterChart>
+      <RechartsScatterChart>
         <CartesianGrid />
         <XAxis type="number" dataKey="vol" name="Volatility (Std. Dev.)" label={{ value: "Volatility", position: 'insideBottom', offset: -5 }} domain={['dataMin', 'dataMax']} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
         <YAxis type="number" dataKey="ret" name="Expected Return" label={{ value: "Return", angle: -90, position: 'insideLeft' }} domain={['dataMin', 'dataMax']} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
         <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<ChartTooltipContent formatter={(value, name) => [`${(Number(value) * 100).toFixed(1)}%`, name === 'vol' ? 'Volatility' : 'Return']} />} />
         <Scatter name="Portfolios" data={portfolios} fill="hsl(var(--primary))" />
-      </ScatterChart>
+      </RechartsScatterChart>
     </ChartContainer>
   );
 };
-
-const DynamicEfficientFrontierChart = dynamic(() => Promise.resolve(EfficientFrontierChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[350px] w-full" />,
-});
 
 
 // --- Main Page Component ---
@@ -109,7 +106,7 @@ export default function EfficientFrontierComponent() {
                 </div>
             </div>
             
-            <DynamicEfficientFrontierChart portfolios={portfolios} />
+            <EfficientFrontierChart portfolios={portfolios} />
           </CardContent>
         </Card>
       </div>

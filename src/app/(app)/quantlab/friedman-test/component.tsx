@@ -8,7 +8,9 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Line, LineChart as RechartsLineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+import { Line, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+
+const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
 
 // Helper to generate rank-like data for demonstration
 const generateRankData = (numSubjects: number) => {
@@ -64,7 +66,7 @@ const FriedmanTestChart = () => {
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis reversed domain={[1, 5]} tickCount={5} />
                 <Tooltip content={<ChartTooltipContent />} />
-                <Legend formatter={(value) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
+                <Legend formatter={(value: string) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
                 <Line type="monotone" dataKey="Algo_A" stroke="var(--color-Algo_A)" />
                 <Line type="monotone" dataKey="Algo_B" stroke="var(--color-Algo_B)" />
                 <Line type="monotone" dataKey="Algo_C" stroke="var(--color-Algo_C)" />
@@ -80,7 +82,6 @@ const FriedmanTestChart = () => {
   );
 };
 
-const DynamicFriedmanTestChart = dynamic(() => Promise.resolve(FriedmanTestChart), { ssr: false });
 
 export default function FriedmanTestPage() {
   return (
@@ -128,7 +129,7 @@ export default function FriedmanTestPage() {
               <span className="font-semibold text-foreground">Example:</span> A quant team wants to compare the performance of five trading algorithms across three different market volatility regimes (Low, Medium, and High). For each regime, they rank the algorithms from 1 (best) to 5 (worst). The Friedman test is used to determine if there is a significant difference in the algorithms' median ranks across the different volatility conditions.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicFriedmanTestChart />
+              <FriedmanTestChart />
             </div>
           </CardContent>
         </Card>

@@ -9,7 +9,9 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Scatter, ScatterChart as RechartsScatterChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+import { Scatter, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+
+const RechartsScatterChart = dynamic(() => import('recharts').then(mod => mod.ScatterChart), { ssr: false });
 
 // Helper function to generate data with a monotonic (but not necessarily linear) relationship
 const generateMonotonicData = (n: number, strength: number) => {
@@ -79,8 +81,6 @@ const SpearmanCorrelationChart = () => {
   );
 };
 
-const DynamicSpearmanCorrelationChart = dynamic(() => Promise.resolve(SpearmanCorrelationChart), { ssr: false });
-
 export default function SpearmansRankCorrelationPage() {
   return (
     <>
@@ -127,7 +127,7 @@ export default function SpearmansRankCorrelationPage() {
               <span className="font-semibold text-foreground">Example:</span> Let&apos;s say we&apos;re analyzing the relationship between a custom 'Market Sentiment Score' and a stock's daily return. The return might increase faster as sentiment gets very high. A linear model (Pearson) would miss this, but Spearman&apos;s would capture the strong monotonic trend.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicSpearmanCorrelationChart />
+              <SpearmanCorrelationChart />
             </div>
           </CardContent>
         </Card>

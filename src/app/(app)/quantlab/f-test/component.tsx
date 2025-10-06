@@ -1,15 +1,16 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FC } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
+import { Bar, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
 import { type TooltipProps } from 'recharts';
-import { type Payload } from 'recharts/types/component/DefaultTooltipContent';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
 
 /**
  * Generates normally distributed random data using the Box-Muller transform.
@@ -149,7 +150,6 @@ const FTestChart = () => {
   );
 };
 
-const DynamicFTestChart = dynamic(() => Promise.resolve(FTestChart), { ssr: false });
 
 export default function FTestPage() {
   return (
@@ -205,7 +205,7 @@ export default function FTestPage() {
               &apos;StableStock&apos;, indicating higher volatility and risk.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicFTestChart />
+              <FTestChart />
             </div>
           </CardContent>
         </Card>

@@ -9,7 +9,10 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Scatter, ScatterChart as RechartsScatterChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+import { Scatter, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+
+const RechartsScatterChart = dynamic(() => import('recharts').then(mod => mod.ScatterChart), { ssr: false });
+
 
 /**
  * Generates two correlated datasets using a variation of the Cholesky decomposition method.
@@ -110,7 +113,6 @@ const PearsonCorrelationChart = () => {
   );
 };
 
-const DynamicPearsonCorrelationChart = dynamic(() => Promise.resolve(PearsonCorrelationChart), { ssr: false });
 
 export default function PearsonCorrelationPage() {
   return (
@@ -157,7 +159,7 @@ export default function PearsonCorrelationPage() {
               <span className="font-semibold text-foreground">Example:</span> We plot the daily returns of two assets. By adjusting the slider, you can change the underlying correlation between their returns and see how it affects the scatter plot. This is fundamental to pairs trading, where you look for highly correlated assets whose prices have temporarily diverged.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-                <DynamicPearsonCorrelationChart />
+                <PearsonCorrelationChart />
             </div>
           </CardContent>
         </Card>

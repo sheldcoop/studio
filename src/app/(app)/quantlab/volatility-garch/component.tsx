@@ -8,10 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, Line, LineChart, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { Area, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+
+const RechartsComposedChart = dynamic(() => import('recharts').then(mod => mod.ComposedChart), { ssr: false });
+const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
+
 
 // --- GARCH Simulation Logic ---
 const generateGarchProcess = (alpha: number, beta: number, n: number) => {
@@ -38,25 +42,25 @@ const GarchChart = ({ alpha, beta }: { alpha: number; beta: number }) => {
       <div>
         <h4 className="font-semibold text-center mb-2">Simulated Asset Returns</h4>
         <ChartContainer config={{}} className="h-[200px] w-full">
-          <ComposedChart data={returns}>
+          <RechartsComposedChart data={returns}>
             <CartesianGrid />
             <XAxis dataKey="time" />
             <YAxis domain={['dataMin', 'dataMax']} />
             <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(3), "Return"]} />} />
             <Area type="monotone" dataKey="value" fill="hsl(var(--primary))" fillOpacity={0.5} stroke="hsl(var(--primary))" />
-          </ComposedChart>
+          </RechartsComposedChart>
         </ChartContainer>
       </div>
       <div>
         <h4 className="font-semibold text-center mb-2">Conditional Volatility (GARCH Model)</h4>
         <ChartContainer config={{}} className="h-[150px] w-full">
-          <LineChart data={volatilities}>
+          <RechartsLineChart data={volatilities}>
             <CartesianGrid />
             <XAxis dataKey="time" />
             <YAxis domain={['dataMin', 'dataMax']} />
             <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(3), "Volatility"]} />} />
             <Line type="monotone" dataKey="value" stroke="hsl(var(--destructive))" dot={false} />
-          </LineChart>
+          </RechartsLineChart>
         </ChartContainer>
       </div>
     </div>

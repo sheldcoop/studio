@@ -8,10 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Line, LineChart, ComposedChart, Scatter, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { Line, Scatter, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+
+const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
 
 // --- Kalman Filter Simulation ---
 const simulateKalmanFilter = (processNoise: number, measurementNoise: number, n: number) => {
@@ -40,7 +42,7 @@ const simulateKalmanFilter = (processNoise: number, measurementNoise: number, n:
 const KalmanChart = ({ data }: { data: { time: number; true: number; measurement: number; estimate: number }[] }) => {
   return (
     <ChartContainer config={{}} className="h-[350px] w-full">
-      <LineChart data={data}>
+      <RechartsLineChart data={data}>
         <CartesianGrid />
         <XAxis dataKey="time" />
         <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
@@ -48,7 +50,7 @@ const KalmanChart = ({ data }: { data: { time: number; true: number; measurement
         <Line type="monotone" dataKey="true" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" dot={false} name="True Value" />
         <Scatter dataKey="measurement" fill="hsla(var(--primary), 0.5)" shape="cross" name="Noisy Measurement" />
         <Line type="monotone" dataKey="estimate" stroke="hsl(var(--destructive))" dot={false} name="Kalman Estimate" strokeWidth={2} />
-      </LineChart>
+      </RechartsLineChart>
     </ChartContainer>
   );
 };

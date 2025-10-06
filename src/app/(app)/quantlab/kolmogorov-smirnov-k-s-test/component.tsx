@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +8,9 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Line, LineChart as RechartsLineChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+import { Line, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+
+const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
 
 
 // --- Math Helpers ---
@@ -105,9 +108,6 @@ const KSTestChart = () => {
   );
 };
 
-const DynamicKSTestChart = dynamic(() => Promise.resolve(KSTestChart), { ssr: false });
-
-
 export default function KolmogorovSmirnovTestPage() {
   return (
     <>
@@ -154,7 +154,7 @@ export default function KolmogorovSmirnovTestPage() {
               <span className="font-semibold text-foreground">Example:</span> We generate a sample of data and plot its Empirical Cumulative Distribution Function (ECDF). We then overlay the theoretical Cumulative Distribution Function (CDF) of a normal distribution. Toggle between a normal sample and a uniform sample to see how the ECDF's fit changes.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicKSTestChart />
+              <KSTestChart />
             </div>
           </CardContent>
         </Card>
