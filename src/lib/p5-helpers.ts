@@ -1,6 +1,5 @@
 
 
-
 'use client';
 
 import p5 from 'p5';
@@ -85,9 +84,9 @@ export const drawTransformedGrid = (p: p5, matrix: { a: number, b: number, c: nu
  */
 export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.Color, label: string | null, weight = 4, offset: p5.Vector | null = null) => {
     if (!v) return;
-    const scaledV = p5.Vector.mult(v, scaleFactor);
+    let scaledV = p5.Vector.mult(v, scaleFactor);
     if (offset) {
-        scaledV.add(p5.Vector.mult(offset, scaleFactor));
+        scaledV = p5.Vector.add(scaledV, p5.Vector.mult(offset, scaleFactor));
     }
     if (v.magSq() < 1e-4) {
         p.fill(color);
@@ -425,10 +424,10 @@ export const drawOrthogonalBasis = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFa
         const size = 0.2 * scaleFactor;
         const n1 = v1.copy().normalize();
         const n2 = v2.copy().normalize();
-        const corner = p5.Vector.add(n1, n2).mult(size);
+        const corner = p5.Vector.add(n1, n2);
         p.beginShape();
         p.vertex(n1.x * size, n1.y * size);
-        p.vertex(corner.x, corner.y);
+        p.vertex(corner.x * size, corner.y * size);
         p.vertex(n2.x * size, n2.y * size);
         p.endShape();
     }
@@ -460,7 +459,7 @@ export const drawAngleBetweenVectors = (p: p5, v1: p5.Vector, v2: p5.Vector, sca
     p.arc(0, 0, arcSize, arcSize, p.min(v1.heading(), v2.heading()), p.max(v1.heading(), v2.heading()));
 
     if (showDotProduct) {
-        const textPos = p5.Vector.add(v1, v2).normalize().mult(arcSize * 1.2);
+        const textPos = p5.Vector.mult(p5.Vector.add(v1, v2).normalize(), arcSize * 1.2);
         p.fill(color); p.noStroke(); p.textSize(12);
         p.text(`θ = ${p.degrees(angle).toFixed(1)}°`, textPos.x, textPos.y);
     }
