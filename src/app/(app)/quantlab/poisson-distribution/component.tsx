@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -8,21 +7,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const factorial = (n: number): number => {
-    if (n < 0) return Infinity;
-    if (n === 0) return 1;
-    let result = 1;
-    for (let i = 2; i <= n; i++) {
-        result *= i;
-    }
-    return result;
-};
-
-const poissonProbability = (lambda: number, k: number): number => {
-    return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
-};
+import { poissonProbability } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const PoissonDistributionChart = ({ lambda = 5 }: { lambda?: number }) => {

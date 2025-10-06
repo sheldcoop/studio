@@ -8,12 +8,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const laplacePdf = (x: number, mu: number, b: number): number => {
-    if (b <= 0) return 0;
-    return (1 / (2 * b)) * Math.exp(-Math.abs(x - mu) / b);
-};
+import { laplacePdf } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const LaplaceDistributionChart = ({ location = 0, scale = 1 }: { location?: number; scale?: number }) => {

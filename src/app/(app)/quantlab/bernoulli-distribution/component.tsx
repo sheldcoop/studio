@@ -7,13 +7,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const bernoulliProbability = (p: number, k: number): number => {
-    if (k === 1) return p;
-    if (k === 0) return 1 - p;
-    return 0;
-};
+import { bernoulliProbability } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const BernoulliDistributionChart = ({ p = 0.7 }: { p?: number }) => {

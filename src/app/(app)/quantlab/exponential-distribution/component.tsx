@@ -8,12 +8,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const exponentialPdf = (x: number, lambda: number): number => {
-    if (x < 0 || lambda <= 0) return 0;
-    return lambda * Math.exp(-lambda * x);
-};
+import { exponentialPdf } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const ExponentialDistributionChart = ({ lambda = 1.5 }: { lambda?: number }) => {

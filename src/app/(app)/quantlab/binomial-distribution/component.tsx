@@ -7,29 +7,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const combinations = (n: number, k: number): number => {
-    if (k < 0 || k > n) {
-        return 0;
-    }
-    if (k === 0 || k === n) {
-        return 1;
-    }
-    if (k > n / 2) {
-        k = n - k;
-    }
-    let res = 1;
-    for (let i = 1; i <= k; i++) {
-        res = res * (n - i + 1) / i;
-    }
-    return res;
-};
-
-const binomialProbability = (n: number, k: number, p: number): number => {
-    return combinations(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
-};
-
+import { binomialProbability } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const BinomialDistributionChart = ({ n = 20, p = 0.5 }: { n?: number, p?: number }) => {

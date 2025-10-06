@@ -8,12 +8,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const cauchyPdf = (x: number, x0: number, gamma: number): number => {
-    if (gamma <= 0) return 0;
-    return 1 / (Math.PI * gamma * (1 + Math.pow((x - x0) / gamma, 2)));
-};
+import { cauchyPdf } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const CauchyDistributionChart = ({ location = 0, scale = 1 }: { location?: number; scale?: number }) => {

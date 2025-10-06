@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -8,12 +7,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const geometricProbability = (p: number, k: number): number => {
-    if (k < 1) return 0;
-    return Math.pow(1 - p, k - 1) * p;
-};
+import { geometricProbability } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const GeometricDistributionChart = ({ p = 0.25 }: { p?: number }) => {

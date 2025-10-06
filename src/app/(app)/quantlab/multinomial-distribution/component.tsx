@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -17,32 +16,7 @@ import { BlockMath, InlineMath } from 'react-katex';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import 'katex/dist/katex.min.css';
-
-// --- Math & Simulation Logic ---
-const factorial = (n: number): number => {
-    if (n < 0) return Infinity;
-    if (n === 0) return 1;
-    let result = 1;
-    for (let i = 2; i <= n; i++) result *= i;
-    return result;
-};
-
-const multinomialProbability = (n: number, x: number[], p: number[]): number => {
-    if (x.reduce((a, b) => a + b, 0) !== n || Math.abs(p.reduce((a, b) => a + b, 0) - 1) > 1e-9) {
-        return 0;
-    }
-
-    let combinations = factorial(n);
-    let prob_product = 1;
-
-    for (let i = 0; i < x.length; i++) {
-        combinations /= factorial(x[i]);
-        prob_product *= Math.pow(p[i], x[i]);
-    }
-    
-    return combinations * prob_product;
-};
-
+import { multinomialProbability } from '@/lib/math/stats';
 
 // --- Main Page Component ---
 export default function MultinomialDistributionComponent() {

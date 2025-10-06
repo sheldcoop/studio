@@ -8,14 +8,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const logisticPdf = (x: number, mu: number, s: number): number => {
-    if (s <= 0) return 0;
-    const z = (x - mu) / s;
-    const expZ = Math.exp(-z);
-    return expZ / (s * Math.pow(1 + expZ, 2));
-};
+import { logisticPdf } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const LogisticDistributionChart = ({ location = 0, scale = 1 }: { location?: number; scale?: number }) => {

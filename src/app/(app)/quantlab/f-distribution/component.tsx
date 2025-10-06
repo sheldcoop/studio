@@ -8,40 +8,8 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
+import { fDistributionPdf } from '@/lib/math/stats';
 
-
-// --- Math & Simulation Logic ---
-function lanczosGamma(z: number): number {
-    const p = [
-        676.5203681218851, -1259.1392167224028, 771.32342877765313,
-        -176.61502916214059, 12.507343278686905, -0.13857109526572012,
-        9.9843695780195716e-6, 1.5056327351493116e-7
-    ];
-    if (z < 0.5) {
-        return Math.PI / (Math.sin(Math.PI * z) * lanczosGamma(1 - z));
-    }
-    z -= 1;
-    let x = 0.99999999999980993;
-    for (let i = 0; i < p.length; i++) {
-        x += p[i] / (z + i + 1);
-    }
-    const t = z + p.length - 0.5;
-    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
-}
-
-const betaFunction = (alpha: number, beta: number): number => {
-    return (lanczosGamma(alpha) * lanczosGamma(beta)) / lanczosGamma(alpha + beta);
-};
-
-const fDistributionPdf = (x: number, d1: number, d2: number): number => {
-    if (x <= 0 || d1 <= 0 || d2 <= 0) {
-        return 0;
-    }
-    const term1 = Math.sqrt(Math.pow(d1 * x, d1) * Math.pow(d2, d2) / Math.pow(d1 * x + d2, d1 + d2));
-    const term2 = x * betaFunction(d1 / 2, d2 / 2);
-    if (term2 === 0) return Infinity;
-    return term1 / term2;
-};
 
 // --- Chart Component ---
 const FDistributionChart = ({ d1 = 5, d2 = 10 }: { d1?: number; d2?: number }) => {

@@ -8,14 +8,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const weibullPdf = (x: number, k: number, lambda: number): number => {
-    if (x < 0 || k <= 0 || lambda <= 0) {
-        return 0;
-    }
-    return (k / lambda) * Math.pow(x / lambda, k - 1) * Math.exp(-Math.pow(x / lambda, k));
-};
+import { weibullPdf } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const WeibullDistributionChart = ({ shape = 2, scale = 1 }: { shape?: number; scale?: number }) => {

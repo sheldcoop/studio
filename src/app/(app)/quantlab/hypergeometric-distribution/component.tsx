@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -8,24 +7,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const combinations = (n: number, k: number): number => {
-    if (k < 0 || k > n) return 0;
-    if (k === 0 || k === n) return 1;
-    if (k > n / 2) k = n - k;
-    let res = 1;
-    for (let i = 1; i <= k; i++) {
-        res = res * (n - i + 1) / i;
-    }
-    return res;
-};
-
-const hypergeometricProbability = (N: number, K: number, n: number, k: number): number => {
-    const num = combinations(K, k) * combinations(N - K, n - k);
-    const den = combinations(N, n);
-    return den > 0 ? num / den : 0;
-};
+import { hypergeometricProbability } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const HypergeometricDistributionChart = ({ N = 52, K = 13, n = 5 }: { N?: number; K?: number; n?: number }) => {

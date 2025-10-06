@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -8,23 +7,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-const combinations = (n: number, k: number): number => {
-    if (k < 0 || k > n) return 0;
-    if (k === 0 || k === n) return 1;
-    if (k > n / 2) k = n - k;
-    let res = 1;
-    for (let i = 1; i <= k; i++) {
-        res = res * (n - i + 1) / i;
-    }
-    return res;
-};
-
-const negativeBinomialProbability = (r: number, p: number, k: number): number => {
-    if (k < r) return 0;
-    return combinations(k - 1, r - 1) * Math.pow(p, r) * Math.pow(1 - p, k - r);
-};
+import { negativeBinomialProbability } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const NegativeBinomialDistributionChart = ({ r = 5, p = 0.5 }: { r?: number; p?: number }) => {

@@ -8,29 +8,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
-
-// --- Math & Simulation Logic ---
-function lanczosGamma(z: number): number {
-    const p = [
-        676.5203681218851, -1259.1392167224028, 771.32342877765313,
-        -176.61502916214059, 12.507343278686905, -0.13857109526572012,
-        9.9843695780195716e-6, 1.5056327351493116e-7
-    ];
-    if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * lanczosGamma(1 - z));
-    z -= 1;
-    let x = 0.99999999999980993;
-    for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
-    const t = z + p.length - 0.5;
-    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
-}
-
-const chiSquaredPdf = (x: number, k: number): number => {
-    if (x < 0 || k <= 0) return 0;
-    const term1 = Math.pow(x, k / 2 - 1) * Math.exp(-x / 2);
-    const term2 = Math.pow(2, k / 2) * lanczosGamma(k / 2);
-    if (term2 === 0) return Infinity;
-    return term1 / term2;
-};
+import { chiSquaredPdf } from '@/lib/math/stats';
 
 // --- Chart Component ---
 const ChiSquaredDistributionChart = ({ df = 5 }: { df?: number }) => {
@@ -110,7 +88,7 @@ export default function ChiSquaredDistributionComponent() {
             description: "The probability density function (PDF) is defined by one parameter: the degrees of freedom (k).",
             formula: "f(x; k) = \\frac{1}{2^{k/2}\\Gamma(k/2)} x^{k/2-1} e^{-x/2}",
             formulaItems: [
-                "x \\text{ is the variable (must be ≥ 0).}",
+                "x \\ge 0 \\text{ is the variable.}",
                 "k \\text{ represents the degrees of freedom.}",
                 "\\Gamma(k/2) \\text{ is the Gamma function.}"
             ]
