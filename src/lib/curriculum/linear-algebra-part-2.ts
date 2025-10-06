@@ -20,6 +20,15 @@ export const linearAlgebraPart2: Topic[] = [
             { id: 'finding-eigenvectors', title: 'Finding Eigenvectors' },
         ]
     }),
+    createTopic({
+        id: 'lu-decomposition',
+        parent: 'la-module-3',
+        title: 'LU Decomposition: The Secret of Easy Steps',
+        icon: 'Waypoints',
+        description: "Factoring a matrix to efficiently solve systems of equations.",
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+    }),
      createTopic({
         id: 'diagonalization',
         parent: 'la-module-3',

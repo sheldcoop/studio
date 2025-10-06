@@ -55,6 +55,7 @@ import VectorProjectionPage from '@/app/(app)/quantlab/vector-projection/compone
 import GaussianEliminationPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/gaussian-elimination/component';
 import GramSchmidtPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/gram-schmidt-orthogonalization/component';
 import DiagonalizationPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/diagonalization/component';
+import LUDecompositionPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/lu-decomposition/component';
 
 
 type TopicPageProps = {
@@ -229,6 +230,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'gaussian-elimination': GaussianEliminationPage,
   'gram-schmidt-orthogonalization': GramSchmidtPage,
   'diagonalization': DiagonalizationPage,
+  'lu-decomposition': LUDecompositionPage,
 };
 
 

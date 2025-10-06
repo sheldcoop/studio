@@ -89,6 +89,14 @@ const CovarianceVisualizer = dynamic(
   }
 );
 
+const LUDecompositionVisualizer = dynamic(
+  () => import('@/components/app/lu-decomposition-visualizer'),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
 
 function EigenvalueTheory() {
   return (
@@ -284,6 +292,25 @@ function CovarianceTheory() {
     );
 }
 
+function LUDecompositionTheory() {
+    return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <p>Solving a system of linear equations, <strong className="text-primary">Ax = b</strong>, can be computationally expensive, especially if the matrix <strong className="text-primary">A</strong> is large. LU Decomposition provides a powerful and efficient method to solve this by factoring the matrix <strong className="text-primary">A</strong> into two simpler matrices: a **Lower triangular matrix (L)** and an **Upper triangular matrix (U)**.</p>
+            <div className="text-center"><BlockMath math="A = LU" /></div>
+            <p>The original problem <InlineMath math="A\mathbf{x} = \mathbf{b}" /> now becomes <InlineMath math="LU\mathbf{x} = \mathbf{b}" />. The genius of this approach is that we can solve this in two easy steps:</p>
+            <ol className="text-sm">
+                <li><strong>Let <InlineMath math="U\mathbf{x} = \mathbf{y}" />. First, solve <InlineMath math="L\mathbf{y} = \mathbf{b}" /> for <InlineMath math="\mathbf{y}" />.</strong> Because L is lower triangular, this can be solved quickly using a process called "forward substitution."</li>
+                <li><strong>Now, solve <InlineMath math="U\mathbf{x} = \mathbf{y}" /> for <InlineMath math="\mathbf{x}" />.</strong> Because U is upper triangular, this can be solved just as quickly using "backward substitution."</li>
+            </ol>
+            <p>This two-step process is dramatically faster than finding the inverse of A, especially if you need to solve the system for many different <strong className="text-primary">b</strong> vectors, as you only need to perform the computationally expensive decomposition once.</p>
+            <hr />
+            <h4 className="font-bold text-lg not-prose">What do L and U represent?</h4>
+            <p>The matrices L and U are directly related to the steps of Gaussian elimination. The **U** matrix is the row echelon form of A. The **L** matrix stores the multipliers used during the elimination process. Its diagonal entries are always 1, and the entries below the diagonal are the negative of the multipliers used to eliminate the entries in A.</p>
+        </div>
+    );
+}
+
+
 function FourSubspacesPage({ topic }: { topic: Topic }) {
     if (!topic.subTopics) return null;
     return (
@@ -370,9 +397,10 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
     const isDeterminantTopic = topicId.includes('determinant');
     const isChangeOfBasisTopic = topicId.includes('change-of-basis');
     const isLinearIndependenceTopic = topicId.includes('linear-independence');
-    const isDiagonalizationTopic = topicId.includes('diagonalization');
-    const isCovarianceTopic = topicId.includes('covariance-and-correlation');
+    const isDiagonalizationTopic = topicId === 'diagonalization';
+    const isCovarianceTopic = topicId === 'covariance-and-correlation-matrices';
     const isFundamentalSubspaceTopic = topicId === 'the-four-fundamental-subspaces';
+    const isLUDecompositionTopic = topicId === 'lu-decomposition';
     
     if (isFundamentalSubspaceTopic) {
         return <FourSubspacesPage topic={topicInfo} />;
@@ -386,6 +414,7 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
         if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
         if (isDiagonalizationTopic) return <DiagonalizationVisualizer />;
         if (isCovarianceTopic) return <CovarianceVisualizer />;
+        if (isLUDecompositionTopic) return <LUDecompositionVisualizer />;
 
         return (
              <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
@@ -398,6 +427,7 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
       if (isEigenTopic) return <EigenvalueTheory />;
       if (isDiagonalizationTopic) return <DiagonalizationTheory />;
       if (isCovarianceTopic) return <CovarianceTheory />;
+      if (isLUDecompositionTopic) return <LUDecompositionTheory />;
       return (
         <div className="prose prose-invert max-w-none p-6 text-foreground/90">
             <p>Theory explanation coming soon.</p>
