@@ -10,7 +10,7 @@ import { BlockMath, InlineMath } from 'react-katex';
 
 // Dynamically import the new animation component
 const EigenVisualizer = dynamic(
-  () => import('@/components/app/eigen-visualizer').then(mod => mod.default),
+  () => import('@/components/app/eigen-visualizer'),
   {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false,
@@ -18,7 +18,7 @@ const EigenVisualizer = dynamic(
 );
 
 const SvdVisualizer = dynamic(
-  () => import('@/components/app/svd-visualizer').then(mod => mod.default),
+  () => import('@/components/app/svd-visualizer'),
   {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false,
@@ -97,9 +97,10 @@ function EigenvalueProperties() {
 }
 
 
-export function TopicContentSection({ subTopic }: SubTopic) {
+export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isEigenTopic = subTopic.id.includes('eigen');
     const isSvdTopic = subTopic.id.includes('svd');
+    const isDeterminantTopic = subTopic.id.includes('determinant');
 
     return (
         <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
@@ -135,7 +136,7 @@ export function TopicContentSection({ subTopic }: SubTopic) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
                     </CardHeader>
-                    {isEigenTopic ? (
+                    {isEigenTopic || isDeterminantTopic ? (
                         <CardContent>
                             <EigenVisualizer />
                         </CardContent>
