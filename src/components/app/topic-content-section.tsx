@@ -41,6 +41,14 @@ const ChangeOfBasisVisualizer = dynamic(
   }
 );
 
+const LinearIndependenceVisualizer = dynamic(
+  () => import('@/components/app/linear-independence-visualizer'),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
 
 function EigenvalueTheory() {
   return (
@@ -118,6 +126,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isSvdTopic = subTopic.id.includes('svd');
     const isDeterminantTopic = subTopic.id.includes('determinant');
     const isChangeOfBasisTopic = subTopic.id.includes('change-of-basis');
+    const isLinearIndependenceTopic = subTopic.id.includes('linear-independence');
 
 
     const renderInteractiveDemo = () => {
@@ -125,6 +134,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         if (isSvdTopic) return <SvdVisualizer />;
         if (isDeterminantTopic) return <DeterminantVisualizer />;
         if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
+        if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
 
         return (
              <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
