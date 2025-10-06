@@ -4,6 +4,18 @@
 import { type SubTopic } from '@/lib/curriculum';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { BookOpen, Code, BrainCircuit, BarChart } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Dynamically import the new animation component
+const EigenAnimation = dynamic(
+  () => import('@/components/app/eigen-animation').then(mod => mod.EigenAnimation),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
 
 function EigenvalueExplanation() {
     return (
@@ -13,30 +25,13 @@ function EigenvalueExplanation() {
                 When you apply a matrix to every vector in a plane, you might see space get stretched, squished, or rotated. It can be a chaotic mess!
             </p>
             <div className="my-6">
-                <div className="grid grid-cols-2 items-center gap-4">
-                    <div className="text-center">
-                        <p className="font-semibold">Before Transformation</p>
-                        <svg viewBox="-5 -5 10 10" className="mx-auto h-24 w-24">
-                            <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(var(--muted-foreground))" /></marker></defs>
-                            <circle cx="0" cy="0" r="3" stroke="hsl(var(--muted-foreground))" strokeWidth="0.2" fill="transparent" />
-                            <line x1="0" y1="0" x2="3" y2="0" stroke="hsl(var(--muted-foreground))" strokeWidth="0.2" markerEnd="url(#arrow)" />
-                            <line x1="0" y1="0" x2="2.12" y2="2.12" stroke="hsl(var(--muted-foreground))" strokeWidth="0.2" markerEnd="url(#arrow)" />
-                        </svg>
-                    </div>
-                    <div className="text-center">
-                        <p className="font-semibold">After Transformation</p>
-                        <svg viewBox="-5 -5 10 10" className="mx-auto h-24 w-24">
-                            <defs><marker id="arrow-transformed" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(var(--primary))" /></marker></defs>
-                            <path d="M -1.5 -4.5 Q 0 -5 1.5 -4.5 T 4.5 -1.5 T 1.5 1.5 T -1.5 4.5 T -4.5 1.5 T -1.5 -1.5 Z" stroke="hsl(var(--primary))" strokeWidth="0.2" fill="transparent" />
-                            <line x1="0" y1="0" x2="4" y2="0" stroke="hsl(var(--primary))" strokeWidth="0.3" markerEnd="url(#arrow-transformed)" />
-                            <line x1="0" y1="0" x2="-1" y2="1" stroke="hsl(var(--primary))" strokeWidth="0.3" markerEnd="url(#arrow-transformed)" />
-                        </svg>
-                    </div>
+               <div className="relative mx-auto aspect-video max-w-lg rounded-lg border bg-background/50">
+                    <EigenAnimation />
                 </div>
             </div>
             <h4>But amidst this chaos, some vectors are special.</h4>
             <p>
-                These are the <strong className="text-primary">eigenvectors</strong>. When the transformation happens, they don't change their direction at all. They stay on their original path, simply getting stretched or shrunk.
+                These are the <strong className="text-primary">eigenvectors</strong>. When the transformation happens, they don't change their direction at all. They stay on their original path, simply getting stretched or shrunk. In the animation above, they are the colored lines.
             </p>
             <p>
                 The factor by which an eigenvector is stretched or shrunk is its corresponding <strong className="text-primary">eigenvalue</strong>.
