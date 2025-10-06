@@ -1,68 +1,7 @@
+
 'use client';
 
 import p5 from 'p5';
-
-/**
- * Draws a transformed grid defined by two basis vectors.
- * The grid dynamically adjusts to fill the entire canvas.
- * @param p - The p5 instance.
- * @param b1 - The first basis vector.
- * @param b2 - The second basis vector.
- * @param c - The color of the grid lines.
- * @param w - The stroke weight of the lines.
- * @param s - The scaling factor.
- * @param fillColor - Optional color to fill the grid area.
- */
-export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: number, s: number, fillColor?: p5.Color) => {
-    if (b1.magSq() < 0.01 || b2.magSq() < 0.01) return;
-    
-    p.stroke(c);
-    p.strokeWeight(w);
-
-    const det = b1.x * b2.y - b1.y * b2.x;
-    if (Math.abs(det) < 0.001) {
-        // If basis is degenerate, just draw a line
-        const dominantVec = b1.magSq() > b2.magSq() ? b1 : b2;
-        if (dominantVec.magSq() > 0.01) {
-            const p1 = dominantVec.copy().mult(-100);
-            const p2 = dominantVec.copy().mult(100);
-            p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
-        }
-        return;
-    }
-    const invDet = 1 / det;
-    
-    const corners = [
-        p.createVector(-p.width/2, -p.height/2),
-        p.createVector(p.width/2, -p.height/2),
-        p.createVector(p.width/2, p.height/2),
-        p.createVector(-p.width/2, p.height/2)
-    ];
-
-    const transformedCorners = corners.map(corner => {
-        const x_coord = (corner.x/s * b2.y - corner.y/s * b2.x) * invDet;
-        const y_coord = (corner.y/s * b1.x - corner.x/s * b1.y) * invDet;
-        return {x: x_coord, y: y_coord};
-    });
-    
-    const min_x = Math.floor(Math.min(...transformedCorners.map(c => c.x)));
-    const max_x = Math.ceil(Math.max(...transformedCorners.map(c => c.x)));
-    const min_y = Math.floor(Math.min(...transformedCorners.map(c => c.y)));
-    const max_y = Math.ceil(Math.max(...transformedCorners.map(c => c.y)));
-
-    for(let i = min_x; i <= max_x; i++) {
-        const p1 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(min_y));
-        const p2 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(max_y));
-        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
-    }
-    
-    for(let j = min_y; j <= max_y; j++) {
-        const p1 = p5.Vector.add(b1.copy().mult(min_x), b2.copy().mult(j));
-        const p2 = p5.Vector.add(b1.copy().mult(max_x), b2.copy().mult(j));
-        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
-    }
-};
-
 
 /**
  * Draws standard Cartesian axes with correct label orientation, arrowheads, and ticks.
@@ -153,6 +92,72 @@ export const drawAxes = (p: p5, scaleFactor: number, color: p5.Color, showLabels
         p.pop();
     }
 };
+
+/**
+ * Draws a transformed grid defined by two basis vectors, now including axes.
+ * The grid dynamically adjusts to fill the entire canvas.
+ * @param p - The p5 instance.
+ * @param b1 - The first basis vector.
+ * @param b2 - The second basis vector.
+ * @param c - The color of the grid lines.
+ * @param w - The stroke weight of the lines.
+ * @param s - The scaling factor.
+ * @param fillColor - Optional color to fill the grid area.
+ */
+export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: number, s: number, fillColor?: p5.Color) => {
+    // Draw the main cartesian axes first, so they are in the background
+    drawAxes(p, s, p.color(c.levels[0], c.levels[1], c.levels[2], 50));
+    
+    if (b1.magSq() < 0.01 || b2.magSq() < 0.01) return;
+    
+    p.stroke(c);
+    p.strokeWeight(w);
+
+    const det = b1.x * b2.y - b1.y * b2.x;
+    if (Math.abs(det) < 0.001) {
+        // If basis is degenerate, just draw a line
+        const dominantVec = b1.magSq() > b2.magSq() ? b1 : b2;
+        if (dominantVec.magSq() > 0.01) {
+            const p1 = dominantVec.copy().mult(-100);
+            const p2 = dominantVec.copy().mult(100);
+            p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+        }
+        return;
+    }
+    const invDet = 1 / det;
+    
+    const corners = [
+        p.createVector(-p.width/2, -p.height/2),
+        p.createVector(p.width/2, -p.height/2),
+        p.createVector(p.width/2, p.height/2),
+        p.createVector(-p.width/2, p.height/2)
+    ];
+
+    const transformedCorners = corners.map(corner => {
+        const x_coord = (corner.x/s * b2.y - corner.y/s * b2.x) * invDet;
+        const y_coord = (corner.y/s * b1.x - corner.x/s * b1.y) * invDet;
+        return {x: x_coord, y: y_coord};
+    });
+    
+    const min_x = Math.floor(Math.min(...transformedCorners.map(c => c.x)));
+    const max_x = Math.ceil(Math.max(...transformedCorners.map(c => c.x)));
+    const min_y = Math.floor(Math.min(...transformedCorners.map(c => c.y)));
+    const max_y = Math.ceil(Math.max(...transformedCorners.map(c => c.y)));
+
+    for(let i = min_x; i <= max_x; i++) {
+        const p1 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(min_y));
+        const p2 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(max_y));
+        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+    }
+    
+    for(let j = min_y; j <= max_y; j++) {
+        const p1 = p5.Vector.add(b1.copy().mult(min_x), b2.copy().mult(j));
+        const p2 = p5.Vector.add(b1.copy().mult(max_x), b2.copy().mult(j));
+        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+    }
+};
+
+
 
 /**
  * Converts screen coordinates (pixels) to world coordinates (mathematical).
