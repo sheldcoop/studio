@@ -2,7 +2,9 @@
 'use client';
 
 import p5 from 'p5';
-import { applyMatrix as applyMatrixMath } from '@/lib/math/linear-algebra';
+import { applyMatrix as applyMatrixMath, calculateDeterminant, invertMatrix, matrixMultiply } from '@/lib/math/linear-algebra';
+import { drawGrid } from './primitives';
+import { drawVector } from './primitives';
 
 /**
  * Applies a matrix transformation to a p5 vector.
@@ -26,24 +28,15 @@ export const applyMatrix = (p: p5, matrix: { a: number, b: number, c: number, d:
  * @param transformedColor - The color of the transformed grid.
  */
 export const drawTransformedGrid = (p: p5, matrix: { a: number, b: number, c: number, d: number }, scaleFactor: number, originalColor: p5.Color, transformedColor: p5.Color) => {
-    // Implementation to draw both original and transformed grids
-};
-
-/**
- * Draws a transformed shape from a list of vertices.
- * @param p - The p5 instance.
- * @param vertices - An array of vectors for the original shape.
- * @param matrix - The transformation matrix.
- * @param scaleFactor - The scaling factor.
- * @param color - The color of the transformed shape.
- */
-export const drawTransformedShape = (p: p5, vertices: p5.Vector[], matrix: {a:number, b:number, c:number, d:number}, scaleFactor: number, color: p5.Color) => {
-    const transformedVertices = vertices.map(v => applyMatrix(p, matrix, v));
-    p.fill(color);
-    p.noStroke();
-    p.beginShape();
-    transformedVertices.forEach(v => p.vertex(v.x * scaleFactor, v.y * scaleFactor));
-    p.endShape(p.CLOSE);
+    // Draw original grid
+    const originalBasis1 = p.createVector(1, 0);
+    const originalBasis2 = p.createVector(0, 1);
+    drawGrid(p, originalBasis1, originalBasis2, originalColor, 1, scaleFactor);
+    
+    // Draw transformed grid
+    const transformedBasis1 = p.createVector(matrix.a, matrix.c);
+    const transformedBasis2 = p.createVector(matrix.b, matrix.d);
+    drawGrid(p, transformedBasis1, transformedBasis2, transformedColor, 2, scaleFactor);
 };
 
 /**
@@ -55,7 +48,23 @@ export const drawTransformedShape = (p: p5, vertices: p5.Vector[], matrix: {a:nu
  * @param showSteps - If true, shows intermediate transformations.
  */
 export const drawMatrixMultiplication = (p: p5, m1: {a: number,b: number,c: number,d: number}, m2: {a: number,b: number,c: number,d: number}, scaleFactor: number, showSteps: boolean = true) => {
-    // Implementation to visualize matrix multiplication
+    const result = matrixMultiply(m1, m2);
+    
+    if (showSteps) {
+        // Show original, m1 applied, then m2 applied
+        const originalBasis1 = p.createVector(1, 0);
+        const originalBasis2 = p.createVector(0, 1);
+        drawGrid(p, originalBasis1, originalBasis2, p.color(200, 200, 200, 100), 1, scaleFactor);
+        
+        const afterM1_b1 = p.createVector(m1.a, m1.c);
+        const afterM1_b2 = p.createVector(m1.b, m1.d);
+        drawGrid(p, afterM1_b1, afterM1_b2, p.color(100, 150, 255, 100), 1.5, scaleFactor);
+    }
+    
+    // Final result
+    const finalBasis1 = p.createVector(result.a, result.c);
+    const finalBasis2 = p.createVector(result.b, result.d);
+    drawGrid(p, finalBasis1, finalBasis2, p.color(255, 100, 100), 2, scaleFactor);
 };
 
 /**
@@ -67,7 +76,18 @@ export const drawMatrixMultiplication = (p: p5, m1: {a: number,b: number,c: numb
  * @param inverseColor - The color for the inverse transformation.
  */
 export const drawInverse = (p: p5, matrix: {a: number,b: number,c: number,d: number}, scaleFactor: number, originalColor: p5.Color, inverseColor: p5.Color) => {
-    // Implementation to draw a shape, its transformation, and its return to origin via the inverse
+    const inv = invertMatrix(matrix);
+    if (!inv) return; // Not invertible
+    
+    // Draw original transformation
+    const transformedBasis1 = p.createVector(matrix.a, matrix.c);
+    const transformedBasis2 = p.createVector(matrix.b, matrix.d);
+    drawGrid(p, transformedBasis1, transformedBasis2, originalColor, 2, scaleFactor);
+    
+    // Draw inverse transformation
+    const inverseBasis1 = p.createVector(inv.a, inv.c);
+    const inverseBasis2 = p.createVector(inv.b, inv.d);
+    drawGrid(p, inverseBasis1, inverseBasis2, inverseColor, 1.5, scaleFactor);
 };
 
 /**
@@ -80,5 +100,19 @@ export const drawInverse = (p: p5, matrix: {a: number,b: number,c: number,d: num
 export const drawColumnSpace = (p: p5, matrix: {a: number,b: number,c: number,d: number}, scaleFactor: number, color: p5.Color) => {
     const col1 = p.createVector(matrix.a, matrix.c);
     const col2 = p.createVector(matrix.b, matrix.d);
-    // ... Implementation to shade the span
+    
+    // Draw the span as a shaded parallelogram
+    p.fill(color);
+    p.noStroke();
+    p.beginShape();
+    p.vertex(0, 0);
+    p.vertex(col1.x * scaleFactor * 10, col1.y * scaleFactor * 10);
+    const combined = p5.Vector.add(col1.copy().mult(10), col2.copy().mult(10));
+    p.vertex(combined.x * scaleFactor, combined.y * scaleFactor);
+    p.vertex(col2.x * scaleFactor * 10, col2.y * scaleFactor * 10);
+    p.endShape(p.CLOSE);
+    
+    // Draw the column vectors
+    drawVector(p, col1, scaleFactor, p.color(255, 0, 0), 'col₁', 3);
+    drawVector(p, col2, scaleFactor, p.color(0, 255, 0), 'col₂', 3);
 };
