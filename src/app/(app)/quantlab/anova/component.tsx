@@ -14,14 +14,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 const RechartsAreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
 const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
 const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
-const Area = dynamic(() => import('recharts').then(mod => mod.Area as FC<any>), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(mod => mod.Bar as FC<any>), { ssr: false });
-const Line = dynamic(() => import('recharts').then(mod => mod.Line as FC<any>), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid as FC<any>), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis as FC<any>), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis as FC<any>), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip as FC<any>), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => mod.Cell as FC<any>), { ssr: false });
+const Area = dynamic(() => import('recharts').then(mod => mod.Area as any), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar as any), { ssr: false });
+const Line = dynamic(() => import('recharts').then(mod => mod.Line as any), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid as any), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis as any), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis as any), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip as any), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell as any), { ssr: false });
 
 
 // Helper function to generate normally distributed data
@@ -102,7 +102,7 @@ const OneWayAnovaChart = () => {
         <ChartContainer config={oneWayAnovaChartConfig} className="h-full w-full">
           <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid vertical={false} />
-              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => oneWayAnovaChartConfig[value as keyof typeof oneWayAnovaChartConfig]?.label || value} />
+              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value: string) => oneWayAnovaChartConfig[value as keyof typeof oneWayAnovaChartConfig]?.label || value} />
               <YAxis unit="%" />
               <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
               <Bar dataKey="value" radius={8}>
@@ -232,7 +232,7 @@ export default function AnovaPage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <h3 className="mb-1 font-semibold text-primary">
-                  Purpose & Analogy
+                  Purpose &amp; Analogy
                 </h3>
                 <p className="text-muted-foreground">
                   ANOVA checks if there's a significant difference somewhere among the means of several groups. Think of it as a &quot;group chaperone&quot;: instead of doing many t-tests, it first tells you if any group is behaving differently from the others overall.
@@ -320,3 +320,5 @@ export default function AnovaPage() {
     </>
   );
 }
+
+    
