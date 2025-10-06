@@ -23,6 +23,7 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, color: p5.Color, w
     if (fillColor) {
         p.noStroke();
         p.fill(fillColor);
+        p.beginShape();
         const r = 8;
         const p1 = p5.Vector.add(p5.Vector.mult(b1, -r), p5.Vector.mult(b2, -r));
         const p2 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, -r));
@@ -356,7 +357,7 @@ export const drawLinearCombination = (p: p5, v1: p5.Vector, v2: p5.Vector, scala
     const result = p5.Vector.add(c1, c2);
 
     if (showComponents) {
-        drawVector(p, c1, scaleFactor, p.color(255, 0, 0, 150));
+        drawVector(p, c1, scaleFactor, p.color(255, 0, 0, 150), null);
         drawVector(p, c2, scaleFactor, p.color(0, 255, 0, 150), null, 4, c1);
     }
     drawVector(p, result, scaleFactor, p.color(255, 255, 0));
@@ -374,7 +375,7 @@ export const drawDeterminantParallelogram = (p: p5, v1: p5.Vector, v2: p5.Vector
     drawParallelogram(p, v1, v2, scaleFactor, fillColor, p.color(255));
     if (showArea) {
         const area = Math.abs(v1.x * v2.y - v1.y * v2.x);
-        const center = p5.Vector.add(v1, v2).div(2);
+        const center = p5.Vector.div(p5.Vector.add(v1, v2), 2);
         p.fill(255);
         p.noStroke();
         p.text(`Area = ${area.toFixed(2)}`, center.x * scaleFactor, center.y * scaleFactor);
@@ -407,7 +408,7 @@ export const drawInverse = (p: p5, matrix: {a:number,b:number,c:number,d:number}
 export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleFactor: number, vectorColor: p5.Color, projectionColor: p5.Color) => {
     const dot = vector.dot(onto);
     const lenSq = onto.magSq();
-    const proj = onto.copy().mult(dot / lenSq);
+    const proj = p5.Vector.mult(onto.copy(), dot / lenSq);
 
     drawVector(p, vector, scaleFactor, vectorColor, 'v');
     drawVector(p, onto, scaleFactor, p.color(200));
@@ -417,14 +418,14 @@ export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleF
 };
 
 export const drawOrthogonalBasis = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, color: p5.Color, showRightAngle: boolean = true) => {
-    drawVector(p, v1, scaleFactor, color);
-    drawVector(p, v2, scaleFactor, color);
+    drawVector(p, v1, scaleFactor, color, null);
+    drawVector(p, v2, scaleFactor, color, null);
     if (showRightAngle) {
         p.noFill(); p.stroke(color); p.strokeWeight(1);
         const size = 0.2 * scaleFactor;
-        const corner = p5.Vector.add(v1.copy().normalize().mult(size), v2.copy().normalize().mult(size));
-        p.line(v1.copy().normalize().mult(size).x * scaleFactor, v1.copy().normalize().mult(size).y * scaleFactor, corner.x * scaleFactor, corner.y * scaleFactor);
-        p.line(v2.copy().normalize().mult(size).x * scaleFactor, v2.copy().normalize().mult(size).y * scaleFactor, corner.x * scaleFactor, corner.y * scaleFactor);
+        const corner = p5.Vector.add(v1.copy().normalize(), v2.copy().normalize()).mult(size);
+        p.line(v1.copy().normalize().x * size, v1.copy().normalize().y * size, corner.x, corner.y);
+        p.line(v2.copy().normalize().x * size, v2.copy().normalize().y * size, corner.x, corner.y);
     }
 };
 
