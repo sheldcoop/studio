@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -7,7 +6,7 @@ import { Play, Pause, RotateCcw, Sliders } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const EigenVisualizer = () => {
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [mode, setMode] = useState('intro'); // intro, compare, explore
@@ -54,8 +53,10 @@ const EigenVisualizer = () => {
       
       // Normalize
       const len1 = Math.sqrt(v1x * v1x + v1y * v1y);
-      v1x /= len1;
-      v1y /= len1;
+      if (len1 > 0) {
+        v1x /= len1;
+        v1y /= len1;
+      }
       
       // Eigenvector for lambda2
       let v2x, v2y;
@@ -71,8 +72,10 @@ const EigenVisualizer = () => {
       }
       
       const len2 = Math.sqrt(v2x * v2x + v2y * v2y);
-      v2x /= len2;
-      v2y /= len2;
+      if (len2 > 0) {
+        v2x /= len2;
+        v2y /= len2;
+      }
       
       setEigenData({
         lambda1, lambda2,
@@ -80,7 +83,7 @@ const EigenVisualizer = () => {
         v2: { x: v2x, y: v2y }
       });
     } else {
-      setEigenData(null); // Handle cases with complex eigenvalues
+      setEigenData(null);
     }
   }, [matrixA, matrixB, matrixC, matrixD]);
 
@@ -102,32 +105,25 @@ const EigenVisualizer = () => {
 
     const lerp = (a: number, b: number, t: number) => a + (b - a) * easeInOutCubic(t);
     
-    const drawGrid = (t: number, opacity = 0.15) => {
-      const gridSize = 8;
-      
-      for (let i = -gridSize; i <= gridSize; i++) {
-        for (let j = -gridSize; j <= gridSize; j++) {
-          const x1 = i, y1 = j;
-          const x2 = i + 1, y2 = j;
-          const x3 = i, y3 = j + 1;
-          
-          const tx1 = lerp(x1, matrixA * x1 + matrixB * y1, t);
-          const ty1 = lerp(y1, matrixC * x1 + matrixD * y1, t);
-          const tx2 = lerp(x2, matrixA * x2 + matrixB * y2, t);
-          const ty2 = lerp(y2, matrixC * x2 + matrixD * y2, t);
-          const tx3 = lerp(x3, matrixA * x3 + matrixB * y3, t);
-          const ty3 = lerp(y3, matrixC * x3 + matrixD * y3, t);
-          
-          const hue = ((i + gridSize) / (2 * gridSize)) * 60 + 180;
-          p5.stroke(`hsla(${hue}, 70%, 60%, ${opacity})`);
-          p5.strokeWeight(1);
-          
-          p5.line(centerX + tx1 * scale, centerY - ty1 * scale, centerX + tx2 * scale, centerY - ty2 * scale);
-          p5.line(centerX + tx1 * scale, centerY - ty1 * scale, centerX + tx3 * scale, centerY - ty3 * scale);
-        }
-      }
-    };
+    const drawGrid = () => {
+        p5.stroke(100, 100, 120, 150);
+        p5.strokeWeight(1);
+        const gridSize = 20;
 
+        for (let x = -width; x < width; x += gridSize) {
+          p5.line(centerX + x, 0, centerX + x, height);
+        }
+        for (let y = -height; y < height; y += gridSize) {
+           p5.line(0, centerY + y, width, centerY + y);
+        }
+
+        // Axes
+        p5.stroke(180, 180, 200);
+        p5.strokeWeight(2);
+        p5.line(0, centerY, width, centerY); // X-axis
+        p5.line(centerX, 0, centerX, height); // Y-axis
+    };
+    
     const drawBasisVectors = (t: number) => {
       const ix = lerp(1, matrixA * 1 + matrixB * 0, t);
       const iy = lerp(0, matrixC * 1 + matrixD * 0, t);
@@ -231,24 +227,24 @@ const EigenVisualizer = () => {
 
     p5.stroke('rgba(255, 255, 255, 0.1)');
     p5.strokeWeight(1);
-    p5.line(0, centerY, width, centerY);
-    p5.line(centerX, 0, centerX, height);
     
+    p5.translate(0,0);
+    drawGrid();
+
+    p5.translate(0,0);
+
     const t = progress;
     
     if (mode === 'intro') {
-      drawGrid(t, 0.3);
       drawBasisVectors(t);
       drawRandomVectors(t, 8);
     } else if (mode === 'compare') {
-      drawGrid(t, 0.2);
       drawRandomVectors(t, 12);
       if (eigenData) {
         drawEigenvector(eigenData.v1.x, eigenData.v1.y, eigenData.lambda1, '#ff6b6b', t, 'v₁');
         drawEigenvector(eigenData.v2.x, eigenData.v2.y, eigenData.lambda2, '#4ecdc4', t, 'v₂');
       }
     } else if (mode === 'explore') {
-      drawGrid(t, 0.25);
       if (eigenData) {
         drawEigenvector(eigenData.v1.x, eigenData.v1.y, eigenData.lambda1, '#ff6b6b', t, 'v₁');
         drawEigenvector(eigenData.v2.x, eigenData.v2.y, eigenData.lambda2, '#4ecdc4', t, 'v₂');
@@ -434,4 +430,3 @@ const EigenVisualizer = () => {
 };
 
 export default EigenVisualizer;
-
