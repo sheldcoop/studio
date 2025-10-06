@@ -76,8 +76,8 @@ const DeterminantVisualizer = () => {
       const jx = lerp(0, matrixB, t);
       const jy = lerp(1, matrixD, t);
       
-      drawArrow(0, 0, ix, iy, '#ff6b6b', 'î');
-      drawArrow(0, 0, jx, jy, '#51cf66', 'ĵ');
+      drawArrow(0, 0, ix, iy, '#ff6b6b', 3, 'î');
+      drawArrow(0, 0, jx, jy, '#51cf66', 3, 'ĵ');
     };
     
     const drawTransformedSquare = (t: number) => {
@@ -96,11 +96,11 @@ const DeterminantVisualizer = () => {
       ctx.fill();
     };
 
-    const drawArrow = (x1: number, y1: number, x2: number, y2: number, color: string, label: string) => {
+    const drawArrow = (x1: number, y1: number, x2: number, y2: number, color: string, width: number, label: string | null) => {
       const sx2 = centerX + x2 * scale;
       const sy2 = centerY - y2 * scale;
       ctx.strokeStyle = color;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = width;
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       ctx.lineTo(sx2, sy2);
@@ -108,7 +108,7 @@ const DeterminantVisualizer = () => {
       
       ctx.font = 'bold 18px Arial';
       ctx.fillStyle = color;
-      ctx.fillText(label, sx2 + 5, sy2 - 5);
+      ctx.fillText(label || '', sx2 + 5, sy2 - 5);
     };
 
     const render = () => {
