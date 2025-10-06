@@ -1,5 +1,7 @@
 
 
+
+
 /**
  * Generates normally distributed random data using the central limit theorem approximation.
  * @param mean - The desired mean.
@@ -461,4 +463,82 @@ export const createReflectionMatrix = (axis: 'x' | 'y' | { x: number, y: number 
         d: (y2 - x2) / lenSq,
     };
 };
-    
+
+/**
+ * Inverts a 2x2 matrix.
+ * @param matrix The matrix to invert.
+ * @returns The inverted matrix, or null if the matrix is singular (not invertible).
+ */
+export const invertMatrix = (matrix: { a: number, b: number, c: number, d: number }): { a: number, b: number, c: number, d: number } | null => {
+    const det = calculateDeterminant(matrix);
+    if (Math.abs(det) < 1e-9) return null;
+    const invDet = 1 / det;
+    return {
+        a: invDet * matrix.d,
+        b: invDet * -matrix.b,
+        c: invDet * -matrix.c,
+        d: invDet * matrix.a,
+    };
+};
+
+/**
+ * Returns a 2x2 identity matrix.
+ * @returns The identity matrix.
+ */
+export const identityMatrix = (): { a: number, b: number, c: number, d: number } => {
+    return { a: 1, b: 0, c: 0, d: 1 };
+};
+
+/**
+ * Creates a projection matrix that projects vectors onto the line defined by the 'onto' vector.
+ * @param onto The vector defining the line to project onto.
+ * @returns A 2x2 projection matrix.
+ */
+export const createProjectionMatrix = (onto: { x: number, y: number }): { a: number, b: number, c: number, d: number } => {
+    const lenSq = onto.x * onto.x + onto.y * onto.y;
+    if (lenSq === 0) return { a: 0, b: 0, c: 0, d: 0 };
+    return {
+        a: (onto.x * onto.x) / lenSq,
+        b: (onto.x * onto.y) / lenSq,
+        c: (onto.x * onto.y) / lenSq,
+        d: (onto.y * onto.y) / lenSq,
+    };
+};
+
+/**
+ * Transposes a 2x2 matrix.
+ * @param matrix The matrix to transpose.
+ * @returns The transposed matrix.
+ */
+export const transposeMatrix = (matrix: { a: number, b: number, c: number, d: number }): { a: number, b: number, c: number, d: number } => {
+    return { a: matrix.a, b: matrix.c, c: matrix.b, d: matrix.d };
+};
+
+/**
+ * Calculates the trace of a 2x2 matrix (sum of diagonal elements).
+ * @param matrix The matrix.
+ * @returns The trace of the matrix.
+ */
+export const trace = (matrix: { a: number, b: number, c: number, d: number }): number => {
+    return matrix.a + matrix.d;
+};
+
+/**
+ * Calculates the dot product of two vectors.
+ * @param v1 The first vector.
+ * @param v2 The second vector.
+ * @returns The dot product.
+ */
+export const dotProduct = (v1: { x: number, y: number }, v2: { x: number, y: number }): number => {
+    return v1.x * v2.x + v1.y * v2.y;
+};
+
+/**
+ * Calculates the 2D cross product of two vectors (magnitude of the resulting z-component).
+ * @param v1 The first vector.
+ * @param v2 The second vector.
+ * @returns The 2D cross product.
+ */
+export const crossProduct2D = (v1: { x: number, y: number }, v2: { x: number, y: number }): number => {
+    return v1.x * v2.y - v1.y * v2.x;
+};

@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import p5 from 'p5';
@@ -116,15 +117,15 @@ export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.C
 };
 
 /**
- * Draws a vector with special styling (e.g., dashed line, different thickness) to indicate it's an eigenvector.
- * Include a label showing the eigenvalue, useful for teaching matrix eigenspaces.
- * @param p - The p5 instance.
- * @param vector - The eigenvector.
- * @param eigenvalue - The corresponding eigenvalue.
- * @param scaleFactor - The scaling factor for the drawing.
- * @param color - The color of the eigenvector.
- * @param showScaling - Whether to show the eigenvalue scaling.
- */
+* Draws a vector with special styling (e.g., dashed line, different thickness) to indicate it's an eigenvector.
+* Include a label showing the eigenvalue, useful for teaching matrix eigenspaces.
+* @param p - The p5 instance.
+* @param vector - The eigenvector.
+* @param eigenvalue - The corresponding eigenvalue.
+* @param scaleFactor - The scaling factor for the drawing.
+* @param color - The color of the eigenvector.
+* @param showScaling - Whether to show the eigenvalue scaling.
+*/
 export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color, showScaling: boolean = true) => {
     p.stroke(color);
     p.strokeWeight(1);
@@ -145,7 +146,6 @@ export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, sc
         drawVector(p, vector, scaleFactor, color, null, 3);
     }
 };
-
 
 /**
  * Draws a simple point on the canvas.
@@ -357,16 +357,16 @@ export const drawLinearCombination = (p: p5, v1: p5.Vector, v2: p5.Vector, scala
     const result = p5.Vector.add(c1, c2);
 
     if (showComponents) {
-        drawVector(p, c1, scaleFactor, p.color(255, 0, 0, 150), null);
+        drawVector(p, c1, scaleFactor, p.color(255, 0, 0, 150), null, 4, null);
         drawVector(p, c2, scaleFactor, p.color(0, 255, 0, 150), null, 4, c1);
     }
-    drawVector(p, result, scaleFactor, p.color(255, 255, 0));
+    drawVector(p, result, scaleFactor, p.color(255, 255, 0), null, 4, null);
 };
 
 export const drawSpan = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, fillColor: p5.Color, showVectors: boolean = true) => {
     if (showVectors) {
-        drawVector(p, v1, scaleFactor, p.color(255, 0, 0));
-        drawVector(p, v2, scaleFactor, p.color(0, 255, 0));
+        drawVector(p, v1, scaleFactor, p.color(255, 0, 0), null, 4, null);
+        drawVector(p, v2, scaleFactor, p.color(0, 255, 0), null, 4, null);
     }
     drawParallelogram(p, v1, v2, scaleFactor, fillColor, p.color(0,0));
 };
@@ -410,22 +410,27 @@ export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleF
     const lenSq = onto.magSq();
     const proj = p5.Vector.mult(onto.copy(), dot / lenSq);
 
-    drawVector(p, vector, scaleFactor, vectorColor, 'v');
-    drawVector(p, onto, scaleFactor, p.color(200));
-    drawVector(p, proj, scaleFactor, projectionColor, 'proj');
+    drawVector(p, vector, scaleFactor, vectorColor, 'v', 4, null);
+    drawVector(p, onto, scaleFactor, p.color(200), null, 4, null);
+    drawVector(p, proj, scaleFactor, projectionColor, 'proj', 4, null);
     p.stroke(255, 100); p.strokeWeight(1);
     p.line(vector.x * scaleFactor, vector.y * scaleFactor, proj.x * scaleFactor, proj.y * scaleFactor);
 };
 
 export const drawOrthogonalBasis = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, color: p5.Color, showRightAngle: boolean = true) => {
-    drawVector(p, v1, scaleFactor, color, null);
-    drawVector(p, v2, scaleFactor, color, null);
+    drawVector(p, v1, scaleFactor, color, null, 4, null);
+    drawVector(p, v2, scaleFactor, color, null, 4, null);
     if (showRightAngle) {
         p.noFill(); p.stroke(color); p.strokeWeight(1);
         const size = 0.2 * scaleFactor;
-        const corner = p5.Vector.add(v1.copy().normalize(), v2.copy().normalize()).mult(size);
-        p.line(v1.copy().normalize().x * size, v1.copy().normalize().y * size, corner.x, corner.y);
-        p.line(v2.copy().normalize().x * size, v2.copy().normalize().y * size, corner.x, corner.y);
+        const n1 = v1.copy().normalize();
+        const n2 = v2.copy().normalize();
+        const corner = p5.Vector.add(n1, n2).mult(size);
+        p.beginShape();
+        p.vertex(n1.x * size, n1.y * size);
+        p.vertex(corner.x, corner.y);
+        p.vertex(n2.x * size, n2.y * size);
+        p.endShape();
     }
 };
 
@@ -470,6 +475,48 @@ export const drawMatrixNotation = (p: p5, matrix: {a:number,b:number,c:number,d:
     p.pop();
 };
 
+/**
+* Draws a standard Cartesian axes.
+* @param p The p5 instance.
+* @param scaleFactor The scaling factor for the drawing.
+* @param color The color of the axes.
+* @param showLabels Whether to show 'x' and 'y' labels.
+* @param tickInterval The interval for drawing tick marks.
+*/
+export const drawAxes = (p: p5, scaleFactor: number, color: p5.Color, showLabels: boolean = true, tickInterval: number = 1) => {
+    p.stroke(color);
+    p.strokeWeight(1.5);
+    // X-axis
+    p.line(-p.width, 0, p.width, 0);
+    // Y-axis
+    p.line(0, -p.height, 0, p.height);
+
+    p.noStroke();
+    p.fill(color);
+    p.textSize(12);
+
+    // Ticks and labels
+    for (let i = -10; i <= 10; i += tickInterval) {
+        if (i === 0) continue;
+        // X-axis ticks
+        p.stroke(color);
+        p.line(i * scaleFactor, -5, i * scaleFactor, 5);
+        p.noStroke();
+        p.text(i, i * scaleFactor - 4, 20);
+
+        // Y-axis ticks
+        p.stroke(color);
+        p.line(-5, i * scaleFactor, 5, i * scaleFactor);
+        p.noStroke();
+        p.text(i, 10, -i * scaleFactor - 4);
+    }
+
+    if (showLabels) {
+        p.textSize(16);
+        p.text('x', p.width / 2 - 20, 20);
+        p.text('y', 10, -p.height / 2 + 20);
+    }
+};
 
 // #endregion
 
