@@ -134,7 +134,7 @@ export function TopicContentSection({ subTopic }: SubTopic) {
                 {isEigenTopic && (
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Waypoint className="text-primary"/> Properties of Eigenvalues & Eigenvectors</CardTitle>
+                            <CardTitle className="flex items-center gap-2"><Waypoints className="text-primary"/> Properties of Eigenvalues & Eigenvectors</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <EigenvalueProperties />
