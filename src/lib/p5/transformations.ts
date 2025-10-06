@@ -1,8 +1,8 @@
 'use client';
 
 import p5 from 'p5';
-import { applyMatrix as applyMatrixMath, calculateDeterminant, invertMatrix, matrixMultiply } from '@/lib/math/linear-algebra';
-import { drawGrid, drawVector, drawParallelogram } from './primitives';
+import { applyMatrix as applyMatrixMath, calculateDeterminant, invertMatrix, matrixMultiply, createProjectionMatrix } from '@/lib/math/linear-algebra';
+import { drawGrid, drawVector, drawParallelogram, drawDashedLine } from './primitives';
 import { drawLine } from './coordinate-system';
 
 /**
@@ -116,6 +116,7 @@ export const drawColumnSpace = (p: p5, matrix: {a: number,b: number,c: number,d:
     drawVector(p, col2, scaleFactor, p.color(0, 255, 0), 'col₂', 3);
 };
 
+
 export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color, showScaling: boolean = true) => {
     // Draw the eigenspace as a dashed line through the origin
     p.stroke(color);
@@ -210,15 +211,7 @@ export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleF
     drawVector(p, proj, scaleFactor, projectionColor, 'proj', 3);
     
     // Draw perpendicular line from v to proj
-    p.stroke(vectorColor);
-    p.strokeWeight(1);
-    if (p.drawingContext.setLineDash) {
-        p.drawingContext.setLineDash([3, 3]);
-    }
-    p.line(vector.x * scaleFactor, vector.y * scaleFactor, proj.x * scaleFactor, proj.y * scaleFactor);
-    if (p.drawingContext.setLineDash) {
-        p.drawingContext.setLineDash([]);
-    }
+    drawDashedLine(p, vector.copy().mult(scaleFactor), proj.copy().mult(scaleFactor), vectorColor, 1, [3,3]);
 };
 
 export const drawLinearSystem = (p: p5, a1: number, b1: number, c1: number, a2: number, b2: number, c2: number, scaleFactor: number, line1Color: p5.Color, line2Color: p5.Color) => {
@@ -247,4 +240,60 @@ export const drawLinearSystem = (p: p5, a1: number, b1: number, c1: number, a2: 
         p.text(`(${x.toFixed(2)}, ${y.toFixed(2)})`, 0, 0);
         p.pop();
     }
+};
+
+export const drawSVD = (p: p5, matrix: {a:number,b:number,c:number,d:number}, svdData: any, progress: number, scaleFactor: number) => {
+    if (!svdData) return;
+    const t = easeInOutCubic(progress);
+
+    const t1_end = 1/3, t2_end = 2/3;
+    let b1: p5.Vector, b2: p5.Vector;
+
+    if (t < t1_end) {
+        const t1 = p.map(t, 0, t1_end, 0, 1);
+        b1 = p5.Vector.lerp(p.createVector(1,0), p.createVector(svdData.V.v1.x, svdData.V.v1.y), t1);
+        b2 = p5.Vector.lerp(p.createVector(0,1), p.createVector(svdData.V.v2.x, svdData.V.v2.y), t1);
+    } else if (t < t2_end) {
+        const t2 = p.map(t, t1_end, t2_end, 0, 1);
+        const v1_scaled = p.createVector(svdData.V.v1.x, svdData.V.v1.y).mult(p.lerp(1, svdData.Sigma.s1, t2));
+        const v2_scaled = p.createVector(svdData.V.v2.x, svdData.V.v2.y).mult(p.lerp(1, svdData.Sigma.s2, t2));
+        b1 = v1_scaled;
+        b2 = v2_scaled;
+    } else {
+        const t3 = p.map(t, t2_end, 1, 0, 1);
+        const v1_final = p.createVector(svdData.V.v1.x * svdData.Sigma.s1, svdData.V.v1.y * svdData.Sigma.s1);
+        const v2_final = p.createVector(svdData.V.v2.x * svdData.Sigma.s2, svdData.V.v2.y * svdData.Sigma.s2);
+        
+        const U = svdData.U;
+        const b1_target = p.createVector(U.u1.x * v1_final.mag(), U.u1.y * v1_final.mag());
+        const b2_target = p.createVector(U.u2.x * v2_final.mag(), U.u2.y * v2_final.mag());
+
+        b1 = p5.Vector.lerp(v1_final, b1_target, t3);
+        b2 = p5.Vector.lerp(v2_final, b2_target, t3);
+    }
+
+    drawGrid(p, b1, b2, p.color(72, 144, 226, 80), 1.5, scaleFactor);
+    drawVector(p, b1, scaleFactor, p.color(255,100,100), 'Av₁', 3);
+    drawVector(p, b2, scaleFactor, p.color(100,255,100), 'Av₂', 3);
+};
+
+export const drawLeastSquaresProjection = (p: p5, a: p5.Vector, b: p5.Vector, dataPoint: p5.Vector, scaleFactor: number) => {
+    // Project dataPoint onto the column space of A = [a,b]
+    const A = [a, b];
+    const At = [[a.x, a.y], [b.x, b.y]];
+    const AtA = [[At[0][0]*A[0].x + At[0][1]*A[1].x, At[0][0]*A[0].y + At[0][1]*A[1].y], 
+                 [At[1][0]*A[0].x + At[1][1]*A[1].x, At[1][0]*A[0].y + At[1][1]*A[1].y]];
+    
+    const AtA_inv = invertMatrix({a: AtA[0][0], b: AtA[0][1], c: AtA[1][0], d: AtA[1][1]});
+    
+    if (AtA_inv) {
+        const P = createProjectionMatrix({x: a.x, y: b.x}); // Needs to be adapted for 2 vectors
+        const proj = applyMatrixMath(dataPoint, P);
+        drawVector(p, p.createVector(proj.x, proj.y), scaleFactor, p.color(255,255,0), 'proj');
+        drawDashedLine(p, dataPoint.copy().mult(scaleFactor), p.createVector(proj.x, proj.y).mult(scaleFactor), p.color(255), 1, [5,5]);
+    }
+    
+    drawVector(p, a, scaleFactor, p.color(100,100,255), 'a');
+    drawVector(p, b, scaleFactor, p.color(100,100,255), 'b');
+    drawVector(p, dataPoint, scaleFactor, p.color(255,100,100), 'data');
 };
