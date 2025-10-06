@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { type Topic, type SubTopic } from '@/lib/curriculum';
@@ -167,6 +166,23 @@ function EigenvalueProperties() {
       </div>
     </div>
   );
+}
+
+function DeterminantTheory() {
+    return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <p>The determinant of a 2x2 matrix is a single number that reveals a surprising amount about the transformation it represents. Geometrically, the absolute value of the determinant tells you the <strong>area scaling factor</strong> of the transformation.</p>
+            <p>Imagine a unit square formed by the standard basis vectors <InlineMath math="\mathbf{\hat{\imath}}" /> and <InlineMath math="\mathbf{\hat{\jmath}}" />. This square has an area of 1. When you apply a matrix transformation, this square gets warped into a parallelogram. The area of this new parallelogram is exactly the absolute value of the determinant of the matrix.</p>
+            <ul className="text-sm">
+                <li>If <InlineMath math="|\det(A)| = 3" />, the transformation blows up areas by a factor of 3.</li>
+                <li>If <InlineMath math="|\det(A)| = 0.5" />, it squishes areas to be half their original size.</li>
+                <li>If <InlineMath math="\det(A) = 0" />, it squishes all of space onto a single line (or even a point), meaning the area becomes zero. This is a crucial indicator that the matrix is "singular" and does not have an inverse.</li>
+            </ul>
+            <hr />
+            <h4 className="font-bold text-lg not-prose">What about the sign?</h4>
+            <p>The sign of the determinant tells you about the transformation's effect on <strong>orientation</strong>. If the determinant is negative, it means the transformation has flipped space, like turning it inside-out or looking at it in a mirror. In 2D, this corresponds to the order of the basis vectors being reversed.</p>
+        </div>
+    );
 }
 
 function NullSpaceTheory() {
@@ -390,12 +406,36 @@ function FourSubspacesPage({ topic }: { topic: Topic }) {
     )
 }
 
+function DeterminantPage() {
+    return (
+        <div className="space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Scaling className="text-primary"/> Theory: The Area Scaling Factor</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <DeterminantTheory />
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <DeterminantVisualizer />
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+
 export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
     const { id: topicId, subTopics } = topicInfo;
 
     const isEigenTopic = topicId.includes('eigen');
     const isSvdTopic = topicId.includes('svd');
-    const isDeterminantTopic = topicId.includes('determinant');
+    const isDeterminantTopic = topicId.includes('determinant-geometric-meaning');
     const isChangeOfBasisTopic = topicId.includes('change-of-basis');
     const isLinearIndependenceTopic = topicId.includes('linear-independence');
     const isDiagonalizationTopic = topicId === 'diagonalization';
@@ -407,10 +447,13 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
         return <FourSubspacesPage topic={topicInfo} />;
     }
 
+    if (isDeterminantTopic) {
+        return <DeterminantPage />;
+    }
+
     const renderInteractiveDemo = () => {
         if (isEigenTopic) return <EigenVisualizer />;
         if (isSvdTopic) return <SvdVisualizer />;
-        if (isDeterminantTopic) return <DeterminantVisualizer />;
         if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
         if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
         if (isDiagonalizationTopic) return <DiagonalizationVisualizer />;
