@@ -2,204 +2,222 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import p5 from 'p5';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { RotateCcw } from 'lucide-react';
 
 const DeterminantVisualizer = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const animationRef = useRef<number | null>(null);
-  
-  const [matrixA, setMatrixA] = useState(1);
-  const [matrixB, setMatrixB] = useState(1);
-  const [matrixC, setMatrixC] = useState(0.5);
-  const [matrixD, setMatrixD] = useState(2);
-  
-  const determinant = matrixA * matrixD - matrixB * matrixC;
+    const canvasRef = useRef<HTMLDivElement>(null);
+    const sketchRef = useRef<p5 | null>(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const [matrix, setMatrix] = useState({ a: 1.0, b: 0.0, c: 0.0, d: 1.0 });
+    const determinant = matrix.a * matrix.d - matrix.b * matrix.c;
+    const area = Math.abs(determinant);
 
-    const width = canvas.width;
-    const height = canvas.height;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const scale = 50;
-
-    const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * easeInOutCubic(t);
-    
-    const drawGrid = (t: number) => {
-      const gridSize = 8;
-      ctx.strokeStyle = '#4a90e2';
-      ctx.lineWidth = 1;
-      ctx.globalAlpha = 0.2;
-      
-      for (let i = -gridSize; i <= gridSize; i++) {
-        const x1 = i, y1 = -gridSize;
-        const x2 = i, y2 = gridSize;
+    useEffect(() => {
+        if (sketchRef.current) {
+            sketchRef.current.remove();
+        }
         
-        const tx1 = lerp(x1, matrixA * x1 + matrixB * y1, t);
-        const ty1 = lerp(y1, matrixC * x1 + matrixD * y1, t);
-        const tx2 = lerp(x2, matrixA * x2 + matrixB * y2, t);
-        const ty2 = lerp(y2, matrixC * x2 + matrixD * y2, t);
+        if (canvasRef.current) {
+            sketchRef.current = new p5(sketch, canvasRef.current);
+        }
         
-        ctx.beginPath();
-        ctx.moveTo(centerX + tx1 * scale, centerY - ty1 * scale);
-        ctx.lineTo(centerX + tx2 * scale, centerY - ty2 * scale);
-        ctx.stroke();
-      }
-      for (let i = -gridSize; i <= gridSize; i++) {
-        const x1 = -gridSize, y1 = i;
-        const x2 = gridSize, y2 = i;
+        return () => {
+            sketchRef.current?.remove();
+        };
+    }, []);
 
-        const tx1 = lerp(x1, matrixA * x1 + matrixB * y1, t);
-        const ty1 = lerp(y1, matrixC * x1 + matrixD * y1, t);
-        const tx2 = lerp(x2, matrixA * x2 + matrixB * y2, t);
-        const ty2 = lerp(y2, matrixC * x2 + matrixD * y2, t);
-        
-        ctx.beginPath();
-        ctx.moveTo(centerX + tx1 * scale, centerY - ty1 * scale);
-        ctx.lineTo(centerX + tx2 * scale, centerY - ty2 * scale);
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
-    };
+    useEffect(() => {
+        if (sketchRef.current?.isLooping()) {
+            sketchRef.current.redraw();
+        }
+    }, [matrix]);
 
-    const drawBasisVectors = (t: number) => {
-      const ix = lerp(1, matrixA, t);
-      const iy = lerp(0, matrixC, t);
-      const jx = lerp(0, matrixB, t);
-      const jy = lerp(1, matrixD, t);
-      
-      drawArrow(0, 0, ix, iy, '#ff6b6b', 3, 'î');
-      drawArrow(0, 0, jx, jy, '#51cf66', 3, 'ĵ');
-    };
-    
-    const drawTransformedSquare = (t: number) => {
-      const ix = lerp(1, matrixA, t);
-      const iy = lerp(0, matrixC, t);
-      const jx = lerp(0, matrixB, t);
-      const jy = lerp(1, matrixD, t);
+    const sketch = (p: p5) => {
+        p.setup = () => {
+            const container = canvasRef.current!;
+            p.createCanvas(container.offsetWidth, 400).parent(container);
+            p.noLoop();
+        };
 
-      ctx.fillStyle = determinant < 0 ? 'rgba(255, 107, 107, 0.3)' : 'rgba(81, 207, 102, 0.3)';
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(centerX + ix * scale, centerY - iy * scale);
-      ctx.lineTo(centerX + (ix + jx) * scale, centerY - (iy + jy) * scale);
-      ctx.lineTo(centerX + jx * scale, centerY - jy * scale);
-      ctx.closePath();
-      ctx.fill();
-    };
+        p.draw = () => {
+            const { a, b, c, d } = matrix;
+            
+            p.background(17, 24, 39); // bg-gray-900
+            p.translate(p.width / 2, p.height / 2);
+            p.scale(1, -1);
 
-    const drawArrow = (x1: number, y1: number, x2: number, y2: number, color: string, width: number, label: string | null) => {
-      const sx2 = centerX + x2 * scale;
-      const sy2 = centerY - y2 * scale;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = width;
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(sx2, sy2);
-      ctx.stroke();
-      
-      ctx.font = 'bold 18px Arial';
-      ctx.fillStyle = color;
-      ctx.fillText(label || '', sx2 + 5, sy2 - 5);
-    };
+            const scaleFactor = Math.min(p.width, p.height) / 5;
 
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-      
-      const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, width);
-      gradient.addColorStop(0, '#1a1a2e');
-      gradient.addColorStop(1, '#0f0f1e');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-      
-      drawGrid(progress);
-      drawTransformedSquare(progress);
-      drawBasisVectors(progress);
-    };
-    
-    render();
-  }, [progress, matrixA, matrixB, matrixC, matrixD, determinant]);
+            // Draw grid
+            drawGrid(scaleFactor);
 
-  useEffect(() => {
-    if (isPlaying) {
-      const animate = () => {
-        setProgress(prev => {
-          const next = prev + 0.008;
-          if (next >= 1) {
-            setIsPlaying(false);
-            return 1;
-          }
-          return next;
-        });
-        animationRef.current = requestAnimationFrame(animate);
-      };
-      animationRef.current = requestAnimationFrame(animate);
-    }
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, [isPlaying]);
+            const i_hat_x = a * scaleFactor;
+            const i_hat_y = c * scaleFactor;
+            const j_hat_x = b * scaleFactor;
+            const j_hat_y = d * scaleFactor;
 
-  const reset = () => {
-    setProgress(0);
-    setIsPlaying(false);
-  };
-
-  return (
-    <div className="bg-black/30 backdrop-blur-xl rounded-xl p-4 md:p-6 shadow-2xl border border-purple-500/20">
-      <canvas ref={canvasRef} width={800} height={500} className="w-full h-auto aspect-[8/5] rounded-xl shadow-inner" />
-      
-      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 bg-black/40 p-4 rounded-xl border border-cyan-500/30">
-        {[
-          { label: 'a', value: matrixA, setter: setMatrixA },
-          { label: 'b', value: matrixB, setter: setMatrixB },
-          { label: 'c', value: matrixC, setter: setMatrixC },
-          { label: 'd', value: matrixD, setter: setMatrixD },
-        ].map(item => (
-          <div key={item.label}>
-            <label className="text-purple-200 text-xs block mb-1 uppercase">{item.label}: {item.value.toFixed(2)}</label>
-            <input type="range" min="-3" max="3" step="0.1" value={item.value}
-              onChange={(e) => item.setter(parseFloat(e.target.value))}
-              className="w-full h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer" />
-          </div>
-        ))}
-      </div>
-      
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 md:gap-3">
-          <button onClick={() => setIsPlaying(!isPlaying)} className="px-5 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-500 hover:to-blue-500 transition-all flex items-center gap-2 font-bold text-base shadow-lg">
-            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-            {isPlaying ? 'Pause' : 'Animate'}
-          </button>
-          <button onClick={reset} className="px-4 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all flex items-center gap-2 text-sm"><RotateCcw className="w-4 h-4" /> Reset</button>
-        </div>
-        
-        <div className="text-right">
-            <p className="text-purple-200 text-sm">Determinant (Area Scaling Factor)</p>
-            <p className={`text-3xl font-bold font-mono transition-colors ${determinant < 0 ? 'text-red-400' : 'text-green-400'}`}>
-                {determinant.toFixed(2)}
-            </p>
-        </div>
-      </div>
-
-       <div className="mt-4 p-3 bg-indigo-900/40 rounded-lg border border-indigo-400/30 text-sm text-purple-200 leading-relaxed">
-            {Math.abs(determinant) < 0.01 
-              ? "A determinant of zero means the transformation squashes space into a lower dimension (a line or a point). The matrix is not invertible."
-              : determinant < 0
-              ? "A negative determinant signifies an orientation flip. The space has been inverted, like looking in a mirror."
-              : "A positive determinant means the area has been scaled by this factor without changing the orientation of the space."
+            // Draw transformed unit square
+            p.noStroke();
+            let fillColor = p.color(34, 211, 238, 100); // cyan-400
+            if (determinant < 0) {
+                fillColor = p.color(250, 204, 21, 100); // yellow-400
             }
-        </div>
-    </div>
-  );
+            if (area < 0.01) {
+                fillColor = p.color(239, 68, 68, 150); // red-500
+            }
+            p.fill(fillColor);
+            
+            p.beginShape();
+            p.vertex(0, 0);
+            p.vertex(i_hat_x, i_hat_y);
+            p.vertex(i_hat_x + j_hat_x, i_hat_y + j_hat_y);
+            p.vertex(j_hat_x, j_hat_y);
+            p.endShape(p.CLOSE);
+            
+            // Draw transformed basis vectors
+            drawVector(0, 0, i_hat_x, i_hat_y, p.color(110, 231, 183), 'î'); // green-400
+            drawVector(0, 0, j_hat_x, j_hat_y, p.color(248, 113, 113), 'ĵ'); // red-400
+        };
+
+        const drawVector = (x1: number, y1: number, x2: number, y2: number, c: p5.Color, label: string) => {
+            p.stroke(c);
+            p.strokeWeight(4);
+            p.line(x1, y1, x2, y2);
+            
+            p.push();
+            p.translate(x2, y2);
+            const angle = p.atan2(y2 - y1, x2 - x1);
+            p.rotate(angle);
+            p.noStroke();
+            p.fill(c);
+            p.triangle(0, 0, -10, 5, -10, -5);
+            p.pop();
+            
+            p.push();
+            p.scale(1, -1);
+            p.noStroke();
+            p.fill(c);
+            p.textStyle(p.BOLD);
+            p.textSize(18);
+            const labelX = (x2 / scaleFactor);
+            const labelY = (y2 / scaleFactor);
+            // Crude text positioning to avoid overlap
+            p.text(label, x2 + (labelX > 0 ? 10 : -20), -y2 - (labelY < 0 ? 10 : -20));
+            p.pop();
+        };
+
+        const drawGrid = (scale: number) => {
+            p.stroke(55, 65, 81, 150); // gray-700
+            p.strokeWeight(1);
+            
+            const gridSize = 10;
+            for (let x = -gridSize; x <= gridSize; x++) {
+                p.line(x * scale, -p.height, x * scale, p.height);
+            }
+            for (let y = -gridSize; y <= gridSize; y++) {
+                p.line(-p.width, y * scale, p.width, y * scale);
+            }
+
+            p.stroke(209, 213, 219); // gray-300
+            p.strokeWeight(2);
+            p.line(-p.width, 0, p.width, 0); // X-axis
+            p.line(0, -p.height, 0, p.height); // Y-axis
+        };
+        
+         p.windowResized = () => {
+            const container = canvasRef.current!;
+            p.resizeCanvas(container.offsetWidth, 400);
+        };
+    };
+
+    const handleSliderChange = (key: 'a' | 'b' | 'c' | 'd', value: number) => {
+        setMatrix(prev => ({ ...prev, [key]: value }));
+    };
+
+    const resetToIdentity = () => {
+        setMatrix({ a: 1.0, b: 0.0, c: 0.0, d: 1.0 });
+    };
+
+    return (
+        <Card className="bg-background/50 overflow-hidden">
+            <CardContent className="p-4 md:p-6 flex flex-col lg:flex-row gap-6">
+                {/* Controls Panel */}
+                <div className="w-full lg:w-96 flex-shrink-0 space-y-4">
+                    <Card>
+                        <CardHeader className="p-4">
+                            <CardTitle>Transformation Matrix</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-0">
+                            <div className="flex items-center justify-center space-x-4 text-2xl">
+                                <div className="text-muted-foreground text-5xl">[</div>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 font-mono">
+                                    <span className="text-green-400">{matrix.a.toFixed(1)}</span>
+                                    <span className="text-red-400">{matrix.b.toFixed(1)}</span>
+                                    <span className="text-green-400">{matrix.c.toFixed(1)}</span>
+                                    <span className="text-red-400">{matrix.d.toFixed(1)}</span>
+                                </div>
+                                <div className="text-muted-foreground text-5xl">]</div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <div className="space-y-4">
+                        <div className="flex items-center space-x-3">
+                            <Label htmlFor="a" className="w-8 text-green-400 font-bold">a:</Label>
+                            <Slider id="a" min={-2} max={2} value={[matrix.a]} step={0.1} onValueChange={(v) => handleSliderChange('a', v[0])}/>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <Label htmlFor="b" className="w-8 text-red-400 font-bold">b:</Label>
+                            <Slider id="b" min={-2} max={2} value={[matrix.b]} step={0.1} onValueChange={(v) => handleSliderChange('b', v[0])} />
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <Label htmlFor="c" className="w-8 text-green-400 font-bold">c:</Label>
+                            <Slider id="c" min={-2} max={2} value={[matrix.c]} step={0.1} onValueChange={(v) => handleSliderChange('c', v[0])} />
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <Label htmlFor="d" className="w-8 text-red-400 font-bold">d:</Label>
+                            <Slider id="d" min={-2} max={2} value={[matrix.d]} step={0.1} onValueChange={(v) => handleSliderChange('d', v[0])} />
+                        </div>
+                    </div>
+                    
+                    <Card>
+                        <CardContent className="p-4 space-y-3">
+                            <div className="flex justify-between items-center text-lg">
+                                <span className="font-semibold">Determinant:</span>
+                                <span className="font-mono p-1 px-2 rounded bg-muted text-primary">{determinant.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-lg">
+                                <span className="font-semibold">Area Factor:</span>
+                                <span className="font-mono p-1 px-2 rounded bg-muted text-primary">{area.toFixed(2)}</span>
+                            </div>
+                            <div className={`text-center h-6 text-yellow-400 font-semibold transition-opacity duration-300 ${determinant < 0 ? 'opacity-100' : 'opacity-0'}`}>
+                                Orientation Flipped!
+                            </div>
+                            <div className={`text-center h-6 text-red-500 font-semibold transition-opacity duration-300 ${area < 0.01 ? 'opacity-100' : 'opacity-0'}`}>
+                                Space is squashed to a line!
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Button onClick={resetToIdentity} variant="outline" className="w-full">
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Reset to Identity
+                    </Button>
+                </div>
+
+                {/* Canvas */}
+                <div ref={canvasRef} className="flex-grow w-full min-h-[400px] rounded-lg border bg-gray-900 overflow-hidden">
+                    {/* p5.js canvas will be created here */}
+                </div>
+            </CardContent>
+        </Card>
+    );
 };
 
 export default DeterminantVisualizer;
+
+  
