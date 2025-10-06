@@ -115,8 +115,16 @@ export const linearAlgebraPart1: Topic[] = [
         subTopics: [
             { id: 'dot-product', title: 'The Dot Product & Orthogonality' },
             { id: 'orthogonal-projections', title: 'Orthogonal Projections' },
-            { id: 'gram-schmidt', title: 'The Gram-Schmidt Process' },
         ]
+    }),
+    createTopic({
+        id: 'gram-schmidt-orthogonalization',
+        parent: 'la-module-2',
+        title: 'Gram-Schmidt: The Art of Tidying Up',
+        icon: 'Waypoints',
+        description: "An interactive visualizer for creating an orthogonal basis.",
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
     }),
      createTopic({
         parent: 'la-module-2',

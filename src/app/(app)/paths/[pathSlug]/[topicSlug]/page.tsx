@@ -52,6 +52,7 @@ import ZTestPage from '@/app/(app)/quantlab/z-test/component';
 import IntroductionToHypothesisTestingPage from '@/app/(app)/quantlab/introduction-to-hypothesis-testing/component';
 import VectorProjectionPage from '@/app/(app)/quantlab/vector-projection/component';
 import GaussianEliminationPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/gaussian-elimination/component';
+import GramSchmidtPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/gram-schmidt-orthogonalization/component';
 
 
 type TopicPageProps = {
@@ -224,6 +225,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'introduction-to-hypothesis-testing': IntroductionToHypothesisTestingPage,
   'vector-projection': VectorProjectionPage,
   'gaussian-elimination': GaussianEliminationPage,
+  'gram-schmidt-orthogonalization': GramSchmidtPage,
 };
 
 
