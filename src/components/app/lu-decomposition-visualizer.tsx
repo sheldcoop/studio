@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
 
 const LUDecompositionVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -75,26 +76,26 @@ const LUDecompositionVisualizer = () => {
                     const b1_A = applyMatrix(p.createVector(1,0), matrixA), b2_A = applyMatrix(p.createVector(0,1), matrixA);
                     const b1 = p5.Vector.lerp(p.createVector(1,0), b1_A, t1); const b2 = p5.Vector.lerp(p.createVector(0,1), b2_A, t1);
                     const currentVec = p5.Vector.lerp(xVec, bVec, t1);
-                    drawGrid(b1, b2, p.color(55, 65, 81), scaleFactor, p);
-                    drawVector(xVec, scaleFactor, p.color(167, 139, 250, 100), 'x', p);
-                    drawVector(currentVec, scaleFactor, p.color(248, 113, 113), 'Ax=b', p);
+                    drawGrid(p, b1, b2, p.color(55, 65, 81), 1, scaleFactor);
+                    drawVector(p, xVec, scaleFactor, p.color(167, 139, 250, 100), 'x');
+                    drawVector(p, currentVec, scaleFactor, p.color(248, 113, 113), 'Ax=b');
                 } else if (t < t2_end) {
                     const t2 = p.map(t, t1_end, t2_end, 0, 1);
                     const b1_L_inv = applyMatrix(p.createVector(1,0), {a:1, b:0, c:-LU.L.c, d:1}); const b2_L_inv = applyMatrix(p.createVector(0,1), {a:1, b:0, c:-LU.L.c, d:1});
                     const b1 = p5.Vector.lerp(p.createVector(1,0), b1_L_inv, t2); const b2 = p5.Vector.lerp(p.createVector(0,1), b2_L_inv, t2);
                     const currentVec = p5.Vector.lerp(bVec, yVec, t2);
-                    drawGrid(b1, b2, p.color(55, 65, 81), scaleFactor, p);
-                    drawVector(bVec, scaleFactor, p.color(244, 114, 182, 100), 'b', p);
-                    drawVector(currentVec, scaleFactor, p.color(96, 165, 250), 'y', p);
+                    drawGrid(p, b1, b2, p.color(55, 65, 81), 1, scaleFactor);
+                    drawVector(p, bVec, scaleFactor, p.color(244, 114, 182, 100), 'b');
+                    drawVector(p, currentVec, scaleFactor, p.color(96, 165, 250), 'y');
                 } else {
                     const t3 = p.map(t, t2_end, t3_end, 0, 1);
                     const inv_u11=1/LU.U.a, inv_u12=-LU.U.b/(LU.U.a*LU.U.d), inv_u22=1/LU.U.d;
                     const b1_U_inv = applyMatrix(p.createVector(1,0), {a:inv_u11, b:inv_u12, c:0, d:inv_u22}); const b2_U_inv = applyMatrix(p.createVector(0,1), {a:inv_u11, b:inv_u12, c:0, d:inv_u22});
                     const b1 = p5.Vector.lerp(p.createVector(1,0), b1_U_inv, t3); const b2 = p5.Vector.lerp(p.createVector(0,1), b2_U_inv, t3);
                     const currentVec = p5.Vector.lerp(yVec, xVec, t3);
-                    drawGrid(b1, b2, p.color(55, 65, 81), scaleFactor, p);
-                    drawVector(yVec, scaleFactor, p.color(250, 204, 21, 100), 'y', p);
-                    drawVector(currentVec, scaleFactor, p.color(74, 222, 128), 'x', p);
+                    drawGrid(p, b1, b2, p.color(55, 65, 81), 1, scaleFactor);
+                    drawVector(p, yVec, scaleFactor, p.color(250, 204, 21, 100), 'y');
+                    drawVector(p, currentVec, scaleFactor, p.color(74, 222, 128), 'x');
                 }
             };
             p.windowResized = () => { if(canvasRef.current) p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); };
@@ -186,8 +187,7 @@ const LUDecompositionVisualizer = () => {
     );
 };
 export default LUDecompositionVisualizer;
-const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-const drawGrid = (b1: p5.Vector, b2: p5.Vector, c: p5.Color, s: number, p: p5) => { p.stroke(c); p.strokeWeight(1); const r=10; for(let i=-r;i<=r;i++){const p1=p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,-r)); const p2=p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,r)); p.line(p1.x*s,p1.y*s,p2.x*s,p2.y*s);const p3=p5.Vector.add(p5.Vector.mult(b1,-r),p5.Vector.mult(b2,i)); const p4=p5.Vector.add(p5.Vector.mult(b1,r),p5.Vector.mult(b2,i)); p.line(p3.x*s,p3.y*s,p4.x*s,p4.y*s);}};
-const drawVector = (v: p5.Vector, s: number, c: p5.Color, l: string | null, p: p5) => {if(!v) return; const sv = p5.Vector.mult(v,s); if(v.magSq()<1e-4) {p.fill(c); p.noStroke(); p.ellipse(0,0,8,8); return;}; p.push();p.stroke(c);p.fill(c);p.strokeWeight(4);p.line(0,0,sv.x,sv.y);const hs=10, a=sv.heading(); p.translate(sv.x,sv.y);p.rotate(a);p.triangle(0,0,-hs,hs/2,-hs,-hs/2);p.pop(); if(l){p.push();const lp=sv.copy().add(sv.copy().normalize().mult(20));p.noStroke();p.fill(c);p.textSize(18);p.textStyle(p.BOLD);p.translate(lp.x,lp.y);p.scale(1,-1);p.text(l,0,0);p.pop();}};
+
 const applyMatrix = (v: p5.Vector, m: {a:number,b:number,c:number,d:number}) => new p5.Vector(m.a*v.x + m.b*v.y, m.c*v.x + m.d*v.y);
 
+    
