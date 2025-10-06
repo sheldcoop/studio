@@ -1,7 +1,7 @@
+
 'use client';
 
-import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -20,6 +20,8 @@ import 'katex/dist/katex.min.css';
 
 // --- Math & Simulation Logic ---
 const factorial = (n: number): number => {
+    if (n < 0) return Infinity;
+    if (n === 0) return 1;
     let result = 1;
     for (let i = 2; i <= n; i++) result *= i;
     return result;
@@ -27,7 +29,7 @@ const factorial = (n: number): number => {
 
 const multinomialProbability = (n: number, x: number[], p: number[]): number => {
     if (x.reduce((a, b) => a + b, 0) !== n || Math.abs(p.reduce((a, b) => a + b, 0) - 1) > 1e-9) {
-        return 0; // Invalid parameters
+        return 0;
     }
 
     let combinations = factorial(n);
@@ -52,28 +54,29 @@ export default function MultinomialDistributionComponent() {
     ]);
     const [calculatedProb, setCalculatedProb] = useState<number | null>(null);
     
-    const handleProbChange = (index: number, newProb: number) => {
+    const handleProbChange = (index: number, newProbStr: string) => {
+        const newProb = parseFloat(newProbStr);
+        if (isNaN(newProb) || newProb < 0 || newProb > 1) return;
+
         const newOutcomes = [...outcomes];
+        const oldProb = newOutcomes[index].prob;
+        const diff = newProb - oldProb;
         newOutcomes[index].prob = newProb;
         
-        // Normalize probabilities
-        const totalProb = newOutcomes.reduce((sum, o, i) => i !== index ? sum + o.prob : sum, newProb);
-        if (totalProb > 1) {
-            const excess = totalProb - 1;
-            const otherSum = totalProb - newProb;
-            if (otherSum > 0) {
-                 newOutcomes.forEach((o, i) => {
-                    if (i !== index) {
-                        o.prob -= excess * (o.prob / otherSum);
-                    }
-                });
-            }
+        const otherSum = 1 - oldProb;
+        if (otherSum > 1e-9) { // Avoid division by zero
+            newOutcomes.forEach((o, i) => {
+                if (i !== index) {
+                    o.prob -= diff * (o.prob / otherSum);
+                }
+            });
         }
-        
         setOutcomes(newOutcomes);
     }
     
-    const handleCountChange = (index: number, newCount: number) => {
+    const handleCountChange = (index: number, newCountStr: string) => {
+        const newCount = parseInt(newCountStr, 10);
+        if (isNaN(newCount) || newCount < 0) return;
         const newOutcomes = [...outcomes];
         newOutcomes[index].count = newCount;
         setOutcomes(newOutcomes);
@@ -83,6 +86,12 @@ export default function MultinomialDistributionComponent() {
         const counts = outcomes.map(o => o.count);
         const probs = outcomes.map(o => o.prob);
         const totalCount = counts.reduce((a, b) => a + b, 0);
+
+        if (Math.abs(probs.reduce((a, b) => a + b, 0) - 1) > 0.01) {
+            alert('Probabilities must sum to 1.');
+            return;
+        }
+
         if (totalCount !== trials) {
             alert('The sum of outcome counts must equal the total number of trials.');
             return;
@@ -120,7 +129,7 @@ export default function MultinomialDistributionComponent() {
             </CardHeader>
             <CardContent>
                  <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  <BlockMath math="P(X_1=x_1, ..., X_c=x_c) = \frac{n!}{x_1!...x_c!} p_1^{x_1} \cdots p_c^{x_c}" />
+                  <BlockMath math="P(X_1=x_1, ..., X_c=x_c) = \\frac{n!}{x_1!...x_c!} p_1^{x_1} \\cdots p_c^{x_c}" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
                     <li><InlineMath math="n" /> is the total number of trials.</li>
@@ -155,10 +164,10 @@ export default function MultinomialDistributionComponent() {
                             <TableRow key={index}>
                                 <TableCell>{outcome.name}</TableCell>
                                 <TableCell>
-                                    <Input type="number" value={outcome.prob} onChange={e => handleProbChange(index, parseFloat(e.target.value))} step="0.01" min="0" max="1" />
+                                    <Input type="number" value={outcome.prob.toFixed(2)} onChange={e => handleProbChange(index, e.target.value)} step="0.01" min="0" max="1" />
                                 </TableCell>
                                 <TableCell>
-                                    <Input type="number" value={outcome.count} onChange={e => handleCountChange(index, parseInt(e.target.value))} step="1" min="0" />
+                                    <Input type="number" value={outcome.count} onChange={e => handleCountChange(index, e.target.value)} step="1" min="0" />
                                 </TableCell>
                             </TableRow>
                         ))}
