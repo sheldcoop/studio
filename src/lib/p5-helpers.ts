@@ -64,6 +64,7 @@ export const drawTransformedGrid = (p: p5, matrix: { a: number, b: number, c: nu
     drawGrid(p, transformedBasis1, transformedBasis2, color, 1, scaleFactor);
 };
 
+
 /**
  * Draws a vector with an arrowhead and an optional label.
  * @param p - The p5 instance.
@@ -76,7 +77,7 @@ export const drawTransformedGrid = (p: p5, matrix: { a: number, b: number, c: nu
  */
 export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.Color, label: string | null, weight = 4, offset: p5.Vector | null = null) => {
     if (!v) return;
-    let scaledV = p5.Vector.mult(v, scaleFactor);
+    const scaledV = p5.Vector.mult(v, scaleFactor);
     if (offset) {
         scaledV.add(p5.Vector.mult(offset, scaleFactor));
     }
@@ -122,14 +123,14 @@ export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, sc
     if (p.drawingContext.setLineDash) {
         p.drawingContext.setLineDash([5, 5]);
     }
-    const extendedStart = vector.copy().mult(-100);
-    const extendedEnd = vector.copy().mult(100);
+    const extendedStart = p5.Vector.mult(vector, -100);
+    const extendedEnd = p5.Vector.mult(vector, 100);
     p.line(extendedStart.x * scaleFactor, extendedStart.y * scaleFactor, extendedEnd.x * scaleFactor, extendedEnd.y * scaleFactor);
     if (p.drawingContext.setLineDash) {
         p.drawingContext.setLineDash([]);
     }
     
-    const scaledVector = vector.copy().mult(eigenvalue);
+    const scaledVector = p5.Vector.mult(vector, eigenvalue);
     drawVector(p, scaledVector, scaleFactor, color, `λ=${eigenvalue.toFixed(2)}`, 3);
 };
 
@@ -156,7 +157,7 @@ export const drawPoint = (p: p5, pt: p5.Vector, s: number, col: p5.Color) => {
  */
 export const drawLabel = (p: p5, v: p5.Vector, color: p5.Color, label: string) => {
     p.push();
-    const labelOffset = v.copy().normalize().mult(20);
+    const labelOffset = p5.Vector.mult(v.copy().normalize(), 20);
     const labelPos = p5.Vector.add(v, labelOffset);
     p.noStroke();
     p.fill(color);
@@ -243,9 +244,94 @@ export const drawTransformedCircle = (p: p5, transform: (x: number, y: number) =
 export const drawNullSpace = (p: p5, v: p5.Vector, s: number) => {
     p.stroke(239, 68, 68, 150);
     p.strokeWeight(3);
-    const p1 = v.copy().mult(-p.width);
-    const p2 = v.copy().mult(p.width);
+    const p1 = p5.Vector.mult(v, -p.width);
+    const p2 = p5.Vector.mult(v, p.width);
     p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+};
+
+
+/**
+ * Draws a parallelogram defined by two vectors from the origin, showing the area they span.
+ * Perfect for visualizing vector addition, linear combinations, and determinants (area = |det|).
+ * @param p - The p5 instance.
+ * @param v1 - The first basis vector.
+ * @param v2 - The second basis vector.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @param fillColor - The color to fill the parallelogram.
+ * @param strokeColor - The color of the parallelogram's border.
+ */
+export const drawParallelogram = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, fillColor: p5.Color, strokeColor: p5.Color) => {
+    p.push();
+    p.fill(fillColor);
+    p.stroke(strokeColor);
+    p.strokeWeight(2);
+    p.beginShape();
+    p.vertex(0, 0);
+    p.vertex(v1.x * scaleFactor, v1.y * scaleFactor);
+    const v3 = p5.Vector.add(v1, v2);
+    p.vertex(v3.x * scaleFactor, v3.y * scaleFactor);
+    p.vertex(v2.x * scaleFactor, v2.y * scaleFactor);
+    p.endShape(p.CLOSE);
+    p.pop();
+};
+
+
+/**
+ * Draws an axis-aligned rectangle at the given corner position with specified dimensions.
+ * Useful for showing areas, bounds, and how rectangles transform under matrices.
+ * @param p - The p5 instance.
+ * @param corner - The vector representing the top-left corner.
+ * @param width - The width of the rectangle.
+ * @param height - The height of the rectangle.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @param color - The color of the rectangle.
+ */
+export const drawRectangle = (p: p5, corner: p5.Vector, width: number, height: number, scaleFactor: number, color: p5.Color) => {
+    p.push();
+    p.fill(color);
+    p.noStroke();
+    p.rect(corner.x * scaleFactor, corner.y * scaleFactor, width * scaleFactor, height * scaleFactor);
+    p.pop();
+};
+
+/**
+ * Draws a closed polygon connecting the given array of vertex positions.
+ * Flexible shape primitive that can be used to show how any shape transforms under linear transformations.
+ * @param p - The p5 instance.
+ * @param vertices - An array of p5.Vector objects.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @param fillColor - The color to fill the polygon.
+ * @param strokeColor - The color of the polygon's border.
+ */
+export const drawPolygon = (p: p5, vertices: p5.Vector[], scaleFactor: number, fillColor: p5.Color, strokeColor: p5.Color) => {
+    p.push();
+    p.fill(fillColor);
+    p.stroke(strokeColor);
+    p.strokeWeight(2);
+    p.beginShape();
+    for (const v of vertices) {
+        p.vertex(v.x * scaleFactor, v.y * scaleFactor);
+    }
+    p.endShape(p.CLOSE);
+    p.pop();
+};
+
+/**
+ * Takes an array of vertices and a transformation matrix, draws the shape after applying the transformation.
+ * Shows students exactly how matrices affect shapes, making abstract linear algebra concrete.
+ * @param p - The p5 instance.
+ * @param vertices - An array of p5.Vector objects representing the original shape.
+ * @param matrix - The transformation matrix.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @param color - The color of the transformed shape.
+ */
+export const drawTransformedShape = (p: p5, vertices: p5.Vector[], matrix: { a: number, b: number, c: number, d: number }, scaleFactor: number, color: p5.Color) => {
+    const transformedVertices = vertices.map(v => {
+        const tx = matrix.a * v.x + matrix.b * v.y;
+        const ty = matrix.c * v.x + matrix.d * v.y;
+        return p.createVector(tx, ty);
+    });
+    drawPolygon(p, transformedVertices, scaleFactor, color, color);
 };
 
 
