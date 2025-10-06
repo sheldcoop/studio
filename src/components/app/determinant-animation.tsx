@@ -28,22 +28,23 @@ export function DeterminantAnimation({ className, isHovered }: DeterminantAnimat
     const script = (p: p5) => {
       let t = 0;
       let targetT = 0;
-      let matrix = { a: 1, b: 0, c: 0, d: 1 };
-      let targetMatrix = { a: 1.5, b: 0.5, c: -0.5, d: 1 };
+      let matrix = { a: 1.5, b: 0.5, c: -0.5, d: 1 };
       
       let primaryColor: p5.Color;
 
       p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight).parent(currentMount);
+        const renderer = p.createCanvas(p.windowWidth, p.windowHeight);
+        renderer.parent(currentMount);
         p.windowResized();
         
         const computedStyle = getComputedStyle(document.documentElement);
         const primaryColorValue = computedStyle.getPropertyValue('--animation-primary-color').trim();
         primaryColor = p.color(primaryColorValue);
+        primaryColor.setAlpha(255);
       };
 
       p.draw = () => {
-        p.background(0, 0); // Transparent background
+        p.clear(0, 0, 0, 0); // Use clear() for transparency
         p.translate(p.width / 2, p.height / 2);
         p.scale(1, -1); // Flip y-axis to match standard math coordinates
 
@@ -56,10 +57,10 @@ export function DeterminantAnimation({ className, isHovered }: DeterminantAnimat
         const easedT = ease(t);
 
         const currentMatrix = {
-          a: p.lerp(1, targetMatrix.a, easedT),
-          b: p.lerp(0, targetMatrix.b, easedT),
-          c: p.lerp(0, targetMatrix.c, easedT),
-          d: p.lerp(1, targetMatrix.d, easedT),
+          a: p.lerp(1, matrix.a, easedT),
+          b: p.lerp(0, matrix.b, easedT),
+          c: p.lerp(0, matrix.c, easedT),
+          d: p.lerp(1, matrix.d, easedT),
         };
         
         const det = currentMatrix.a * currentMatrix.d - currentMatrix.b * currentMatrix.c;
@@ -94,8 +95,8 @@ export function DeterminantAnimation({ className, isHovered }: DeterminantAnimat
       };
       
       const drawGrid = (m: {a:number,b:number,c:number,d:number}, s: number) => {
-        p.stroke(primaryColor);
         primaryColor.setAlpha(40);
+        p.stroke(primaryColor);
         p.strokeWeight(1);
         
         const gridSize = 10;
