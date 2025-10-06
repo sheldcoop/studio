@@ -21,6 +21,7 @@ const animationMap: Record<string, ComponentType<AnimationProps>> = {
   'stat-toolkit': dynamic(() => import('@/components/app/confidence-interval-animation').then(mod => mod.ConfidenceIntervalAnimation)),
   'probability': dynamic(() => import('@/components/app/plinko-animation').then(mod => mod.PlinkoAnimation)),
   'probability-toolkit': dynamic(() => import('@/components/app/dice-animation').then(mod => mod.DiceAnimation)),
+  'determinant': dynamic(() => import('@/components/app/determinant-animation').then(mod => mod.DeterminantAnimation)),
 };
 
 

@@ -41,6 +41,7 @@ export const linearAlgebraPart1: Topic[] = [
         description: "Understanding how transformations scale space.",
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
+        animation: 'determinant',
         subTopics: [
             { id: 'determinant-intro', title: 'Introduction' },
             { id: 'determinant-properties', title: 'Properties' },
