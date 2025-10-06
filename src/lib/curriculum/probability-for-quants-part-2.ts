@@ -23,7 +23,7 @@ export const probabilityForQuantsPart2: Topic[] = [
         parent: 'prob-quant-mod-3',
         id: 'covariance-and-correlation',
         title: 'Covariance & Correlation',
-        href: '/paths/statistics-for-quantitative-finance/pearson-correlation',
+        href: '/paths/linear-algebra-for-quantitative-finance/covariance-and-correlation-matrices',
         icon: 'TrendingUp',
         description: "Measuring how two random variables move together.",
         category: 'sub-topic',

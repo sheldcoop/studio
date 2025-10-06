@@ -51,6 +51,7 @@ export const linearAlgebraPart2: Topic[] = [
     // --- Module 4 ---
      createTopic({
         parent: 'la-module-4',
+        id: 'covariance-and-correlation-matrices',
         title: 'Covariance & Correlation Matrices',
         icon: 'Waypoints',
         description: "The cornerstone of portfolio theory.",
