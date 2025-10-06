@@ -4,9 +4,8 @@
 import p5 from 'p5';
 import { applyMatrix as applyMatrixMath, calculateDeterminant, invertMatrix, matrixMultiply, calculateSVD as calculateSVDMath } from '@/lib/math/linear-algebra';
 import { drawVector, drawParallelogram, drawGrid, drawDashedLine } from './primitives';
-import { drawLine } from './coordinate-system';
 import { easeInOutCubic } from './animation';
-
+import { drawLine } from './coordinate-system';
 
 /**
  * Applies a matrix transformation to a p5 vector.
@@ -328,9 +327,9 @@ export const drawLeastSquaresProjection = (p: p5, A_col1: p5.Vector, A_col2: p5.
 };
 
 export const drawGramSchmidt = (p: p5, v1: p5.Vector, v2: p5.Vector, progress: number, scaleFactor: number) => {
-    if (v1.magSq() < 1e-9) {
-      console.warn('drawGramSchmidt: zero vector detected');
-      return;
+    if (v1.magSq() < 1e-9 || v2.magSq() < 1e-9) {
+        console.warn('drawGramSchmidt: zero vector detected');
+        return;
     }
     const t = easeInOutCubic(progress);
 
@@ -417,7 +416,7 @@ export const drawConditionNumber = (p: p5, matrix: {a:number,b:number,c:number,d
 
 export const drawPCA = (p: p5, dataPoints: p5.Vector[], scaleFactor: number) => {
     if (dataPoints.length < 2) return;
-    const mean = dataPoints.reduce((acc, v) => acc.add(v), p.createVector(0,0)).div(dataPoints.length);
+    const mean = dataPoints.reduce((acc, v) => p5.Vector.add(acc, v), p.createVector(0,0)).div(dataPoints.length);
     const centered = dataPoints.map(v => p5.Vector.sub(v, mean));
 
     let cov_xx = 0, cov_xy = 0, cov_yy = 0;
@@ -448,4 +447,4 @@ export const drawPCA = (p: p5, dataPoints: p5.Vector[], scaleFactor: number) => 
     drawVector(p, v2.copy().mult(Math.sqrt(trace - l1)*2), scaleFactor, p.color(100,255,100), 'PC2', 3, mean);
 };
 
-export const drawStateTransition = (p:p5) => { /* Stub */ };
+    
