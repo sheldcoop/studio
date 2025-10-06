@@ -4,6 +4,7 @@ import p5 from 'p5';
 
 /**
  * Draws a transformed grid defined by two basis vectors.
+ * The grid dynamically adjusts to fill the entire canvas.
  * @param p - The p5 instance.
  * @param b1 - The first basis vector.
  * @param b2 - The second basis vector.
@@ -17,7 +18,11 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: nu
     
     p.stroke(c);
     p.strokeWeight(w);
-    const range = 10;
+
+    // Dynamically calculate the range based on canvas size and scale
+    const xRange = Math.ceil(p.width / (2 * s));
+    const yRange = Math.ceil(p.height / (2 * s));
+    const range = Math.max(xRange, yRange) * 1.5; // Add a buffer
     
     for(let i = -range; i <= range; i++) {
         const p1 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(-range));
@@ -33,7 +38,7 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: nu
         p.noStroke();
         p.fill(fillColor);
         p.beginShape();
-        const r = 8;
+        const r = range;
         const p1_fill = b1.copy().mult(-r);
         const p2_fill = b1.copy().mult(r);
         const p3_fill = b2.copy().mult(-r);
@@ -54,6 +59,7 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: nu
 
 /**
  * Draws standard Cartesian axes with correct label orientation, arrowheads, and ticks.
+ * The axes and labels dynamically adjust to fill the entire canvas.
  * @param p - The p5 instance.
  * @param scaleFactor - The scaling factor.
  * @param color - The color of the axes.
@@ -83,12 +89,19 @@ export const drawAxes = (p: p5, scaleFactor: number, color: p5.Color, showLabels
 
 
     if (showLabels) {
+        // Dynamically calculate range based on canvas size
+        const xRange = Math.floor(p.width / (2 * scaleFactor));
+        const yRange = Math.floor(p.height / (2 * scaleFactor));
+
         // Draw Ticks
         p.strokeWeight(1);
-        for (let i = -10; i <= 10; i += tickInterval) {
+        for (let i = -xRange; i <= xRange; i += tickInterval) {
             if (i === 0) continue;
             // X-ticks
             p.line(i * scaleFactor, -tickSize, i * scaleFactor, tickSize);
+        }
+         for (let i = -yRange; i <= yRange; i += tickInterval) {
+            if (i === 0) continue;
             // Y-ticks
             p.line(-tickSize, i * scaleFactor, tickSize, i * scaleFactor);
         }
@@ -99,7 +112,7 @@ export const drawAxes = (p: p5, scaleFactor: number, color: p5.Color, showLabels
         p.textSize(14);
         p.textAlign(p.CENTER, p.CENTER);
         
-        for (let i = -10; i <= 10; i += tickInterval) {
+        for (let i = -xRange; i <= xRange; i += tickInterval) {
             if (i === 0) continue;
             // X labels
             p.push();
@@ -107,7 +120,10 @@ export const drawAxes = (p: p5, scaleFactor: number, color: p5.Color, showLabels
             p.scale(1, -1);
             p.text(i, 0, 0);
             p.pop();
-            
+        }
+        
+        for (let i = -yRange; i <= yRange; i += tickInterval) {
+            if (i === 0) continue;
             // Y labels
             p.push();
             p.translate(-20, i * scaleFactor);
@@ -173,12 +189,14 @@ export const worldToScreen = (p: p5, worldX: number, worldY: number, scaleFactor
 export const drawLine = (p: p5, a: number, b: number, c: number, scaleFactor: number, color: p5.Color) => {
     p.stroke(color);
     p.strokeWeight(2);
+    const xRange = p.width / (2 * scaleFactor);
     if (Math.abs(b) > 0.01) {
-        const x1 = -10, y1 = (c - a * x1) / b;
-        const x2 = 10, y2 = (c - a * x2) / b;
+        const x1 = -xRange, y1 = (c - a * x1) / b;
+        const x2 = xRange, y2 = (c - a * x2) / b;
         p.line(x1 * scaleFactor, y1 * scaleFactor, x2 * scaleFactor, y2 * scaleFactor);
     } else if (Math.abs(a) > 0.01) {
         const x = c / a;
-        p.line(x * scaleFactor, -10 * scaleFactor, x * scaleFactor, 10 * scaleFactor);
+        const yRange = p.height / (2 * scaleFactor);
+        p.line(x * scaleFactor, -yRange * scaleFactor, x * scaleFactor, yRange * scaleFactor);
     }
 };
