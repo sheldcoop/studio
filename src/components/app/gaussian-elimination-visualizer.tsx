@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
 import { drawGrid as p5DrawGrid, easeInOutCubic, drawLine, lerpMatrix } from '@/lib/p5-helpers';
-import { calculate2x2Solution } from '@/lib/math';
+import { calculate2x2Solution } from '@/lib/math/linear-algebra';
 
 const GaussianEliminationVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -212,5 +212,3 @@ const GaussianEliminationVisualizer = () => {
     );
 };
 export default GaussianEliminationVisualizer;
-
-    

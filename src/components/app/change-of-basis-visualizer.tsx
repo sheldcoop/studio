@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5-helpers';
-import { calculateEigen } from '@/lib/math';
+import { calculateEigen } from '@/lib/math/linear-algebra';
 
 const ChangeOfBasisVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);

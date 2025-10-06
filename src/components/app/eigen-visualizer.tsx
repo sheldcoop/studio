@@ -9,7 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
-import { calculateEigen } from '@/lib/math';
+import { calculateEigen } from '@/lib/math/linear-algebra';
 
 
 const EigenVisualizer = () => {
