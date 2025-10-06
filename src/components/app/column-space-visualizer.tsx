@@ -3,15 +3,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 const ColumnSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
     const sketchRef = useRef<p5 | null>(null);
 
-    const [col1Coords, setCol1Coords] = useState('');
-    const [col2Coords, setCol2Coords] = useState('');
+    const [col1Coords, setCol1Coords] = useState({ x: 1.5, y: 0.5 });
+    const [col2Coords, setCol2Coords] = useState({ x: -1.0, y: 1.0 });
     const [outputCoords, setOutputCoords] = useState('');
     const [isRankDeficient, setIsRankDeficient] = useState(false);
 
@@ -35,7 +35,6 @@ const ColumnSpaceVisualizer = () => {
 
                 inputArea = { x: 20, y: p.height - 170, w: 150, h: 150 };
                 
-                // Set cursor style for the body
                 document.body.style.cursor = 'grab';
             };
 
@@ -43,7 +42,6 @@ const ColumnSpaceVisualizer = () => {
                 scaleFactor = p.min(p.width, p.height) / 10;
                 p.background(17, 24, 39);
 
-                // --- Main Output Canvas ---
                 p.push();
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
@@ -52,10 +50,15 @@ const ColumnSpaceVisualizer = () => {
                 const det = col1.x * col2.y - col1.y * col2.x;
                 const rankDeficient = Math.abs(det) < 0.1;
                 
+                // Update React state
+                setCol1Coords({x: col1.x, y: col1.y});
+                setCol2Coords({x: col2.x, y: col2.y});
+                setIsRankDeficient(rankDeficient);
+                
                 if (rankDeficient) {
                     drawSpanLine(col1.magSq() > col2.magSq() ? col1 : col2, p.color(96, 165, 250, 150), 3);
                 } else {
-                    drawSpanGrid(col1, col2, p.color(96, 165, 250, 80), 2);
+                    drawSpanGrid(col1, col2, p.color(96, 165, 250, 80), 2, p.color(96, 165, 250, 20));
                 }
 
                 drawVector(col1, p.color(96, 165, 250), 'col₁', 4);
@@ -63,19 +66,13 @@ const ColumnSpaceVisualizer = () => {
 
                 const outputVec = p5.Vector.add(p5.Vector.mult(col1, inputVec.x), p5.Vector.mult(col2, inputVec.y));
                 drawVector(outputVec, p.color(244, 114, 182), 'Ax', 5);
-
-                // Update React state instead of direct DOM manipulation
-                setCol1Coords(`(${col1.x.toFixed(2)}, ${col1.y.toFixed(2)})`);
-                setCol2Coords(`(${col2.x.toFixed(2)}, ${col2.y.toFixed(2)})`);
                 setOutputCoords(`(${outputVec.x.toFixed(2)}, ${outputVec.y.toFixed(2)})`);
-                setIsRankDeficient(rankDeficient);
-                
+
                 p.pop();
 
-                // --- Input Area Sub-canvas ---
                 drawInputArea();
             };
-
+            
             const handleDragging = () => {
                 const mouseWorld = screenToWorld(p.mouseX, p.mouseY);
                 if (isDraggingC1) col1.set(mouseWorld);
@@ -93,7 +90,7 @@ const ColumnSpaceVisualizer = () => {
                 }
                 document.body.style.cursor = 'grabbing';
             };
-
+            
             p.mouseDragged = () => {
                 if (isDraggingInput) {
                     const s = inputArea.w / 6;
@@ -102,49 +99,57 @@ const ColumnSpaceVisualizer = () => {
                     inputVec.set(x, y);
                 }
             };
-
-            p.mouseReleased = () => {
-                isDraggingC1 = false; isDraggingC2 = false; isDraggingInput = false;
-                document.body.style.cursor = 'grab';
-            };
-
+            
+            p.mouseReleased = () => { isDraggingC1 = false; isDraggingC2 = false; isDraggingInput = false; document.body.style.cursor = 'grab'; };
+            
             const drawInputArea = () => {
                 p.push();
-                p.fill(17, 24, 39, 200);
-                p.stroke(96, 165, 250);
+                p.fill(17, 24, 39, 200); p.stroke(96, 165, 250);
                 p.rect(inputArea.x, inputArea.y, inputArea.w, inputArea.h, 10);
                 p.fill(255); p.noStroke(); p.textAlign(p.CENTER); p.textSize(14);
                 p.text('Input Space', inputArea.x + inputArea.w / 2, inputArea.y - 10);
                 p.translate(inputArea.x + inputArea.w / 2, inputArea.y + inputArea.h / 2);
                 const s = inputArea.w / 6;
                 p.stroke(55, 65, 81);
-                p.line(-inputArea.w/2, 0, inputArea.w/2, 0);
-                p.line(0, -inputArea.h/2, 0, inputArea.h/2);
+                p.line(-inputArea.w/2, 0, inputArea.w/2, 0); p.line(0, -inputArea.h/2, 0, inputArea.h/2);
                 p.fill(244, 114, 182); p.stroke(244, 114, 182); p.strokeWeight(3);
-                p.line(0, 0, inputVec.x * s, -inputVec.y * s);
-                p.ellipse(inputVec.x * s, -inputVec.y * s, 8, 8);
+                p.line(0, 0, inputVec.x * s, -inputVec.y * s); p.ellipse(inputVec.x * s, -inputVec.y * s, 8, 8);
                 p.pop();
             };
 
-            const drawSpanGrid = (b1: p5.Vector,b2: p5.Vector,c: p5.Color,w=1) => { p.stroke(c); p.strokeWeight(w); const r=8; for(let i=-r;i<=r;i++){const p1=p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,-r));const p2=p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,r));p.line(p1.x*scaleFactor,p1.y*scaleFactor,p2.x*scaleFactor,p2.y*scaleFactor);const p3=p5.Vector.add(p5.Vector.mult(b1,-r),p5.Vector.mult(b2,i));const p4=p5.Vector.add(p5.Vector.mult(b1,r),p5.Vector.mult(b2,i));p.line(p3.x*scaleFactor,p3.y*scaleFactor,p4.x*scaleFactor,p4.y*scaleFactor);}}
-            const drawSpanLine = (v: p5.Vector, c: p5.Color, w: number) => {p.stroke(c);p.strokeWeight(w);if(v.magSq()<0.01)return;const p1=v.copy().mult(-100);const p2=v.copy().mult(100);p.line(p1.x*scaleFactor,p1.y*scaleFactor,p2.x*scaleFactor,p2.y*scaleFactor);}
-            const drawVector = (v: p5.Vector,c: p5.Color,l:string,w=4) => {if(!v)return;if(v.magSq()<1e-4){p.fill(c);p.noStroke();p.ellipse(0,0,8,8);return;};const sv=p5.Vector.mult(v,scaleFactor);p.push();p.stroke(c);p.fill(c);p.strokeWeight(w);p.line(0,0,sv.x,sv.y);const hs=10;const a=sv.heading();p.translate(sv.x,sv.y);p.rotate(a);p.triangle(0,0,-hs,hs/2,-hs,-hs/2);p.pop();if(l){p.push();const lp=sv.copy().add(sv.copy().normalize().mult(20));p.noStroke();p.fill(c);p.textSize(18);p.textStyle(p.BOLD);p.translate(lp.x,lp.y);p.scale(1,-1);p.text(l,0,0);p.pop();}}
-            const screenToWorld = (mx: number, my: number) => {const x=(mx-p.width/2)/scaleFactor;const y=(my-p.height/2)/-scaleFactor;return p.createVector(x,y);}
-            
-            p.windowResized = () => {
-                if(canvasRef.current) {
-                    p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight);
-                    inputArea.y = p.height - 170;
+            const drawSpanGrid = (b1: p5.Vector, b2: p5.Vector, gridColor: p5.Color, gridWeight: number, fillColor: p5.Color) => {
+                p.noStroke(); p.fill(fillColor);
+                const r = 8;
+                p.beginShape();
+                const p1 = p5.Vector.add(p5.Vector.mult(b1, -r), p5.Vector.mult(b2, -r));
+                const p2 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, -r));
+                const p3 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, r));
+                const p4 = p5.Vector.add(p5.Vector.mult(b1, -r), p5.Vector.mult(b2, r));
+                p.vertex(p1.x * scaleFactor, p1.y * scaleFactor);
+                p.vertex(p2.x * scaleFactor, p2.y * scaleFactor);
+                p.vertex(p3.x * scaleFactor, p3.y * scaleFactor);
+                p.vertex(p4.x * scaleFactor, p4.y * scaleFactor);
+                p.endShape(p.CLOSE);
+
+                p.stroke(gridColor); p.strokeWeight(gridWeight); p.noFill();
+                for(let i=-r;i<=r;i++){
+                    const p1 = p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,-r));
+                    const p2 = p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,r));
+                    p.line(p1.x*scaleFactor,p1.y*scaleFactor,p2.x*scaleFactor,p2.y*scaleFactor);
+                    const p3 = p5.Vector.add(p5.Vector.mult(b1,-r),p5.Vector.mult(b2,i));
+                    const p4 = p5.Vector.add(p5.Vector.mult(b1,r),p5.Vector.mult(b2,i));
+                    p.line(p3.x*scaleFactor,p3.y*scaleFactor,p4.x*scaleFactor,p4.y*scaleFactor);
                 }
-            };
+            }
+
+            const drawSpanLine = (v: p5.Vector, c: p5.Color, w: number) => { p.stroke(c); p.strokeWeight(w); if(v.magSq()<0.01)return;const p1=v.copy().mult(-100);const p2=v.copy().mult(100);p.line(p1.x*scaleFactor,p1.y*scaleFactor,p2.x*scaleFactor,p2.y*scaleFactor);}
+            const drawVector = (v: p5.Vector,c: p5.Color,l:string,w=4) => {if(!v)return;if(v.magSq()<1e-4){p.fill(c);p.noStroke();p.ellipse(0,0,8,8);return;};const sv=p5.Vector.mult(v,scaleFactor);p.push();p.stroke(c);p.fill(c);p.strokeWeight(w);p.line(0,0,sv.x,sv.y);const hs=10;const a=sv.heading();p.translate(sv.x,sv.y);p.rotate(a);p.triangle(0,0,-hs,hs/2,-hs,-hs/2);p.pop();if(l){p.push();const lp=sv.copy().add(sv.copy().normalize().mult(20));p.noStroke();p.fill(c);p.textSize(18);p.textStyle(p.BOLD);p.translate(lp.x,lp.y);p.scale(1,-1);p.text(l,0,0);p.pop();}}
+            const screenToWorld = (mx: number, my: number) => p.createVector((mx - p.width / 2) / scaleFactor, (my - p.height / 2) / -scaleFactor);
+            p.windowResized = () => { if(canvasRef.current) { p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); inputArea.y = p.height - 170; }};
         };
 
         sketchRef.current = new p5(sketch, canvasRef.current!);
-        
-        return () => {
-            document.body.style.cursor = 'default';
-            sketchRef.current?.remove();
-        };
+        return () => { document.body.style.cursor = 'default'; sketchRef.current?.remove(); };
     }, []);
 
     return (
@@ -163,13 +168,15 @@ const ColumnSpaceVisualizer = () => {
                             <h3 className="text-2xl font-bold">{isRankDeficient ? 'LINE (Rank Deficient)' : 'PLANE (Full Rank)'}</h3>
                         </div>
                         <div className="space-y-3 p-4 rounded-lg bg-gray-900/50 border border-cyan-500/30">
-                            <div className="flex justify-between items-center">
-                                <span className="text-lg text-blue-300 font-bold">col₁ =</span>
-                                <span className="font-mono text-lg">{col1Coords}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-lg text-blue-300 font-bold">col₂ =</span>
-                                <span className="font-mono text-lg">{col2Coords}</span>
+                            <div className="flex items-center justify-center space-x-4 text-2xl">
+                                <div className="text-muted-foreground text-5xl">[</div>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 font-mono text-center">
+                                    <span className="text-blue-300">{col1Coords.x.toFixed(2)}</span>
+                                    <span className="text-blue-300">{col2Coords.x.toFixed(2)}</span>
+                                    <span className="text-blue-300">{col1Coords.y.toFixed(2)}</span>
+                                    <span className="text-blue-300">{col2Coords.y.toFixed(2)}</span>
+                                </div>
+                                <div className="text-muted-foreground text-5xl">]</div>
                             </div>
                         </div>
                         <div className="p-4 rounded-lg bg-gray-900/50 border border-cyan-500/30">
