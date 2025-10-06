@@ -21,12 +21,12 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: nu
     const range = 10;
     
     for(let i = -range; i <= range; i++) {
-        const p1 = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, -range));
-        const p2 = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, range));
+        const p1 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(-range));
+        const p2 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(range));
         p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
 
-        const p3 = p5.Vector.add(p5.Vector.mult(b1, -range), p5.Vector.mult(b2, i));
-        const p4 = p5.Vector.add(p5.Vector.mult(b1, range), p5.Vector.mult(b2, i));
+        const p3 = p5.Vector.add(b1.copy().mult(-range), b2.copy().mult(i));
+        const p4 = p5.Vector.add(b1.copy().mult(range), b2.copy().mult(i));
         p.line(p3.x * s, p3.y * s, p4.x * s, p4.y * s);
     }
     
@@ -35,10 +35,10 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: nu
         p.fill(fillColor);
         p.beginShape();
         const r = 8;
-        const p1_fill = p5.Vector.mult(b1, -r);
-        const p2_fill = p5.Vector.mult(b1, r);
-        const p3_fill = p5.Vector.mult(b2, -r);
-        const p4_fill = p5.Vector.mult(b2, r);
+        const p1_fill = b1.copy().mult(-r);
+        const p2_fill = b1.copy().mult(r);
+        const p3_fill = b2.copy().mult(-r);
+        const p4_fill = b2.copy().mult(r);
 
         const v1 = p5.Vector.add(p1_fill, p3_fill);
         const v2 = p5.Vector.add(p2_fill, p3_fill);
@@ -83,9 +83,12 @@ export const drawOrthogonalBasis = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFa
         const n2 = v2.copy().normalize();
         p.noFill(); p.stroke(color); p.strokeWeight(1);
         p.beginShape();
-        p.vertex(n1.x * size, n1.y * size);
-        p.vertex(p5.Vector.add(n1, n2).mult(size).x, p5.Vector.add(n1, n2).mult(size).y);
-        p.vertex(n2.x * size, n2.y * size);
+        const p1 = n1.copy().mult(size);
+        const p2 = p5.Vector.add(n1, n2).mult(size);
+        const p3 = n2.copy().mult(size);
+        p.vertex(p1.x, p1.y);
+        p.vertex(p2.x, p2.y);
+        p.vertex(p3.x, p3.y);
         p.endShape();
     }
 };

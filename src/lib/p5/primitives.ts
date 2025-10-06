@@ -16,9 +16,9 @@ import p5 from 'p5';
 export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.Color, label: string | null, weight = 4, offset: p5.Vector | null = null) => {
     if (!v) return;
 
-    const scaledVector = p5.Vector.mult(v, scaleFactor);
+    const scaledVector = v.copy().mult(scaleFactor);
     if (offset) {
-        scaledVector.add(p5.Vector.mult(offset, scaleFactor));
+        scaledVector.add(offset.copy().mult(scaleFactor));
     }
     
     // Don't draw if the vector is effectively zero length

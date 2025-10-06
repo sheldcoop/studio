@@ -9,7 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5/index.ts';
+import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5';
 import { calculateEigen } from '@/lib/math/linear-algebra';
 
 const ChangeOfBasisVisualizer = () => {
@@ -124,14 +124,14 @@ const ChangeOfBasisVisualizer = () => {
                         const p_eigen_coords = getCustomCoords(p_standard, grid_b1, grid_b2)!;
                         const scaled_coords_x = p.lerp(p_eigen_coords.x, p_eigen_coords.x * eigen.lambda1, local_t);
                         const scaled_coords_y = p.lerp(p_eigen_coords.y, p_eigen_coords.y * eigen.lambda2, local_t);
-                        const v1_part = p5.Vector.mult(grid_b1, scaled_coords_x);
-                        const v2_part = p5.Vector.mult(grid_b2, scaled_coords_y);
+                        const v1_part = grid_b1.copy().mult(scaled_coords_x);
+                        const v2_part = grid_b2.copy().mult(scaled_coords_y);
                         p_display = p5.Vector.add(v1_part, v2_part);
                     } else {
                         const local_t = p.map(t, 0.666, 1, 0, 1);
                         const p_eigen_coords = getCustomCoords(p_standard, p.createVector(eigen.v1.x, eigen.v1.y), p.createVector(eigen.v2.x, eigen.v2.y))!;
-                        const v1_part_scaled = p5.Vector.mult(p.createVector(eigen.v1.x, eigen.v1.y), p_eigen_coords.x * eigen.lambda1);
-                        const v2_part_scaled = p5.Vector.mult(p.createVector(eigen.v2.x, eigen.v2.y), p_eigen_coords.y * eigen.lambda2);
+                        const v1_part_scaled = p.createVector(eigen.v1.x, eigen.v1.y).mult(p_eigen_coords.x * eigen.lambda1);
+                        const v2_part_scaled = p.createVector(eigen.v2.x, eigen.v2.y).mult(p_eigen_coords.y * eigen.lambda2);
                         const p_scaled = p5.Vector.add(v1_part_scaled, v2_part_scaled);
                         const p_final = p.createVector(matrix.a * p_standard.x + matrix.b * p_standard.y, matrix.c * p_standard.x + matrix.d * p_standard.y);
                         grid_b1 = p5.Vector.lerp(p.createVector(eigen.v1.x, eigen.v1.y), p.createVector(1,0), local_t);
@@ -177,9 +177,9 @@ const ChangeOfBasisVisualizer = () => {
             
             const drawLinearCombination = (coords: p5.Vector | null, basis1: p5.Vector, basis2: p5.Vector, s: number) => {
                 if(!coords) return;
-                const p1 = p5.Vector.mult(basis1, coords.x);
+                const p1 = basis1.copy().mult(coords.x);
                 p.strokeWeight(2); p.stroke(248, 113, 113, 150); p.line(0,0,p1.x*s, p1.y*s);
-                const p2 = p5.Vector.mult(basis2, coords.y);
+                const p2 = basis2.copy().mult(coords.y);
                 p.stroke(96, 165, 250, 150); p.line(p1.x*s, p1.y*s, (p1.x+p2.x)*s, (p1.y+p2.y)*s);
             };
 
