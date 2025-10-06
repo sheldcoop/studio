@@ -2,12 +2,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Sketch from 'react-p5';
 import { Play, Pause, RotateCcw, Sliders } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 
 const EigenVisualizer = () => {
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [mode, setMode] = useState('intro'); // intro, compare, explore
@@ -88,14 +86,15 @@ const EigenVisualizer = () => {
     }
   }, [matrixA, matrixB, matrixC, matrixD]);
 
-  const setup = (p5: any, canvasParentRef: Element) => {
-    p5.createCanvas(900, 600).parent(canvasParentRef);
-  };
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-  const draw = (p5: any) => {
-    const ctx = p5.drawingContext as CanvasRenderingContext2D;
-    const width = p5.width;
-    const height = p5.height;
+    const width = canvas.width;
+    const height = canvas.height;
     const centerX = width / 2;
     const centerY = height / 2;
     const scale = 50;
@@ -107,41 +106,44 @@ const EigenVisualizer = () => {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * easeInOutCubic(t);
     
     const drawGrid = (t: number, opacity = 0.15) => {
-        const gridSize = 8;
-        
-        for (let i = -gridSize; i <= gridSize; i++) {
-          for (let j = -gridSize; j <= gridSize; j++) {
-            const x1 = i, y1 = j;
-            const x2 = i + 1, y2 = j;
-            const x3 = i, y3 = j + 1;
-            
-            const tx1 = lerp(x1, matrixA * x1 + matrixB * y1, t);
-            const ty1 = lerp(y1, matrixC * x1 + matrixD * y1, t);
-            const tx2 = lerp(x2, matrixA * x2 + matrixB * y2, t);
-            const ty2 = lerp(y2, matrixC * x2 + matrixD * y2, t);
-            const tx3 = lerp(x3, matrixA * x3 + matrixB * y3, t);
-            const ty3 = lerp(y3, matrixC * x3 + matrixD * y3, t);
-            
-            const hue = ((i + gridSize) / (2 * gridSize)) * 60 + 180;
-            ctx.strokeStyle = `hsla(${hue}, 70%, 60%, ${opacity})`;
-            ctx.lineWidth = 1;
-            
-            ctx.beginPath();
-            ctx.moveTo(centerX + tx1 * scale, centerY - ty1 * scale);
-            ctx.lineTo(centerX + tx2 * scale, centerY - ty2 * scale);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(centerX + tx1 * scale, centerY - ty1 * scale);
-            ctx.lineTo(centerX + tx3 * scale, centerY - ty3 * scale);
-            ctx.stroke();
-          }
+      const gridSize = 8;
+      
+      for (let i = -gridSize; i <= gridSize; i++) {
+        for (let j = -gridSize; j <= gridSize; j++) {
+          const x1 = i, y1 = j;
+          const x2 = i + 1, y2 = j;
+          const x3 = i, y3 = j + 1;
+          
+          const tx1 = lerp(x1, matrixA * x1 + matrixB * y1, t);
+          const ty1 = lerp(y1, matrixC * x1 + matrixD * y1, t);
+          const tx2 = lerp(x2, matrixA * x2 + matrixB * y2, t);
+          const ty2 = lerp(y2, matrixC * x2 + matrixD * y2, t);
+          const tx3 = lerp(x3, matrixA * x3 + matrixB * y3, t);
+          const ty3 = lerp(y3, matrixC * x3 + matrixD * y3, t);
+          
+          const hue = ((i + gridSize) / (2 * gridSize)) * 60 + 180;
+          ctx.strokeStyle = `hsla(${hue}, 70%, 60%, ${opacity})`;
+          ctx.lineWidth = 1;
+          
+          ctx.beginPath();
+          ctx.moveTo(centerX + tx1 * scale, centerY - ty1 * scale);
+          ctx.lineTo(centerX + tx2 * scale, centerY - ty2 * scale);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(centerX + tx1 * scale, centerY - ty1 * scale);
+          ctx.lineTo(centerX + tx3 * scale, centerY - ty3 * scale);
+          ctx.stroke();
         }
+      }
     };
-    
+
     const drawBasisVectors = (t: number) => {
+      // i-hat (red)
       const ix = lerp(1, matrixA * 1 + matrixB * 0, t);
       const iy = lerp(0, matrixC * 1 + matrixD * 0, t);
+      
+      // j-hat (green)
       const jx = lerp(0, matrixA * 0 + matrixB * 1, t);
       const jy = lerp(1, matrixC * 0 + matrixD * 1, t);
       
@@ -160,6 +162,7 @@ const EigenVisualizer = () => {
       ctx.lineWidth = width;
       ctx.lineCap = 'round';
       
+      // Glow effect
       ctx.shadowBlur = 15;
       ctx.shadowColor = color;
       
@@ -194,27 +197,32 @@ const EigenVisualizer = () => {
     };
 
     const drawEigenvector = (vx: number, vy: number, lambda: number, color: string, t: number, label: string) => {
-      ctx.globalAlpha = 0.2;
+      // Draw the span line
       ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.2;
       ctx.lineWidth = 2;
       ctx.setLineDash([8, 8]);
       const extend = 6;
       ctx.beginPath();
       ctx.moveTo(
-        centerX - vx * scale * extend, centerY + vy * scale * extend,
+        centerX - vx * scale * extend,
+        centerY + vy * scale * extend
       );
       ctx.lineTo(
-        centerX + vx * scale * extend, centerY - vy * scale * extend
+        centerX + vx * scale * extend,
+        centerY - vy * scale * extend
       );
       ctx.stroke();
       ctx.setLineDash([]);
       ctx.globalAlpha = 1;
       
+      // Animate the eigenvector
       const scaledVx = lerp(vx * 2, vx * 2 * lambda, t);
       const scaledVy = lerp(vy * 2, vy * 2 * lambda, t);
       
       drawArrow(0, 0, scaledVx, scaledVy, color, 4, null);
       
+      // Label
       const sx = centerX + scaledVx * scale;
       const sy = centerY - scaledVy * scale;
       ctx.font = 'bold 16px Arial';
@@ -226,11 +234,10 @@ const EigenVisualizer = () => {
       ctx.shadowBlur = 0;
     };
 
-    const drawRandomVectors = (t: number, count = 12) => {
+    const drawRandomVectors = (t: number, count = 6) => {
       const vectors = [
         [1.5, 0.5], [2, 1], [-1, 1.5], [-1.5, -0.5],
-        [0.5, 2], [-2, 0.5], [1, -1.5], [-0.5, -2],
-        [2.5, 0], [0, 2.5], [-2, -1], [1.5, -1.5]
+        [0.5, 2.5], [-2, -1.5]
       ];
       
       for (let i = 0; i < count; i++) {
@@ -242,45 +249,67 @@ const EigenVisualizer = () => {
         drawArrow(0, 0, tx, ty, `hsla(${hue}, 80%, 70%, 0.6)`, 2, null);
       }
     };
-    
-    // Main draw function logic
-    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, width);
-    gradient.addColorStop(0, '#1a1a2e');
-    gradient.addColorStop(1, '#0f0f1e');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, centerY);
-    ctx.lineTo(width, centerY);
-    ctx.moveTo(centerX, 0);
-    ctx.lineTo(centerX, height);
-    ctx.stroke();
+    // Main draw
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+      
+      // Gradient background
+      const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, width);
+      gradient.addColorStop(0, '#1a1a2e');
+      gradient.addColorStop(1, '#0f0f1e');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+      
+      // Axes
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, centerY);
+      ctx.lineTo(width, centerY);
+      ctx.moveTo(centerX, 0);
+      ctx.lineTo(centerX, height);
+      ctx.stroke();
+      
+      const t = progress;
+      
+      if (mode === 'intro') {
+        drawGrid(t, 0.3);
+        drawBasisVectors(t);
+        drawRandomVectors(t, 4);
+      } else if (mode === 'compare') {
+        drawGrid(t, 0.2);
+        drawRandomVectors(t, 6);
+        
+        if (eigenData) {
+          drawEigenvector(
+            eigenData.v1.x, eigenData.v1.y, 
+            eigenData.lambda1, '#ff6b6b', t, 'v₁'
+          );
+          drawEigenvector(
+            eigenData.v2.x, eigenData.v2.y, 
+            eigenData.lambda2, '#4ecdc4', t, 'v₂'
+          );
+        }
+      } else if (mode === 'explore') {
+        drawGrid(t, 0.25);
+        
+        if (eigenData) {
+          drawEigenvector(
+            eigenData.v1.x, eigenData.v1.y, 
+            eigenData.lambda1, '#ff6b6b', t, 'v₁'
+          );
+          drawEigenvector(
+            eigenData.v2.x, eigenData.v2.y, 
+            eigenData.lambda2, '#4ecdc4', t, 'v₂'
+          );
+        }
+      }
+    };
 
-    const t = progress;
-    
-    if (mode === 'intro') {
-      drawGrid(t, 0.3);
-      drawBasisVectors(t);
-      drawRandomVectors(t, 8);
-    } else if (mode === 'compare') {
-      drawGrid(t, 0.2);
-      drawRandomVectors(t, 12);
-      if (eigenData) {
-        drawEigenvector(eigenData.v1.x, eigenData.v1.y, eigenData.lambda1, '#ff6b6b', t, 'v₁');
-        drawEigenvector(eigenData.v2.x, eigenData.v2.y, eigenData.lambda2, '#4ecdc4', t, 'v₂');
-      }
-    } else if (mode === 'explore') {
-      drawGrid(t, 0.25);
-      if (eigenData) {
-        drawEigenvector(eigenData.v1.x, eigenData.v1.y, eigenData.lambda1, '#ff6b6b', t, 'v₁');
-        drawEigenvector(eigenData.v2.x, eigenData.v2.y, eigenData.lambda2, '#4ecdc4', t, 'v₂');
-      }
-    }
-  };
-  
+    render();
+  }, [progress, mode, matrixA, matrixB, matrixC, matrixD, eigenData]);
+
   useEffect(() => {
     if (isPlaying) {
       const animate = () => {
@@ -325,9 +354,12 @@ const EigenVisualizer = () => {
     <Card className="bg-transparent border-0 shadow-none">
       <CardContent className="p-0">
           <div className="bg-black/30 backdrop-blur-xl rounded-xl p-4 md:p-6 shadow-2xl border border-purple-500/20">
-            <div ref={canvasRef} className="w-full h-auto aspect-[3/2] rounded-xl shadow-2xl overflow-hidden">
-                {typeof window !== 'undefined' && <Sketch setup={setup} draw={draw} />}
-            </div>
+            <canvas
+              ref={canvasRef}
+              width={900}
+              height={600}
+              className="w-full h-auto aspect-[3/2] rounded-xl shadow-2xl"
+            />
             
             <div className="mt-4 md:mt-6">
                 <div className="bg-gradient-to-r from-purple-900/40 to-blue-900/40 p-4 rounded-xl border border-purple-400/30 mb-4">
