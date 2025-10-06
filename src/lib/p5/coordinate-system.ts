@@ -19,40 +19,47 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: nu
     p.stroke(c);
     p.strokeWeight(w);
 
-    // Dynamically calculate the range based on canvas size and scale
-    const xRange = Math.ceil(p.width / (2 * s));
-    const yRange = Math.ceil(p.height / (2 * s));
-    const range = Math.max(xRange, yRange) * 1.5; // Add a buffer
+    const det = b1.x * b2.y - b1.y * b2.x;
+    if (Math.abs(det) < 0.001) {
+        // If basis is degenerate, just draw a line
+        const dominantVec = b1.magSq() > b2.magSq() ? b1 : b2;
+        if (dominantVec.magSq() > 0.01) {
+            const p1 = dominantVec.copy().mult(-100);
+            const p2 = dominantVec.copy().mult(100);
+            p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+        }
+        return;
+    }
+    const invDet = 1 / det;
     
-    for(let i = -range; i <= range; i++) {
-        const p1 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(-range));
-        const p2 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(range));
-        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+    const corners = [
+        p.createVector(-p.width/2, -p.height/2),
+        p.createVector(p.width/2, -p.height/2),
+        p.createVector(p.width/2, p.height/2),
+        p.createVector(-p.width/2, p.height/2)
+    ];
 
-        const p3 = p5.Vector.add(b1.copy().mult(-range), b2.copy().mult(i));
-        const p4 = p5.Vector.add(b1.copy().mult(range), b2.copy().mult(i));
-        p.line(p3.x * s, p3.y * s, p4.x * s, p4.y * s);
+    const transformedCorners = corners.map(corner => {
+        const x_coord = (corner.x/s * b2.y - corner.y/s * b2.x) * invDet;
+        const y_coord = (corner.y/s * b1.x - corner.x/s * b1.y) * invDet;
+        return {x: x_coord, y: y_coord};
+    });
+    
+    const min_x = Math.floor(Math.min(...transformedCorners.map(c => c.x)));
+    const max_x = Math.ceil(Math.max(...transformedCorners.map(c => c.x)));
+    const min_y = Math.floor(Math.min(...transformedCorners.map(c => c.y)));
+    const max_y = Math.ceil(Math.max(...transformedCorners.map(c => c.y)));
+
+    for(let i = min_x; i <= max_x; i++) {
+        const p1 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(min_y));
+        const p2 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(max_y));
+        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
     }
     
-    if (fillColor) {
-        p.noStroke();
-        p.fill(fillColor);
-        p.beginShape();
-        const r = range;
-        const p1_fill = b1.copy().mult(-r);
-        const p2_fill = b1.copy().mult(r);
-        const p3_fill = b2.copy().mult(-r);
-        const p4_fill = b2.copy().mult(r);
-
-        const v1 = p5.Vector.add(p1_fill, p3_fill);
-        const v2 = p5.Vector.add(p2_fill, p3_fill);
-        const v3 = p5.Vector.add(p2_fill, p4_fill);
-        const v4 = p5.Vector.add(p1_fill, p4_fill);
-        p.vertex(v1.x * s, v1.y * s);
-        p.vertex(v2.x * s, v2.y * s);
-        p.vertex(v3.x * s, v3.y * s);
-        p.vertex(v4.x * s, v4.y * s);
-        p.endShape(p.CLOSE);
+    for(let j = min_y; j <= max_y; j++) {
+        const p1 = p5.Vector.add(b1.copy().mult(min_x), b2.copy().mult(j));
+        const p2 = p5.Vector.add(b1.copy().mult(max_x), b2.copy().mult(j));
+        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
     }
 };
 
