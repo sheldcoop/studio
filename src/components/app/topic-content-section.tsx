@@ -57,6 +57,14 @@ const NullSpaceVisualizer = dynamic(
   }
 );
 
+const ColumnSpaceVisualizer = dynamic(
+  () => import('@/components/app/column-space-visualizer'),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
 
 function EigenvalueTheory() {
   return (
@@ -142,6 +150,24 @@ function NullSpaceTheory() {
   );
 }
 
+function ColumnSpaceTheory() {
+  return (
+    <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+      <p>The <strong>Column Space</strong> (also known as the range or image) of a matrix <strong className="text-primary">A</strong> represents all possible outputs the transformation can produce. If you imagine the matrix as a machine that takes in any vector <strong className="text-primary">x</strong> from its domain (e.g., ℝ²), the Column Space is the set of all possible landing spots for the output vector <strong className="text-primary">Ax</strong>.</p>
+      <p>It's called the Column Space because it is the <strong>span</strong> of the column vectors of the matrix. Think about the standard basis vectors, <InlineMath math="\mathbf{\hat{\imath}} = \begin{pmatrix} 1 \\ 0 \end{pmatrix}" /> and <InlineMath math="\mathbf{\hat{\jmath}} = \begin{pmatrix} 0 \\ 1 \end{pmatrix}" />. Where do they land after the transformation?
+      </p>
+      <div className="text-center"><BlockMath math="A\mathbf{\hat{\imath}} = \text{1st column of } A" /></div>
+      <div className="text-center"><BlockMath math="A\mathbf{\hat{\jmath}} = \text{2nd column of } A" /></div>
+      <p>Since any input vector <InlineMath math="\mathbf{x} = \begin{pmatrix} x_1 \\ x_2 \end{pmatrix}" /> can be written as <InlineMath math="x_1\mathbf{\hat{\imath}} + x_2\mathbf{\hat{\jmath}}" />, its output is:</p>
+      <div className="text-center"><BlockMath math="A\mathbf{x} = A(x_1\mathbf{\hat{\imath}} + x_2\mathbf{\hat{\jmath}}) = x_1(A\mathbf{\hat{\imath}}) + x_2(A\mathbf{\hat{\jmath}})" /></div>
+      <p>This shows that every possible output is just a linear combination of the columns of A. Therefore, the set of all outputs—the Column Space—is the span of the columns.</p>
+      <hr/>
+      <h4 className="font-bold text-lg not-prose">Dimension and Solvability</h4>
+      <p>The dimension of the column space is called the <strong>rank</strong> of the matrix. If the rank of a 2x2 matrix is 2, its columns are linearly independent, and they span the entire 2D plane. If the rank is 1, the columns are linearly dependent (they lie on the same line), and they only span a line. If the rank is 0, the matrix is the zero matrix.</p>
+      <p>The Column Space directly answers the question of solvability for a system <InlineMath math="A\mathbf{x} = \mathbf{b}" />. A solution exists if and only if the vector <strong className="text-primary">b</strong> is in the Column Space of A. In other words, a solution exists if you can form <strong className="text-primary">b</strong> from a linear combination of the columns of A.</p>
+    </div>
+  );
+}
 
 export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isEigenTopic = subTopic.id.includes('eigen');
@@ -150,6 +176,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isChangeOfBasisTopic = subTopic.id.includes('change-of-basis');
     const isLinearIndependenceTopic = subTopic.id.includes('linear-independence');
     const isNullSpaceTopic = subTopic.id.includes('null-space');
+    const isColumnSpaceTopic = subTopic.id.includes('column-space');
 
 
     const renderInteractiveDemo = () => {
@@ -159,6 +186,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
         if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
         if (isNullSpaceTopic) return <NullSpaceVisualizer />;
+        if (isColumnSpaceTopic) return <ColumnSpaceVisualizer />;
 
         return (
              <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
@@ -170,6 +198,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const renderTheory = () => {
       if (isEigenTopic) return <EigenvalueTheory />;
       if (isNullSpaceTopic) return <NullSpaceTheory />;
+      if (isColumnSpaceTopic) return <ColumnSpaceTheory />;
       return (
         <div className="prose prose-invert max-w-none p-6 text-foreground/90">
             <p>Theory explanation coming soon.</p>
