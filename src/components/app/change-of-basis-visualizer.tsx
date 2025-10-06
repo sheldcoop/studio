@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { Play, Pause, RotateCcw } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -178,9 +178,13 @@ const ChangeOfBasisVisualizer = () => {
             const drawLinearCombination = (coords: p5.Vector | null, basis1: p5.Vector, basis2: p5.Vector, s: number) => {
                 if(!coords) return;
                 const p1 = basis1.copy().mult(coords.x);
-                p.strokeWeight(2); p.stroke(248, 113, 113, 150); p.line(0,0,p1.x*s, p1.y*s);
+                p.strokeWeight(2);
+                p.stroke(248, 113, 113, 150); // Red
+                p.line(0, 0, p1.x * s, p1.y * s);
+
                 const p2 = basis2.copy().mult(coords.y);
-                p.stroke(96, 165, 250, 150); p.line(p1.x*s, p1.y*s, (p1.x+p2.x)*s, (p1.y+p2.y)*s);
+                p.stroke(96, 165, 250, 150); // Blue
+                p.line(p1.x * s, p1.y * s, (p1.x + p2.x) * s, (p1.y + p2.y) * s);
             };
 
             p.mousePressed = () => { if (componentState.mode === 'explore' && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) { const m = screenToWorld(p, p.mouseX, p.mouseY, p.min(p.width, p.height)/8); if(p5.Vector.dist(m, b1) < 0.3) dragging = b1; else if(p5.Vector.dist(m, b2) < 0.3) dragging = b2; }};
@@ -293,3 +297,5 @@ const ChangeOfBasisVisualizer = () => {
 };
 
 export default ChangeOfBasisVisualizer;
+
+    
