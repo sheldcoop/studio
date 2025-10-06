@@ -29,7 +29,6 @@ import CLTPage from '@/app/(app)/quantlab/central-limit-theorem/component';
 import DescriptiveStatsPage from '@/app/(app)/quantlab/descriptive-statistics-explorer/component';
 import ZTablePage from '@/app/(app)/quantlab/z-table/component';
 import ConfidenceIntervalsPage from '@/app/(app)/quantlab/confidence-intervals/component';
-import MentalMathPage from '@/app/(app)/topics/mental-math/page';
 import MonteCarloPage from '@/app/(app)/quantlab/monte-carlo-simulation/component';
 import TimeSeriesDecompositionPage from '@/app/(app)/quantlab/time-series-decomposition/component';
 import AcfPacfPage from '@/app/(app)/quantlab/autocorrelation-acf-pacf/component';
