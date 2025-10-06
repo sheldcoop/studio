@@ -77,7 +77,7 @@ const ColumnSpaceVisualizer = () => {
                 drawVector(p, col1, scaleFactor, p.color(96, 165, 250), 'col₁');
                 drawVector(p, col2, scaleFactor, p.color(96, 165, 250), 'col₂');
 
-                const outputVec = p5.Vector.add(p5.Vector.mult(col1, inputVec.x), p5.Vector.mult(col2, inputVec.y));
+                const outputVec = p5.Vector.add(col1.copy().mult(inputVec.x), col2.copy().mult(inputVec.y));
                 drawVector(p, outputVec, scaleFactor, p.color(244, 114, 182), 'Ax', 5);
                 setOutputCoords(`(${outputVec.x.toFixed(2)}, ${outputVec.y.toFixed(2)})`);
 
