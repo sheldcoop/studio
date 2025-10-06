@@ -3,9 +3,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { drawVector, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
+import { RotateCcw } from 'lucide-react';
+import { drawGrid, drawVector, screenToWorld } from '@/lib/p5-helpers';
 
 const ColumnSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -57,9 +62,16 @@ const ColumnSpaceVisualizer = () => {
                 setIsRankDeficient(rankDeficient);
                 
                 if (rankDeficient) {
-                    drawSpanLine(col1.magSq() > col2.magSq() ? col1 : col2, p.color(96, 165, 250, 150), 3);
+                     const dominantVec = col1.magSq() > col2.magSq() ? col1 : col2;
+                     p.stroke(p.color(96, 165, 250, 150));
+                     p.strokeWeight(3);
+                     if (dominantVec.magSq() > 0.01) {
+                         const p1 = dominantVec.copy().mult(-100);
+                         const p2 = dominantVec.copy().mult(100);
+                         p.line(p1.x * scaleFactor, p1.y * scaleFactor, p2.x * scaleFactor, p2.y * scaleFactor);
+                     }
                 } else {
-                    drawSpanGrid(col1, col2, p.color(96, 165, 250, 80), 2, p.color(96, 165, 250, 20));
+                    drawGrid(p, col1, col2, p.color(96, 165, 250, 80), 2, scaleFactor, p.color(96, 165, 250, 20));
                 }
 
                 drawVector(p, col1, scaleFactor, p.color(96, 165, 250), 'col₁');
@@ -75,13 +87,13 @@ const ColumnSpaceVisualizer = () => {
             };
             
             const handleDragging = () => {
-                const mouseWorld = screenToWorld(p.mouseX, p.mouseY);
+                const mouseWorld = screenToWorld(p, p.mouseX, p.mouseY, scaleFactor);
                 if (isDraggingC1) col1.set(mouseWorld);
                 if (isDraggingC2) col2.set(mouseWorld);
             };
 
             p.mousePressed = () => {
-                const mouseWorld = screenToWorld(p.mouseX, p.mouseY);
+                const mouseWorld = screenToWorld(p, p.mouseX, p.mouseY, scaleFactor);
                 if (p.dist(p.mouseX, p.mouseY, inputArea.x + inputArea.w / 2, inputArea.y + inputArea.h / 2) < inputArea.w / 2) {
                     isDraggingInput = true;
                 } else if (p5.Vector.dist(mouseWorld, col1) < 0.5) {
@@ -118,33 +130,6 @@ const ColumnSpaceVisualizer = () => {
                 p.pop();
             };
 
-            const drawSpanGrid = (b1: p5.Vector, b2: p5.Vector, gridColor: p5.Color, gridWeight: number, fillColor: p5.Color) => {
-                p.noStroke(); p.fill(fillColor);
-                const r = 8;
-                p.beginShape();
-                const p1 = p5.Vector.add(p5.Vector.mult(b1, -r), p5.Vector.mult(b2, -r));
-                const p2 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, -r));
-                const p3 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, r));
-                const p4 = p5.Vector.add(p5.Vector.mult(b1, -r), p5.Vector.mult(b2, r));
-                p.vertex(p1.x * scaleFactor, p1.y * scaleFactor);
-                p.vertex(p2.x * scaleFactor, p2.y * scaleFactor);
-                p.vertex(p3.x * scaleFactor, p3.y * scaleFactor);
-                p.vertex(p4.x * scaleFactor, p4.y * scaleFactor);
-                p.endShape(p.CLOSE);
-
-                p.stroke(gridColor); p.strokeWeight(gridWeight); p.noFill();
-                for(let i=-r;i<=r;i++){
-                    const p1 = p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,-r));
-                    const p2 = p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,r));
-                    p.line(p1.x*scaleFactor,p1.y*scaleFactor,p2.x*scaleFactor,p2.y*scaleFactor);
-                    const p3 = p5.Vector.add(p5.Vector.mult(b1,-r),p5.Vector.mult(b2,i));
-                    const p4 = p5.Vector.add(p5.Vector.mult(b1,r),p5.Vector.mult(b2,i));
-                    p.line(p3.x*scaleFactor,p3.y*scaleFactor,p4.x*scaleFactor,p4.y*scaleFactor);
-                }
-            }
-
-            const drawSpanLine = (v: p5.Vector, c: p5.Color, w: number) => { p.stroke(c); p.strokeWeight(w); if(v.magSq()<0.01)return;const p1=v.copy().mult(-100);const p2=v.copy().mult(100);p.line(p1.x*scaleFactor,p1.y*scaleFactor,p2.x*scaleFactor,p2.y*scaleFactor);}
-            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, scaleFactor);
             p.windowResized = () => { if(canvasRef.current) { p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); inputArea.y = p.height - 170; }};
         };
 
@@ -195,5 +180,6 @@ const ColumnSpaceVisualizer = () => {
 };
 
 export default ColumnSpaceVisualizer;
+    
 
     

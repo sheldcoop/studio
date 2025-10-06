@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { RotateCcw, Play, Pause } from 'lucide-react';
-import { drawGrid as p5DrawGrid, easeInOutCubic } from '@/lib/p5-helpers';
+import { drawGrid, easeInOutCubic } from '@/lib/p5-helpers';
 
 const NullSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -59,7 +59,7 @@ const NullSpaceVisualizer = () => {
 
                 const det = currentMatrix.a * currentMatrix.d - currentMatrix.b * currentMatrix.c;
 
-                p5DrawGrid(p, p.createVector(currentMatrix.a, currentMatrix.c), p.createVector(currentMatrix.b, currentMatrix.d), p.color(72, 144, 226, 50), 1, scaleFactor);
+                drawGrid(p, p.createVector(currentMatrix.a, currentMatrix.c), p.createVector(currentMatrix.b, currentMatrix.d), p.color(72, 144, 226, 50), 1, scaleFactor);
 
                 if (Math.abs(det) < 0.01) {
                     const nullSpaceVector = p.createVector(-state.matrix.b, state.matrix.a).normalize();

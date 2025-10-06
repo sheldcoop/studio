@@ -7,17 +7,37 @@ import type p5 from 'p5';
 
 /**
  * Draws a grid on the canvas based on a given basis.
+ * Can optionally fill the area spanned by the basis vectors.
  * @param p - The p5 instance.
  * @param b1 - The first basis vector.
  * @param b2 - The second basis vector.
  * @param color - The color of the grid lines.
  * @param weight - The stroke weight of the grid lines.
  * @param scaleFactor - The scaling factor for the grid.
+ * @param fillColor - Optional: The color to fill the spanned area.
  */
-export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, color: p5.Color, weight: number, scaleFactor: number) => {
+export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, color: p5.Color, weight: number, scaleFactor: number, fillColor?: p5.Color) => {
     if (b1.magSq() < 0.01 || b2.magSq() < 0.01) return;
+
+    if (fillColor) {
+        p.noStroke();
+        p.fill(fillColor);
+        const r = 8;
+        p.beginShape();
+        const p1 = p5.Vector.add(p5.Vector.mult(b1, -r), p5.Vector.mult(b2, -r));
+        const p2 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, -r));
+        const p3 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, r));
+        const p4 = p5.Vector.add(p5.Vector.mult(b1, -r), p5.Vector.mult(b2, r));
+        p.vertex(p1.x * scaleFactor, p1.y * scaleFactor);
+        p.vertex(p2.x * scaleFactor, p2.y * scaleFactor);
+        p.vertex(p3.x * scaleFactor, p3.y * scaleFactor);
+        p.vertex(p4.x * scaleFactor, p4.y * scaleFactor);
+        p.endShape(p.CLOSE);
+    }
+
     p.stroke(color);
     p.strokeWeight(weight);
+    p.noFill();
     const range = 10;
     for (let i = -range; i <= range; i++) {
         const p1 = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, -range));
@@ -95,26 +115,6 @@ export const drawLabel = (p: p5, v: p5.Vector, color: p5.Color, label: string) =
     p.pop();
 };
 
-
-/**
- * Draws a transformed circle on the canvas.
- * @param p - The p5 instance.
- * @param transform - A function that transforms a 2D point.
- * @param scaleFactor - The scaling factor for the drawing.
- * @param color - The color of the circle.
- */
-export const drawTransformedCircle = (p: p5, transform: (x: number, y: number) => { x: number; y: number }, scaleFactor: number, color: p5.Color) => {
-    p.noFill();
-    p.stroke(color);
-    p.strokeWeight(3);
-    p.beginShape();
-    for (let i = 0; i <= 64; i++) {
-        const angle = p.map(i, 0, 64, 0, p.TWO_PI);
-        const { x, y } = transform(p.cos(angle), p.sin(angle));
-        p.vertex(x * scaleFactor, y * scaleFactor);
-    }
-    p.endShape(p.CLOSE);
-};
 
 /**
  * Draws a dashed line between two points.
