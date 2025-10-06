@@ -62,7 +62,7 @@ const GarchChart = ({ alpha, beta }: { alpha: number; beta: number }) => {
 };
 
 // --- Main Page Component ---
-export default function GarchComponent() {
+export default function GarchPage() {
     const [alpha, setAlpha] = useState(0.1); // ARCH term
     const [beta, setBeta] = useState(0.85); // GARCH term
 
@@ -125,7 +125,7 @@ export default function GarchComponent() {
                     <Slider id="beta-slider" min={0.6} max={0.99} step={0.01} value={[beta]} onValueChange={(val) => setBeta(val[0])} />
                 </div>
             </div>
-            <GarchComponent alpha={alpha} beta={beta} />
+            <GarchChart alpha={alpha} beta={beta} />
           </CardContent>
         </Card>
       </div>
