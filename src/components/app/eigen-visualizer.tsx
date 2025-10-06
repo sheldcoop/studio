@@ -80,7 +80,7 @@ const EigenVisualizer = () => {
         v2: { x: v2x, y: v2y }
       });
     } else {
-      setEigenData(null);
+      setEigenData(null); // Handle cases with complex eigenvalues
     }
   }, [matrixA, matrixB, matrixC, matrixD]);
 
@@ -223,12 +223,11 @@ const EigenVisualizer = () => {
     };
     
     // Main draw function logic
-    p5.background('#0f0f1e');
     const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, width);
     gradient.addColorStop(0, '#1a1a2e');
     gradient.addColorStop(1, '#0f0f1e');
-    p5.fill(gradient);
-    p5.rect(0, 0, width, height);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
 
     p5.stroke('rgba(255, 255, 255, 0.1)');
     p5.strokeWeight(1);
