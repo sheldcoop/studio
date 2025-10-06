@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { type Topic, type SubTopic } from '@/lib/curriculum';
@@ -181,6 +182,22 @@ function DeterminantTheory() {
             <hr />
             <h4 className="font-bold text-lg not-prose">What about the sign?</h4>
             <p>The sign of the determinant tells you about the transformation's effect on <strong>orientation</strong>. If the determinant is negative, it means the transformation has flipped space, like turning it inside-out or looking at it in a mirror. In 2D, this corresponds to the order of the basis vectors being reversed.</p>
+        </div>
+    );
+}
+
+function ChangeOfBasisTheory() {
+    return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <p>A <strong>basis</strong> is a set of vectors that can be used as a coordinate system for a vector space. The standard basis we're all used to is (<InlineMath math="\mathbf{\hat{\imath}}" />, <InlineMath math="\mathbf{\hat{\jmath}}" />), which are the vectors <InlineMath math="\begin{pmatrix} 1 \\ 0 \end{pmatrix}" /> and <InlineMath math="\begin{pmatrix} 0 \\ 1 \end{pmatrix}" /> respectively. The coordinates of a vector <InlineMath math="\mathbf{v} = \begin{pmatrix} 3 \\ 2 \end{pmatrix}" /> simply mean "3 steps in the <InlineMath math="\mathbf{\hat{\imath}}" /> direction and 2 steps in the <InlineMath math="\mathbf{\hat{\jmath}}" /> direction."</p>
+            <p>However, we can choose any two linearly independent vectors to be our basis. A **change of basis** is the process of re-expressing a vector in terms of a new set of basis vectors. It's like translating a description of a location from one language (e.g., "3 steps east, 2 steps north") to another language (e.g., "1.5 steps northeast, 0.5 steps northwest"). The location itself doesn't change, just how we describe it.</p>
+             <hr />
+            <h4 className="font-bold text-lg not-prose">The Change of Basis Matrix</h4>
+            <p>If we have a new basis B = {<b className="text-red-400">b₁</b>, <b className="text-blue-400">b₂</b>}, we can create a "change of basis matrix" <InlineMath math="P_B" /> whose columns are these new basis vectors. To find the standard coordinates of a vector <InlineMath math="[\mathbf{v}]_B = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}" /> given in the new basis, we simply multiply:</p>
+             <div className="text-center"><BlockMath math="\mathbf{v}_{\text{std}} = P_B [\mathbf{v}]_B = c_1\mathbf{b}_1 + c_2\mathbf{b}_2" /></div>
+             <p>To go the other way—from standard coordinates to the new basis—we use the inverse matrix:</p>
+             <div className="text-center"><BlockMath math="[\mathbf{v}]_B = P_B^{-1} \mathbf{v}_{\text{std}}" /></div>
+            <p>This is extremely powerful in quantitative finance, particularly in Principal Component Analysis (PCA), where we change the basis of our data to a new set of orthogonal axes (the eigenvectors of the covariance matrix) that represent the directions of maximum variance.</p>
         </div>
     );
 }
@@ -429,6 +446,29 @@ function DeterminantPage() {
     );
 }
 
+function ChangeOfBasisPage() {
+    return (
+        <div className="space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Scaling className="text-primary"/> Theory: A New Perspective</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <ChangeOfBasisTheory />
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ChangeOfBasisVisualizer />
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
 
 export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
     const { id: topicId, subTopics } = topicInfo;
@@ -450,11 +490,14 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
     if (isDeterminantTopic) {
         return <DeterminantPage />;
     }
+    
+    if (isChangeOfBasisTopic) {
+        return <ChangeOfBasisPage />;
+    }
 
     const renderInteractiveDemo = () => {
         if (isEigenTopic) return <EigenVisualizer />;
         if (isSvdTopic) return <SvdVisualizer />;
-        if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
         if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
         if (isDiagonalizationTopic) return <DiagonalizationVisualizer />;
         if (isCovarianceTopic) return <CovarianceVisualizer />;
