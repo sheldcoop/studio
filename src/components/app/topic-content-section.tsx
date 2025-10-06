@@ -123,9 +123,9 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
                             <EigenvalueTheory />
                         </CardContent>
                     ) : (
-                        <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
-                            <p className="text-sm text-muted-foreground">Theory explanation coming soon.</p>
-                        </CardContent>
+                         <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+                            <p>Theory explanation coming soon.</p>
+                        </div>
                     )}
                 </Card>
                 
