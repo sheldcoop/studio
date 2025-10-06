@@ -3,7 +3,7 @@
 
 import { type SubTopic } from '@/lib/curriculum';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { BookOpen, Code, BrainCircuit, BarChart, Scaling } from 'lucide-react';
+import { BookOpen, Code, BrainCircuit, BarChart, Scaling, Sigma, Waypoints } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
@@ -82,6 +82,33 @@ function EigenvalueTheory() {
   );
 }
 
+function EigenvalueProperties() {
+  return (
+    <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+        <p>Eigenvalues and eigenvectors have several remarkable properties that are not just mathematical curiosities, but are fundamental to their application in quantitative finance and data science. Let's consider our example matrix:</p>
+        <div className="text-center"><BlockMath math="A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}" /></div>
+        <p>We found its eigenvalues to be <InlineMath math="\lambda_1 = 3" /> and <InlineMath math="\lambda_2 = 1" />.</p>
+        <hr />
+
+        <h4>1. Sum of Eigenvalues = Trace of the Matrix</h4>
+        <p>The <strong>trace</strong> of a square matrix is the sum of its diagonal elements. This property provides a quick check on your calculations.</p>
+        <p><strong>Example:</strong> For our matrix A, the trace is <InlineMath math="2 + 2 = 4" />. The sum of our eigenvalues is <InlineMath math="3 + 1 = 4" />. They match perfectly.</p>
+
+        <h4>2. Product of Eigenvalues = Determinant of the Matrix</h4>
+        <p>The <strong>determinant</strong> represents the scaling factor of the transformation on an area (in 2D) or volume (in 3D). This property connects the scaling of individual eigenvectors to the overall scaling of space.</p>
+        <p><strong>Example:</strong> The determinant of A is <InlineMath math="(2 \times 2) - (1 \times 1) = 3" />. The product of our eigenvalues is <InlineMath math="3 \times 1 = 3" />. Again, a perfect match.</p>
+
+        <h4>3. Eigenvectors of a Symmetric Matrix are Orthogonal</h4>
+        <p>A matrix is <strong>symmetric</strong> if it is equal to its own transpose (<InlineMath math="A = A^T" />). Our matrix A is symmetric. A profound consequence is that its eigenvectors are perpendicular to each other. This is the foundation of the Spectral Theorem and why PCA works so well for financial data (covariance matrices are always symmetric).</p>
+        <p><strong>Example:</strong> Our eigenvectors were <InlineMath math="v_1 = \begin{pmatrix} 1 \\ 1 \end{pmatrix}" /> and <InlineMath math="v_2 = \begin{pmatrix} -1 \\ 1 \end{pmatrix}" />. Their dot product is <InlineMath math="(1 \times -1) + (1 \times 1) = -1 + 1 = 0" />, which proves they are orthogonal.</p>
+        
+        <h4>4. Eigenvalues of a Diagonal/Triangular Matrix are its Diagonal Entries</h4>
+        <p>This is a convenient shortcut. If you have an upper or lower triangular matrix, the eigenvalues are simply the numbers on the main diagonal.</p>
+        <p><strong>Example:</strong> For the matrix <InlineMath math="B = \begin{pmatrix} 5 & 10 & -1 \\ 0 & -2 & 3 \\ 0 & 0 & 7 \end{pmatrix}" />, you don't need to do any calculation. The eigenvalues are immediately known to be 5, -2, and 7.</p>
+    </div>
+  );
+}
+
 
 export function TopicContentSection({ subTopic }: SubTopic) {
     const isEigenTopic = subTopic.id.includes('eigen');
@@ -104,6 +131,16 @@ export function TopicContentSection({ subTopic }: SubTopic) {
                         </CardContent>
                     )}
                 </Card>
+                {isEigenTopic && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Waypoint className="text-primary"/> Properties of Eigenvalues & Eigenvectors</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <EigenvalueProperties />
+                        </CardContent>
+                    </Card>
+                )}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
