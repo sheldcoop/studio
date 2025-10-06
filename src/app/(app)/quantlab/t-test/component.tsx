@@ -1,21 +1,9 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  ReferenceLine,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend,
-  Cell,
-  Bar,
-  Line,
-  CartesianGrid,
-  BarChart as RechartsBarChart,
-  LineChart as RechartsLineChart,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +13,20 @@ import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
 import { Label as RechartsLabel } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
+const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
+const ReferenceLine = dynamic(() => import('recharts').then(mod => mod.ReferenceLine), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Legend = dynamic(() => import('recharts').then(mod => mod.Legend), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const Line = dynamic(() => import('recharts').then(mod => mod.Line), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
