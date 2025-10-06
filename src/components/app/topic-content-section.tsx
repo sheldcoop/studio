@@ -49,6 +49,14 @@ const LinearIndependenceVisualizer = dynamic(
   }
 );
 
+const NullSpaceVisualizer = dynamic(
+  () => import('@/components/app/null-space-visualizer'),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
 
 function EigenvalueTheory() {
   return (
@@ -120,6 +128,20 @@ function EigenvalueProperties() {
   );
 }
 
+function NullSpaceTheory() {
+  return (
+     <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+        <p>Every matrix <strong className="text-primary">A</strong> tells a story. It's a linear transformation that takes an input vector <strong className="text-primary">x</strong> and maps it to an output vector <strong className="text-primary">Ax</strong>. While many vectors are stretched, shrunk, and rotated to new locations, some special vectors are completely annihilated by the transformation—they are sent to the zero vector.</p>
+        <p>The collection of all such vectors is called the <strong>Null Space</strong> or <strong>Kernel</strong> of the matrix <strong className="text-primary">A</strong>. It's the set of all solutions to the fundamental equation:</p>
+        <div className="text-center"><BlockMath math="A\mathbf{x} = \mathbf{0}" /></div>
+        <p>The Null Space is not just a mathematical curiosity; it answers a critical question: is the transformation "many-to-one"? If the null space contains more than just the zero vector, it means that multiple different input vectors are being mapped to the same output vector. This has profound implications for solving systems of equations. If <InlineMath math="A\mathbf{x} = \mathbf{b}" /> has a solution, and the null space of A is non-trivial, then there are infinitely many solutions.</p>
+        <hr/>
+        <h4 className="font-bold text-lg not-prose">How to Find the Null Space</h4>
+        <p>Finding the null space is equivalent to solving the homogeneous system of linear equations <InlineMath math="A\mathbf{x} = \mathbf{0}" />. The standard method is to use <strong>Gaussian elimination</strong> to reduce the matrix A to its Row Echelon Form. The variables that correspond to columns without pivots are "free variables." By expressing the "pivot variables" in terms of these free variables, we can describe every vector in the null space.</p>
+     </div>
+  );
+}
+
 
 export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isEigenTopic = subTopic.id.includes('eigen');
@@ -127,6 +149,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isDeterminantTopic = subTopic.id.includes('determinant');
     const isChangeOfBasisTopic = subTopic.id.includes('change-of-basis');
     const isLinearIndependenceTopic = subTopic.id.includes('linear-independence');
+    const isNullSpaceTopic = subTopic.id.includes('null-space');
 
 
     const renderInteractiveDemo = () => {
@@ -135,6 +158,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         if (isDeterminantTopic) return <DeterminantVisualizer />;
         if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
         if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
+        if (isNullSpaceTopic) return <NullSpaceVisualizer />;
 
         return (
              <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
@@ -142,6 +166,16 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
             </div>
         );
     };
+
+    const renderTheory = () => {
+      if (isEigenTopic) return <EigenvalueTheory />;
+      if (isNullSpaceTopic) return <NullSpaceTheory />;
+      return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <p>Theory explanation coming soon.</p>
+        </div>
+      );
+    }
 
     return (
         <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
@@ -151,15 +185,9 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Scaling className="text-primary"/> Theory</CardTitle>
                     </CardHeader>
-                    {isEigenTopic ? (
-                         <CardContent className="p-0">
-                            <EigenvalueTheory />
-                        </CardContent>
-                    ) : (
-                         <div className="prose prose-invert max-w-none p-6 text-foreground/90">
-                            <p>Theory explanation coming soon.</p>
-                        </div>
-                    )}
+                    <CardContent className="p-0">
+                        {renderTheory()}
+                    </CardContent>
                 </Card>
                 
                 {isEigenTopic && (
