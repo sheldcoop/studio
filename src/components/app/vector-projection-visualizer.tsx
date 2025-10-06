@@ -61,8 +61,8 @@ const VectorProjectionVisualizer = () => {
                     p5DrawVector(p, proj, scaleFactor, p.color(252, 165, 165), 'proj', 4);
                 }
                 
-                const screenA = p5.Vector.mult(a, scaleFactor);
-                const screenProj = p5.Vector.mult(proj, scaleFactor);
+                const screenA = a.copy().mult(scaleFactor);
+                const screenProj = proj.copy().mult(scaleFactor);
                 p5DrawDashedLine(p, screenA, screenProj, p.color(255, 255, 255, 100), 2, [5, 10]);
             };
 
