@@ -171,7 +171,6 @@ export const drawTransformedCircle = (p: p5, transformFn: (x: number, y: number)
 };
 
 // Moved from coordinate-system.ts
-
 /**
  * Draws a transformed grid.
  * @param p - The p5 instance.
@@ -264,5 +263,73 @@ export const drawOrthogonalBasis = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFa
         p.vertex(p2.x, p2.y);
         p.vertex(p3.x, p3.y);
         p.endShape();
+    }
+};
+
+/**
+ * Draws a line representing the null space of a matrix.
+ * @param v - A vector that defines the direction of the null space.
+ * @param s - The scaling factor.
+ * @param p - The p5 instance.
+ */
+export const drawNullSpace = (v: p5.Vector, s: number, p: p5) => {
+    p.stroke(239, 68, 68, 150); // Red
+    p.strokeWeight(3);
+    const p1 = v.copy().mult(-p.width);
+    const p2 = v.copy().mult(p.width);
+    p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+};
+
+/**
+ * Draws an ellipse.
+ * @param p - The p5 instance.
+ * @param x - The x-coordinate of the center.
+ * @param y - The y-coordinate of the center.
+ * @param w - The width of the ellipse.
+ * @param h - The height of the ellipse.
+ * @param color - The fill color of the ellipse.
+ */
+export const drawEllipse = (p: p5, x: number, y: number, w: number, h: number, color: p5.Color) => {
+    p.fill(color);
+    p.noStroke();
+    p.ellipse(x, y, w, h);
+};
+
+/**
+ * Draws the convex hull of a set of points.
+ * @param p - The p5 instance.
+ * @param points - An array of p5.Vector points.
+ * @param scaleFactor - The scaling factor.
+ * @param color - The color of the hull.
+ */
+export const drawConvexHull = (p: p5, points: p5.Vector[], scaleFactor: number, color: p5.Color) => {
+    // This is a placeholder for a convex hull algorithm (e.g., Graham scan)
+    // For simplicity, we'll just draw lines connecting the points in order.
+    p.stroke(color);
+    p.noFill();
+    p.strokeWeight(2);
+    p.beginShape();
+    points.forEach(pt => {
+        p.vertex(pt.x * scaleFactor, pt.y * scaleFactor);
+    });
+    p.endShape(p.CLOSE);
+};
+
+/**
+ * Draws a gradient field, representing the direction of change at various points.
+ * @param p - The p5 instance.
+ * @param scaleFactor - The scaling factor.
+ * @param color - The color of the arrows.
+ */
+export const drawGradientField = (p: p5, scaleFactor: number, color: p5.Color) => {
+    const range = 8;
+    for (let i = -range; i <= range; i++) {
+        for (let j = -range; j <= range; j++) {
+            // Example gradient function (e.g., of f(x,y) = x^2 + y^2)
+            const gradX = 2 * i;
+            const gradY = 2 * j;
+            const grad = p.createVector(gradX, gradY).normalize().mult(0.3);
+            drawVector(p, grad, scaleFactor, color, null, 1, p.createVector(i, j));
+        }
     }
 };
