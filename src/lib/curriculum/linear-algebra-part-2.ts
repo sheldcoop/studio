@@ -21,6 +21,7 @@ export const linearAlgebraPart2: Topic[] = [
         ]
     }),
      createTopic({
+        id: 'diagonalization',
         parent: 'la-module-3',
         title: 'Diagonalization',
         icon: 'Waypoints',

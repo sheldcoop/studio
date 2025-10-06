@@ -73,6 +73,14 @@ const RowSpaceVisualizer = dynamic(
   }
 );
 
+const DiagonalizationVisualizer = dynamic(
+  () => import('@/components/app/diagonalization-visualizer'),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
 
 function EigenvalueTheory() {
   return (
@@ -215,6 +223,31 @@ function FundamentalTheoremTheory() {
     );
 }
 
+function DiagonalizationTheory() {
+  return (
+    <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+        <p>Diagonalization is the process of finding an "eigenbasis" for a transformation. For many matrices <strong className="text-primary">A</strong>, there exists a special basis formed by its eigenvectors. In this basis, the transformation <strong className="text-primary">A</strong> acts in a very simple way: it just stretches or shrinks along the new basis axes, without any rotation or shear.</p>
+        <p>This simplification is captured by the famous equation: </p>
+        <div className="text-center"><BlockMath math="A = PDP^{-1}" /></div>
+        <p>This isn't just an abstract formula; it's a recipe for understanding a complex transformation:</p>
+        <ul className="text-sm">
+            <li><strong>Step 1: <InlineMath math="P^{-1}" /> (Change of Basis).</strong> First, we take a vector and figure out its coordinates in the language of the eigenbasis. This is what <InlineMath math="P^{-1}" /> does.</li>
+            <li><strong>Step 2: <InlineMath math="D" /> (Scale).</strong> In this new "eigenworld," the transformation is simple. We just stretch the vector along each eigen-axis by the amount of the corresponding eigenvalue. This is what the diagonal matrix <strong className="text-primary">D</strong> does.</li>
+            <li><strong>Step 3: <InlineMath math="P" /> (Change Back).</strong> Finally, we convert the stretched vector back to our standard coordinate system. This is the job of <strong className="text-primary">P</strong>.</li>
+        </ul>
+        <p>So, a complicated transformation <strong className="text-primary">A</strong> is really just a simple stretch (<strong className="text-primary">D</strong>) viewed from a different perspective (<strong className="text-primary">P</strong>).</p>
+        <hr />
+        <h4 className="font-bold text-lg not-prose">When is a Matrix Diagonalizable?</h4>
+        <p>A square <InlineMath math="n \times n" /> matrix is diagonalizable if and only if it has <InlineMath math="n" /> linearly independent eigenvectors. If it doesn't have enough independent eigenvectors to form a basis for the entire space, it cannot be diagonalized.</p>
+        <hr />
+        <h4 className="font-bold text-lg not-prose">Why is it Useful in Finance?</h4>
+        <p>One of the most powerful applications is calculating powers of a matrix. To find <InlineMath math="A^{100}" />, you don't need to multiply A by itself 100 times. Instead, you can do:</p>
+        <div className="text-center"><BlockMath math="A^k = (PDP^{-1})^k = PD^kP^{-1}" /></div>
+        <p>Calculating <InlineMath math="D^k" /> is incredibly easy—you just raise the diagonal eigenvalue entries to the power of k. This technique is fundamental for modeling the long-term state of systems described by Markov chains, which are used extensively in credit risk modeling to predict the probability of a bond defaulting over many time periods.</p>
+    </div>
+  );
+}
+
 
 function FourSubspacesPage() {
     return (
@@ -285,6 +318,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isDeterminantTopic = subTopic.id.includes('determinant');
     const isChangeOfBasisTopic = subTopic.id.includes('change-of-basis');
     const isLinearIndependenceTopic = subTopic.id.includes('linear-independence');
+    const isDiagonalizationTopic = subTopic.id.includes('diagonalization');
     
     const isFundamentalSubspace = ['column-space', 'null-space', 'row-space', 'fundamental-theorem'].includes(subTopic.id);
 
@@ -298,6 +332,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         if (isDeterminantTopic) return <DeterminantVisualizer />;
         if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
         if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
+        if (isDiagonalizationTopic) return <DiagonalizationVisualizer />;
 
         return (
              <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
@@ -308,6 +343,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
 
     const renderTheory = () => {
       if (isEigenTopic) return <EigenvalueTheory />;
+      if (isDiagonalizationTopic) return <DiagonalizationTheory />;
       return (
         <div className="prose prose-invert max-w-none p-6 text-foreground/90">
             <p>Theory explanation coming soon.</p>

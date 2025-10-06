@@ -1,4 +1,5 @@
 
+
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/data';
@@ -53,6 +54,7 @@ import IntroductionToHypothesisTestingPage from '@/app/(app)/quantlab/introducti
 import VectorProjectionPage from '@/app/(app)/quantlab/vector-projection/component';
 import GaussianEliminationPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/gaussian-elimination/component';
 import GramSchmidtPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/gram-schmidt-orthogonalization/component';
+import DiagonalizationPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/diagonalization/component';
 
 
 type TopicPageProps = {
@@ -226,6 +228,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'vector-projection': VectorProjectionPage,
   'gaussian-elimination': GaussianEliminationPage,
   'gram-schmidt-orthogonalization': GramSchmidtPage,
+  'diagonalization': DiagonalizationPage,
 };
 
 
