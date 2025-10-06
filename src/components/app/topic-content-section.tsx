@@ -9,45 +9,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 
 // Dynamically import the new animation component
-const EigenAnimation = dynamic(
-  () => import('@/components/app/eigen-animation').then(mod => mod.EigenAnimation),
+const EigenVisualizer = dynamic(
+  () => import('@/components/app/eigen-visualizer').then(mod => mod.default),
   {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false,
   }
 );
 
-
-function EigenvalueExplanation() {
-    return (
-        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
-            <h4>Imagine a matrix not as a grid of numbers, but as a transformation of space.</h4>
-            <p>
-                When you apply a matrix to every vector in a plane, you might see space get stretched, squished, or rotated. It can be a chaotic mess!
-            </p>
-            <div className="my-6">
-               <div className="relative mx-auto aspect-video max-w-lg rounded-lg border bg-background/50">
-                    <EigenAnimation />
-                </div>
-            </div>
-            <h4>But amidst this chaos, some vectors are special.</h4>
-            <p>
-                These are the <strong className="text-primary">eigenvectors</strong>. When the transformation happens, they don't change their direction at all. They stay on their original path, simply getting stretched or shrunk. In the animation above, they are the colored lines.
-            </p>
-            <p>
-                The factor by which an eigenvector is stretched or shrunk is its corresponding <strong className="text-primary">eigenvalue</strong>.
-            </p>
-            <ul className="text-sm">
-                <li>An <strong>eigenvalue of 2</strong> means the vector gets twice as long.</li>
-                <li>An <strong>eigenvalue of 0.5</strong> means it gets half as long.</li>
-                <li>A <strong>negative eigenvalue</strong> means it flips direction and gets scaled.</li>
-            </ul>
-            <p>
-                Finding these special "axes" of a transformation is one of the most powerful ideas in linear algebra, forming the basis for techniques like Principal Component Analysis (PCA) used in factor modeling.
-            </p>
-        </div>
-    );
-}
 
 function EigenvalueTheory() {
   return (
@@ -90,7 +59,7 @@ function EigenvalueProperties() {
         <p>We found its eigenvalues to be <InlineMath math="\lambda_1 = 3" /> and <InlineMath math="\lambda_2 = 1" />.</p>
         <hr className="my-6" />
 
-        <h4>1. Sum of Eigenvalues = Trace of the Matrix</h4>
+        <h4 className="font-bold text-lg">1. Sum of Eigenvalues = Trace of the Matrix</h4>
         <p>The <strong>trace</strong> of a square matrix is the sum of its diagonal elements. This property provides a quick check on your calculations.</p>
         <div className="p-4 rounded-md bg-muted/50 my-4">
             <p className="font-semibold">Example:</p>
@@ -98,7 +67,7 @@ function EigenvalueProperties() {
         </div>
         <hr className="my-6" />
 
-        <h4>2. Product of Eigenvalues = Determinant of the Matrix</h4>
+        <h4 className="font-bold text-lg">2. Product of Eigenvalues = Determinant of the Matrix</h4>
         <p>The <strong>determinant</strong> represents the scaling factor of the transformation on an area (in 2D) or volume (in 3D). This property connects the scaling of individual eigenvectors to the overall scaling of space.</p>
          <div className="p-4 rounded-md bg-muted/50 my-4">
             <p className="font-semibold">Example:</p>
@@ -106,7 +75,7 @@ function EigenvalueProperties() {
         </div>
         <hr className="my-6" />
 
-        <h4>3. Eigenvectors of a Symmetric Matrix are Orthogonal</h4>
+        <h4 className="font-bold text-lg">3. Eigenvectors of a Symmetric Matrix are Orthogonal</h4>
         <p>A matrix is <strong>symmetric</strong> if it is equal to its own transpose (<InlineMath math="A = A^T" />). Our matrix A is symmetric. A profound consequence is that its eigenvectors are perpendicular to each other. This is the foundation of the Spectral Theorem and why PCA works so well for financial data (covariance matrices are always symmetric).</p>
          <div className="p-4 rounded-md bg-muted/50 my-4">
             <p className="font-semibold">Example:</p>
@@ -114,7 +83,7 @@ function EigenvalueProperties() {
         </div>
         <hr className="my-6" />
         
-        <h4>4. Eigenvalues of a Diagonal/Triangular Matrix are its Diagonal Entries</h4>
+        <h4 className="font-bold text-lg">4. Eigenvalues of a Diagonal/Triangular Matrix are its Diagonal Entries</h4>
         <p>This is a convenient shortcut. If you have an upper or lower triangular matrix, the eigenvalues are simply the numbers on the main diagonal.</p>
         <div className="p-4 rounded-md bg-muted/50 my-4">
             <p className="font-semibold">Example:</p>
@@ -146,23 +115,25 @@ export function TopicContentSection({ subTopic }: SubTopic) {
                         </CardContent>
                     )}
                 </Card>
+                
                 {isEigenTopic && (
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Waypoints className="text-primary"/> Properties of Eigenvalues & Eigenvectors</CardTitle>
+                             <CardTitle className="flex items-center gap-2"><Waypoints className="text-primary"/> Properties of Eigenvalues & Eigenvectors</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <EigenvalueProperties />
                         </CardContent>
                     </Card>
                 )}
+
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
                     </CardHeader>
                     {isEigenTopic ? (
-                        <CardContent className="p-0">
-                            <EigenvalueExplanation />
+                        <CardContent>
+                            <EigenVisualizer />
                         </CardContent>
                     ) : (
                          <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
@@ -170,6 +141,7 @@ export function TopicContentSection({ subTopic }: SubTopic) {
                         </CardContent>
                     )}
                 </Card>
+
                 <Card>
                     <CardHeader>
                             <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-primary"/> Practice Problems</CardTitle>
