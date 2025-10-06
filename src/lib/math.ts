@@ -1,4 +1,5 @@
 
+
 /**
  * Generates normally distributed random data using the central limit theorem approximation.
  * @param mean - The desired mean.
@@ -303,4 +304,63 @@ export const calculate2x2Solution = (m: { a11: number; a12: number; b1: number; 
     return { x, y };
 };
 
+/**
+ * Calculates the eigenvalues and eigenvectors of a 2x2 matrix.
+ * @param a - The top-left element of the matrix.
+ * @param b - The top-right element of the matrix.
+ * @param c - The bottom-left element of the matrix.
+ * @param d - The bottom-right element of the matrix.
+ * @returns An object containing the eigenvalues (lambda1, lambda2) and eigenvectors (v1, v2), or null if there are no real eigenvalues.
+ */
+export const calculateEigen = (a: number, b: number, c: number, d: number) => {
+    const trace = a + d;
+    const det = a * d - b * c;
+    const discriminant = trace * trace - 4 * det;
+
+    if (discriminant < 0) {
+        return null; // No real eigenvalues
+    }
+
+    const sqrtDiscriminant = Math.sqrt(discriminant);
+    const lambda1 = (trace + sqrtDiscriminant) / 2;
+    const lambda2 = (trace - sqrtDiscriminant) / 2;
+
+    const v1 = { x: 0, y: 0 };
+    if (Math.abs(b) > 0.001) {
+        v1.x = 1;
+        v1.y = (lambda1 - a) / b;
+    } else if (Math.abs(c) > 0.001) {
+        v1.y = 1;
+        v1.x = (lambda1 - d) / c;
+    } else {
+        v1.x = 1;
+        v1.y = 0;
+    }
+
+    const len1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+    if (len1 > 0) {
+        v1.x /= len1;
+        v1.y /= len1;
+    }
+
+    const v2 = { x: 0, y: 0 };
+    if (Math.abs(b) > 0.001) {
+        v2.x = 1;
+        v2.y = (lambda2 - a) / b;
+    } else if (Math.abs(c) > 0.001) {
+        v2.y = 1;
+        v2.x = (lambda2 - d) / c;
+    } else {
+        v2.x = 0;
+        v2.y = 1;
+    }
+
+    const len2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+    if (len2 > 0) {
+        v2.x /= len2;
+        v2.y /= len2;
+    }
+    
+    return { lambda1, lambda2, v1, v2 };
+};
     

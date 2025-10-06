@@ -4,8 +4,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { Play, Pause, RotateCcw, Sliders } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
+import { calculateEigen } from '@/lib/math';
 
 
 const EigenVisualizer = () => {
@@ -32,63 +36,7 @@ const EigenVisualizer = () => {
   } | null>(null);
   
   useEffect(() => {
-    // Calculate eigenvalues and eigenvectors
-    const a = matrixA, b = matrixB, c = matrixC, d = matrixD;
-    const trace = a + d;
-    const det = a * d - b * c;
-    const discriminant = trace * trace - 4 * det;
-    
-    if (discriminant >= 0) {
-      const lambda1 = (trace + Math.sqrt(discriminant)) / 2;
-      const lambda2 = (trace - Math.sqrt(discriminant)) / 2;
-      
-      // Eigenvector for lambda1
-      let v1x, v1y;
-      if (Math.abs(b) > 0.001) {
-        v1x = 1;
-        v1y = (lambda1 - a) / b;
-      } else if (Math.abs(c) > 0.001) {
-        v1y = 1;
-        v1x = (lambda1 - d) / c;
-      } else {
-        v1x = 1;
-        v1y = 0;
-      }
-      
-      // Normalize
-      const len1 = Math.sqrt(v1x * v1x + v1y * v1y);
-      if (len1 > 0) {
-        v1x /= len1;
-        v1y /= len1;
-      }
-      
-      // Eigenvector for lambda2
-      let v2x, v2y;
-      if (Math.abs(b) > 0.001) {
-        v2x = 1;
-        v2y = (lambda2 - a) / b;
-      } else if (Math.abs(c) > 0.001) {
-        v2y = 1;
-        v2x = (lambda2 - d) / c;
-      } else {
-        v2x = 0;
-        v2y = 1;
-      }
-      
-      const len2 = Math.sqrt(v2x * v2x + v2y * v2y);
-      if (len2 > 0) {
-        v2x /= len2;
-        v2y /= len2;
-      }
-      
-      setEigenData({
-        lambda1, lambda2,
-        v1: { x: v1x, y: v1y },
-        v2: { x: v2x, y: v2y }
-      });
-    } else {
-        setEigenData(null);
-    }
+    setEigenData(calculateEigen(matrixA, matrixB, matrixC, matrixD));
   }, [matrixA, matrixB, matrixC, matrixD]);
 
   useEffect(() => {
