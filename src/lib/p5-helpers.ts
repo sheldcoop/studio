@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type p5 from 'p5';
@@ -114,6 +115,27 @@ export const drawTransformedCircle = (p: p5, transform: (x: number, y: number) =
         p.vertex(x * scaleFactor, y * scaleFactor);
     }
     p.endShape(p.CLOSE);
+};
+
+/**
+ * Draws a dashed line between two points.
+ * @param p - The p5 instance.
+ * @param v1 - The starting vector.
+ * @param v2 - The ending vector.
+ * @param color - The color of the line.
+ * @param weight - The stroke weight.
+ * @param dashPattern - An array describing the dash pattern (e.g., [5, 10]).
+ */
+export const drawDashedLine = (p: p5, v1: p5.Vector, v2: p5.Vector, color: p5.Color, weight: number, dashPattern: number[]) => {
+    p.stroke(color);
+    p.strokeWeight(weight);
+    if (p.drawingContext.setLineDash) {
+        p.drawingContext.setLineDash(dashPattern);
+    }
+    p.line(v1.x, v1.y, v2.x, v2.y);
+    if (p.drawingContext.setLineDash) {
+        p.drawingContext.setLineDash([]);
+    }
 };
 
 // #endregion

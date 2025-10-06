@@ -1,9 +1,10 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { drawGrid as p5DrawGrid, drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
+import { drawGrid as p5DrawGrid, drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, drawDashedLine as p5DrawDashedLine } from '@/lib/p5-helpers';
 
 const VectorProjectionVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -61,11 +62,9 @@ const VectorProjectionVisualizer = () => {
                     p5DrawVector(p, proj, scaleFactor, p.color(252, 165, 165), 'proj');
                 }
                 
-                p.stroke(255, 255, 255, 100);
-                p.strokeWeight(2);
-                p.drawingContext.setLineDash([5, 10]);
-                p.line(a.x * scaleFactor, a.y * scaleFactor, proj.x * scaleFactor, proj.y * scaleFactor);
-                p.drawingContext.setLineDash([]);
+                const screenA = p5.Vector.mult(a, scaleFactor);
+                const screenProj = p5.Vector.mult(proj, scaleFactor);
+                p5DrawDashedLine(p, screenA, screenProj, p.color(255, 255, 255, 100), 2, [5, 10]);
             };
 
             const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, p.min(p.width, p.height) / 8);
@@ -144,5 +143,3 @@ const VectorProjectionVisualizer = () => {
 };
 
 export default VectorProjectionVisualizer;
-
-    
