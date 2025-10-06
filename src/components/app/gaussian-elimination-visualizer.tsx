@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -69,7 +69,7 @@ const GaussianEliminationVisualizer = () => {
                     const nextProgress = animation.progress + 1;
                     if (nextProgress >= animation.duration) {
                         setAnimation(a => ({...a, active: false}));
-                        setMatrix(animation.endState as any);
+                        setMatrix(animation.endState as SystemMatrix);
                     } else {
                         setAnimation(a => ({...a, progress: nextProgress}));
                     }
@@ -170,7 +170,7 @@ const GaussianEliminationVisualizer = () => {
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <Input id="a21" type="number" defaultValue={matrix.a21} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a21) && "is-zero")} />
-                                            <Input id="a22" type="number" defaultValue={matrix.a22} onChange={updateMatrixFromUI} step="0.5" className="matrix-val" />
+                                            <Input id="a22" type="number" defaultValue={matrix.a22} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a22) && "is-zero")} />
                                             <span className="text-gray-500">|</span>
                                             <Input id="b2" type="number" defaultValue={matrix.b2} onChange={updateMatrixFromUI} step="0.5" className="matrix-val" />
                                         </div>
@@ -205,4 +205,3 @@ const GaussianEliminationVisualizer = () => {
 };
 
 export default GaussianEliminationVisualizer;
-
