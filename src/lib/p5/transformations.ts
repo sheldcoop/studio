@@ -119,7 +119,6 @@ export const drawColumnSpace = (p: p5, matrix: {a: number,b: number,c: number,d:
     drawVector(p, col2, scaleFactor, p.color(0, 255, 0), 'col₂', 3);
 };
 
-
 export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color, showScaling: boolean = true) => {
     // Draw the eigenspace as a dashed line through the origin
     p.stroke(color);
@@ -288,22 +287,28 @@ export const drawSVD = (p: p5, matrix: {a:number,b:number,c:number,d:number}, pr
 
 export const drawLeastSquaresProjection = (p: p5, A_col1: p5.Vector, A_col2: p5.Vector, b: p5.Vector, scaleFactor: number) => {
     // A is the matrix [A_col1 | A_col2]
-    const AtA_11 = A_col1.dot(A_col1);
-    const AtA_12 = A_col1.dot(A_col2);
-    const AtA_21 = A_col2.dot(A_col1);
-    const AtA_22 = A_col2.dot(A_col2);
+    const AtA = {
+        a: A_col1.dot(A_col1), // a*a + c*c
+        b: A_col1.dot(A_col2), // a*b + c*d
+        c: A_col2.dot(A_col1), // b*a + d*c
+        d: A_col2.dot(A_col2), // b*b + d*d
+    };
     
-    const AtA_inv = invertMatrix({a: AtA_11, b: AtA_12, c: AtA_21, d: AtA_22});
+    const AtA_inv = invertMatrix(AtA);
 
     if (!AtA_inv) return; // If A^T A is not invertible
 
-    const At_b_1 = A_col1.dot(b);
-    const At_b_2 = A_col2.dot(b);
+    const At_b = {
+        x: A_col1.dot(b),
+        y: A_col2.dot(b),
+    };
 
-    const x_hat_x = AtA_inv.a * At_b_1 + AtA_inv.b * At_b_2;
-    const x_hat_y = AtA_inv.c * At_b_1 + AtA_inv.d * At_b_2;
+    const x_hat = {
+        x: AtA_inv.a * At_b.x + AtA_inv.b * At_b.y,
+        y: AtA_inv.c * At_b.x + AtA_inv.d * At_b.y,
+    };
 
-    const proj_b = p5.Vector.add(A_col1.copy().mult(x_hat_x), A_col2.copy().mult(x_hat_y));
+    const proj_b = p5.Vector.add(A_col1.copy().mult(x_hat.x), A_col2.copy().mult(x_hat.y));
 
     // Draw the column space plane
     const spanColor = p.color(100, 150, 255, 50);
@@ -323,7 +328,7 @@ export const drawLeastSquaresProjection = (p: p5, A_col1: p5.Vector, A_col2: p5.
 };
 
 export const drawGramSchmidt = (p: p5, v1: p5.Vector, v2: p5.Vector, progress: number, scaleFactor: number) => {
-    if (v1.magSq() < 1e-9 || v2.magSq() < 1e-9) {
+    if (v1.magSq() < 1e-9) {
       console.warn('drawGramSchmidt: zero vector detected');
       return;
     }
@@ -411,13 +416,19 @@ export const drawConditionNumber = (p: p5, matrix: {a:number,b:number,c:number,d
 };
 
 export const drawPCA = (p: p5, dataPoints: p5.Vector[], scaleFactor: number) => {
-    if (dataPoints.length === 0) return;
+    if (dataPoints.length < 2) return;
     const mean = dataPoints.reduce((acc, v) => acc.add(v), p.createVector(0,0)).div(dataPoints.length);
     const centered = dataPoints.map(v => p5.Vector.sub(v, mean));
 
-    const cov_xx = centered.reduce((acc, v) => acc + v.x*v.x, 0) / (centered.length - 1);
-    const cov_xy = centered.reduce((acc, v) => acc + v.x*v.y, 0) / (centered.length - 1);
-    const cov_yy = centered.reduce((acc, v) => acc + v.y*v.y, 0) / (centered.length - 1);
+    let cov_xx = 0, cov_xy = 0, cov_yy = 0;
+    for (const v of centered) {
+        cov_xx += v.x * v.x;
+        cov_xy += v.x * v.y;
+        cov_yy += v.y * v.y;
+    }
+    cov_xx /= (centered.length - 1);
+    cov_xy /= (centered.length - 1);
+    cov_yy /= (centered.length - 1);
 
     const trace = cov_xx + cov_yy;
     const det = cov_xx*cov_yy - cov_xy*cov_xy;
