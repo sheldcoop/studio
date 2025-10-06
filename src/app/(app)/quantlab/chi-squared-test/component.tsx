@@ -2,17 +2,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
-
-const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
-
+import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
 
 const goodnessOfFitChartConfig = {
   observed: {
@@ -84,15 +79,15 @@ const GoodnessOfFitChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={goodnessOfFitChartConfig} className="h-full w-full">
-            <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                <YAxis />
-                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                <Legend />
-                <Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
-                <Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
-            </RechartsBarChart>
+            <Chart.BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <Chart.CartesianGrid vertical={false} />
+                <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <Chart.YAxis />
+                <Chart.Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Chart.Legend />
+                <Chart.Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
+                <Chart.Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
+            </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
@@ -142,15 +137,15 @@ const TestForIndependenceChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={testForIndependenceChartConfig} className="h-full w-full">
-            <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.split(' ')[0]}/>
-                <YAxis />
-                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                <Legend />
-                <Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
-                <Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
-            </RechartsBarChart>
+            <Chart.BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <Chart.CartesianGrid vertical={false} />
+                <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.split(' ')[0]}/>
+                <Chart.YAxis />
+                <Chart.Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Chart.Legend />
+                <Chart.Bar dataKey="observed" fill="var(--color-observed)" radius={4} />
+                <Chart.Bar dataKey="expected" fill="var(--color-expected)" radius={4} />
+            </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Data</Button></div>
@@ -189,15 +184,15 @@ const TestForHomogeneityChart = () => {
         <div className="flex h-[420px] w-full flex-col">
           <div className="flex-grow">
             <ChartContainer config={testForHomogeneityChartConfig} className="h-full w-full">
-                <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                    <CartesianGrid vertical={false} />
-                    <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                    <YAxis />
-                    <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                    <Legend />
-                    <Bar dataKey="ny" fill="var(--color-ny)" radius={4} />
-                    <Bar dataKey="london" fill="var(--color-london)" radius={4} />
-                </RechartsBarChart>
+                <Chart.BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <Chart.CartesianGrid vertical={false} />
+                    <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                    <Chart.YAxis />
+                    <Chart.Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                    <Chart.Legend />
+                    <Chart.Bar dataKey="ny" fill="var(--color-ny)" radius={4} />
+                    <Chart.Bar dataKey="london" fill="var(--color-london)" radius={4} />
+                </Chart.BarChart>
             </ChartContainer>
           </div>
           <div className="mt-4 flex-shrink-0 text-center"><Button onClick={generateData}>Simulate New Survey Data</Button></div>

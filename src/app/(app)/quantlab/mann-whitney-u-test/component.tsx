@@ -2,15 +2,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
-
-const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -77,15 +73,15 @@ const MannWhitneyChart = () => {
     <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full">
         <ChartContainer config={mannWhitneyChartConfig} className="h-full w-full">
-          <RechartsBarChart accessibilityLayer data={chartData} barCategoryGap="0%" margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis />
-            <Tooltip content={<ChartTooltipContent />} wrapperStyle={{ zIndex: 1000 }} />
-            <Legend formatter={(value: string) => mannWhitneyChartConfig[value as keyof typeof mannWhitneyChartConfig]?.label || value} />
-            <Bar dataKey="Algo_A" fill="var(--color-Algo_A)" />
-            <Bar dataKey="Algo_B" fill="var(--color-Algo_B)" />
-          </RechartsBarChart>
+          <Chart.BarChart accessibilityLayer data={chartData} barCategoryGap="0%" margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <Chart.CartesianGrid vertical={false} />
+            <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+            <Chart.YAxis />
+            <Chart.Tooltip content={<ChartTooltipContent />} wrapperStyle={{ zIndex: 1000 }} />
+            <Chart.Legend formatter={(value: string) => mannWhitneyChartConfig[value as keyof typeof mannWhitneyChartConfig]?.label || value} />
+            <Chart.Bar dataKey="Algo_A" fill="var(--color-Algo_A)" />
+            <Chart.Bar dataKey="Algo_B" fill="var(--color-Algo_B)" />
+          </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">

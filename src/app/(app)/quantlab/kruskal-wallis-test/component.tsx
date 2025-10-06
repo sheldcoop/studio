@@ -2,16 +2,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
-
-const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
-
+import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
 
 // Helper to generate skewed data (log-normal distribution)
 const generateLogNormalData = (mu: number, sigma: number, n: number) => {
@@ -75,17 +70,17 @@ const KruskalWallisChart = () => {
     <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={kruskalWallisChartConfig} className="h-full w-full">
-          <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value: string) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
-            <YAxis unit="$" />
-            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Bar dataKey="value" name="Median Profit" radius={4}>
+          <Chart.BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <Chart.CartesianGrid vertical={false} />
+            <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value: string) => kruskalWallisChartConfig[value as keyof typeof kruskalWallisChartConfig]?.label || value} />
+            <Chart.YAxis unit="$" />
+            <Chart.Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Chart.Bar dataKey="value" name="Median Profit" radius={4}>
               {chartData.map((entry) => (
-                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
               ))}
-            </Bar>
-          </RechartsBarChart>
+            </Chart.Bar>
+          </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">

@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,11 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, CartesianGrid, Legend, ReferenceLine, Tooltip, XAxis, YAxis } from 'recharts';
+import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
 import 'katex/dist/katex.min.css';
 
-const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -62,13 +59,13 @@ const OneSampleZTestChart = () => {
     <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={oneSampleZTestChartConfig} className="h-full w-full">
-          <RechartsBarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
-            <CartesianGrid horizontal={false} />
-            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120} tickFormatter={() => "Stock A's Recent Avg."}/>
-            <XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
-            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey="value" radius={8} fill="var(--color-value)" />
-            <ReferenceLine
+          <Chart.BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
+            <Chart.CartesianGrid horizontal={false} />
+            <Chart.YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={120} tickFormatter={() => "Stock A's Recent Avg."}/>
+            <Chart.XAxis type="number" unit="%" domain={[-0.2, 0.3]} />
+            <Chart.Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Chart.Bar dataKey="value" radius={8} fill="var(--color-value)" />
+            <Chart.ReferenceLine
               x={target}
               stroke="hsl(var(--destructive))"
               strokeWidth={2}
@@ -80,7 +77,7 @@ const OneSampleZTestChart = () => {
                 fontSize: 12,
               }}
             />
-          </RechartsBarChart>
+          </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mx-auto max-w-sm flex-shrink-0 text-center">
@@ -133,15 +130,15 @@ const TwoSampleZTestChart = () => {
     <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={twoSampleZTestChartConfig} className="h-full w-full">
-            <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
-                <YAxis unit="%" />
-                <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                <Legend />
-                <Bar dataKey="Stock_A" radius={4} fill="hsl(var(--chart-1))" />
-                <Bar dataKey="Stock_B" radius={4} fill="hsl(var(--chart-2))" />
-            </RechartsBarChart>
+            <Chart.BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <Chart.CartesianGrid vertical={false} />
+                <Chart.XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
+                <Chart.YAxis unit="%" />
+                <Chart.Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                <Chart.Legend />
+                <Chart.Bar dataKey="Stock_A" radius={4} fill="hsl(var(--chart-1))" />
+                <Chart.Bar dataKey="Stock_B" radius={4} fill="hsl(var(--chart-2))" />
+            </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">

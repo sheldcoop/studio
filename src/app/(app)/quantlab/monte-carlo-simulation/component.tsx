@@ -2,14 +2,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Line, LineChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
@@ -31,15 +29,15 @@ const generateGBMPath = (s0: number, mu: number, sigma: number, T: number, steps
 const MonteCarloPathsChart = ({ paths }: { paths: { step: number; price: number }[][] }) => {
   return (
     <ChartContainer config={{}} className="h-[350px] w-full">
-      <LineChart>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="step" type="number" allowDuplicatedCategory={false} />
-        <YAxis domain={['dataMin', 'dataMax']} />
-        <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Price"]} />} />
+      <Chart.LineChart>
+        <Chart.CartesianGrid strokeDasharray="3 3" />
+        <Chart.XAxis dataKey="step" type="number" allowDuplicatedCategory={false} />
+        <Chart.YAxis domain={['dataMin', 'dataMax']} />
+        <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Price"]} />} />
         {paths.map((path, index) => (
-          <Line key={index} data={path} type="monotone" dataKey="price" stroke="hsl(var(--primary))" opacity={0.2} dot={false} activeDot={false} />
+          <Chart.Line key={index} data={path} type="monotone" dataKey="price" stroke="hsl(var(--primary))" opacity={0.2} dot={false} activeDot={false} />
         ))}
-      </LineChart>
+      </Chart.LineChart>
     </ChartContainer>
   );
 };
@@ -62,13 +60,13 @@ const MonteCarloDistributionChart = ({ finalPrices }: { finalPrices: number[] })
   return (
     <div>
         <ChartContainer config={{}} className="h-[300px] w-full">
-        <BarChart data={histogramData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip content={<ChartTooltipContent formatter={(value) => [value, "Frequency"]} />} />
-            <Bar dataKey="count" fill="hsl(var(--primary))" />
-        </BarChart>
+        <Chart.BarChart data={histogramData}>
+            <Chart.CartesianGrid strokeDasharray="3 3" />
+            <Chart.XAxis dataKey="name" />
+            <Chart.YAxis />
+            <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [value, "Frequency"]} />} />
+            <Chart.Bar dataKey="count" fill="hsl(var(--primary))" />
+        </Chart.BarChart>
         </ChartContainer>
         <div className="text-center text-xs text-muted-foreground mt-2">
             Mean: {mean.toFixed(2)}, StdDev: {stdDev.toFixed(2)}
@@ -77,15 +75,6 @@ const MonteCarloDistributionChart = ({ finalPrices }: { finalPrices: number[] })
   );
 };
 
-const DynamicPathsChart = dynamic(() => Promise.resolve(MonteCarloPathsChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[350px] w-full" />,
-});
-
-const DynamicDistributionChart = dynamic(() => Promise.resolve(MonteCarloDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[340px] w-full" />,
-});
 
 // --- Main Page Component ---
 export default function MonteCarloSimulationComponent() {
@@ -175,11 +164,11 @@ export default function MonteCarloSimulationComponent() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div>
                     <h4 className="font-semibold text-center mb-2">{paths.length} Simulated Price Paths</h4>
-                    <DynamicPathsChart paths={paths} />
+                    <MonteCarloPathsChart paths={paths} />
                 </div>
                 <div>
                     <h4 className="font-semibold text-center mb-2">Distribution of Final Prices</h4>
-                    <DynamicDistributionChart finalPrices={finalPrices} />
+                    <MonteCarloDistributionChart finalPrices={finalPrices} />
                 </div>
             </div>
           </CardContent>

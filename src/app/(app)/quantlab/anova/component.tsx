@@ -2,21 +2,13 @@
 'use client';
 
 import { useState, useEffect, type FC } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
+import {type ChartConfig, ChartContainer, Chart } from '@/components/ui/chart';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Area, Bar, Line, CartesianGrid, XAxis, YAxis, Tooltip, Cell, Legend } from 'recharts';
-
-// Dynamically import ONLY the main chart containers
-const RechartsAreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
-const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
-const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
-
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -94,17 +86,17 @@ const OneWayAnovaChart = () => {
     <div className="flex h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={oneWayAnovaChartConfig} className="h-full w-full">
-          <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value: string) => oneWayAnovaChartConfig[value as keyof typeof oneWayAnovaChartConfig]?.label || value} />
-              <YAxis unit="%" />
-              <Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
-              <Bar dataKey="value" radius={8}>
+          <Chart.BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <Chart.CartesianGrid vertical={false} />
+              <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value: string) => oneWayAnovaChartConfig[value as keyof typeof oneWayAnovaChartConfig]?.label || value} />
+              <Chart.YAxis unit="%" />
+              <Chart.Tooltip cursor={false} content={<ChartTooltipContent indicator='dot' />} />
+              <Chart.Bar dataKey="value" radius={8}>
                 {chartData.map((entry) => (
-                    <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                    <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
                 ))}
-              </Bar>
-          </RechartsBarChart>
+              </Chart.Bar>
+          </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -141,15 +133,15 @@ const TwoWayAnovaChart = () => {
         <div className="flex h-[420px] w-full flex-col">
             <div className="flex-grow">
                 <ChartContainer config={twoWayAnovaChartConfig} className="h-full w-full">
-                    <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                        <CartesianGrid vertical={false} />
-                        <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                        <YAxis unit="$" />
-                        <Tooltip content={<ChartTooltipContent indicator='dot' />} />
-                        <Legend />
-                        <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-stocks)" />
-                        <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-crypto)" />
-                    </RechartsLineChart>
+                    <Chart.LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <Chart.CartesianGrid vertical={false} />
+                        <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                        <Chart.YAxis unit="$" />
+                        <Chart.Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                        <Chart.Legend />
+                        <Chart.Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-stocks)" />
+                        <Chart.Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-crypto)" />
+                    </Chart.LineChart>
                 </ChartContainer>
             </div>
             <p className="pt-4 text-center text-sm text-muted-foreground">Non-parallel lines suggest an interaction effect.</p>
@@ -184,19 +176,19 @@ const RepeatedMeasuresAnovaChart = () => {
          <div className="flex h-[420px] w-full flex-col">
             <div className="flex-grow">
                 <ChartContainer config={repeatedMeasuresAnovaChartConfig} className="h-full w-full">
-                     <RechartsAreaChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                        <CartesianGrid vertical={false} />
-                        <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                        <YAxis />
-                        <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                     <Chart.AreaChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <Chart.CartesianGrid vertical={false} />
+                        <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                        <Chart.YAxis />
+                        <Chart.Tooltip content={<ChartTooltipContent indicator='dot' />} />
                         <defs>
                             <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />
                                 <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0.1} />
                             </linearGradient>
                         </defs>
-                        <Area type="monotone" dataKey="value" strokeWidth={2} stroke="var(--color-value)" fill="url(#fillValue)" />
-                    </RechartsAreaChart>
+                        <Chart.Area type="monotone" dataKey="value" strokeWidth={2} stroke="var(--color-value)" fill="url(#fillValue)" />
+                    </Chart.AreaChart>
                 </ChartContainer>
             </div>
             <div className="mt-4 flex-shrink-0 text-center">
@@ -310,5 +302,3 @@ export default function AnovaPage() {
     </>
   );
 }
-
-    

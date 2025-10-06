@@ -2,20 +2,14 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-const RechartsComposedChart = dynamic(() => import('recharts').then(mod => mod.ComposedChart), { ssr: false });
-const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
-
 
 // --- GARCH Simulation Logic ---
 const generateGarchProcess = (alpha: number, beta: number, n: number) => {
@@ -42,35 +36,30 @@ const GarchChart = ({ alpha, beta }: { alpha: number; beta: number }) => {
       <div>
         <h4 className="font-semibold text-center mb-2">Simulated Asset Returns</h4>
         <ChartContainer config={{}} className="h-[200px] w-full">
-          <RechartsComposedChart data={returns}>
-            <CartesianGrid />
-            <XAxis dataKey="time" />
-            <YAxis domain={['dataMin', 'dataMax']} />
-            <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(3), "Return"]} />} />
-            <Area type="monotone" dataKey="value" fill="hsl(var(--primary))" fillOpacity={0.5} stroke="hsl(var(--primary))" />
-          </RechartsComposedChart>
+          <Chart.ComposedChart data={returns}>
+            <Chart.CartesianGrid />
+            <Chart.XAxis dataKey="time" />
+            <Chart.YAxis domain={['dataMin', 'dataMax']} />
+            <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(3), "Return"]} />} />
+            <Chart.Area type="monotone" dataKey="value" fill="hsl(var(--primary))" fillOpacity={0.5} stroke="hsl(var(--primary))" />
+          </Chart.ComposedChart>
         </ChartContainer>
       </div>
       <div>
         <h4 className="font-semibold text-center mb-2">Conditional Volatility (GARCH Model)</h4>
         <ChartContainer config={{}} className="h-[150px] w-full">
-          <RechartsLineChart data={volatilities}>
-            <CartesianGrid />
-            <XAxis dataKey="time" />
-            <YAxis domain={['dataMin', 'dataMax']} />
-            <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(3), "Volatility"]} />} />
-            <Line type="monotone" dataKey="value" stroke="hsl(var(--destructive))" dot={false} />
-          </RechartsLineChart>
+          <Chart.LineChart data={volatilities}>
+            <Chart.CartesianGrid />
+            <Chart.XAxis dataKey="time" />
+            <Chart.YAxis domain={['dataMin', 'dataMax']} />
+            <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(3), "Volatility"]} />} />
+            <Chart.Line type="monotone" dataKey="value" stroke="hsl(var(--destructive))" dot={false} />
+          </Chart.LineChart>
         </ChartContainer>
       </div>
     </div>
   );
 };
-
-const DynamicGarchChart = dynamic(() => Promise.resolve(GarchChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[420px] w-full" />,
-});
 
 // --- Main Page Component ---
 export default function GarchComponent() {
@@ -136,7 +125,7 @@ export default function GarchComponent() {
                     <Slider id="beta-slider" min={0.6} max={0.99} step={0.01} value={[beta]} onValueChange={(val) => setBeta(val[0])} />
                 </div>
             </div>
-            <DynamicGarchChart alpha={alpha} beta={beta} />
+            <GarchComponent alpha={alpha} beta={beta} />
           </CardContent>
         </Card>
       </div>

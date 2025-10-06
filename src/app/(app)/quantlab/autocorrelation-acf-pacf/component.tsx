@@ -2,20 +2,14 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, Line, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-[200px] w-full" /> });
-const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-[200px] w-full" /> });
-
 
 // --- Math & Simulation Logic ---
 const generateARProcess = (phi: number, n: number) => {
@@ -49,13 +43,13 @@ const TimeSeriesChart = ({ data }: { data: number[] }) => {
   const chartData = data.map((value, index) => ({ index, value }));
   return (
     <ChartContainer config={{}} className="h-[200px] w-full">
-      <RechartsLineChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="index" />
-        <YAxis />
-        <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
-        <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" dot={false} />
-      </RechartsLineChart>
+      <Chart.LineChart data={chartData}>
+        <Chart.CartesianGrid strokeDasharray="3 3" />
+        <Chart.XAxis dataKey="index" />
+        <Chart.YAxis />
+        <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
+        <Chart.Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" dot={false} />
+      </Chart.LineChart>
     </ChartContainer>
   );
 };
@@ -65,16 +59,16 @@ const ACFChart = ({ data, maxLag }: { data: number[], maxLag: number }) => {
   const confidenceInterval = 1.96 / Math.sqrt(data.length);
   return (
     <ChartContainer config={{}} className="h-[200px] w-full">
-        <RechartsBarChart data={acfData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="lag" />
-            <YAxis domain={[-1, 1]}/>
-            <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "ACF"]} />} />
-            <ReferenceLine y={confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
-            <ReferenceLine y={-confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
-            <ReferenceLine y={0} stroke="hsl(var(--border))" />
-            <Bar dataKey="value" fill="hsl(var(--primary))" />
-        </RechartsBarChart>
+        <Chart.BarChart data={acfData}>
+            <Chart.CartesianGrid strokeDasharray="3 3" />
+            <Chart.XAxis dataKey="lag" />
+            <Chart.YAxis domain={[-1, 1]}/>
+            <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "ACF"]} />} />
+            <Chart.ReferenceLine y={confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
+            <Chart.ReferenceLine y={-confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
+            <Chart.ReferenceLine y={0} stroke="hsl(var(--border))" />
+            <Chart.Bar dataKey="value" fill="hsl(var(--primary))" />
+        </Chart.BarChart>
     </ChartContainer>
   )
 };

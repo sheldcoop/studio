@@ -2,15 +2,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Line, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
-
-const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
+import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
 
 // Helper to generate rank-like data for demonstration
 const generateRankData = (numSubjects: number) => {
@@ -61,18 +57,18 @@ const FriedmanTestChart = () => {
     <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={friedmanTestChartConfig} className="h-full w-full">
-            <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                <YAxis reversed domain={[1, 5]} tickCount={5} />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Legend formatter={(value: string) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
-                <Line type="monotone" dataKey="Algo_A" stroke="var(--color-Algo_A)" />
-                <Line type="monotone" dataKey="Algo_B" stroke="var(--color-Algo_B)" />
-                <Line type="monotone" dataKey="Algo_C" stroke="var(--color-Algo_C)" />
-                <Line type="monotone" dataKey="Algo_D" stroke="var(--color-Algo_D)" />
-                <Line type="monotone" dataKey="Algo_E" stroke="var(--color-Algo_E)" />
-            </RechartsLineChart>
+            <Chart.LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <Chart.CartesianGrid vertical={false} />
+                <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <Chart.YAxis reversed domain={[1, 5]} tickCount={5} />
+                <Chart.Tooltip content={<ChartTooltipContent />} />
+                <Chart.Legend formatter={(value: string) => friedmanTestChartConfig[value as keyof typeof friedmanTestChartConfig]?.label || value} />
+                <Chart.Line type="monotone" dataKey="Algo_A" stroke="var(--color-Algo_A)" />
+                <Chart.Line type="monotone" dataKey="Algo_B" stroke="var(--color-Algo_B)" />
+                <Chart.Line type="monotone" dataKey="Algo_C" stroke="var(--color-Algo_C)" />
+                <Chart.Line type="monotone" dataKey="Algo_D" stroke="var(--color-Algo_D)" />
+                <Chart.Line type="monotone" dataKey="Algo_E" stroke="var(--color-Algo_E)" />
+            </Chart.LineChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">

@@ -2,16 +2,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Line, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
-
-const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
-
+import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
 
 // --- Math Helpers ---
 
@@ -88,15 +83,15 @@ const KSTestChart = () => {
     <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="flex-grow">
         <ChartContainer config={ksTestChartConfig} className="h-full w-full">
-            <RechartsLineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis type="number" dataKey="x" name="Value" domain={['dataMin', 'dataMax']} tickLine={false} tickMargin={10} axisLine={false} />
-                <YAxis domain={[0,1]} />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Line type="step" dataKey="empirical" stroke="var(--color-empirical)" dot={false} strokeWidth={2}/>
-                <Line type="monotone" dataKey="theoretical" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
-            </RechartsLineChart>
+            <Chart.LineChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <Chart.CartesianGrid vertical={false} />
+                <Chart.XAxis type="number" dataKey="x" name="Value" domain={['dataMin', 'dataMax']} tickLine={false} tickMargin={10} axisLine={false} />
+                <Chart.YAxis domain={[0,1]} />
+                <Chart.Tooltip content={<ChartTooltipContent />} />
+                <Chart.Legend />
+                <Chart.Line type="step" dataKey="empirical" stroke="var(--color-empirical)" dot={false} strokeWidth={2}/>
+                <Chart.Line type="monotone" dataKey="theoretical" stroke="var(--color-theoretical)" dot={false} strokeWidth={2} />
+            </Chart.LineChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex flex-shrink-0 justify-center gap-4">
