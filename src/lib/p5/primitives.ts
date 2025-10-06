@@ -148,3 +148,25 @@ export const drawPolygon = (p: p5, vertices: p5.Vector[], scaleFactor: number, f
     vertices.forEach(v => p.vertex(v.x * scaleFactor, v.y * scaleFactor));
     p.endShape(p.CLOSE);
 };
+
+/**
+ * Draws a transformed circle based on two basis vectors.
+ * @param p - The p5 instance.
+ * @param transformFn - A function that takes x,y coords and returns transformed coords.
+ * @param s - The scaling factor.
+ * @param c - The color of the circle.
+ */
+export const drawTransformedCircle = (p: p5, transformFn: (x: number, y: number) => {x:number, y:number}, s: number, c: p5.Color) => {
+    p.noFill();
+    p.stroke(c);
+    p.strokeWeight(3);
+    p.beginShape();
+    for (let i = 0; i <= 64; i++) {
+        const angle = p.map(i, 0, 64, 0, p.TWO_PI);
+        const x = p.cos(angle);
+        const y = p.sin(angle);
+        const transformed = transformFn(x, y);
+        p.vertex(transformed.x * s, transformed.y * s);
+    }
+    p.endShape(p.CLOSE);
+};

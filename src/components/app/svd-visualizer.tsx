@@ -266,5 +266,3 @@ const SVDVisualizer = () => {
 };
 
 export default SVDVisualizer;
-
-    
