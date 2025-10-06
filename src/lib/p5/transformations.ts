@@ -3,8 +3,8 @@
 
 import p5 from 'p5';
 import { applyMatrix as applyMatrixMath, calculateDeterminant, invertMatrix, matrixMultiply } from '@/lib/math/linear-algebra';
-import { drawGrid } from './primitives';
-import { drawVector } from './primitives';
+import { drawGrid, drawVector, drawParallelogram } from './primitives';
+import { drawLine } from './coordinate-system';
 
 /**
  * Applies a matrix transformation to a p5 vector.
@@ -116,3 +116,139 @@ export const drawColumnSpace = (p: p5, matrix: {a: number,b: number,c: number,d:
     drawVector(p, col1, scaleFactor, p.color(255, 0, 0), 'col₁', 3);
     drawVector(p, col2, scaleFactor, p.color(0, 255, 0), 'col₂', 3);
 };
+
+export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color, showScaling: boolean = true) => {
+    // Draw the eigenspace as a dashed line through the origin
+    p.stroke(color);
+    p.strokeWeight(1);
+    if (p.drawingContext.setLineDash) {
+        p.drawingContext.setLineDash([5, 5]);
+    }
+    const extended1 = vector.copy().mult(-100);
+    const extended2 = vector.copy().mult(100);
+    p.line(extended1.x * scaleFactor, extended1.y * scaleFactor, extended2.x * scaleFactor, extended2.y * scaleFactor);
+    if (p.drawingContext.setLineDash) {
+        p.drawingContext.setLineDash([]);
+    }
+    
+    // Draw the eigenvector and its scaled version
+    drawVector(p, vector, scaleFactor, color, null, 3);
+    if (showScaling) {
+        const scaled = vector.copy().mult(eigenvalue);
+        drawVector(p, scaled, scaleFactor, color, `λ=${eigenvalue.toFixed(2)}`, 3);
+    }
+};
+
+export const drawLinearCombination = (p: p5, v1: p5.Vector, v2: p5.Vector, scalar1: number, scalar2: number, scaleFactor: number, showComponents: boolean = true) => {
+    const c1 = v1.copy().mult(scalar1);
+    const c2 = v2.copy().mult(scalar2);
+    const result = p5.Vector.add(c1, c2);
+
+    if (showComponents) {
+        // Draw component vectors
+        drawVector(p, c1, scaleFactor, p.color(255, 100, 100, 150), `${scalar1}v₁`, 3);
+        drawVector(p, c2, scaleFactor, p.color(100, 255, 100, 150), `${scalar2}v₂`, 3, c1);
+    }
+    
+    // Draw result
+    drawVector(p, result, scaleFactor, p.color(255, 255, 0), 'result', 4);
+};
+
+export const drawSpan = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, fillColor: p5.Color, showVectors: boolean = true) => {
+    // Check if vectors are linearly dependent
+    const cross = v1.x * v2.y - v1.y * v2.x;
+    
+    if (Math.abs(cross) < 0.01) {
+        // Vectors are parallel - draw a line
+        p.stroke(fillColor);
+        p.strokeWeight(10);
+        const extended = v1.copy().normalize().mult(1000);
+        p.line(-extended.x * scaleFactor, -extended.y * scaleFactor, extended.x * scaleFactor, extended.y * scaleFactor);
+    } else {
+        // Vectors span a plane - draw large parallelogram
+        drawParallelogram(p, v1.copy().mult(10), v2.copy().mult(10), scaleFactor, fillColor, p.color(0, 0));
+    }
+    
+    if (showVectors) {
+        drawVector(p, v1, scaleFactor, p.color(255, 0, 0), 'v₁', 3);
+        drawVector(p, v2, scaleFactor, p.color(0, 255, 0), 'v₂', 3);
+    }
+};
+
+export const drawDeterminantParallelogram = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, fillColor: p5.Color, showArea: boolean = true) => {
+    drawParallelogram(p, v1, v2, scaleFactor, fillColor, p.color(255));
+    
+    if (showArea) {
+        const area = Math.abs(calculateDeterminant({ a: v1.x, b: v2.x, c: v1.y, d: v2.y }));
+        const center = p5.Vector.add(v1, v2).div(2);
+        
+        p.push();
+        p.fill(255);
+        p.stroke(0);
+        p.strokeWeight(1);
+        p.textSize(20);
+        p.textStyle(p.BOLD);
+        p.translate(center.x * scaleFactor, center.y * scaleFactor);
+        p.scale(1, -1);
+        p.text(`Area = ${area.toFixed(2)}`, 0, 0);
+        p.pop();
+    }
+};
+
+export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleFactor: number, vectorColor: p5.Color, projectionColor: p5.Color) => {
+    // Calculate projection: proj = (v·u / |u|²) * u
+    const dot = vector.dot(onto);
+    const ontoMagSq = onto.magSq();
+    const proj = onto.copy().mult(dot / ontoMagSq);
+    
+    // Draw the vector being projected
+    drawVector(p, vector, scaleFactor, vectorColor, 'v', 3);
+    
+    // Draw the vector we're projecting onto
+    drawVector(p, onto.copy().normalize().mult(3), scaleFactor, p.color(200), 'u', 2);
+    
+    // Draw the projection
+    drawVector(p, proj, scaleFactor, projectionColor, 'proj', 3);
+    
+    // Draw perpendicular line from v to proj
+    p.stroke(vectorColor);
+    p.strokeWeight(1);
+    if (p.drawingContext.setLineDash) {
+        p.drawingContext.setLineDash([3, 3]);
+    }
+    p.line(vector.x * scaleFactor, vector.y * scaleFactor, proj.x * scaleFactor, proj.y * scaleFactor);
+    if (p.drawingContext.setLineDash) {
+        p.drawingContext.setLineDash([]);
+    }
+};
+
+export const drawLinearSystem = (p: p5, a1: number, b1: number, c1: number, a2: number, b2: number, c2: number, scaleFactor: number, line1Color: p5.Color, line2Color: p5.Color) => {
+    
+    // Draw both lines
+    drawLine(p, a1, b1, c1, scaleFactor, line1Color);
+    drawLine(p, a2, b2, c2, scaleFactor, line2Color);
+    
+    // Calculate and draw intersection point
+    const det = a1 * b2 - a2 * b1;
+    if (Math.abs(det) > 1e-9) {
+        const x = (c1 * b2 - c2 * b1) / det;
+        const y = (a1 * c2 - a2 * c1) / det;
+        
+        p.fill(255, 255, 0);
+        p.stroke(0);
+        p.strokeWeight(2);
+        p.ellipse(x * scaleFactor, y * scaleFactor, 12, 12);
+        
+        // Label the solution
+        p.push();
+        p.noStroke();
+        p.fill(255);
+        p.textSize(16);
+        p.translate(x * scaleFactor + 15, y * scaleFactor - 15);
+        p.scale(1, -1);
+        p.text(`(${x.toFixed(2)}, ${y.toFixed(2)})`, 0, 0);
+        p.pop();
+    }
+};
+
+    
