@@ -136,13 +136,26 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
                     </CardHeader>
-                    {isEigenTopic || isDeterminantTopic ? (
+                    {isEigenTopic ? (
                         <CardContent>
                             <EigenVisualizer />
                         </CardContent>
                     ) : isSvdTopic ? (
                         <CardContent>
                             <SvdVisualizer />
+                        </CardContent>
+                    ) : isDeterminantTopic ? (
+                        <CardContent className="prose prose-invert max-w-none p-6 text-foreground/90">
+                            <p className="font-semibold text-lg text-primary">Why it's hard: "It's the area scaling factor" - people memorize formulas but don't SEE it.</p>
+                            <h4 className="font-bold text-base not-prose mt-4">Visualization potential:</h4>
+                            <ul className="text-sm">
+                                <li>Start with a unit square, watch its area change as you transform it.</li>
+                                <li>Show how determinant = volume scaling in 3D (unit cube transforming).</li>
+                                <li>Negative determinant = orientation flip (watch the square flip inside out!).</li>
+                                <li>Det = 0 means squashing to lower dimension (3D → plane → line → point).</li>
+                                <li>Interactive: drag matrix values, watch area change in real-time.</li>
+                                <li>The "wow" moment: Draw a shape, apply transformation, see area multiply by |det|!</li>
+                            </ul>
                         </CardContent>
                     ) : (
                          <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
