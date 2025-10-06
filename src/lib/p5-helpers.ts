@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import p5 from 'p5';
@@ -23,7 +24,6 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, color: p5.Color, w
         p.noStroke();
         p.fill(fillColor);
         const r = 8;
-        p.beginShape();
         const p1 = p5.Vector.add(p5.Vector.mult(b1, -r), p5.Vector.mult(b2, -r));
         const p2 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, -r));
         const p3 = p5.Vector.add(p5.Vector.mult(b1, r), p5.Vector.mult(b2, r));
@@ -40,12 +40,16 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, color: p5.Color, w
     p.noFill();
     const range = 10;
     for (let i = -range; i <= range; i++) {
-        const p1 = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, -range));
-        const p2 = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, range));
+        const p1_start = p5.Vector.mult(b2, -range);
+        const p1 = p5.Vector.add(p5.Vector.mult(b1, i), p1_start);
+        const p2_end = p5.Vector.mult(b2, range);
+        const p2 = p5.Vector.add(p5.Vector.mult(b1, i), p2_end);
         p.line(p1.x * scaleFactor, p1.y * scaleFactor, p2.x * scaleFactor, p2.y * scaleFactor);
 
-        const p3 = p5.Vector.add(p5.Vector.mult(b1, -range), p5.Vector.mult(b2, i));
-        const p4 = p5.Vector.add(p5.Vector.mult(b1, range), p5.Vector.mult(b2, i));
+        const p3_start = p5.Vector.mult(b1, -range);
+        const p3 = p5.Vector.add(p3_start, p5.Vector.mult(b2, i));
+        const p4_end = p5.Vector.mult(b1, range);
+        const p4 = p5.Vector.add(p4_end, p5.Vector.mult(b2, i));
         p.line(p3.x * scaleFactor, p3.y * scaleFactor, p4.x * scaleFactor, p4.y * scaleFactor);
     }
 };
@@ -56,12 +60,14 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, color: p5.Color, w
  * @param p - The p5 instance.
  * @param matrix - The 2x2 transformation matrix.
  * @param scaleFactor - The scaling factor for the drawing.
- * @param color - The color of the grid lines.
+ * @param originalColor - The color of the original grid.
+ * @param transformedColor - The color of the transformed grid.
  */
-export const drawTransformedGrid = (p: p5, matrix: { a: number, b: number, c: number, d: number }, scaleFactor: number, color: p5.Color) => {
+export const drawTransformedGrid = (p: p5, matrix: { a: number, b: number, c: number, d: number }, scaleFactor: number, originalColor: p5.Color, transformedColor: p5.Color) => {
+    drawGrid(p, p.createVector(1, 0), p.createVector(0, 1), originalColor, 1, scaleFactor);
     const transformedBasis1 = p.createVector(matrix.a, matrix.c);
     const transformedBasis2 = p.createVector(matrix.b, matrix.d);
-    drawGrid(p, transformedBasis1, transformedBasis2, color, 1, scaleFactor);
+    drawGrid(p, transformedBasis1, transformedBasis2, transformedColor, 1.5, scaleFactor);
 };
 
 
@@ -110,14 +116,15 @@ export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.C
 
 /**
  * Draws a vector with special styling (e.g., dashed line, different thickness) to indicate it's an eigenvector.
- * Includes a label showing the eigenvalue, useful for teaching matrix eigenspaces.
+ * Include a label showing the eigenvalue, useful for teaching matrix eigenspaces.
  * @param p - The p5 instance.
  * @param vector - The eigenvector.
  * @param eigenvalue - The corresponding eigenvalue.
  * @param scaleFactor - The scaling factor for the drawing.
  * @param color - The color of the eigenvector.
+ * @param showScaling - Whether to show the eigenvalue scaling.
  */
-export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color) => {
+export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color, showScaling: boolean = true) => {
     p.stroke(color);
     p.strokeWeight(1);
     if (p.drawingContext.setLineDash) {
@@ -130,8 +137,12 @@ export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, sc
         p.drawingContext.setLineDash([]);
     }
     
-    const scaledVector = p5.Vector.mult(vector, eigenvalue);
-    drawVector(p, scaledVector, scaleFactor, color, `λ=${eigenvalue.toFixed(2)}`, 3);
+    if (showScaling) {
+        const scaledVector = p5.Vector.mult(vector, eigenvalue);
+        drawVector(p, scaledVector, scaleFactor, color, `λ=${eigenvalue.toFixed(2)}`, 3);
+    } else {
+        drawVector(p, vector, scaleFactor, color, null, 3);
+    }
 };
 
 
@@ -332,6 +343,130 @@ export const drawTransformedShape = (p: p5, vertices: p5.Vector[], matrix: { a: 
         return p.createVector(tx, ty);
     });
     drawPolygon(p, transformedVertices, scaleFactor, color, color);
+};
+
+export const drawBasisVectors = (p: p5, b1: p5.Vector, b2: p5.Vector, scaleFactor: number, color1: p5.Color, color2: p5.Color, labels: boolean = true) => {
+    drawVector(p, b1, scaleFactor, color1, labels ? 'b₁' : null);
+    drawVector(p, b2, scaleFactor, color2, labels ? 'b₂' : null);
+};
+
+export const drawLinearCombination = (p: p5, v1: p5.Vector, v2: p5.Vector, scalar1: number, scalar2: number, scaleFactor: number, showComponents: boolean = true) => {
+    const c1 = p5.Vector.mult(v1, scalar1);
+    const c2 = p5.Vector.mult(v2, scalar2);
+    const result = p5.Vector.add(c1, c2);
+
+    if (showComponents) {
+        drawVector(p, c1, scaleFactor, p.color(255, 0, 0, 150));
+        drawVector(p, c2, scaleFactor, p.color(0, 255, 0, 150), null, 4, c1);
+    }
+    drawVector(p, result, scaleFactor, p.color(255, 255, 0));
+};
+
+export const drawSpan = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, fillColor: p5.Color, showVectors: boolean = true) => {
+    if (showVectors) {
+        drawVector(p, v1, scaleFactor, p.color(255, 0, 0));
+        drawVector(p, v2, scaleFactor, p.color(0, 255, 0));
+    }
+    drawParallelogram(p, v1, v2, scaleFactor, fillColor, p.color(0,0));
+};
+
+export const drawDeterminantParallelogram = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, fillColor: p5.Color, showArea: boolean = true) => {
+    drawParallelogram(p, v1, v2, scaleFactor, fillColor, p.color(255));
+    if (showArea) {
+        const area = Math.abs(v1.x * v2.y - v1.y * v2.x);
+        const center = p5.Vector.add(v1, v2).div(2);
+        p.fill(255);
+        p.noStroke();
+        p.text(`Area = ${area.toFixed(2)}`, center.x * scaleFactor, center.y * scaleFactor);
+    }
+};
+
+export const drawMatrixMultiplication = (p: p5, m1: {a:number,b:number,c:number,d:number}, m2: {a:number,b:number,c:number,d:number}, scaleFactor: number, showSteps: boolean = true) => {
+    // This is more conceptual - showing the composition.
+    // A full visual requires animation, showing m1 applied then m2.
+    // For a static view, we can show the final transformed grid.
+    const m3 = {
+        a: m2.a * m1.a + m2.b * m1.c, b: m2.a * m1.b + m2.b * m1.d,
+        c: m2.c * m1.a + m2.d * m1.c, d: m2.c * m1.b + m2.d * m1.d
+    };
+    drawTransformedGrid(p, m3, scaleFactor, p.color(255, 50), p.color(255, 150));
+};
+
+export const drawInverse = (p: p5, matrix: {a:number,b:number,c:number,d:number}, scaleFactor: number, originalColor: p5.Color, inverseColor: p5.Color) => {
+    const det = matrix.a * matrix.d - matrix.b * matrix.c;
+    if (Math.abs(det) < 1e-9) return; // Not invertible
+    const invDet = 1 / det;
+    const invMatrix = {
+        a: invDet * matrix.d, b: invDet * -matrix.b,
+        c: invDet * -matrix.c, d: invDet * matrix.a
+    };
+    drawTransformedGrid(p, matrix, scaleFactor, p.color(255), originalColor);
+    drawTransformedGrid(p, invMatrix, scaleFactor, p.color(255), inverseColor);
+};
+
+export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleFactor: number, vectorColor: p5.Color, projectionColor: p5.Color) => {
+    const dot = vector.dot(onto);
+    const lenSq = onto.magSq();
+    const proj = onto.copy().mult(dot / lenSq);
+
+    drawVector(p, vector, scaleFactor, vectorColor, 'v');
+    drawVector(p, onto, scaleFactor, p.color(200));
+    drawVector(p, proj, scaleFactor, projectionColor, 'proj');
+    p.stroke(255, 100); p.strokeWeight(1);
+    p.line(vector.x * scaleFactor, vector.y * scaleFactor, proj.x * scaleFactor, proj.y * scaleFactor);
+};
+
+export const drawOrthogonalBasis = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, color: p5.Color, showRightAngle: boolean = true) => {
+    drawVector(p, v1, scaleFactor, color);
+    drawVector(p, v2, scaleFactor, color);
+    if (showRightAngle) {
+        p.noFill(); p.stroke(color); p.strokeWeight(1);
+        const size = 0.2 * scaleFactor;
+        const corner = p5.Vector.add(v1.copy().normalize().mult(size), v2.copy().normalize().mult(size));
+        p.line(v1.copy().normalize().mult(size).x * scaleFactor, v1.copy().normalize().mult(size).y * scaleFactor, corner.x * scaleFactor, corner.y * scaleFactor);
+        p.line(v2.copy().normalize().mult(size).x * scaleFactor, v2.copy().normalize().mult(size).y * scaleFactor, corner.x * scaleFactor, corner.y * scaleFactor);
+    }
+};
+
+export const drawLinearSystem = (p: p5, a1: number, b1: number, c1: number, a2: number, b2: number, c2: number, scaleFactor: number, line1Color: p5.Color, line2Color: p5.Color) => {
+    drawLine(p, a1, b1, c1, scaleFactor, line1Color);
+    drawLine(p, a2, b2, c2, scaleFactor, line2Color);
+    
+    const det = a1 * b2 - a2 * b1;
+    if (Math.abs(det) > 1e-9) {
+        const x = (c1 * b2 - c2 * b1) / det;
+        const y = (a1 * c2 - a2 * c1) / det;
+        p.fill(255, 255, 0); p.noStroke();
+        p.ellipse(x * scaleFactor, y * scaleFactor, 10, 10);
+    }
+};
+
+export const drawColumnSpace = (p: p5, matrix: {a:number,b:number,c:number,d:number}, scaleFactor: number, color: p5.Color) => {
+    const v1 = p.createVector(matrix.a, matrix.c);
+    const v2 = p.createVector(matrix.b, matrix.d);
+    drawSpan(p, v1, v2, scaleFactor, color);
+};
+
+export const drawAngleBetweenVectors = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, color: p5.Color, showDotProduct: boolean = true) => {
+    const angle = p5.Vector.angleBetween(v1, v2);
+    p.noFill(); p.stroke(color); p.strokeWeight(1.5);
+    const arcSize = p.min(v1.mag(), v2.mag()) * scaleFactor * 0.5;
+    p.arc(0, 0, arcSize, arcSize, p.min(v1.heading(), v2.heading()), p.max(v1.heading(), v2.heading()));
+
+    if (showDotProduct) {
+        const textPos = p5.Vector.add(v1, v2).normalize().mult(arcSize * 1.2);
+        p.fill(color); p.noStroke(); p.textSize(12);
+        p.text(`θ = ${p.degrees(angle).toFixed(1)}°`, textPos.x, textPos.y);
+    }
+};
+
+export const drawMatrixNotation = (p: p5, matrix: {a:number,b:number,c:number,d:number}, position: p5.Vector, color: p5.Color) => {
+    p.push();
+    p.translate(position.x, position.y);
+    p.scale(1, -1);
+    p.fill(color); p.noStroke(); p.textSize(16); p.textFont('monospace');
+    p.text(`[[${matrix.a.toFixed(1)}, ${matrix.b.toFixed(1)}],\n [${matrix.c.toFixed(1)}, ${matrix.d.toFixed(1)}]]`, 0, 0);
+    p.pop();
 };
 
 

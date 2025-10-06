@@ -1,5 +1,6 @@
 
 
+
 /**
  * Generates normally distributed random data using the central limit theorem approximation.
  * @param mean - The desired mean.
@@ -287,7 +288,7 @@ export const inverseStandardNormalCdf = (p: number): number => {
     } else {
         const q = p - 0.5;
         const r = q * q;
-        return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / ((((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1));
+        return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / ((((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)));
     }
 }
 
@@ -377,5 +378,90 @@ export const applyMatrix = (v: { x: number; y: number }, m: { a: number; b: numb
         y: m.c * v.x + m.d * v.y,
     };
 };
+
+/**
+ * Returns the determinant value ad - bc for a 2x2 matrix.
+ * @param matrix - The 2x2 matrix.
+ * @returns The determinant of the matrix.
+ */
+export const calculateDeterminant = (matrix: { a: number, b: number, c: number, d: number }): number => {
+    return matrix.a * matrix.d - matrix.b * matrix.c;
+};
+
+/**
+ * Computes the product of two 2x2 matrices and returns the result matrix.
+ * @param m1 - The first matrix.
+ * @param m2 - The second matrix.
+ * @returns The resulting matrix from m1 * m2.
+ */
+export const matrixMultiply = (m1: { a: number, b: number, c: number, d: number }, m2: { a: number, b: number, c: number, d: number }): { a: number, b: number, c: number, d: number } => {
+    return {
+        a: m1.a * m2.a + m1.b * m2.c,
+        b: m1.a * m2.b + m1.b * m2.d,
+        c: m1.c * m2.a + m1.d * m2.c,
+        d: m1.c * m2.b + m1.d * m2.d,
+    };
+};
+
+/**
+ * Returns a rotation matrix for the given angle in radians.
+ * @param angle - The angle in radians.
+ * @returns A 2x2 rotation matrix.
+ */
+export const createRotationMatrix = (angle: number): { a: number, b: number, c: number, d: number } => {
+    return {
+        a: Math.cos(angle),
+        b: -Math.sin(angle),
+        c: Math.sin(angle),
+        d: Math.cos(angle),
+    };
+};
+
+/**
+ * Returns a scaling matrix.
+ * @param sx - The scaling factor in the x-direction.
+ * @param sy - The scaling factor in the y-direction.
+ * @returns A 2x2 scaling matrix.
+ */
+export const createScalingMatrix = (sx: number, sy: number): { a: number, b: number, c: number, d: number } => {
+    return { a: sx, b: 0, c: 0, d: sy };
+};
+
+/**
+ * Returns a shear matrix.
+ * @param shx - The horizontal shear factor.
+ * @param shy - The vertical shear factor.
+ * @returns A 2x2 shear matrix.
+ */
+export const createShearMatrix = (shx: number, shy: number): { a: number, b: number, c: number, d: number } => {
+    return { a: 1, b: shx, c: shy, d: 1 };
+};
+
+/**
+ * Returns a reflection matrix across a specified axis.
+ * @param axis - The axis of reflection ('x', 'y', or a vector).
+ * @returns A 2x2 reflection matrix.
+ */
+export const createReflectionMatrix = (axis: 'x' | 'y' | { x: number, y: number }): { a: number, b: number, c: number, d: number } => {
+    if (axis === 'x') {
+        return { a: 1, b: 0, c: 0, d: -1 };
+    }
+    if (axis === 'y') {
+        return { a: -1, b: 0, c: 0, d: 1 };
+    }
+    // Reflection across a line defined by a vector
+    const lenSq = axis.x * axis.x + axis.y * axis.y;
+    if (lenSq === 0) return { a: 1, b: 0, c: 0, d: 1 }; // Identity if zero vector
+    const x2 = axis.x * axis.x;
+    const y2 = axis.y * axis.y;
+    const xy = axis.x * axis.y;
+    return {
+        a: (x2 - y2) / lenSq,
+        b: 2 * xy / lenSq,
+        c: 2 * xy / lenSq,
+        d: (y2 - x2) / lenSq,
+    };
+};
     
+
 
