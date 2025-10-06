@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
-import { drawGrid as p5DrawGrid, drawVector as p5DrawVector } from '@/lib/p5';
+import { drawGrid as p5DrawGrid, drawVector as p5DrawVector, drawAxes as p5DrawAxes } from '@/lib/p5';
 
 const DeterminantVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -55,10 +55,8 @@ const DeterminantVisualizer = () => {
 
                 // Use the standardized grid drawing function
                 p5DrawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
-                p.stroke(209, 213, 219);
-                p.strokeWeight(2);
-                p.line(-p.width, 0, p.width, 0); // X-axis
-                p.line(0, -p.height, 0, p.height); // Y-axis
+                p5DrawAxes(p, scaleFactor, p.color(209, 213, 219));
+
 
                 const i_hat_x = a * scaleFactor;
                 const i_hat_y = c * scaleFactor;
@@ -195,5 +193,3 @@ const DeterminantVisualizer = () => {
 };
 
 export default DeterminantVisualizer;
-
-    
