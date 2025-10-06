@@ -137,6 +137,32 @@ export const drawDashedLine = (p: p5, v1: p5.Vector, v2: p5.Vector, color: p5.Co
     }
 };
 
+/**
+ * Draws a line representing the equation ax + by = c.
+ * @param p - The p5 instance.
+ * @param a - The coefficient of x.
+ * @param b - The coefficient of y.
+ * @param c - The constant term.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @param color - The color of the line.
+ */
+export const drawLine = (p: p5, a: number, b: number, c: number, scaleFactor: number, color: p5.Color) => {
+    p.push();
+    p.stroke(color); p.strokeWeight(3);
+    let x1, y1, x2, y2;
+    const limit = p.max(p.width, p.height) * 2;
+    if (Math.abs(b) > 1e-9) {
+        x1 = -limit; y1 = (c - a * x1) / b;
+        x2 = limit; y2 = (c - a * x2) / b;
+    } else {
+        if (Math.abs(a) < 1e-9) return;
+        x1 = c / a; y1 = -limit;
+        x2 = c / a; y2 = limit;
+    }
+    p.line(x1 * scaleFactor, y1 * scaleFactor, x2 * scaleFactor, y2 * scaleFactor);
+    p.pop();
+};
+
 // #endregion
 
 // #region --- Coordinate System ---
@@ -167,4 +193,22 @@ export const screenToWorld = (p: p5, mx: number, my: number, scaleFactor: number
 export const easeInOutCubic = (t: number): number => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
 
+/**
+ * Linearly interpolates between two matrices.
+ * @param p - The p5 instance.
+ * @param m1 - The starting matrix.
+ * @param m2 - The ending matrix.
+ * @param t - The progress of the interpolation (0 to 1).
+ * @returns The interpolated matrix.
+ */
+export const lerpMatrix = (p: p5, m1: any, m2: any, t: number) => {
+    const res: { [key: string]: number } = {};
+    for (const key in m1) {
+        res[key] = p.lerp(m1[key], m2[key], t);
+    }
+    return res as any;
+};
+
 // #endregion
+
+    

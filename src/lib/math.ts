@@ -289,3 +289,18 @@ export const inverseStandardNormalCdf = (p: number): number => {
         return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / ((((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1));
     }
 }
+
+/**
+ * Solves a 2x2 system of linear equations Ax = b.
+ * @param m - An object representing the augmented matrix [A|b].
+ * @returns An object with x and y coordinates of the solution, or null if no unique solution exists.
+ */
+export const calculate2x2Solution = (m: { a11: number; a12: number; b1: number; a21: number; a22: number; b2: number; }) => {
+    const det = m.a11 * m.a22 - m.a12 * m.a21;
+    if (Math.abs(det) < 1e-9) return null;
+    const x = (m.b1 * m.a22 - m.b2 * m.a12) / det;
+    const y = (m.a11 * m.b2 - m.a21 * m.b1) / det;
+    return { x, y };
+};
+
+    

@@ -10,15 +10,15 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
-import { drawGrid as p5DrawGrid, easeInOutCubic } from '@/lib/p5-helpers';
-
+import { drawGrid as p5DrawGrid, easeInOutCubic, drawLine, lerpMatrix } from '@/lib/p5-helpers';
+import { calculate2x2Solution } from '@/lib/math';
 
 const GaussianEliminationVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
     const sketchRef = useRef<p5 | null>(null);
 
     const [matrix, setMatrix] = useState({ a11: 2, a12: -1, b1: 1, a21: 1, a22: 1, b2: 5 });
-    const [animation, setAnimation] = useState({ active: false, progress: 0, duration: 45, startState: null, endState: null, isScaling: false });
+    const [animation, setAnimation] = useState({ active: false, progress: 0, duration: 45, startState: null as any, endState: null as any, isScaling: false });
     const [sliders, setSliders] = useState({ k1: 0, k2: 0, s1: 1, s2: 1 });
     const [solution, setSolution] = useState<{ x: number, y: number } | null>(null);
 
@@ -34,7 +34,7 @@ const GaussianEliminationVisualizer = () => {
     };
     
     useEffect(() => {
-        const sol = calculateSolution(matrix);
+        const sol = calculate2x2Solution(matrix);
         setSolution(sol);
     }, [matrix]);
 
@@ -74,7 +74,7 @@ const GaussianEliminationVisualizer = () => {
                 drawLine(p, currentMatrix.a11, currentMatrix.a12, currentMatrix.b1, scaleFactor, p.color(134, 239, 172)); // green
                 drawLine(p, currentMatrix.a21, currentMatrix.a22, currentMatrix.b2, scaleFactor, p.color(147, 197, 253)); // blue
                 
-                const sol = calculateSolution(currentMatrix);
+                const sol = calculate2x2Solution(currentMatrix);
                 if (sol) {
                     p.noStroke();
                     if (currentAnimation.active && !currentAnimation.isScaling) {
@@ -213,36 +213,4 @@ const GaussianEliminationVisualizer = () => {
 };
 export default GaussianEliminationVisualizer;
 
-// --- p5.js Helper Functions (to be used within the sketch) ---
-const drawLine = (p: p5, a: number, b: number, c: number, s: number, col: p5.Color) => {
-    p.push();
-    p.stroke(col); p.strokeWeight(3);
-    let x1, y1, x2, y2;
-    const limit = p.max(p.width, p.height) * 2;
-    if (Math.abs(b) > 1e-9) {
-        x1 = -limit; y1 = (c - a * x1) / b;
-        x2 = limit; y2 = (c - a * x2) / b;
-    } else {
-        if (Math.abs(a) < 1e-9) return;
-        x1 = c / a; y1 = -limit;
-        x2 = c / a; y2 = limit;
-    }
-    p.line(x1 * s, y1 * s, x2 * s, y2 * s);
-    p.pop();
-};
-
-const calculateSolution = (m: { a11: number; a12: number; b1: number; a21: number; a22: number; b2: number; }) => {
-    const det = m.a11 * m.a22 - m.a12 * m.a21;
-    if (Math.abs(det) < 1e-9) return null;
-    const x = (m.b1 * m.a22 - m.b2 * m.a12) / det;
-    const y = (m.a11 * m.b2 - m.a21 * m.b1) / det;
-    return { x, y };
-};
-
-const lerpMatrix = (p: p5, m1: any, m2: any, t: number) => {
-    const res: { [key: string]: number } = {};
-    for (const key in m1) {
-        res[key] = p.lerp(m1[key], m2[key], t);
-    }
-    return res as any;
-};
+    
