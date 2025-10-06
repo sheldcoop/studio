@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { drawGrid, drawVector, screenToWorld, drawDashedLine } from '@/lib/p5';
+import { drawGrid, drawVector, screenToWorld, drawDashedLine, drawAxes } from '@/lib/p5';
 
 const VectorProjectionVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,8 @@ const VectorProjectionVisualizer = () => {
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
 
-                drawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
+                drawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81, 150), 1, scaleFactor);
+                drawAxes(p, scaleFactor, p.color(100));
 
                 const b_norm = sketchState.b.copy().normalize();
                 const dot_ab_val = sketchState.a.dot(sketchState.b);
@@ -167,3 +168,5 @@ const VectorProjectionVisualizer = () => {
 };
 
 export default VectorProjectionVisualizer;
+
+    

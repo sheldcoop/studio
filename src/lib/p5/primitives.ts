@@ -16,39 +16,44 @@ import { calculateEigen } from '../math/linear-algebra';
 export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.Color, label: string | null, weight = 4, offset: p5.Vector | null = null) => {
     if (!v) return;
 
-    const scaledVector = v.copy().mult(scaleFactor);
-    if (offset) {
-        scaledVector.add(offset.copy().mult(scaleFactor));
-    }
+    const start = offset ? offset.copy().mult(scaleFactor) : p.createVector(0, 0);
+    const end = p5.Vector.add(start, v.copy().mult(scaleFactor));
     
     // Don't draw if the vector is effectively zero length
     if (v.magSq() < 1e-4) {
         p.fill(color);
         p.noStroke();
-        p.ellipse(offset ? scaledVector.x : 0, offset ? scaledVector.y : 0, 8, 8);
+        p.ellipse(start.x, start.y, 8, 8);
         return;
     };
 
     p.push();
-    if(offset) {
-        p.translate(offset.x * scaleFactor, offset.y * scaleFactor);
-    }
     p.stroke(color);
     p.fill(color);
     p.strokeWeight(weight);
-    p.line(0, 0, v.x * scaleFactor, v.y * scaleFactor);
+    p.line(start.x, start.y, end.x, end.y);
 
     // Arrowhead
     const arrowSize = 10;
     const angle = v.heading();
-    p.translate(v.x * scaleFactor, v.y * scaleFactor);
+    p.translate(end.x, end.y);
     p.rotate(angle);
     p.triangle(0, 0, -arrowSize, arrowSize / 2, -arrowSize, -arrowSize / 2);
     p.pop();
 
     if (label) {
         p.push();
-        const labelPosition = scaledVector.copy().add(v.copy().normalize().mult(20));
+        // Intelligent label positioning
+        const normalized = v.copy().normalize();
+        const perp = p.createVector(-normalized.y, normalized.x);
+        let labelOffset = normalized.mult(20);
+
+        // If the label is for 'proj', move it slightly perpendicular to avoid overlaps
+        if (label === 'proj') {
+            labelOffset.add(perp.mult(15));
+        }
+
+        const labelPosition = p5.Vector.add(end, labelOffset);
         p.noStroke();
         p.fill(color);
         p.textSize(18);
@@ -332,3 +337,5 @@ export const drawGradientField = (p: p5, gradientFn: (x: number, y: number) => {
         }
     }
 };
+
+    
