@@ -3,6 +3,56 @@
 import p5 from 'p5';
 
 /**
+ * Draws a transformed grid defined by two basis vectors.
+ * @param p - The p5 instance.
+ * @param b1 - The first basis vector.
+ * @param b2 - The second basis vector.
+ * @param c - The color of the grid lines.
+ * @param w - The stroke weight of the lines.
+ * @param s - The scaling factor.
+ * @param fillColor - Optional color to fill the grid area.
+ */
+export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: number, s: number, fillColor?: p5.Color) => {
+    if (b1.magSq() < 0.01 || b2.magSq() < 0.01) return;
+    
+    p.stroke(c);
+    p.strokeWeight(w);
+    const range = 10;
+    
+    for(let i = -range; i <= range; i++) {
+        const p1 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(-range));
+        const p2 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(range));
+        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+
+        const p3 = p5.Vector.add(b1.copy().mult(-range), b2.copy().mult(i));
+        const p4 = p5.Vector.add(b1.copy().mult(range), b2.copy().mult(i));
+        p.line(p3.x * s, p3.y * s, p4.x * s, p4.y * s);
+    }
+    
+    if (fillColor) {
+        p.noStroke();
+        p.fill(fillColor);
+        p.beginShape();
+        const r = 8;
+        const p1_fill = b1.copy().mult(-r);
+        const p2_fill = b1.copy().mult(r);
+        const p3_fill = b2.copy().mult(-r);
+        const p4_fill = b2.copy().mult(r);
+
+        const v1 = p5.Vector.add(p1_fill, p3_fill);
+        const v2 = p5.Vector.add(p2_fill, p3_fill);
+        const v3 = p5.Vector.add(p2_fill, p4_fill);
+        const v4 = p5.Vector.add(p1_fill, p4_fill);
+        p.vertex(v1.x * s, v1.y * s);
+        p.vertex(v2.x * s, v2.y * s);
+        p.vertex(v3.x * s, v3.y * s);
+        p.vertex(v4.x * s, v4.y * s);
+        p.endShape(p.CLOSE);
+    }
+};
+
+
+/**
  * Draws standard Cartesian axes with correct label orientation, arrowheads, and ticks.
  * @param p - The p5 instance.
  * @param scaleFactor - The scaling factor.
