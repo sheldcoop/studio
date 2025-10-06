@@ -1,4 +1,3 @@
-
 'use client';
 
 import p5 from 'p5';
@@ -51,11 +50,11 @@ export const screenToWorld = (p: p5, mx: number, my: number, scaleFactor: number
 /**
  * Draws two lines representing a 2x2 system of equations.
  * @param p - The p5 instance.
- * @param a1, b1, c1 - Coefficients for the first line (a1*x + b1*y = c1).
- * @param a2, b2, c2 - Coefficients for the second line (a2*x + b2*y = c2).
+ * @param a - Coefficient a of the line ax + by = c.
+ * @param b - Coefficient b of the line ax + by = c.
+ * @param c - Coefficient c of the line ax + by = c.
  * @param scaleFactor - The scaling factor.
- * @param line1Color - The color of the first line.
- * @param line2Color - The color of the second line.
+ * @param color - The color of the line.
  */
 export const drawLine = (p: p5, a: number, b: number, c: number, scaleFactor: number, color: p5.Color) => {
     p.stroke(color);
