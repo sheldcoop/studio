@@ -1,7 +1,4 @@
 
-
-
-
 /**
  * Generates normally distributed random data using the central limit theorem approximation.
  * @param mean - The desired mean.
