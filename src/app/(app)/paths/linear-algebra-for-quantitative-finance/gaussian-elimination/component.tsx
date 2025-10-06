@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/app/page-header";
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// This component is ALREADY dynamically imported by the [slug] page.
+// The dynamic import for the visualizer itself should be here.
 const GaussianEliminationVisualizer = dynamic(
   () => import('@/components/app/gaussian-elimination-visualizer'),
   { 
