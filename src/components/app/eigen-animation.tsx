@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
@@ -16,127 +16,169 @@ export function EigenAnimation({ className }: EigenAnimationProps) {
 
   useEffect(() => {
     if (!mountRef.current) return;
-    const currentMount = mountRef.current;
-    let animationFrameId: number;
+
     let frameId: number;
-
-    const cleanupFunctions: (() => void)[] = [];
+    const currentMount = mountRef.current;
     
-    // Defer execution to ensure mountRef is fully available
-    animationFrameId = requestAnimationFrame(() => {
-        if (!currentMount) return;
+    // --- Scene Setup ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(
+      currentMount.clientWidth / -50, currentMount.clientWidth / 50,
+      currentMount.clientHeight / 50, currentMount.clientHeight / -50,
+      1, 1000
+    );
+    camera.position.z = 10;
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    currentMount.appendChild(renderer.domElement);
 
-        const computedStyle = getComputedStyle(document.documentElement);
-        const primaryColorValue = computedStyle.getPropertyValue('--chart-1').trim();
-        const secondaryColorValue = computedStyle.getPropertyValue('--chart-2').trim();
-        const gridColorValue = computedStyle.getPropertyValue('--muted-foreground').trim();
+    // --- Colors & Materials ---
+    const computedStyle = getComputedStyle(document.documentElement);
+    const blueColor = new THREE.Color(computedStyle.getPropertyValue('--chart-1').trim());
+    const pinkColor = new THREE.Color(computedStyle.getPropertyValue('--chart-2').trim());
+    const greenColor = new THREE.Color(computedStyle.getPropertyValue('--chart-3').trim());
+    const brightGreenColor = new THREE.Color(computedStyle.getPropertyValue('--chart-4').trim());
+    const gridColor = new THREE.Color(computedStyle.getPropertyValue('--muted-foreground').trim());
 
-        const primaryColor = new THREE.Color(primaryColorValue);
-        const secondaryColor = new THREE.Color(secondaryColorValue);
-        const gridColor = new THREE.Color(gridColorValue);
+    // --- Grid ---
+    const gridHelper = new THREE.GridHelper(20, 20, gridColor, gridColor);
+    gridHelper.material.opacity = 0.25;
+    gridHelper.material.transparent = true;
+    gridHelper.rotation.x = Math.PI / 2;
+    scene.add(gridHelper);
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 10);
+    const axesHelper = new THREE.AxesHelper(10);
+    (axesHelper.material as THREE.Material).transparent = true;
+    (axesHelper.material as THREE.Material).opacity = 0.4;
+    scene.add(axesHelper);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        currentMount.appendChild(renderer.domElement);
-        cleanupFunctions.push(() => {
-            if (renderer.domElement.parentElement) currentMount.removeChild(renderer.domElement);
-            renderer.dispose();
-        });
+    // --- Transformation Matrix and Eigenvectors ---
+    const matrix = new THREE.Matrix3().fromArray([2, 1, 0, 1, 2, 0, 0, 0, 1]);
+    const eigen = {
+        vec1: new THREE.Vector2(1, 1).normalize(),
+        val1: 3,
+        vec2: new THREE.Vector2(-1, 1).normalize(),
+        val2: 1
+    };
 
-        // Grid of points
-        const gridSize = 10;
-        const gridDivisions = 20;
-        const pointsGeometry = new THREE.BufferGeometry();
-        const points: THREE.Vector3[] = [];
-        for (let i = -gridSize / 2; i <= gridSize / 2; i += gridSize / gridDivisions) {
-            for (let j = -gridSize / 2; j <= gridSize / 2; j += gridSize / gridDivisions) {
-                points.push(new THREE.Vector3(i, j, 0));
-            }
-        }
-        pointsGeometry.setFromPoints(points);
-        const pointsMaterial = new THREE.PointsMaterial({ color: gridColor, size: 0.08 });
-        const pointCloud = new THREE.Points(pointsGeometry, pointsMaterial);
-        scene.add(pointCloud);
-        cleanupFunctions.push(() => { pointsGeometry.dispose(); pointsMaterial.dispose(); });
+    // --- Vector Objects ---
+    const origin = new THREE.Vector3(0, 0, 0);
+    const userVec2D = new THREE.Vector2(2, 1); // Default position (100, 50) on a 500px canvas is (2,1) in a +/-5 world
+    
+    const userArrow = new THREE.ArrowHelper(new THREE.Vector3(userVec2D.x, userVec2D.y, 0).normalize(), origin, userVec2D.length(), blueColor.getHex(), 0.5, 0.3);
+    const transformedArrow = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), origin, 1, pinkColor.getHex(), 0.5, 0.3);
+    
+    const eigenArrow1Before = new THREE.ArrowHelper(new THREE.Vector3(eigen.vec1.x, eigen.vec1.y, 0), origin, 3, greenColor.getHex(), 0.4, 0.2);
+    const eigenArrow1After = new THREE.ArrowHelper(new THREE.Vector3(eigen.vec1.x, eigen.vec1.y, 0), origin, 3 * eigen.val1, brightGreenColor.getHex(), 0.4, 0.2);
+    
+    // Make before arrow dashed
+    const dashedMaterial = new THREE.LineDashedMaterial({ color: greenColor.getHex(), dashSize: 0.2, gapSize: 0.2 });
+    (eigenArrow1Before.line.material as THREE.Material).dispose();
+    eigenArrow1Before.line.material = dashedMaterial;
+    eigenArrow1Before.line.computeLineDistances();
 
-        const originalPositions = pointsGeometry.attributes.position.clone();
+    scene.add(userArrow, transformedArrow, eigenArrow1Before, eigenArrow1After);
 
-        // Eigenvectors
-        const eigenVec1 = new THREE.Vector3(1, 0.5, 0).normalize();
-        const eigenVec2 = new THREE.Vector3(-0.5, 1, 0).normalize();
-        const eigenVal1 = 1.8;
-        const eigenVal2 = 0.5;
-
-        const arrow1 = new THREE.ArrowHelper(eigenVec1, new THREE.Vector3(0,0,0), 6, primaryColor.getHex(), 0.5, 0.3);
-        const arrow2 = new THREE.ArrowHelper(eigenVec2, new THREE.Vector3(0,0,0), 6, secondaryColor.getHex(), 0.5, 0.3);
-        scene.add(arrow1, arrow2);
-
-        const transformationMatrix = new THREE.Matrix4();
-        const basis = [eigenVec1.clone(), eigenVec2.clone(), new THREE.Vector3(0,0,1)];
-        const basisInv = new THREE.Matrix4().makeBasis(basis[0], basis[1], basis[2]).invert();
-        const scaleMatrix = new THREE.Matrix4().makeScale(eigenVal1, eigenVal2, 1);
-        const basisMatrix = new THREE.Matrix4().makeBasis(basis[0], basis[1], basis[2]);
-        transformationMatrix.multiply(basisMatrix).multiply(scaleMatrix).multiply(basisInv);
-
-        const clock = new THREE.Clock();
+    const updateVectors = () => {
+        const transformedVec2D = userVec2D.clone().applyMatrix3(matrix);
         
-        const animate = () => {
-            frameId = requestAnimationFrame(animate);
-            const t = (Math.sin(clock.getElapsedTime() * 0.5) + 1) / 2; // Oscillates between 0 and 1
+        userArrow.setDirection(new THREE.Vector3(userVec2D.x, userVec2D.y, 0).normalize());
+        userArrow.setLength(userVec2D.length(), 0.5, 0.3);
 
-            const identityMatrix = new THREE.Matrix4();
-            const currentMatrix = new THREE.Matrix4();
-            const newElements = new Float32Array(16);
-            for (let i = 0; i < 16; i++) {
-                newElements[i] = identityMatrix.elements[i] + (transformationMatrix.elements[i] - identityMatrix.elements[i]) * t;
-            }
-            currentMatrix.set(...newElements);
-            
-            const positions = pointsGeometry.attributes.position;
-            for (let i = 0; i < positions.count; i++) {
-                const vec = new THREE.Vector3().fromBufferAttribute(originalPositions, i);
-                vec.applyMatrix4(currentMatrix);
-                positions.setXYZ(i, vec.x, vec.y, vec.z);
-            }
-            positions.needsUpdate = true;
+        transformedArrow.setDirection(new THREE.Vector3(transformedVec2D.x, transformedVec2D.y, 0).normalize());
+        transformedArrow.setLength(transformedVec2D.length(), 0.5, 0.3);
+    };
 
-            const arrow1TargetScale = new THREE.Vector3(1,1,1).lerp(new THREE.Vector3(eigenVal1, 1, 1), t);
-            arrow1.scale.copy(arrow1TargetScale);
-            const arrow2TargetScale = new THREE.Vector3(1,1,1).lerp(new THREE.Vector3(eigenVal2, 1, 1), t);
-            arrow2.scale.copy(arrow2TargetScale);
+    updateVectors();
 
-            renderer.render(scene, camera);
-        };
-        animate();
-
-        const handleResize = () => {
-            if (currentMount) {
-                camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-            }
-        };
-        window.addEventListener('resize', handleResize);
-        cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
-
-        cleanupFunctions.push(() => {
-            if (frameId) cancelAnimationFrame(frameId);
-        });
-    });
-
-    return () => {
-        cleanupFunctions.forEach(fn => fn());
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        if (mountRef.current) {
-            while (mountRef.current.firstChild) {
-                mountRef.current.removeChild(mountRef.current.firstChild);
-            }
+    // --- Interaction ---
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let isDragging = false;
+    
+    const onPointerMove = (event: PointerEvent) => {
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        
+        if (isDragging) {
+            raycaster.setFromCamera(mouse, camera);
+            const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+            const intersectPoint = new THREE.Vector3();
+            raycaster.ray.intersectPlane(plane, intersectPoint);
+            userVec2D.set(intersectPoint.x, intersectPoint.y);
+            updateVectors();
         }
+    };
+    
+    const onPointerDown = (event: PointerEvent) => {
+        onPointerMove(event); // Update mouse position
+        raycaster.setFromCamera(mouse, camera);
+        
+        const userArrowTip = new THREE.Vector3(userVec2D.x, userVec2D.y, 0);
+        const mouseWorldPos = new THREE.Vector3();
+        raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), mouseWorldPos);
+
+        if (mouseWorldPos.distanceTo(userArrowTip) < 0.5) {
+            isDragging = true;
+            currentMount.style.cursor = 'grabbing';
+        }
+    };
+
+    const onPointerUp = () => {
+        isDragging = false;
+        currentMount.style.cursor = 'default';
+    };
+
+    renderer.domElement.addEventListener('pointerdown', onPointerDown);
+    renderer.domElement.addEventListener('pointermove', onPointerMove);
+    renderer.domElement.addEventListener('pointerup', onPointerUp);
+    renderer.domElement.addEventListener('pointerleave', onPointerUp);
+
+
+    // --- Animate & Resize ---
+    const animate = () => {
+      frameId = requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    const handleResize = () => {
+      const { clientWidth, clientHeight } = currentMount;
+      renderer.setSize(clientWidth, clientHeight);
+      camera.left = clientWidth / -50;
+      camera.right = clientWidth / 50;
+      camera.top = clientHeight / 50;
+      camera.bottom = clientHeight / -50;
+      camera.updateProjectionMatrix();
+    };
+    window.addEventListener('resize', handleResize);
+
+    // --- Cleanup ---
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      renderer.domElement.removeEventListener('pointerdown', onPointerDown);
+      renderer.domElement.removeEventListener('pointermove', onPointerMove);
+      renderer.domElement.removeEventListener('pointerup', onPointerUp);
+      renderer.domElement.removeEventListener('pointerleave', onPointerUp);
+
+      cancelAnimationFrame(frameId);
+      currentMount.removeChild(renderer.domElement);
+      
+      scene.traverse(object => {
+        if (object instanceof THREE.Mesh) {
+          if (object.geometry) object.geometry.dispose();
+          if (object.material) {
+            if (Array.isArray(object.material)) {
+              object.material.forEach(material => material.dispose());
+            } else {
+              object.material.dispose();
+            }
+          }
+        }
+      });
     };
   }, [theme]);
 
