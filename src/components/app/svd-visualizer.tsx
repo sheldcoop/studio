@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -14,7 +15,7 @@ const SVDVisualizer = () => {
 
   // --- State Management ---
   const [mode, setMode] = useState<'geometric' | 'steps'>('geometric');
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0); // 0=original, 1=U, 2=Σ, 3=V
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [matrix, setMatrix] = useState({ a: 1.5, b: 0.5, c: 0.5, d: 1.0 });
@@ -32,6 +33,7 @@ const SVDVisualizer = () => {
   // --- SVD Calculation ---
   useEffect(() => {
     const { a, b, c, d } = matrix;
+    // Calculate A^T * A
     const ata_11 = a * a + c * c;
     const ata_12 = a * b + c * d;
     const ata_22 = b * b + d * d;
@@ -56,7 +58,9 @@ const SVDVisualizer = () => {
 
   // --- p5.js Sketch ---
   useEffect(() => {
-    if (sketchRef.current) sketchRef.current.remove();
+    if (sketchRef.current) {
+        sketchRef.current.remove();
+    }
     if (!canvasRef.current || !svdData) return;
 
     const sketch = (p: p5) => {
@@ -64,7 +68,6 @@ const SVDVisualizer = () => {
         p.createCanvas(canvasRef.current!.offsetWidth, 400).parent(canvasRef.current!);
         p.noLoop();
       };
-
       p.draw = () => {
         const t = p.constrain(progress, 0, 1);
         const easedT = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -88,11 +91,6 @@ const SVDVisualizer = () => {
                 return lerpPoint({x,y}, final, easedT);
             };
         } else { // steps mode
-            const p0 = {x:1,y:0}, p1 = {x:0,y:1};
-            const vRot = {x:V.v1.x, y:V.v2.x}, vRot1 = {x:V.v1.y, y:V.v2.y};
-            const sigmaScale = {x: vRot.x*Sigma.s1, y: vRot1.x*Sigma.s1, x1:vRot.y*Sigma.s2, y1: vRot1.y*Sigma.s2 };
-            const uRot = {x:U.u1.x, y:U.u2.x}, uRot1={x:U.u1.y, y:U.u2.y};
-
             switch (currentStep) {
                 case 1:
                     currentTransform = (x, y) => lerpPoint({x,y}, applyMatrix(x, y, V.v1.x, V.v1.y, V.v2.x, V.v2.y), easedT);
@@ -106,7 +104,7 @@ const SVDVisualizer = () => {
                 case 3:
                      currentTransform = (x, y) => {
                         const rotated = applyMatrix(x, y, V.v1.x, V.v1.y, V.v2.x, V.v2.y);
-                        const scaled = applyMatrix(rotated.x, rotated.y, Sigma.s1, 0, 0, Sigma.s2);
+                        const scaled = {x: rotated.x * Sigma.s1, y: rotated.y * Sigma.s2};
                         return lerpPoint(scaled, applyMatrix(scaled.x, scaled.y, U.u1.x, U.u2.x, U.u1.y, U.u2.y), easedT);
                     };
                     break;
@@ -167,11 +165,12 @@ const SVDVisualizer = () => {
       sketchRef.current = p;
     };
     new p5(sketch);
-  }, [svdData, mode, currentStep]);
-
+    return () => sketchRef.current?.remove();
+  }, [svdData, mode, currentStep, matrix]);
+  
   useEffect(() => {
     sketchRef.current?.redraw();
-  }, [progress, svdData, mode, currentStep]);
+  }, [progress]);
   
   useEffect(() => {
     if (isPlaying) {
@@ -204,6 +203,18 @@ const SVDVisualizer = () => {
       resetAnimation();
   };
 
+  const renderSVDVectors = (key: 'U' | 'V') => {
+    if (!svdData) return '';
+    const data = svdData[key];
+    const v1 = key === 'U' ? data.u1 : data.v1;
+    const v2 = key === 'U' ? data.u2 : data.v2;
+    const v1_label = key === 'U' ? 'u₁' : 'v₁';
+    const v2_label = key === 'U' ? 'u₂' : 'v₂';
+
+    return `${v1_label}=(${v1.x.toFixed(2)},${v1.y.toFixed(2)}) ${v2_label}=(${v2.x.toFixed(2)},${v2.y.toFixed(2)})`;
+  };
+
+
   return (
     <Card className="bg-transparent border-0 shadow-none">
       <CardContent className="p-0">
@@ -212,10 +223,10 @@ const SVDVisualizer = () => {
             
             <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 p-4 rounded-xl border border-indigo-400/30 mb-4">
                 <h3 className="text-lg font-bold text-white mb-1">
-                    {mode === 'geometric' ? "The Geometric Picture" : stepDescriptions[currentStep].title}
+                    {mode === 'geometric' ? "The Geometric Picture" : stepDescriptions[currentStep]}
                 </h3>
                 <p className="text-purple-100 leading-relaxed text-sm">
-                    {mode === 'geometric' ? "Watch the unit circle transform into an ellipse! SVD decomposes this complex transformation into simple rotations and stretches." : stepDescriptions[currentStep].desc}
+                    {mode === 'geometric' ? "Watch the unit circle transform into an ellipse! SVD decomposes this complex transformation into simple rotations and stretches." : stepDescriptions[currentStep]}
                 </p>
             </div>
             
@@ -244,7 +255,7 @@ const SVDVisualizer = () => {
               <Button onClick={togglePlay} className="flex-grow">
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </Button>
-              <Slider value={[progress]} min={0} max={1} step={0.01} onValueChange={(v) => setProgress(v[0])} />
+              <Slider value={[progress]} min={0} max={1} step={0.01} onValueChange={(v) => {setProgress(v[0]); setIsPlaying(false);}} />
               {mode === 'steps' && <Button onClick={() => handleStepChange(1)} disabled={currentStep === 3}><ArrowRight/></Button>}
             </div>
           </div>
@@ -258,7 +269,8 @@ const SVDVisualizer = () => {
                         </CardHeader>
                         <CardContent className="p-3 pt-0 text-xs font-mono text-muted-foreground">
                             {key === 'Sigma' ? `σ₁=${svdData.Sigma.s1.toFixed(3)}, σ₂=${svdData.Sigma.s2.toFixed(3)}` :
-                             `v₁=(${svdData[key].u1.x.toFixed(2)},${svdData[key].u1.y.toFixed(2)}) v₂=(${svdData[key].u2.x.toFixed(2)},${svdData[key].u2.y.toFixed(2)})`}
+                             renderSVDVectors(key)
+                            }
                         </CardContent>
                     </Card>
                 ))}
