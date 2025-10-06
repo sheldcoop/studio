@@ -3,9 +3,10 @@
 
 import { type SubTopic } from '@/lib/curriculum';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { BookOpen, Code, BrainCircuit, BarChart } from 'lucide-react';
+import { BookOpen, Code, BrainCircuit, BarChart, Scaling } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // Dynamically import the new animation component
 const EigenAnimation = dynamic(
@@ -48,6 +49,41 @@ function EigenvalueExplanation() {
     );
 }
 
+function EigenvalueTheory() {
+  return (
+    <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+        <h3>Level 1: The Core Intuition</h3>
+        <p>Imagine you have a big, stretchy sheet of rubber with a grid drawn on it. A matrix transformation is like grabbing this sheet and stretching, rotating, or squishing it in some way. Almost every point on the grid moves to a new position, pointing in a new direction from the center.</p>
+        <p>However, there will be certain special lines of points on this sheet that, after the stretch, are still on the same line they started on. They haven't been rotated off their original path. These special directions are the **eigenvectors**.</p>
+        <p>The amount each of these special lines stretched or shrunk is its corresponding **eigenvalue**. An eigenvalue of 3 means points on that line are now three times farther from the center. An eigenvalue of 0.5 means they are twice as close.</p>
+        <hr />
+
+        <h3>Level 2: The Formal Mathematics</h3>
+        <p>We can express this intuition with a simple but profound equation. For a given square matrix <strong className="text-primary">A</strong>, a non-zero vector <strong className="text-primary">v</strong> is an eigenvector if applying the transformation **A** to **v** results in a vector that is just a scaled version of **v**.</p>
+        <div className="text-center"><BlockMath math="Av = \lambda v" /></div>
+        <ul>
+            <li><InlineMath math="A" /> is the transformation matrix.</li>
+            <li><InlineMath math="v" /> is the eigenvector.</li>
+            <li><InlineMath math="\lambda" /> (lambda) is the eigenvalue, which is just a scalar number.</li>
+        </ul>
+        <p>To find these values, we rearrange the equation:</p>
+        <div className="text-center"><BlockMath math="Av - \lambda v = 0" /></div>
+        <p>We can introduce the identity matrix <InlineMath math="I" /> to make the matrix subtraction valid:</p>
+        <div className="text-center"><BlockMath math="Av - \lambda I v = 0" /></div>
+        <div className="text-center"><BlockMath math="(A - \lambda I)v = 0" /></div>
+        <p>This equation tells us that the matrix <InlineMath math="(A - \lambda I)" /> transforms the non-zero vector **v** into the zero vector. This can only happen if the matrix <InlineMath math="(A - \lambda I)" /> squishes space into a lower dimension (i.e., its determinant is zero).</p>
+        <p>This gives us the **characteristic equation**, which we can solve to find the eigenvalues:</p>
+        <div className="text-center"><BlockMath math="\det(A - \lambda I) = 0" /></div>
+        <p>Once we have the eigenvalues (<InlineMath math="\lambda" />), we can plug each one back into <InlineMath math="(A - \lambda I)v = 0" /> to solve for the corresponding eigenvectors (<InlineMath math="v" />).</p>
+        <hr />
+
+        <h3>Level 3: Graduate-Level Connections</h3>
+        <p><strong>Spectral Theorem:</strong> For symmetric matrices (like covariance matrices in finance), the Spectral Theorem is a cornerstone. It guarantees that the eigenvalues are real numbers and the eigenvectors are orthogonal (perpendicular). This means we can form a new basis for our space made entirely of these orthogonal eigenvectors. This is the mathematical foundation of Principal Component Analysis (PCA), where we change the basis of our data to align with the directions of highest variance.</p>
+        <p><strong>Eigendecomposition:</strong> A matrix A can be decomposed into the product of its eigenvectors and eigenvalues: <InlineMath math="A = PDP^{-1}" />, where **P** is the matrix whose columns are the eigenvectors of **A**, and **D** is a diagonal matrix with the eigenvalues on its diagonal. This is incredibly useful for calculating powers of a matrix (<InlineMath math="A^k = PD^kP^{-1}" />), which is fundamental to modeling long-term behavior in dynamic systems like Markov chains.</p>
+    </div>
+  );
+}
+
 
 export function TopicContentSection({ subTopic }: SubTopic) {
     const isEigenTopic = subTopic.id.includes('eigen');
@@ -58,11 +94,17 @@ export function TopicContentSection({ subTopic }: SubTopic) {
             <div className="space-y-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><BookOpen className="text-primary"/> Theory</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><Scaling className="text-primary"/> Theory</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
-                        <p className="text-sm text-muted-foreground">Theory explanation coming soon.</p>
-                    </CardContent>
+                    {isEigenTopic ? (
+                         <CardContent className="p-0">
+                            <EigenvalueTheory />
+                        </CardContent>
+                    ) : (
+                        <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
+                            <p className="text-sm text-muted-foreground">Theory explanation coming soon.</p>
+                        </CardContent>
+                    )}
                 </Card>
                 <Card>
                     <CardHeader>
