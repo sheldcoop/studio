@@ -1,3 +1,7 @@
+
+
+const EPSILON = 1e-9; // Epsilon for floating point comparisons
+
 /**
  * Solves a 2x2 system of linear equations Ax = b.
  * @param m - An object representing the augmented matrix [A|b].
@@ -5,7 +9,7 @@
  */
 export const calculate2x2Solution = (m: { a11: number; a12: number; b1: number; a21: number; a22: number; b2: number; }) => {
     const det = m.a11 * m.a22 - m.a12 * m.a21;
-    if (Math.abs(det) < 1e-9) return null;
+    if (Math.abs(det) < EPSILON) return null;
     const x = (m.b1 * m.a22 - m.b2 * m.a12) / det;
     const y = (m.a11 * m.b2 - m.a21 * m.b1) / det;
     return { x, y };
@@ -33,10 +37,10 @@ export const calculateEigen = (a: number, b: number, c: number, d: number) => {
     const lambda2 = (trace - sqrtDiscriminant) / 2;
 
     const v1 = { x: 0, y: 0 };
-    if (Math.abs(c) > 0.001) {
+    if (Math.abs(c) > EPSILON) {
         v1.x = lambda1 - d;
         v1.y = c;
-    } else if (Math.abs(b) > 0.001) {
+    } else if (Math.abs(b) > EPSILON) {
         v1.x = b;
         v1.y = lambda1 - a;
     } else {
@@ -51,21 +55,28 @@ export const calculateEigen = (a: number, b: number, c: number, d: number) => {
     }
 
     const v2 = { x: 0, y: 0 };
-    if (Math.abs(c) > 0.001) {
-        v2.x = lambda2 - d;
-        v2.y = c;
-    } else if (Math.abs(b) > 0.001) {
-        v2.x = b;
-        v2.y = lambda2 - a;
+    if (Math.abs(lambda1 - lambda2) < EPSILON) {
+        // Repeated eigenvalue: any perpendicular vector works for v2
+        v2.x = -v1.y;
+        v2.y = v1.x;
     } else {
-        v2.x = 0;
-        v2.y = 1;
-    }
-
-    const len2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
-    if (len2 > 0) {
-        v2.x /= len2;
-        v2.y /= len2;
+        // Distinct eigenvalues: compute v2 normally
+        if (Math.abs(c) > EPSILON) {
+            v2.x = lambda2 - d;
+            v2.y = c;
+        } else if (Math.abs(b) > EPSILON) {
+            v2.x = b;
+            v2.y = lambda2 - a;
+        } else {
+            v2.x = 0;
+            v2.y = 1;
+        }
+        
+        const len2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+        if (len2 > 0) {
+            v2.x /= len2;
+            v2.y /= len2;
+        }
     }
     
     return { lambda1, lambda2, v1, v2 };
@@ -176,7 +187,7 @@ export const createReflectionMatrix = (axis: 'x' | 'y' | { x: number, y: number 
  */
 export const invertMatrix = (matrix: { a: number, b: number, c: number, d: number }): { a: number, b: number, c: number, d: number } | null => {
     const det = calculateDeterminant(matrix);
-    if (Math.abs(det) < 1e-9) return null;
+    if (Math.abs(det) < EPSILON) return null;
     const invDet = 1 / det;
     return {
         a: invDet * matrix.d,
@@ -246,4 +257,74 @@ export const dotProduct = (v1: { x: number, y: number }, v2: { x: number, y: num
  */
 export const crossProduct2D = (v1: { x: number, y: number }, v2: { x: number, y: number }): number => {
     return v1.x * v2.y - v1.y * v2.x;
+};
+
+/**
+ * Computes the Singular Value Decomposition (SVD) of a 2x2 matrix A = UΣVᵀ.
+ * @param matrix The matrix A = {a, b, c, d}.
+ * @returns An object containing U, Sigma, and V, or null if decomposition fails.
+ */
+export const calculateSVD = (matrix: {a: number, b: number, c: number, d: number}) => {
+    const { a, b, c, d } = matrix;
+    const AtA = {
+        a: a * a + c * c,
+        b: a * b + c * d,
+        c: a * b + c * d,
+        d: b * b + d * d,
+    };
+
+    const trace = AtA.a + AtA.d;
+    const det = AtA.a * AtA.d - AtA.b * AtA.c;
+    const discriminant = Math.sqrt(Math.max(0, trace * trace - 4 * det));
+
+    const lambda1 = (trace + discriminant) / 2;
+    const lambda2 = (trace - discriminant) / 2;
+
+    const s1 = Math.sqrt(lambda1);
+    const s2 = Math.sqrt(lambda2);
+
+    let v1 = { x: (Math.abs(AtA.c) < EPSILON) ? 1 : lambda1 - AtA.d, y: (Math.abs(AtA.c) < EPSILON) ? 0 : AtA.c };
+    let len1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+    if (len1 > EPSILON) { v1.x /= len1; v1.y /= len1; }
+
+    let v2 = { x: -v1.y, y: v1.x };
+    
+    let u1 = { x: 0, y: 0 };
+    if (s1 > EPSILON) {
+        u1 = { x: (a * v1.x + b * v1.y) / s1, y: (c * v1.x + d * v1.y) / s1 };
+        const len_u1 = Math.sqrt(u1.x * u1.x + u1.y * u1.y);
+        if (len_u1 > EPSILON) { u1.x /= len_u1; u1.y /= len_u1; }
+    }
+
+    let u2 = { x: 0, y: 0 };
+    if (s2 > 1e-4) {
+        const Av2_x = a * v2.x + b * v2.y;
+        const Av2_y = c * v2.x + d * v2.y;
+        u2 = { x: Av2_x / s2, y: Av2_y / s2 };
+        const len_u2 = Math.sqrt(u2.x*u2.x + u2.y*u2.y);
+        if (len_u2 > EPSILON) {
+            u2.x /= len_u2;
+            u2.y /= len_u2;
+        }
+    } else {
+        u2 = { x: -u1.y, y: u1.x };
+    }
+
+    // Validate orthogonality
+    const u_orthogonal = Math.abs(u1.x*u2.x + u1.y*u2.y) < 0.01;
+    const v_orthogonal = Math.abs(v1.x*v2.x + v1.y*v2.y) < 0.01;
+
+    if (!u_orthogonal || !v_orthogonal) {
+        console.error('SVD orthogonality check failed', {
+            u_dot: u1.x*u2.x + u1.y*u2.y,
+            v_dot: v1.x*v2.x + v1.y*v2.y
+        });
+        return null;
+    }
+    
+    return {
+        U: { u1, u2 },
+        Sigma: { s1, s2 },
+        V: { v1, v2 }
+    };
 };
