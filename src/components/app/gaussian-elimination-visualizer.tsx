@@ -246,5 +246,3 @@ const lerpMatrix = (p: p5, m1: any, m2: any, t: number) => {
     }
     return res as any;
 };
-
-    

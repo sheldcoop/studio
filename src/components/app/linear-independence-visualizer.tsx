@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
+import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, drawGrid as p5DrawGrid } from '@/lib/p5-helpers';
 
 const LinearIndependenceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -51,11 +51,17 @@ const LinearIndependenceVisualizer = () => {
                 setDeterminant(det);
                 setIsDependent(dependent);
 
-
                 if (dependent) {
-                    drawSpanLine();
+                    p.stroke(239, 68, 68, 150); // red
+                    p.strokeWeight(3);
+                    const dominantVec = v1.magSq() > v2.magSq() ? v1 : v2;
+                    if (dominantVec.magSq() > 0.01) {
+                        const p1 = dominantVec.copy().mult(-100);
+                        const p2 = dominantVec.copy().mult(100);
+                        p.line(p1.x * scaleFactor, p1.y * scaleFactor, p2.x * scaleFactor, p2.y * scaleFactor);
+                    }
                 } else {
-                    drawSpanGrid();
+                    p5DrawGrid(p, v1, v2, p.color(55, 65, 81, 150), 1.5, scaleFactor);
                 }
 
                 p5DrawVector(p, v1, scaleFactor, p.color(248, 113, 113), 'v₁');
@@ -79,31 +85,6 @@ const LinearIndependenceVisualizer = () => {
             p.mouseReleased = () => {
                 draggingV1 = false;
                 draggingV2 = false;
-            };
-
-            const drawSpanGrid = () => {
-                p.stroke(55, 65, 81, 150);
-                p.strokeWeight(1.5);
-                const range = 8;
-                for (let i = -range; i <= range; i++) {
-                    const p1 = p5.Vector.add(p5.Vector.mult(v1, i), p5.Vector.mult(v2, -range));
-                    const p2 = p5.Vector.add(p5.Vector.mult(v1, i), p5.Vector.mult(v2, range));
-                    p.line(p1.x * scaleFactor, p1.y * scaleFactor, p2.x * scaleFactor, p2.y * scaleFactor);
-
-                    const p3 = p5.Vector.add(p5.Vector.mult(v1, -range), p5.Vector.mult(v2, i));
-                    const p4 = p5.Vector.add(p5.Vector.mult(v1, range), p5.Vector.mult(v2, i));
-                    p.line(p3.x * scaleFactor, p3.y * scaleFactor, p4.x * scaleFactor, p4.y * scaleFactor);
-                }
-            };
-
-            const drawSpanLine = () => {
-                p.stroke(239, 68, 68, 150); // red
-                p.strokeWeight(3);
-                const dominantVec = v1.magSq() > v2.magSq() ? v1 : v2;
-                if (dominantVec.magSq() < 0.01) return;
-                const p1 = dominantVec.copy().mult(-10);
-                const p2 = dominantVec.copy().mult(10);
-                p.line(p1.x * scaleFactor, p1.y * scaleFactor, p2.x * scaleFactor, p2.y * scaleFactor);
             };
 
             const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, scaleFactor);
@@ -166,5 +147,3 @@ const LinearIndependenceVisualizer = () => {
 };
 
 export default LinearIndependenceVisualizer;
-
-    
