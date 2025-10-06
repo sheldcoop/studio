@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5';
 import { calculateEigen } from '@/lib/math/linear-algebra';
+import { VectorDisplay } from './vector-display';
 
 const ChangeOfBasisVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -244,15 +245,17 @@ const ChangeOfBasisVisualizer = () => {
                                         : 'Watch how coordinates change as the basis (grid) and vector transform.'
                                     }
                                 </p>
-                                <div className="flex justify-around pt-2">
-                                    <div>
-                                        <p className="text-gray-400">Standard Basis (<span className="text-gray-400">î, ĵ</span>)</p>
-                                        <p className="text-2xl text-white font-mono">{standardCoords}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-cyan-400">Your Basis (<span className="text-red-400">b₁</span>, <span className="text-blue-400">b₂</span>)</p>
-                                        <p className="text-2xl text-cyan-400 font-mono">{customCoords}</p>
-                                    </div>
+                                <div className="flex justify-around items-start pt-2">
+                                    <VectorDisplay 
+                                        label={<>Standard Basis (<span className="text-gray-400">î, ĵ</span>)</>}
+                                        coords={standardCoords}
+                                        labelClassName="text-gray-400"
+                                    />
+                                    <VectorDisplay 
+                                        label={<>Your Basis (<span className="text-red-400">b₁</span>, <span className="text-blue-400">b₂</span>)</>}
+                                        coords={customCoords}
+                                        labelClassName="text-cyan-400"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -290,4 +293,3 @@ const ChangeOfBasisVisualizer = () => {
 };
 
 export default ChangeOfBasisVisualizer;
-
