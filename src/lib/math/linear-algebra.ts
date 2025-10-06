@@ -1,3 +1,4 @@
+
 /**
  * Solves a 2x2 system of linear equations Ax = b.
  * @param m - An object representing the augmented matrix [A|b].
@@ -246,4 +247,54 @@ export const dotProduct = (v1: { x: number, y: number }, v2: { x: number, y: num
  */
 export const crossProduct2D = (v1: { x: number, y: number }, v2: { x: number, y: number }): number => {
     return v1.x * v2.y - v1.y * v2.x;
+};
+
+/**
+ * Computes the Singular Value Decomposition (SVD) of a 2x2 matrix A = UΣVᵀ.
+ * @param matrix The matrix A = {a, b, c, d}.
+ * @returns An object containing U, Sigma, and V, or null if decomposition fails.
+ */
+export const calculateSVD = (matrix: {a: number, b: number, c: number, d: number}) => {
+    const { a, b, c, d } = matrix;
+    const AtA = {
+        a: a * a + c * c,
+        b: a * b + c * d,
+        c: a * b + c * d,
+        d: b * b + d * d,
+    };
+
+    const trace = AtA.a + AtA.d;
+    const det = AtA.a * AtA.d - AtA.b * AtA.c;
+    const discriminant = Math.sqrt(Math.max(0, trace * trace - 4 * det));
+
+    const lambda1 = (trace + discriminant) / 2;
+    const lambda2 = (trace - discriminant) / 2;
+
+    const s1 = Math.sqrt(lambda1);
+    const s2 = Math.sqrt(lambda2);
+
+    let v1 = { x: AtA.b, y: lambda1 - AtA.a };
+    if (v1.x * v1.x + v1.y * v1.y < 1e-4) v1 = { x: 1, y: 0 };
+    const len1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+    v1.x /= len1; v1.y /= len1;
+
+    let v2 = { x: -v1.y, y: v1.x };
+    
+    let u1 = { x: 0, y: 0 };
+    if (s1 > 1e-4) {
+        u1 = { x: (a * v1.x + b * v1.y) / s1, y: (c * v1.x + d * v1.y) / s1 };
+    }
+
+    let u2 = { x: -u1.y, y: u1.x };
+    // Ensure correct sign for u2
+    const check = (a*v2.x + b*v2.y) / s2;
+    if (Math.abs(check - u2.x) > 0.1) {
+        u2.x *= -1; u2.y *= -1;
+    }
+    
+    return {
+        U: { u1, u2 },
+        Sigma: { s1, s2 },
+        V: { v1, v2 }
+    };
 };

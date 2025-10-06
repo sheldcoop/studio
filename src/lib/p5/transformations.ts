@@ -1,9 +1,11 @@
+
 'use client';
 
 import p5 from 'p5';
-import { applyMatrix as applyMatrixMath, calculateDeterminant, invertMatrix, matrixMultiply, createProjectionMatrix } from '@/lib/math/linear-algebra';
-import { drawGrid, drawVector, drawParallelogram, drawDashedLine } from './primitives';
+import { applyMatrix as applyMatrixMath, calculateDeterminant, invertMatrix, matrixMultiply, calculateSVD as calculateSVDMath } from '@/lib/math/linear-algebra';
+import { drawVector, drawParallelogram, drawGrid, drawDashedLine } from './primitives';
 import { drawLine } from './coordinate-system';
+import { easeInOutCubic } from './animation';
 
 /**
  * Applies a matrix transformation to a p5 vector.
@@ -116,7 +118,6 @@ export const drawColumnSpace = (p: p5, matrix: {a: number,b: number,c: number,d:
     drawVector(p, col2, scaleFactor, p.color(0, 255, 0), 'col₂', 3);
 };
 
-
 export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color, showScaling: boolean = true) => {
     // Draw the eigenspace as a dashed line through the origin
     p.stroke(color);
@@ -199,6 +200,7 @@ export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleF
     // Calculate projection: proj = (v·u / |u|²) * u
     const dot = vector.dot(onto);
     const ontoMagSq = onto.magSq();
+    if (ontoMagSq < 1e-9) return;
     const proj = onto.copy().mult(dot / ontoMagSq);
     
     // Draw the vector being projected
@@ -242,34 +244,38 @@ export const drawLinearSystem = (p: p5, a1: number, b1: number, c1: number, a2: 
     }
 };
 
-export const drawSVD = (p: p5, matrix: {a:number,b:number,c:number,d:number}, svdData: any, progress: number, scaleFactor: number) => {
+export const drawSVD = (p: p5, matrix: {a:number,b:number,c:number,d:number}, progress: number, scaleFactor: number) => {
+    const svdData = calculateSVDMath(matrix);
     if (!svdData) return;
+    
     const t = easeInOutCubic(progress);
 
     const t1_end = 1/3, t2_end = 2/3;
     let b1: p5.Vector, b2: p5.Vector;
 
+    const v1 = p.createVector(svdData.V.v1.x, svdData.V.v1.y);
+    const v2 = p.createVector(svdData.V.v2.x, svdData.V.v2.y);
+    const u1 = p.createVector(svdData.U.u1.x, svdData.U.u1.y);
+    const u2 = p.createVector(svdData.U.u2.x, svdData.U.u2.y);
+
     if (t < t1_end) {
         const t1 = p.map(t, 0, t1_end, 0, 1);
-        b1 = p5.Vector.lerp(p.createVector(1,0), p.createVector(svdData.V.v1.x, svdData.V.v1.y), t1);
-        b2 = p5.Vector.lerp(p.createVector(0,1), p.createVector(svdData.V.v2.x, svdData.V.v2.y), t1);
+        b1 = p5.Vector.lerp(p.createVector(1,0), v1, t1);
+        b2 = p5.Vector.lerp(p.createVector(0,1), v2, t1);
     } else if (t < t2_end) {
         const t2 = p.map(t, t1_end, t2_end, 0, 1);
-        const v1_scaled = p.createVector(svdData.V.v1.x, svdData.V.v1.y).mult(p.lerp(1, svdData.Sigma.s1, t2));
-        const v2_scaled = p.createVector(svdData.V.v2.x, svdData.V.v2.y).mult(p.lerp(1, svdData.Sigma.s2, t2));
-        b1 = v1_scaled;
-        b2 = v2_scaled;
+        b1 = v1.copy().mult(p.lerp(1, svdData.Sigma.s1, t2));
+        b2 = v2.copy().mult(p.lerp(1, svdData.Sigma.s2, t2));
     } else {
         const t3 = p.map(t, t2_end, 1, 0, 1);
-        const v1_final = p.createVector(svdData.V.v1.x * svdData.Sigma.s1, svdData.V.v1.y * svdData.Sigma.s1);
-        const v2_final = p.createVector(svdData.V.v2.x * svdData.Sigma.s2, svdData.V.v2.y * svdData.Sigma.s2);
+        const scaled_v1 = v1.copy().mult(svdData.Sigma.s1);
+        const scaled_v2 = v2.copy().mult(svdData.Sigma.s2);
         
-        const U = svdData.U;
-        const b1_target = p.createVector(U.u1.x * v1_final.mag(), U.u1.y * v1_final.mag());
-        const b2_target = p.createVector(U.u2.x * v2_final.mag(), U.u2.y * v2_final.mag());
+        const final_b1 = u1.copy().mult(scaled_v1.mag());
+        const final_b2 = u2.copy().mult(scaled_v2.mag());
 
-        b1 = p5.Vector.lerp(v1_final, b1_target, t3);
-        b2 = p5.Vector.lerp(v2_final, b2_target, t3);
+        b1 = p5.Vector.lerp(scaled_v1, final_b1, t3);
+        b2 = p5.Vector.lerp(scaled_v2, final_b2, t3);
     }
 
     drawGrid(p, b1, b2, p.color(72, 144, 226, 80), 1.5, scaleFactor);
@@ -277,23 +283,140 @@ export const drawSVD = (p: p5, matrix: {a:number,b:number,c:number,d:number}, sv
     drawVector(p, b2, scaleFactor, p.color(100,255,100), 'Av₂', 3);
 };
 
-export const drawLeastSquaresProjection = (p: p5, a: p5.Vector, b: p5.Vector, dataPoint: p5.Vector, scaleFactor: number) => {
-    // Project dataPoint onto the column space of A = [a,b]
-    const A = [a, b];
-    const At = [[a.x, a.y], [b.x, b.y]];
-    const AtA = [[At[0][0]*A[0].x + At[0][1]*A[1].x, At[0][0]*A[0].y + At[0][1]*A[1].y], 
-                 [At[1][0]*A[0].x + At[1][1]*A[1].x, At[1][0]*A[0].y + At[1][1]*A[1].y]];
+export const drawLeastSquaresProjection = (p: p5, A_col1: p5.Vector, A_col2: p5.Vector, b: p5.Vector, scaleFactor: number) => {
+    // A is the matrix [A_col1 | A_col2]
+    const AtA_11 = A_col1.dot(A_col1);
+    const AtA_12 = A_col1.dot(A_col2);
+    const AtA_21 = A_col2.dot(A_col1);
+    const AtA_22 = A_col2.dot(A_col2);
     
-    const AtA_inv = invertMatrix({a: AtA[0][0], b: AtA[0][1], c: AtA[1][0], d: AtA[1][1]});
+    const AtA_inv = invertMatrix({a: AtA_11, b: AtA_12, c: AtA_21, d: AtA_22});
+
+    if (!AtA_inv) return; // If A^T A is not invertible
+
+    const At_b_1 = A_col1.dot(b);
+    const At_b_2 = A_col2.dot(b);
+
+    const x_hat_x = AtA_inv.a * At_b_1 + AtA_inv.b * At_b_2;
+    const x_hat_y = AtA_inv.c * At_b_1 + AtA_inv.d * At_b_2;
+
+    const proj_b = p5.Vector.add(A_col1.copy().mult(x_hat_x), A_col2.copy().mult(x_hat_y));
+
+    // Draw the column space plane
+    const spanColor = p.color(100, 150, 255, 50);
+    drawSpan(p, A_col1, A_col2, scaleFactor, spanColor, false);
+
+    // Draw the vectors
+    drawVector(p, A_col1, scaleFactor, p.color(100,100,255), 'col₁', 2);
+    drawVector(p, A_col2, scaleFactor, p.color(100,100,255), 'col₂', 2);
+    drawVector(p, b, scaleFactor, p.color(255,100,100), 'b', 3);
+    drawVector(p, proj_b, scaleFactor, p.color(255,255,0), 'p', 3);
     
-    if (AtA_inv) {
-        const P = createProjectionMatrix({x: a.x, y: b.x}); // Needs to be adapted for 2 vectors
-        const proj = applyMatrixMath(dataPoint, P);
-        drawVector(p, p.createVector(proj.x, proj.y), scaleFactor, p.color(255,255,0), 'proj');
-        drawDashedLine(p, dataPoint.copy().mult(scaleFactor), p.createVector(proj.x, proj.y).mult(scaleFactor), p.color(255), 1, [5,5]);
-    }
+    // Draw the error vector
+    const error_vec = p5.Vector.sub(b, proj_b);
+    drawVector(p, error_vec, scaleFactor, p.color(200), 'error', 2, proj_b);
     
-    drawVector(p, a, scaleFactor, p.color(100,100,255), 'a');
-    drawVector(p, b, scaleFactor, p.color(100,100,255), 'b');
-    drawVector(p, dataPoint, scaleFactor, p.color(255,100,100), 'data');
+    drawDashedLine(p, b.copy().mult(scaleFactor), proj_b.copy().mult(scaleFactor), p.color(255,255,255,100), 1, [5,5]);
+};
+
+export const drawGramSchmidt = (p: p5, v1: p5.Vector, v2: p5.Vector, progress: number, scaleFactor: number) => {
+    const t = easeInOutCubic(progress);
+
+    const u1 = v1.copy();
+    const proj = u1.copy().mult(v2.dot(u1) / u1.magSq());
+    const u2 = p5.Vector.sub(v2, proj);
+
+    const t_v1_fade = p.map(t, 0.2, 0.4, 1, 0, true);
+    const t_v2_fade = p.map(t, 0.5, 0.7, 1, 0, true);
+    const t_u1_show = p.map(t, 0.1, 0.3, 0, 1, true);
+    const t_proj_show = p.map(t, 0.4, 0.6, 0, 1, true);
+    const t_u2_show = p.map(t, 0.7, 0.9, 0, 1, true);
+
+    drawVector(p, v1, scaleFactor, p.color(255,100,100, 255 * t_v1_fade), 'v₁');
+    drawVector(p, v2, scaleFactor, p.color(100,100,255, 255 * t_v2_fade), 'v₂');
+    
+    drawVector(p, u1, scaleFactor, p.color(255,255,0, 255 * t_u1_show), 'u₁');
+    drawVector(p, proj, scaleFactor, p.color(200, 255 * t_proj_show), 'proj');
+    drawVector(p, u2, scaleFactor, p.color(0,255,0, 255 * t_u2_show), 'u₂');
+};
+
+export const drawChangeOfBasis = (p: p5, v_std: p5.Vector, b1: p5.Vector, b2: p5.Vector, progress: number, scaleFactor: number) => {
+    const t = easeInOutCubic(progress);
+    
+    const b1_interp = p5.Vector.lerp(p.createVector(1,0), b1, t);
+    const b2_interp = p5.Vector.lerp(p.createVector(0,1), b2, t);
+
+    drawGrid(p, b1_interp, b2_interp, p.color(72,144,226, 80), 1.5, scaleFactor);
+    drawVector(p, v_std, scaleFactor, p.color(255,255,0), 'v');
+};
+
+export const drawRank = (p: p5, matrix: {a:number,b:number,c:number,d:number}, scaleFactor: number) => {
+    const col1 = p.createVector(matrix.a, matrix.c);
+    const col2 = p.createVector(matrix.b, matrix.d);
+    
+    const det = matrix.a * matrix.d - matrix.b * matrix.c;
+    const rank = Math.abs(det) < 0.01 ? 1 : 2;
+
+    const spanColor = rank === 2 ? p.color(100, 150, 255, 50) : p.color(255, 100, 100, 50);
+    drawSpan(p, col1, col2, scaleFactor, spanColor, false);
+
+    drawVector(p, col1, scaleFactor, p.color(255,100,100), 'col₁');
+    drawVector(p, col2, scaleFactor, p.color(100,255,100), 'col₂');
+    
+    p.push();
+    p.scale(1, -1);
+    p.fill(255);
+    p.textSize(24);
+    p.textAlign(p.CENTER);
+    p.text(`Rank = ${rank}`, 0, -p.height/2 + 30);
+    p.pop();
+};
+
+export const drawConditionNumber = (p: p5, matrix: {a:number,b:number,c:number,d:number}, scaleFactor: number) => {
+    const svd = calculateSVDMath(matrix);
+    if (!svd) return;
+
+    const cond = svd.Sigma.s1 / svd.Sigma.s2;
+    
+    const b1 = p.createVector(matrix.a, matrix.c);
+    const b2 = p.createVector(matrix.b, matrix.d);
+
+    drawGrid(p, b1, b2, p.color(72,144,226, 80), 1, scaleFactor);
+    drawVector(p, b1, scaleFactor, p.color(255,100,100), null, 3);
+    drawVector(p, b2, scaleFactor, p.color(100,255,100), null, 3);
+    
+    p.push();
+    p.scale(1, -1);
+    p.fill(255);
+    p.textSize(24);
+    p.textAlign(p.CENTER);
+    p.text(`Condition Number ≈ ${cond.toFixed(2)}`, 0, -p.height/2 + 30);
+    p.pop();
+};
+
+export const drawPCA = (p: p5, dataPoints: p5.Vector[], scaleFactor: number) => {
+    if (dataPoints.length === 0) return;
+    const mean = dataPoints.reduce((acc, v) => acc.add(v), p.createVector(0,0)).div(dataPoints.length);
+    const centered = dataPoints.map(v => p5.Vector.sub(v, mean));
+
+    const cov_xx = centered.reduce((acc, v) => acc + v.x*v.x, 0) / (centered.length - 1);
+    const cov_xy = centered.reduce((acc, v) => acc + v.x*v.y, 0) / (centered.length - 1);
+    const cov_yy = centered.reduce((acc, v) => acc + v.y*v.y, 0) / (centered.length - 1);
+
+    const trace = cov_xx + cov_yy;
+    const det = cov_xx*cov_yy - cov_xy*cov_xy;
+    const discriminant = Math.sqrt(Math.max(0, trace*trace - 4*det));
+    const l1 = (trace + discriminant) / 2;
+
+    const v1 = (Math.abs(cov_xy) < 0.001) ? p.createVector(1,0) : p.createVector(l1 - cov_yy, cov_xy).normalize();
+    const v2 = p.createVector(-v1.y, v1.x);
+
+    // Draw data points
+    p.noStroke();
+    p.fill(200, 150);
+    dataPoints.forEach(pt => p.ellipse(pt.x * scaleFactor, pt.y * scaleFactor, 5, 5));
+    
+    // Draw PCA vectors
+    drawVector(p, v1.mult(Math.sqrt(l1)*2), scaleFactor, p.color(255,100,100), 'PC1', 3, mean);
+    drawVector(p, v2.mult(Math.sqrt(trace - l1)*2), scaleFactor, p.color(100,255,100), 'PC2', 3, mean);
 };
