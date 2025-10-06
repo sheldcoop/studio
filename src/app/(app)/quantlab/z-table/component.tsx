@@ -484,7 +484,7 @@ export default function ZTableComponent() {
                             <p><strong className="text-primary">The Question:</strong> After a week of intense social media hype, the stock is trading $9.50 above its 50-day moving average. Is the stock now "overbought" and due for a fall back to its average?</p>
                             <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
                             <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, the rubber band is stretched very tight.</p>
-                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z > +2.0, consider short-selling; if Z &lt -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
+                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z &gt +2.0, consider short-selling; if Z &lt -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>

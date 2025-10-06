@@ -301,7 +301,7 @@ export default function ZTableComponent() {
                             <AlertCircle className="h-5 w-5 mt-1 flex-shrink-0" />
                             <div>
                                 <h4 className="font-semibold">Normality or Large Sample Size</h4>
-                                <p className="text-sm mt-1">The data should either be drawn from a normally distributed population or the sample size must be large enough (typically n > 30) for the Central Limit Theorem to apply. This theorem guarantees that the distribution of sample means will be approximately normal, even if the original population is not.</p>
+                                <p className="text-sm mt-1">The data should either be drawn from a normally distributed population or the sample size must be large enough (typically n &gt 30) for the Central Limit Theorem to apply. This theorem guarantees that the distribution of sample means will be approximately normal, even if the original population is not.</p>
                             </div>
                         </div>
                     </div>
