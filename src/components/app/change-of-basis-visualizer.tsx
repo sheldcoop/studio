@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -94,7 +94,7 @@ const ChangeOfBasisVisualizer = () => {
                     setCustomCoords(p_custom_coords ? `(${p_custom_coords.x.toFixed(2)}, ${p_custom_coords.y.toFixed(2)})` : '(Invalid)');
 
                     drawLinearCombination(p_custom_coords, b1, b2, scaleFactor);
-                    drawPoint(p, p_standard, scaleFactor, p.color(255, 217, 61));
+                    drawVector(p, p_standard, scaleFactor, p.color(255, 217, 61), 'v', 5);
                     drawVector(p, p.createVector(1, 0), scaleFactor, p.color(156, 163, 175), 'î', 4);
                     drawVector(p, p.createVector(0, 1), scaleFactor, p.color(156, 163, 175), 'ĵ', 4);
                     drawVector(p, b1, scaleFactor, p.color(248, 113, 113), 'b₁', 4);
@@ -144,14 +144,13 @@ const ChangeOfBasisVisualizer = () => {
                     setCustomCoords(live_custom_coords ? `(${live_custom_coords.x.toFixed(2)}, ${live_custom_coords.y.toFixed(2)})` : '(Invalid)');
                     
                     drawGrid(p, grid_b1, grid_b2, p.color(56, 189, 248, 80), 1, scaleFactor);
-                    drawPoint(p, p_display, scaleFactor, p.color(255, 217, 61));
-
+                    
                     if (progress > 0.99) {
                         const p_final = p.createVector(matrix.a * p_standard.x + matrix.b * p_standard.y, matrix.c * p_standard.x + matrix.d * p_standard.y);
-                        drawVector(p, p_standard, scaleFactor, p.color(255, 255, 255, 50), 'P_start', 5);
-                        drawVector(p, p_final, scaleFactor, p.color(255, 217, 61), 'AP', 5);
+                        drawVector(p, p_standard, scaleFactor, p.color(255, 255, 255, 50), 'v_start', 5);
+                        drawVector(p, p_final, scaleFactor, p.color(255, 217, 61), 'Av', 5);
                     } else {
-                        drawVector(p, p_display, scaleFactor, p.color(255, 217, 61), 'P', 5);
+                        drawVector(p, p_display, scaleFactor, p.color(255, 217, 61), 'v', 5);
                     }
                 }
             };
@@ -220,6 +219,11 @@ const ChangeOfBasisVisualizer = () => {
         setIsPlaying(!isPlaying);
     };
 
+    const reset = () => {
+        setIsPlaying(false);
+        setProgress(0);
+    }
+
     return (
         <Card className="bg-transparent border-0 shadow-none">
             <CardContent className="p-0">
@@ -271,11 +275,11 @@ const ChangeOfBasisVisualizer = () => {
                         </div>
                         
                         <div className={cn("items-center gap-4", mode === 'transform' ? 'flex' : 'hidden')}>
-                            <Button onClick={togglePlay} className="w-1/3">
+                            <Button onClick={togglePlay}>
                                 {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                                <span className="ml-2">{isPlaying ? 'Pause' : 'Play'}</span>
                             </Button>
                             <Slider value={[progress]} onValueChange={(v) => setProgress(v[0])} min={0} max={1} step={0.01} />
+                            <Button onClick={reset} variant="ghost"><RotateCcw className="w-4 h-4"/></Button>
                         </div>
                     </div>
                     <div ref={canvasRef} className="flex-grow min-h-[300px] lg:min-h-[500px] rounded-lg border bg-gray-900 overflow-hidden" />
@@ -286,3 +290,4 @@ const ChangeOfBasisVisualizer = () => {
 };
 
 export default ChangeOfBasisVisualizer;
+
