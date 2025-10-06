@@ -92,9 +92,18 @@ export const linearAlgebraPart1: Topic[] = [
         pathPrefix: PATH_PREFIX,
         subTopics: [
             { id: 'sle-matrix-form', title: 'Representing Systems in Matrix Form' },
-            { id: 'gaussian-elimination', title: 'Gaussian Elimination' },
+            { id: 'gaussian-elimination-intro', title: 'Intro to Gaussian Elimination' },
             { id: 'solving-systems', title: 'Solving Systems of Equations' },
         ]
+    }),
+    createTopic({
+        id: 'gaussian-elimination',
+        parent: 'la-module-2',
+        title: 'Gaussian Elimination: A Dance of Lines',
+        icon: 'Waypoints',
+        description: "An interactive visualizer for row operations.",
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
     }),
      createTopic({
         parent: 'la-module-2',

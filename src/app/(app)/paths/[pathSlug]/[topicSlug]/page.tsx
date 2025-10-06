@@ -51,6 +51,7 @@ import WilcoxonSignedRankTestPage from '@/app/(app)/quantlab/wilcoxon-signed-ran
 import ZTestPage from '@/app/(app)/quantlab/z-test/component';
 import IntroductionToHypothesisTestingPage from '@/app/(app)/quantlab/introduction-to-hypothesis-testing/component';
 import VectorProjectionPage from '@/app/(app)/quantlab/vector-projection/component';
+import GaussianEliminationPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/gaussian-elimination/component';
 
 
 type TopicPageProps = {
@@ -222,6 +223,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'z-test': ZTestPage,
   'introduction-to-hypothesis-testing': IntroductionToHypothesisTestingPage,
   'vector-projection': VectorProjectionPage,
+  'gaussian-elimination': GaussianEliminationPage,
 };
 
 
