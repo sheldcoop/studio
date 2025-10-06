@@ -70,9 +70,9 @@ const SVDVisualizer = () => {
                 currentStep: 0,
                 matrix: { a: 1.5, b: 0.5, c: 0.5, d: 1.0 },
                 svdData: null as any
-            }
+            };
             
-            p.updateWithProps = (props: any) => {
+            (p as any).updateWithProps = (props: any) => {
                 state.progress = props.progress;
                 state.mode = props.mode;
                 state.currentStep = props.currentStep;
@@ -109,17 +109,17 @@ const SVDVisualizer = () => {
                 } else { // steps mode
                     switch (currentStep) {
                         case 1:
-                            currentTransform = (x, y) => lerpPoint({ x, y }, applyMatrix(x, y, svdData.V.v1.x, svdData.V.v1.y, svdData.V.v2.x, svdData.V.v2.y), t);
+                            currentTransform = (x, y) => lerpPoint({ x, y }, applyMatrix(x, y, svdData.V.v1.x, svdData.V.v2.x, svdData.V.v1.y, svdData.V.v2.y), t);
                             break;
                         case 2:
                             currentTransform = (x, y) => {
-                                const rotated = applyMatrix(x, y, svdData.V.v1.x, svdData.V.v1.y, svdData.V.v2.x, svdData.V.v2.y);
+                                const rotated = applyMatrix(x, y, svdData.V.v1.x, svdData.V.v2.x, svdData.V.v1.y, svdData.V.v2.y);
                                 return lerpPoint(rotated, applyMatrix(rotated.x, rotated.y, svdData.Sigma.s1, 0, 0, svdData.Sigma.s2), t);
                             };
                             break;
                         case 3:
                             currentTransform = (x, y) => {
-                                const rotatedV = applyMatrix(x, y, svdData.V.v1.x, svdData.V.v1.y, svdData.V.v2.x, svdData.V.v2.y);
+                                const rotatedV = applyMatrix(x, y, svdData.V.v1.x, svdData.V.v2.x, svdData.V.v1.y, svdData.V.v2.y);
                                 const scaled = { x: rotatedV.x * svdData.Sigma.s1, y: rotatedV.y * svdData.Sigma.s2 };
                                 return lerpPoint(scaled, applyMatrix(scaled.x, scaled.y, svdData.U.u1.x, svdData.U.u2.x, svdData.U.u1.y, svdData.U.u2.y), t);
                             };
@@ -266,3 +266,5 @@ const SVDVisualizer = () => {
 };
 
 export default SVDVisualizer;
+
+    
