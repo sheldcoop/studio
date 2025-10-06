@@ -51,6 +51,20 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, color: p5.Color, w
 };
 
 /**
+ * Draws a grid that has been transformed by the given matrix, showing how the transformation warps space.
+ * Helps students see how matrices affect the entire coordinate system, not just individual points.
+ * @param p - The p5 instance.
+ * @param matrix - The 2x2 transformation matrix.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @param color - The color of the grid lines.
+ */
+export const drawTransformedGrid = (p: p5, matrix: { a: number, b: number, c: number, d: number }, scaleFactor: number, color: p5.Color) => {
+    const transformedBasis1 = p.createVector(matrix.a, matrix.c);
+    const transformedBasis2 = p.createVector(matrix.b, matrix.d);
+    drawGrid(p, transformedBasis1, transformedBasis2, color, 1, scaleFactor);
+};
+
+/**
  * Draws a vector with an arrowhead and an optional label.
  * @param p - The p5 instance.
  * @param v - The vector to draw.
@@ -64,7 +78,7 @@ export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.C
     if (!v) return;
     let scaledV = p5.Vector.mult(v, scaleFactor);
     if (offset) {
-        scaledV = p5.Vector.add(scaledV, p5.Vector.mult(offset, scaleFactor));
+        scaledV.add(p5.Vector.mult(offset, scaleFactor));
     }
     if (v.magSq() < 1e-4) {
         p.fill(color);
@@ -92,6 +106,33 @@ export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.C
         drawLabel(p, scaledV, color, label);
     }
 };
+
+/**
+ * Draws a vector with special styling (e.g., dashed line, different thickness) to indicate it's an eigenvector.
+ * Includes a label showing the eigenvalue, useful for teaching matrix eigenspaces.
+ * @param p - The p5 instance.
+ * @param vector - The eigenvector.
+ * @param eigenvalue - The corresponding eigenvalue.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @param color - The color of the eigenvector.
+ */
+export const drawEigenvector = (p: p5, vector: p5.Vector, eigenvalue: number, scaleFactor: number, color: p5.Color) => {
+    p.stroke(color);
+    p.strokeWeight(1);
+    if (p.drawingContext.setLineDash) {
+        p.drawingContext.setLineDash([5, 5]);
+    }
+    const extendedStart = vector.copy().mult(-100);
+    const extendedEnd = vector.copy().mult(100);
+    p.line(extendedStart.x * scaleFactor, extendedStart.y * scaleFactor, extendedEnd.x * scaleFactor, extendedEnd.y * scaleFactor);
+    if (p.drawingContext.setLineDash) {
+        p.drawingContext.setLineDash([]);
+    }
+    
+    const scaledVector = vector.copy().mult(eigenvalue);
+    drawVector(p, scaledVector, scaleFactor, color, `λ=${eigenvalue.toFixed(2)}`, 3);
+};
+
 
 /**
  * Draws a simple point on the canvas.
@@ -252,6 +293,25 @@ export const lerpMatrix = (p: p5, m1: any, m2: any, t: number) => {
         res[key] = p.lerp(m1[key], m2[key], t);
     }
     return res as any;
+};
+
+/**
+ * Returns an interpolated matrix between two transformation matrices based on progress (0 to 1).
+ * Use with for smooth animations showing how one transformation morphs into another.
+ * @param p - The p5 instance.
+ * @param fromMatrix - The starting matrix.
+ * @param toMatrix - The ending matrix.
+ * @param progress - The progress of the animation (0 to 1).
+ * @returns The interpolated matrix.
+ */
+export const animateTransformation = (p: p5, fromMatrix: {a: number, b: number, c: number, d: number}, toMatrix: {a: number, b: number, c: number, d: number}, progress: number): {a: number, b: number, c: number, d: number} => {
+    const t = easeInOutCubic(progress);
+    return {
+        a: p.lerp(fromMatrix.a, toMatrix.a, t),
+        b: p.lerp(fromMatrix.b, toMatrix.b, t),
+        c: p.lerp(fromMatrix.c, toMatrix.c, t),
+        d: p.lerp(fromMatrix.d, toMatrix.d, t)
+    };
 };
 
 // #endregion

@@ -1,4 +1,5 @@
 
+
 /**
  * Generates normally distributed random data using the central limit theorem approximation.
  * @param mean - The desired mean.
@@ -365,14 +366,16 @@ export const calculateEigen = (a: number, b: number, c: number, d: number) => {
 
 /**
  * Applies a 2x2 matrix transformation to a 2D vector.
+ * Essential for visualizing linear transformations, rotations, scaling, and shearing operations.
  * @param v The vector to transform.
  * @param m The matrix to apply.
  * @returns The transformed vector.
  */
-export const applyMatrix = (v: { x: number; y: number }, m: { a: number; b: number; c: number; d: number }) => {
+export const applyMatrix = (v: { x: number; y: number }, m: { a: number; b: number; c: number; d: number }): { x: number; y: number } => {
     return {
         x: m.a * v.x + m.b * v.y,
         y: m.c * v.x + m.d * v.y,
     };
 };
     
+
