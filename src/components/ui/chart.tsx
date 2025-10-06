@@ -6,6 +6,7 @@ import {
   ResponsiveContainer,
 } from "recharts"
 import * as RechartsPrimitive from "recharts"
+import dynamic from 'next/dynamic';
 
 import { cn } from "@/lib/utils"
 
@@ -357,6 +358,19 @@ function getPayloadConfigFromPayload(
     : config[key as keyof typeof config]
 }
 
+const Chart = {
+  ...RechartsPrimitive,
+  AreaChart: dynamic(() => import("recharts").then(mod => mod.AreaChart), {ssr: false}),
+  BarChart: dynamic(() => import("recharts").then(mod => mod.BarChart), {ssr: false}),
+  LineChart: dynamic(() => import("recharts").then(mod => mod.LineChart), {ssr: false}),
+  ComposedChart: dynamic(() => import("recharts").then(mod => mod.ComposedChart), {ssr: false}),
+  PieChart: dynamic(() => import("recharts").then(mod => mod.PieChart), {ssr: false}),
+  RadarChart: dynamic(() => import("recharts").then(mod => mod.RadarChart), {ssr: false}),
+  RadialBarChart: dynamic(() => import("recharts").then(mod => mod.RadialBarChart), {ssr: false}),
+  ScatterChart: dynamic(() => import("recharts").then(mod => mod.ScatterChart), {ssr: false}),
+};
+
+
 export {
   ChartContainer,
   ChartTooltip,
@@ -364,4 +378,5 @@ export {
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  Chart,
 }

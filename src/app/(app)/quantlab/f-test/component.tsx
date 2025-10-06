@@ -1,15 +1,12 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+import { useState, useEffect, type FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, Tooltip, XAxis, YAxis, Cell } from 'recharts';
+import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
 import { type TooltipProps } from 'recharts';
-import { type Payload } from 'recharts/types/component/DefaultTooltipContent';
 
 /**
  * Generates normally distributed random data using the Box-Muller transform.
@@ -126,20 +123,20 @@ const FTestChart = () => {
     <div className="flex h-full min-h-[420px] w-full flex-col">
       <div className="relative mx-auto flex-grow w-full max-w-2xl">
         <ChartContainer config={fTestChartConfig} className="h-full w-full">
-          <RechartsBarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => fTestChartConfig[value as keyof typeof fTestChartConfig]?.label || value} />
-            <YAxis />
-            <Tooltip
+          <Chart.BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <Chart.CartesianGrid vertical={false} />
+            <Chart.XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => fTestChartConfig[value as keyof typeof fTestChartConfig]?.label || value} />
+            <Chart.YAxis />
+            <Chart.Tooltip
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<CustomTooltip />}
             />
-            <Bar dataKey="value" radius={8}>
+            <Chart.Bar dataKey="value" radius={8}>
               {chartData.map((entry) => (
-                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
               ))}
-            </Bar>
-          </RechartsBarChart>
+            </Chart.Bar>
+          </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -149,7 +146,6 @@ const FTestChart = () => {
   );
 };
 
-const DynamicFTestChart = dynamic(() => Promise.resolve(FTestChart), { ssr: false });
 
 export default function FTestPage() {
   return (
@@ -205,7 +201,7 @@ export default function FTestPage() {
               &apos;StableStock&apos;, indicating higher volatility and risk.
             </p>
             <div className="mt-4 rounded-lg bg-background/50 p-4">
-              <DynamicFTestChart />
+              <FTestChart />
             </div>
           </CardContent>
         </Card>

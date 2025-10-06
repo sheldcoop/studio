@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { inverseStandardNormalCdf } from '@/lib/math';
+import { inverseStandardNormalCdf } from '@/lib/math/stats';
 import { AlertTriangle, Calculator } from 'lucide-react';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';

@@ -2,13 +2,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Line, LineChart, ComposedChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import 'katex/dist/katex.min.css';
 
@@ -37,13 +35,13 @@ const DecompositionChart = ({ model, data }: { model: ModelType, data: any[] }) 
       <div>
         <h4 className="text-center font-semibold mb-2">Original Time Series</h4>
         <ChartContainer config={{}} className="h-[200px] w-full">
-          <LineChart data={chartData}>
-            <CartesianGrid />
-            <XAxis dataKey="time" />
-            <YAxis />
-            <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
-            <Line type="monotone" dataKey="original" stroke="hsl(var(--primary))" dot={false} />
-          </LineChart>
+          <Chart.LineChart data={chartData}>
+            <Chart.CartesianGrid />
+            <Chart.XAxis dataKey="time" />
+            <Chart.YAxis />
+            <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
+            <Chart.Line type="monotone" dataKey="original" stroke="hsl(var(--primary))" dot={false} />
+          </Chart.LineChart>
         </ChartContainer>
       </div>
 
@@ -51,42 +49,37 @@ const DecompositionChart = ({ model, data }: { model: ModelType, data: any[] }) 
         <div>
           <h4 className="text-center font-semibold text-sm mb-2">Trend Component</h4>
           <ChartContainer config={{}} className="h-[150px] w-full">
-            <LineChart data={chartData}>
-              <XAxis dataKey="time" hide />
-              <YAxis />
-              <Line type="monotone" dataKey="trend" stroke="hsl(var(--chart-2))" dot={false} />
-            </LineChart>
+            <Chart.LineChart data={chartData}>
+              <Chart.XAxis dataKey="time" hide />
+              <Chart.YAxis />
+              <Chart.Line type="monotone" dataKey="trend" stroke="hsl(var(--chart-2))" dot={false} />
+            </Chart.LineChart>
           </ChartContainer>
         </div>
         <div>
           <h4 className="text-center font-semibold text-sm mb-2">Seasonal Component</h4>
           <ChartContainer config={{}} className="h-[150px] w-full">
-            <LineChart data={chartData}>
-              <XAxis dataKey="time" hide />
-              <YAxis />
-              <Line type="monotone" dataKey="seasonality" stroke="hsl(var(--chart-3))" dot={false} />
-            </LineChart>
+            <Chart.LineChart data={chartData}>
+              <Chart.XAxis dataKey="time" hide />
+              <Chart.YAxis />
+              <Chart.Line type="monotone" dataKey="seasonality" stroke="hsl(var(--chart-3))" dot={false} />
+            </Chart.LineChart>
           </ChartContainer>
         </div>
         <div>
           <h4 className="text-center font-semibold text-sm mb-2">Residual (Noise)</h4>
           <ChartContainer config={{}} className="h-[150px] w-full">
-            <LineChart data={chartData}>
-              <XAxis dataKey="time" hide />
-              <YAxis />
-              <Line type="monotone" dataKey="residual" stroke="hsl(var(--muted-foreground))" dot={false} />
-            </LineChart>
+            <Chart.LineChart data={chartData}>
+              <Chart.XAxis dataKey="time" hide />
+              <Chart.YAxis />
+              <Chart.Line type="monotone" dataKey="residual" stroke="hsl(var(--muted-foreground))" dot={false} />
+            </Chart.LineChart>
           </ChartContainer>
         </div>
       </div>
     </div>
   );
 };
-
-const DynamicDecompositionChart = dynamic(() => Promise.resolve(DecompositionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[450px] w-full" />,
-});
 
 
 // --- Main Page Component ---
@@ -142,7 +135,7 @@ export default function TimeSeriesDecompositionComponent() {
                 </RadioGroup>
             </div>
             
-            <DynamicDecompositionChart model={model} data={timeSeriesData} />
+            <DecompositionChart model={model} data={timeSeriesData} />
             
              <p className="text-sm text-center text-muted-foreground mt-4">
                 {model === 'additive'

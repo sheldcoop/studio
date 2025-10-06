@@ -2,13 +2,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Line, LineChart, ComposedChart, Scatter, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
@@ -40,23 +38,18 @@ const simulateKalmanFilter = (processNoise: number, measurementNoise: number, n:
 const KalmanChart = ({ data }: { data: { time: number; true: number; measurement: number; estimate: number }[] }) => {
   return (
     <ChartContainer config={{}} className="h-[350px] w-full">
-      <LineChart data={data}>
-        <CartesianGrid />
-        <XAxis dataKey="time" />
-        <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
-        <Tooltip content={<ChartTooltipContent formatter={(value: any, name: any) => [Number(value).toFixed(2), String(name).charAt(0).toUpperCase() + String(name).slice(1)]} />} />
-        <Line type="monotone" dataKey="true" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" dot={false} name="True Value" />
-        <Scatter dataKey="measurement" fill="hsla(var(--primary), 0.5)" shape="cross" name="Noisy Measurement" />
-        <Line type="monotone" dataKey="estimate" stroke="hsl(var(--destructive))" dot={false} name="Kalman Estimate" strokeWidth={2} />
-      </LineChart>
+      <Chart.LineChart data={data}>
+        <Chart.CartesianGrid />
+        <Chart.XAxis dataKey="time" />
+        <Chart.YAxis domain={['dataMin - 1', 'dataMax + 1']} />
+        <Chart.Tooltip content={<ChartTooltipContent formatter={(value: any, name: any) => [Number(value).toFixed(2), String(name).charAt(0).toUpperCase() + String(name).slice(1)]} />} />
+        <Chart.Line type="monotone" dataKey="true" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" dot={false} name="True Value" />
+        <Chart.Scatter dataKey="measurement" fill="hsla(var(--primary), 0.5)" shape="cross" name="Noisy Measurement" />
+        <Chart.Line type="monotone" dataKey="estimate" stroke="hsl(var(--destructive))" dot={false} name="Kalman Estimate" strokeWidth={2} />
+      </Chart.LineChart>
     </ChartContainer>
   );
 };
-
-const DynamicKalmanChart = dynamic(() => Promise.resolve(KalmanChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[350px] w-full" />,
-});
 
 // --- Main Page Component ---
 export default function KalmanFilterComponent() {
@@ -104,7 +97,7 @@ export default function KalmanFilterComponent() {
                         <Slider id="measurement-noise-slider" min={0.1} max={5} step={0.1} value={[measurementNoise]} onValueChange={(val) => setMeasurementNoise(val[0])} />
                     </div>
                 </div>
-                <DynamicKalmanChart data={simulatedData} />
+                <KalmanChart data={simulatedData} />
             </CardContent>
         </Card>
       </div>

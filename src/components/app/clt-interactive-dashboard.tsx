@@ -7,10 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
-import { BarChart, Bar, ResponsiveContainer, ReferenceLine, Line } from 'recharts';
+import { Chart } from '@/components/ui/chart';
 import { generateExponentialData, getMean, getStdDev, generateLogNormalData } from '@/lib/math';
 import { Loader2 } from 'lucide-react';
-import { XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { InlineMath } from 'react-katex';
 
 
@@ -68,16 +67,14 @@ const PopulationChart = ({ distribution }: { distribution: DistributionType }) =
 
   return (
     <>
-        <ResponsiveContainer width="100%" height={200}>
-        <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-            <Tooltip wrapperClassName="text-xs" />
-            <Bar dataKey="count" fill="hsl(var(--primary))" barSize={20} />
-            <ReferenceLine x={mean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `μ=${mean.toFixed(2)}`, position: 'top', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
-        </BarChart>
-        </ResponsiveContainer>
+        <Chart.BarChart data={data}>
+            <Chart.CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <Chart.XAxis dataKey="name" tick={{ fontSize: 12 }} />
+            <Chart.YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+            <Chart.Tooltip wrapperClassName="text-xs" />
+            <Chart.Bar dataKey="count" fill="hsl(var(--primary))" barSize={20} />
+            <Chart.ReferenceLine x={mean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `μ=${mean.toFixed(2)}`, position: 'top', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+        </Chart.BarChart>
         <div className="text-center text-xs text-muted-foreground mt-2 space-x-2">
             <span>Population Mean (<InlineMath math="\mu" />): {mean.toFixed(2)},</span>
             <span>Population Std Dev (<InlineMath math="\sigma" />): {stdDev.toFixed(2)}</span>
@@ -107,18 +104,16 @@ const SampleChart = ({ sample, sampleMean }: { sample: number[], sampleMean: num
     }, [sample]);
 
     return (
-        <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip wrapperClassName="text-xs" />
-                <Bar dataKey="count" fill="hsl(var(--chart-2))" />
-                {sampleMean !== null && (
-                     <ReferenceLine x={sampleMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean: ${sampleMean.toFixed(2)}`, position: 'insideTop', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
-                )}
-            </BarChart>
-        </ResponsiveContainer>
+        <Chart.BarChart data={data}>
+            <Chart.CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <Chart.XAxis dataKey="name" tick={{ fontSize: 12 }} />
+            <Chart.YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+            <Chart.Tooltip wrapperClassName="text-xs" />
+            <Chart.Bar dataKey="count" fill="hsl(var(--chart-2))" />
+            {sampleMean !== null && (
+                 <Chart.ReferenceLine x={sampleMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean: ${sampleMean.toFixed(2)}`, position: 'insideTop', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+            )}
+        </Chart.BarChart>
     );
 }
 
@@ -155,29 +150,27 @@ const SamplingDistributionChart = ({ sampleMeans }: { sampleMeans: number[] }) =
   
   return (
     <>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false}/>
-          <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-          <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-          <Tooltip wrapperClassName="text-xs" />
-          <Bar dataKey="count" fill="hsl(var(--primary))" fillOpacity={0.7} />
-          {sampleMeans.length > 1 && (
-              <ReferenceLine x={overallMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
-          )}
-          {data.length > 1 &&
-            <Line
-                data={data}
-                dataKey="count"
-                type="monotone"
-                stroke="hsl(var(--chart-2))"
-                strokeWidth={2}
-                dot={false}
-                yAxisId={0}
-            />
-           }
-        </BarChart>
-      </ResponsiveContainer>
+      <Chart.BarChart data={data}>
+        <Chart.CartesianGrid strokeDasharray="3 3" vertical={false}/>
+        <Chart.XAxis dataKey="name" tick={{ fontSize: 12 }} />
+        <Chart.YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+        <Chart.Tooltip wrapperClassName="text-xs" />
+        <Chart.Bar dataKey="count" fill="hsl(var(--primary))" fillOpacity={0.7} />
+        {sampleMeans.length > 1 && (
+            <Chart.ReferenceLine x={overallMean} stroke="hsl(var(--destructive))" strokeWidth={2} label={{ value: `Mean of Means`, position: 'insideTopRight', fill: 'hsl(var(--destructive))', fontSize: 12 }} />
+        )}
+        {data.length > 1 &&
+          <Chart.Line
+              data={data}
+              dataKey="count"
+              type="monotone"
+              stroke="hsl(var(--chart-2))"
+              strokeWidth={2}
+              dot={false}
+              yAxisId={0}
+          />
+         }
+      </Chart.BarChart>
       <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-2">
         <div>
             Mean of Sample Means (<InlineMath math="\bar{x}" />): <span className="font-semibold text-foreground block">{overallMean.toFixed(3)}</span>

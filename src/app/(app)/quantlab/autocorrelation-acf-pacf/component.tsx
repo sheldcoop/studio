@@ -2,13 +2,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
@@ -45,13 +43,13 @@ const TimeSeriesChart = ({ data }: { data: number[] }) => {
   const chartData = data.map((value, index) => ({ index, value }));
   return (
     <ChartContainer config={{}} className="h-[200px] w-full">
-      <LineChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="index" />
-        <YAxis />
-        <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
-        <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" dot={false} />
-      </LineChart>
+      <Chart.LineChart data={chartData}>
+        <Chart.CartesianGrid strokeDasharray="3 3" />
+        <Chart.XAxis dataKey="index" />
+        <Chart.YAxis />
+        <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "Value"]} />} />
+        <Chart.Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" dot={false} />
+      </Chart.LineChart>
     </ChartContainer>
   );
 };
@@ -61,29 +59,19 @@ const ACFChart = ({ data, maxLag }: { data: number[], maxLag: number }) => {
   const confidenceInterval = 1.96 / Math.sqrt(data.length);
   return (
     <ChartContainer config={{}} className="h-[200px] w-full">
-        <BarChart data={acfData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="lag" />
-            <YAxis domain={[-1, 1]}/>
-            <Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "ACF"]} />} />
-            <ReferenceLine y={confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
-            <ReferenceLine y={-confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
-            <ReferenceLine y={0} stroke="hsl(var(--border))" />
-            <Bar dataKey="value" fill="hsl(var(--primary))" />
-        </BarChart>
+        <Chart.BarChart data={acfData}>
+            <Chart.CartesianGrid strokeDasharray="3 3" />
+            <Chart.XAxis dataKey="lag" />
+            <Chart.YAxis domain={[-1, 1]}/>
+            <Chart.Tooltip content={<ChartTooltipContent formatter={(value) => [Number(value).toFixed(2), "ACF"]} />} />
+            <Chart.ReferenceLine y={confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
+            <Chart.ReferenceLine y={-confidenceInterval} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
+            <Chart.ReferenceLine y={0} stroke="hsl(var(--border))" />
+            <Chart.Bar dataKey="value" fill="hsl(var(--primary))" />
+        </Chart.BarChart>
     </ChartContainer>
   )
 };
-
-const DynamicTimeSeriesChart = dynamic(() => Promise.resolve(TimeSeriesChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[200px] w-full" />,
-});
-
-const DynamicACFChart = dynamic(() => Promise.resolve(ACFChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[200px] w-full" />,
-});
 
 
 // --- Main Page Component ---
@@ -148,11 +136,11 @@ export default function ACF_PACF_Page() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                     <h4 className="text-center font-semibold mb-2">Simulated Time Series</h4>
-                    <DynamicTimeSeriesChart data={timeSeriesData} />
+                    <TimeSeriesChart data={timeSeriesData} />
                 </div>
                  <div>
                     <h4 className="text-center font-semibold mb-2">Autocorrelation Function (ACF)</h4>
-                    <DynamicACFChart data={timeSeriesData} maxLag={20} />
+                    <ACFChart data={timeSeriesData} maxLag={20} />
                 </div>
             </div>
             <p className="text-xs text-muted-foreground mt-4 text-center">Notice how for a high positive ϕ, the ACF decays slowly, indicating strong memory. The PACF (not shown here) for an AR(1) process would have a single significant spike at lag 1 and then cut off to zero.</p>

@@ -3,28 +3,19 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  ReferenceLine,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend,
-  Cell,
-  Bar,
-  Line,
-  CartesianGrid,
-  BarChart as RechartsBarChart,
-  LineChart as RechartsLineChart,
-} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Label as RechartsLabel } from 'recharts';
+import { Label as RechartsLabel, Tooltip, XAxis, YAxis, Legend, Cell, Bar, Line, CartesianGrid, ReferenceLine } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
+import { InteractiveTestWrapper } from '@/components/app/interactive-test-wrapper';
+import { allTopics, Topic } from '@/lib/data';
+
+const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
+const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -110,7 +101,7 @@ const IndependentTestChart = () => {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value}
+              tickFormatter={(value: string) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value}
             />
             <YAxis unit="%" />
             <Tooltip
@@ -177,7 +168,7 @@ const PairedTestChart = () => {
             />
             <YAxis unit="%" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Legend formatter={(value) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
+            <Legend formatter={(value: string) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
             <Line
               type="monotone"
               dataKey="before"
@@ -262,7 +253,7 @@ const OneSampleTestChart = () => {
             max={2.5}
             value={[meanValue]}
             step={0.05}
-            onValueChange={(value) => setMeanValue(value[0])}
+            onValueChange={(value: number[]) => setMeanValue(value[0])}
             className="my-4"
           />
         </div>
@@ -279,133 +270,64 @@ const OneSampleTestChart = () => {
   );
 };
 
-const DynamicIndependentTestChart = dynamic(() => Promise.resolve(IndependentTestChart), { ssr: false });
-const DynamicPairedTestChart = dynamic(() => Promise.resolve(PairedTestChart), { ssr: false });
-const DynamicOneSampleTestChart = dynamic(() => Promise.resolve(OneSampleTestChart), { ssr: false });
-
 
 export default function TTestPage() {
-  return (
-    <>
-      <PageHeader
-        title="An Interactive Guide to the T-Test for Trading"
-        description="The t-test is a key tool for comparing average returns and performance. This guide uses interactive trading examples to explain the main types of t-tests and help you understand when to use each one."
-      />
-      <div className="mx-auto max-w-5xl space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">Core Concepts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <h3 className="mb-1 font-semibold text-primary">
-                  Purpose &amp; Analogy
-                </h3>
-                <p className="text-muted-foreground">
-                  A t-test checks if the difference between two average returns
-                  is statistically significant or just due to random market
-                  noise. Think of it as a performance verifier: is Strategy A{' '}
-                  <span className="italic">truly</span> more profitable than
-                  Strategy B, or did it just get lucky in this sample?
-                </p>
-              </div>
-              <div>
-                <h3 className="mb-1 font-semibold text-primary">
-                  Key Assumption
-                </h3>
-                <p className="text-muted-foreground">
-                  The main requirement for a t-test is that the data (e.g.,
-                  daily or monthly returns) should be approximately{' '}
-                  <strong className="text-foreground">
-                    normally distributed
-                  </strong>{' '}
-                  (forming a &quot;bell curve&quot;). This is a critical check
-                  before relying on the test&apos;s results.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+    const topic = allTopics.find(t => t.id === 't-test');
 
-        <Card>
-          <CardContent className="p-6">
-            <Tabs defaultValue="independent">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="independent">
-                  Independent Samples
-                </TabsTrigger>
-                <TabsTrigger value="paired">Paired Samples</TabsTrigger>
-                <TabsTrigger value="one-sample">One-Sample</TabsTrigger>
-              </TabsList>
-              <TabsContent value="independent" className="mt-6">
-                <h3 className="text-xl font-bold">Independent Samples T-Test</h3>
-                <p className="mt-2 text-muted-foreground">
-                  This test compares the means of two{' '}
-                  <strong>separate, unrelated groups</strong>. In trading, this
-                  is perfect for comparing the performance of two different
-                  strategies that are traded independently.
-                </p>
-                <p className="mt-4 text-sm">
-                  <span className="font-semibold text-foreground">
-                    Example:
-                  </span>{' '}
-                  Comparing the average daily returns of a Momentum Strategy vs.
-                  a Mean-Reversion Strategy over the last 60 days to see if
-                  one is significantly more profitable.
-                </p>
-                <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicIndependentTestChart />
-                </div>
-              </TabsContent>
-              <TabsContent value="paired" className="mt-6">
-                <h3 className="text-xl font-bold">Paired Samples T-Test</h3>
-                <p className="mt-2 text-muted-foreground">
-                  This test is used to compare the means of{' '}
-                  <strong>one group, measured twice</strong>. It&apos;s ideal
-                  for &quot;before and after&quot; scenarios, like testing if a change
-                  to an algorithm improved an existing portfolio&apos;s
-                  performance.
-                </p>
-                <p className="mt-4 text-sm">
-                  <span className="font-semibold text-foreground">
-                    Example:
-                  </span>{' '}
-                  Measuring a portfolio's weekly returns for 12 weeks{' '}
-                  <i>before</i> adding a new algorithm, and then for 12 weeks{' '}
-                  <i>after</i>, to see if the change led to a significant
-                  improvement.
-                </p>
-                <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicPairedTestChart />
-                </div>
-              </TabsContent>
-              <TabsContent value="one-sample" className="mt-6">
-                <h3 className="text-xl font-bold">One-Sample T-Test</h3>
-                <p className="mt-2 text-muted-foreground">
-                  This test compares the mean of a{' '}
-                  <strong>single group to a known, fixed number</strong>. In
-                  finance, you can use this to check if a fund&apos;s actual
-                  performance matches its advertised claims or a specific
-                  benchmark.
-                </p>
-                <p className="mt-4 text-sm">
-                  <span className="font-semibold text-foreground">
-                    Example:
-                  </span>{' '}
-                  A hedge fund claims its average monthly return is 1.5%. You
-                  test a sample of its returns from the last 24 months to see
-                  if the average is statistically different from their 1.5%
-                  claim.
-                </p>
-                <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicOneSampleTestChart />
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </div>
-    </>
-  );
+    if (!topic) {
+        return <div>Topic not found</div>;
+    }
+    
+    // Augment the topic object with the actual chart components
+    const augmentedTopic: Topic = {
+        ...topic,
+        interactiveExamples: {
+            coreConcepts: [
+                {
+                    title: 'Purpose & Analogy',
+                    description: 'A t-test checks if the difference between two average returns is statistically significant or just due to random market noise. Think of it as a performance verifier: is Strategy A truly more profitable than Strategy B, or did it just get lucky in this sample?',
+                },
+                {
+                    title: 'Key Assumption',
+                    description: 'The main requirement for a t-test is that the data (e.g., daily or monthly returns) should be approximately normally distributed (forming a "bell curve"). This is a critical check before relying on the test\'s results.',
+                },
+            ],
+            examples: [
+                {
+                    id: 'independent',
+                    title: 'Independent Samples',
+                    description: 'This test compares the means of two separate, unrelated groups. In trading, this is perfect for comparing the performance of two different strategies that are traded independently.',
+                    exampleText: 'Comparing the average daily returns of a Momentum Strategy vs. a Mean-Reversion Strategy over the last 60 days to see if one is significantly more profitable.',
+                    ChartComponent: IndependentTestChart,
+                    buttonText: 'Simulate New 60-Day Period',
+                },
+                {
+                    id: 'paired',
+                    title: 'Paired Samples',
+                    description: 'This test is used to compare the means of one group, measured twice. It\'s ideal for "before and after" scenarios, like testing if a change to an algorithm improved an existing portfolio\'s performance.',
+                    exampleText: 'Measuring a portfolio\'s weekly returns for 12 weeks before adding a new algorithm, and then for 12 weeks after, to see if the change led to a significant improvement.',
+                    ChartComponent: PairedTestChart,
+                    buttonText: 'Simulate New Data',
+                },
+                {
+                    id: 'one-sample',
+                    title: 'One-Sample',
+                    description: 'This test compares the mean of a single group to a known, fixed number. In finance, you can use this to check if a fund\'s actual performance matches its advertised claims or a specific benchmark.',
+                    exampleText: 'A hedge fund claims its average monthly return is 1.5%. You test a sample of its returns from the last 24 months to see if the average is statistically different from their 1.5% claim.',
+                    ChartComponent: OneSampleTestChart,
+                    buttonText: 'Adjust Sample\'s Average Monthly Return',
+                }
+            ],
+        },
+    };
+
+    return (
+        <>
+            <PageHeader
+                title="An Interactive Guide to the T-Test for Trading"
+                description="The t-test is a key tool for comparing average returns and performance. This guide uses interactive trading examples to explain the main types of t-tests and help you understand when to use each one."
+            />
+            <InteractiveTestWrapper topic={augmentedTopic} />
+        </>
+    );
 }

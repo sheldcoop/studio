@@ -8,6 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Scaling, Code, BrainCircuit, BarChart } from 'lucide-react';
 import { InlineMath, BlockMath } from 'react-katex';
 
+// This component is ALREADY dynamically imported by the [slug] page.
+// The dynamic import for the visualizer itself should be here.
 const VectorProjectionVisualizer = dynamic(
   () => import('@/components/app/vector-projection-visualizer'),
   {

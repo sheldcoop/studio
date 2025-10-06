@@ -1,7 +1,9 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // The app directory is the default in Next.js 14, but explicitly setting this
-  // can help resolve ambiguity in some environments.
+  // Explicitly disable the Pages Router to resolve build errors.
+  // Our application uses the App Router exclusively.
+  pagesRouter: false,
 };
 
 export default nextConfig;
