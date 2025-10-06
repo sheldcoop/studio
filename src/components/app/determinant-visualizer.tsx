@@ -32,9 +32,9 @@ const DeterminantVisualizer = () => {
             p.setup = () => {
                 const container = canvasRef.current!;
                 p.createCanvas(container.offsetWidth, 400).parent(container);
-                p.noLoop(); // We will manually redraw
             };
 
+            // Redraw when the matrix state changes
             p.draw = () => {
                 const { a, b, c, d } = matrix; // Use the matrix state from the component
                 
@@ -44,7 +44,12 @@ const DeterminantVisualizer = () => {
 
                 scaleFactor = Math.min(p.width, p.height) / 5;
 
-                drawGrid(p);
+                // Use the standardized grid drawing function
+                p5DrawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
+                p.stroke(209, 213, 219);
+                p.strokeWeight(2);
+                p.line(-p.width, 0, p.width, 0); // X-axis
+                p.line(0, -p.height, 0, p.height); // Y-axis
 
                 const i_hat_x = a * scaleFactor;
                 const i_hat_y = c * scaleFactor;
@@ -70,24 +75,7 @@ const DeterminantVisualizer = () => {
                 
                 p5DrawVector(p, p.createVector(a, c), scaleFactor, p.color(110, 231, 183), 'î');
                 p5DrawVector(p, p.createVector(b, d), scaleFactor, p.color(248, 113, 113), 'ĵ');
-            };
-
-            const drawGrid = (scale: number) => {
-                p.stroke(55, 65, 81, 150);
-                p.strokeWeight(1);
-                
-                const gridSize = 10;
-                for (let x = -gridSize; x <= gridSize; x++) {
-                    p.line(x * scale, -p.height, x * scale, p.height);
-                }
-                for (let y = -gridSize; y <= gridSize; y++) {
-                    p.line(-p.width, y * scale, p.width, y * scale);
-                }
-
-                p.stroke(209, 213, 219);
-                p.strokeWeight(2);
-                p.line(-p.width, 0, p.width, 0); // X-axis
-                p.line(0, -p.height, 0, p.height); // Y-axis
+                p.noLoop();
             };
             
              p.windowResized = () => {
@@ -107,7 +95,13 @@ const DeterminantVisualizer = () => {
         };
     // The useEffect hook now depends on the `matrix` state.
     // This will re-create the sketch whenever the matrix changes.
-    }, [matrix, determinant, area]);
+    }, []);
+
+    useEffect(() => {
+        if(sketchRef.current) {
+            sketchRef.current.redraw();
+        }
+    }, [matrix]);
 
 
     const handleSliderChange = (key: 'a' | 'b' | 'c' | 'd', value: number) => {
@@ -194,5 +188,3 @@ const DeterminantVisualizer = () => {
 };
 
 export default DeterminantVisualizer;
-
-    
