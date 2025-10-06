@@ -24,19 +24,28 @@ const DeterminantVisualizer = () => {
             sketchRef.current.remove();
         }
 
-        // The sketch function is now defined inside the useEffect hook,
-        // so it has access to the current `matrix` state.
         const sketch = (p: p5) => {
             let scaleFactor: number;
+
+            // This object will hold the state that p5 needs to draw.
+            const sketchState = {
+                matrix: { a: 1.0, b: 0.0, c: 0.0, d: 1.0 }
+            };
+
+            // This function allows React to update the state within the p5 sketch.
+            (p as any).updateWithProps = (props: { matrix: typeof matrix }) => {
+                sketchState.matrix = props.matrix;
+                p.redraw(); // Trigger a redraw whenever props change
+            };
 
             p.setup = () => {
                 const container = canvasRef.current!;
                 p.createCanvas(container.offsetWidth, 400).parent(container);
+                p.noLoop(); // We will manually trigger redraws
             };
 
-            // Redraw when the matrix state changes
             p.draw = () => {
-                const { a, b, c, d } = matrix; // Use the matrix state from the component
+                const { a, b, c, d } = sketchState.matrix; // Use the sketch's internal state
                 
                 p.background(17, 24, 39); // bg-gray-900
                 p.translate(p.width / 2, p.height / 2);
@@ -58,10 +67,10 @@ const DeterminantVisualizer = () => {
 
                 p.noStroke();
                 let fillColor = p.color(34, 211, 238, 100); // cyan-400
-                if (determinant < 0) {
+                if (calculateDeterminant(sketchState.matrix) < 0) {
                     fillColor = p.color(250, 204, 21, 100); // yellow-400
                 }
-                if (area < 0.01) {
+                if (Math.abs(calculateDeterminant(sketchState.matrix)) < 0.01) {
                     fillColor = p.color(239, 68, 68, 150); // red-500
                 }
                 p.fill(fillColor);
@@ -75,7 +84,6 @@ const DeterminantVisualizer = () => {
                 
                 p5DrawVector(p, p.createVector(a, c), scaleFactor, p.color(110, 231, 183), 'î', 4);
                 p5DrawVector(p, p.createVector(b, d), scaleFactor, p.color(248, 113, 113), 'ĵ', 4);
-                p.noLoop();
             };
             
              p.windowResized = () => {
@@ -84,25 +92,21 @@ const DeterminantVisualizer = () => {
             };
         };
 
-        // Create the p5 instance
         if (canvasRef.current) {
             sketchRef.current = new p5(sketch, canvasRef.current);
         }
         
-        // Cleanup function to remove the p5 sketch when the component unmounts or re-renders
         return () => {
             sketchRef.current?.remove();
         };
-    // The useEffect hook now depends on the `matrix` state.
-    // This will re-create the sketch whenever the matrix changes.
     }, []);
 
+    // This useEffect hook is now responsible for passing the updated matrix state to the p5 sketch.
     useEffect(() => {
-        if(sketchRef.current) {
-            sketchRef.current.redraw();
+        if (sketchRef.current && (sketchRef.current as any).updateWithProps) {
+            (sketchRef.current as any).updateWithProps({ matrix });
         }
     }, [matrix]);
-
 
     const handleSliderChange = (key: 'a' | 'b' | 'c' | 'd', value: number) => {
         setMatrix(prev => ({ ...prev, [key]: value }));
@@ -111,6 +115,9 @@ const DeterminantVisualizer = () => {
     const resetToIdentity = () => {
         setMatrix({ a: 1.0, b: 0.0, c: 0.0, d: 1.0 });
     };
+    
+    // Helper to calculate determinant for local use
+    const calculateDeterminant = (m: {a: number, b: number, c: number, d: number}) => m.a * m.d - m.b * m.c;
 
     return (
         <Card className="bg-background/50 overflow-hidden">
@@ -122,9 +129,9 @@ const DeterminantVisualizer = () => {
                             <CardTitle>Transformation Matrix</CardTitle>
                         </CardHeader>
                         <CardContent className="p-4 pt-0">
-                            <div className="flex items-center justify-center space-x-4 text-2xl">
+                             <div className="flex items-center justify-center space-x-4 text-2xl">
                                 <div className="text-muted-foreground text-5xl">[</div>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 font-mono">
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 font-mono text-center">
                                     <span className="text-green-400">{matrix.a.toFixed(1)}</span>
                                     <span className="text-red-400">{matrix.b.toFixed(1)}</span>
                                     <span className="text-green-400">{matrix.c.toFixed(1)}</span>
@@ -188,3 +195,5 @@ const DeterminantVisualizer = () => {
 };
 
 export default DeterminantVisualizer;
+
+    
