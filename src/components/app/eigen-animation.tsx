@@ -87,9 +87,15 @@ export function EigenAnimation({ className }: EigenAnimationProps) {
         
         const animate = () => {
             frameId = requestAnimationFrame(animate);
-            const t = (Math.sin(clock.getElapsedTime()) + 1) / 2; // Oscillates between 0 and 1
+            const t = (Math.sin(clock.getElapsedTime() * 0.5) + 1) / 2; // Oscillates between 0 and 1
 
-            const currentMatrix = new THREE.Matrix4().identity().lerp(transformationMatrix, t);
+            const identityMatrix = new THREE.Matrix4();
+            const currentMatrix = new THREE.Matrix4();
+            const newElements = new Float32Array(16);
+            for (let i = 0; i < 16; i++) {
+                newElements[i] = identityMatrix.elements[i] + (transformationMatrix.elements[i] - identityMatrix.elements[i]) * t;
+            }
+            currentMatrix.set(...newElements);
             
             const positions = pointsGeometry.attributes.position;
             for (let i = 0; i < positions.count; i++) {
