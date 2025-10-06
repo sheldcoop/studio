@@ -1,7 +1,7 @@
 
 'use client';
 
-import type p5 from 'p5';
+import p5 from 'p5';
 
 // #region --- Drawing Primitives ---
 
@@ -191,6 +191,20 @@ export const drawTransformedCircle = (p: p5, transform: (x: number, y: number) =
         p.vertex(x * scaleFactor, y * scaleFactor);
     }
     p.endShape(p.CLOSE);
+};
+
+/**
+ * Draws a line representing a null space.
+ * @param p - The p5 instance.
+ * @param v - The vector defining the null space.
+ * @param s - The scaling factor.
+ */
+export const drawNullSpace = (p: p5, v: p5.Vector, s: number) => {
+    p.stroke(239, 68, 68, 150);
+    p.strokeWeight(3);
+    const p1 = v.copy().mult(-p.width);
+    const p2 = v.copy().mult(p.width);
+    p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
 };
 
 
