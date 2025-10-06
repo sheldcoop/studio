@@ -3,38 +3,86 @@
 import p5 from 'p5';
 
 /**
- * Draws standard Cartesian axes.
+ * Draws standard Cartesian axes with correct label orientation, arrowheads, and ticks.
  * @param p - The p5 instance.
  * @param scaleFactor - The scaling factor.
  * @param color - The color of the axes.
- * @param showLabels - Whether to show labels.
+ * @param showLabels - Whether to show numeric labels and ticks.
  * @param tickInterval - The interval for tick marks.
  */
 export const drawAxes = (p: p5, scaleFactor: number, color: p5.Color, showLabels: boolean = true, tickInterval: number = 1) => {
+    const tickSize = 5;
+    
     p.stroke(color);
     p.strokeWeight(1.5);
-    p.line(-p.width, 0, p.width, 0); // X-axis
-    p.line(0, -p.height, 0, p.height); // Y-axis
+    // X-axis with arrowhead
+    p.line(-p.width / 2, 0, p.width / 2, 0);
+    p.push();
+    p.translate(p.width / 2, 0);
+    p.fill(color);
+    p.triangle(0, 0, -10, -5, -10, 5);
+    p.pop();
+
+    // Y-axis with arrowhead
+    p.line(0, -p.height / 2, 0, p.height / 2);
+     p.push();
+    p.translate(0, p.height / 2);
+    p.fill(color);
+    p.triangle(0, 0, -5, -10, 5, -10);
+    p.pop();
+
 
     if (showLabels) {
-        p.noStroke();
-        p.fill(color);
-        p.textSize(14);
-        const tickSize = 5;
+        // Draw Ticks
+        p.strokeWeight(1);
         for (let i = -10; i <= 10; i += tickInterval) {
             if (i === 0) continue;
             // X-ticks
             p.line(i * scaleFactor, -tickSize, i * scaleFactor, tickSize);
-            p.text(i, i * scaleFactor - 4, tickSize + 14);
             // Y-ticks
             p.line(-tickSize, i * scaleFactor, tickSize, i * scaleFactor);
-            p.text(i, tickSize + 4, -i * scaleFactor + 5);
         }
+        
+        // Draw Labels with correct orientation
+        p.noStroke();
+        p.fill(color);
+        p.textSize(14);
+        p.textAlign(p.CENTER, p.CENTER);
+        
+        for (let i = -10; i <= 10; i += tickInterval) {
+            if (i === 0) continue;
+            // X labels
+            p.push();
+            p.translate(i * scaleFactor, 15);
+            p.scale(1, -1);
+            p.text(i, 0, 0);
+            p.pop();
+            
+            // Y labels
+            p.push();
+            p.translate(-20, i * scaleFactor);
+            p.scale(1, -1);
+            p.text(i, 0, 0);
+            p.pop();
+        }
+
+        // "x" and "y" axis labels
+        p.push();
+        p.translate(p.width / 2 - 20, 20);
+        p.scale(1, -1);
+        p.text('x', 0, 0);
+        p.pop();
+
+        p.push();
+        p.translate(-20, p.height / 2 - 20);
+        p.scale(1, -1);
+        p.text('y', 0, 0);
+        p.pop();
     }
 };
 
 /**
- * Converts screen coordinates to world coordinates.
+ * Converts screen coordinates (pixels) to world coordinates (mathematical).
  * @param p - The p5 instance.
  * @param mx - The mouse x-coordinate.
  * @param my - The mouse y-coordinate.
@@ -46,6 +94,22 @@ export const screenToWorld = (p: p5, mx: number, my: number, scaleFactor: number
     const worldY = (p.height / 2 - my) / scaleFactor; // Y is inverted
     return p.createVector(worldX, worldY);
 };
+
+
+/**
+ * Converts world coordinates (mathematical) to screen coordinates (pixels).
+ * @param p - The p5 instance.
+ * @param worldX - The world x-coordinate.
+ * @param worldY - The world y-coordinate.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @returns A p5.Vector with the screen coordinates.
+ */
+export const worldToScreen = (p: p5, worldX: number, worldY: number, scaleFactor: number): p5.Vector => {
+    const screenX = worldX * scaleFactor + p.width / 2;
+    const screenY = p.height / 2 - worldY * scaleFactor;
+    return p.createVector(screenX, screenY);
+};
+
 
 /**
  * Draws two lines representing a 2x2 system of equations.
