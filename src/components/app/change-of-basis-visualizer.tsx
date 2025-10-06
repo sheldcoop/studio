@@ -9,7 +9,8 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { drawGrid, drawVector, easeInOutCubic, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
+import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5-helpers';
+import { calculateEigen } from '@/lib/math';
 
 const ChangeOfBasisVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -93,7 +94,7 @@ const ChangeOfBasisVisualizer = () => {
                     setCustomCoords(p_custom_coords ? `(${p_custom_coords.x.toFixed(2)}, ${p_custom_coords.y.toFixed(2)})` : '(Invalid)');
 
                     drawLinearCombination(p_custom_coords, b1, b2, scaleFactor);
-                    drawPoint(p_standard, scaleFactor, p.color(255, 217, 61));
+                    drawPoint(p, p_standard, scaleFactor, p.color(255, 217, 61));
                     drawVector(p, p.createVector(1, 0), scaleFactor, p.color(156, 163, 175), 'î');
                     drawVector(p, p.createVector(0, 1), scaleFactor, p.color(156, 163, 175), 'ĵ');
                     drawVector(p, b1, scaleFactor, p.color(248, 113, 113), 'b₁');
@@ -102,33 +103,39 @@ const ChangeOfBasisVisualizer = () => {
                     const t = easeInOutCubic(progress);
                     const eigen = calculateEigen(matrix.a, matrix.b, matrix.c, matrix.d);
                     
+                    if (!eigen) {
+                         p.fill(255, 100, 100); p.textAlign(p.CENTER, p.CENTER); p.textSize(16);
+                         p.text("Matrix has no real eigenvectors.\nPlease choose different values.", 0, 0);
+                         return;
+                    }
+
                     let grid_b1 = p.createVector(1,0);
                     let grid_b2 = p.createVector(0,1);
                     let p_display = p_standard.copy();
 
                     if (t <= 0.333) {
                         const local_t = p.map(t, 0, 0.333, 0, 1);
-                        grid_b1.lerp(eigen.v1, local_t);
-                        grid_b2.lerp(eigen.v2, local_t);
+                        grid_b1.lerp(p.createVector(eigen.v1.x, eigen.v1.y), local_t);
+                        grid_b2.lerp(p.createVector(eigen.v2.x, eigen.v2.y), local_t);
                     } else if (t <= 0.666) {
-                        grid_b1 = eigen.v1;
-                        grid_b2 = eigen.v2;
+                        grid_b1 = p.createVector(eigen.v1.x, eigen.v1.y);
+                        grid_b2 = p.createVector(eigen.v2.x, eigen.v2.y);
                         const local_t = p.map(t, 0.333, 0.666, 0, 1);
-                        const p_eigen_coords = getCustomCoords(p_standard, eigen.v1, eigen.v2)!;
-                        const scaled_coords_x = p.lerp(p_eigen_coords.x, p_eigen_coords.x * eigen.l1, local_t);
-                        const scaled_coords_y = p.lerp(p_eigen_coords.y, p_eigen_coords.y * eigen.l2, local_t);
-                        const v1_part = p5.Vector.mult(eigen.v1, scaled_coords_x);
-                        const v2_part = p5.Vector.mult(eigen.v2, scaled_coords_y);
+                        const p_eigen_coords = getCustomCoords(p_standard, grid_b1, grid_b2)!;
+                        const scaled_coords_x = p.lerp(p_eigen_coords.x, p_eigen_coords.x * eigen.lambda1, local_t);
+                        const scaled_coords_y = p.lerp(p_eigen_coords.y, p_eigen_coords.y * eigen.lambda2, local_t);
+                        const v1_part = p5.Vector.mult(grid_b1, scaled_coords_x);
+                        const v2_part = p5.Vector.mult(grid_b2, scaled_coords_y);
                         p_display = p5.Vector.add(v1_part, v2_part);
                     } else {
                         const local_t = p.map(t, 0.666, 1, 0, 1);
-                        const p_eigen_coords = getCustomCoords(p_standard, eigen.v1, eigen.v2)!;
-                        const v1_part_scaled = p5.Vector.mult(eigen.v1, p_eigen_coords.x * eigen.l1);
-                        const v2_part_scaled = p5.Vector.mult(eigen.v2, p_eigen_coords.y * eigen.l2);
+                        const p_eigen_coords = getCustomCoords(p_standard, p.createVector(eigen.v1.x, eigen.v1.y), p.createVector(eigen.v2.x, eigen.v2.y))!;
+                        const v1_part_scaled = p5.Vector.mult(p.createVector(eigen.v1.x, eigen.v1.y), p_eigen_coords.x * eigen.lambda1);
+                        const v2_part_scaled = p5.Vector.mult(p.createVector(eigen.v2.x, eigen.v2.y), p_eigen_coords.y * eigen.lambda2);
                         const p_scaled = p5.Vector.add(v1_part_scaled, v2_part_scaled);
                         const p_final = p.createVector(matrix.a * p_standard.x + matrix.b * p_standard.y, matrix.c * p_standard.x + matrix.d * p_standard.y);
-                        grid_b1 = p5.Vector.lerp(eigen.v1, p.createVector(1,0), local_t);
-                        grid_b2 = p5.Vector.lerp(eigen.v2, p.createVector(0,1), local_t);
+                        grid_b1 = p5.Vector.lerp(p.createVector(eigen.v1.x, eigen.v1.y), p.createVector(1,0), local_t);
+                        grid_b2 = p5.Vector.lerp(p.createVector(eigen.v2.x, eigen.v2.y), p.createVector(0,1), local_t);
                         p_display = p5.Vector.lerp(p_scaled, p_final, local_t);
                     }
                     
@@ -137,7 +144,7 @@ const ChangeOfBasisVisualizer = () => {
                     setCustomCoords(live_custom_coords ? `(${live_custom_coords.x.toFixed(2)}, ${live_custom_coords.y.toFixed(2)})` : '(Invalid)');
                     
                     drawGrid(p, grid_b1, grid_b2, p.color(56, 189, 248, 80), 1, scaleFactor);
-                    drawPoint(p_display, scaleFactor, p.color(255, 217, 61));
+                    drawPoint(p, p_display, scaleFactor, p.color(255, 217, 61));
 
                     if (progress > 0.99) {
                         const p_final = p.createVector(matrix.a * p_standard.x + matrix.b * p_standard.y, matrix.c * p_standard.x + matrix.d * p_standard.y);
@@ -168,24 +175,6 @@ const ChangeOfBasisVisualizer = () => {
                 return p.createVector(x, y);
             };
             
-            const calculateEigen = (a: number, b: number, c: number, d: number) => {
-                const trace = a + d;
-                const det = a * d - b * c;
-                const discriminant = Math.sqrt(Math.max(0, trace * trace - 4 * det));
-                const l1 = (trace + discriminant) / 2;
-                const l2 = (trace - discriminant) / 2;
-                let v1 = p.createVector(b, l1 - a);
-                let v2 = p.createVector(b, l2 - a);
-                if (v1.magSq() === 0) v1 = p.createVector(l1 - d, c);
-                if (v2.magSq() === 0) v2 = p.createVector(l2 - d, c);
-                if (v1.magSq() === 0) v1 = p.createVector(1,0);
-                if (v2.magSq() === 0) v2 = p.createVector(0,1);
-                v1.normalize(); v2.normalize();
-                return { l1, l2, v1, v2 };
-            };
-
-            const drawPoint = (pt: p5.Vector, s: number, col: p5.Color) => { p.fill(col); p.noStroke(); p.ellipse(pt.x * s, pt.y * s, 12, 12); };
-            
             const drawLinearCombination = (coords: p5.Vector | null, basis1: p5.Vector, basis2: p5.Vector, s: number) => {
                 if(!coords) return;
                 const p1 = p5.Vector.mult(basis1, coords.x);
@@ -194,10 +183,8 @@ const ChangeOfBasisVisualizer = () => {
                 p.stroke(96, 165, 250, 150); p.line(p1.x*s, p1.y*s, (p1.x+p2.x)*s, (p1.y+p2.y)*s);
             };
 
-            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, p.min(p.width, p.height) / 8);
-
-            p.mousePressed = () => { if (componentState.mode === 'explore' && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) { const m = screenToWorld(p.mouseX, p.mouseY); if(p5.Vector.dist(m, b1) < 0.3) dragging = b1; else if(p5.Vector.dist(m, b2) < 0.3) dragging = b2; }};
-            p.mouseDragged = () => { if (dragging) dragging.set(screenToWorld(p.mouseX, p.mouseY)); };
+            p.mousePressed = () => { if (componentState.mode === 'explore' && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) { const m = screenToWorld(p, p.mouseX, p.mouseY, p.min(p.width, p.height)/8); if(p5.Vector.dist(m, b1) < 0.3) dragging = b1; else if(p5.Vector.dist(m, b2) < 0.3) dragging = b2; }};
+            p.mouseDragged = () => { if (dragging) dragging.set(screenToWorld(p, p.mouseX, p.mouseY, p.min(p.width, p.height)/8)); };
             p.mouseReleased = () => { dragging = null; };
             p.windowResized = () => p.resizeCanvas(canvasRef.current!.offsetWidth, 500);
         }, canvasRef.current!);
@@ -299,5 +286,3 @@ const ChangeOfBasisVisualizer = () => {
 };
 
 export default ChangeOfBasisVisualizer;
-
-    

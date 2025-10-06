@@ -93,6 +93,18 @@ export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.C
     }
 };
 
+/**
+ * Draws a simple point on the canvas.
+ * @param p The p5 instance.
+ * @param pt The vector representing the point's position in world coordinates.
+ * @param s The scaling factor.
+ * @param col The color of the point.
+ */
+export const drawPoint = (p: p5, pt: p5.Vector, s: number, col: p5.Color) => {
+    p.fill(col);
+    p.noStroke();
+    p.ellipse(pt.x * s, pt.y * s, 12, 12);
+};
 
 /**
  * Draws a label for a vector.
@@ -210,5 +222,3 @@ export const lerpMatrix = (p: p5, m1: any, m2: any, t: number) => {
 };
 
 // #endregion
-
-    

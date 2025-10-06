@@ -1,5 +1,4 @@
 
-
 /**
  * Generates normally distributed random data using the central limit theorem approximation.
  * @param mean - The desired mean.
@@ -326,12 +325,12 @@ export const calculateEigen = (a: number, b: number, c: number, d: number) => {
     const lambda2 = (trace - sqrtDiscriminant) / 2;
 
     const v1 = { x: 0, y: 0 };
-    if (Math.abs(b) > 0.001) {
-        v1.x = 1;
-        v1.y = (lambda1 - a) / b;
-    } else if (Math.abs(c) > 0.001) {
-        v1.y = 1;
-        v1.x = (lambda1 - d) / c;
+    if (Math.abs(c) > 0.001) {
+        v1.x = lambda1 - d;
+        v1.y = c;
+    } else if (Math.abs(b) > 0.001) {
+        v1.x = b;
+        v1.y = lambda1 - a;
     } else {
         v1.x = 1;
         v1.y = 0;
@@ -344,12 +343,12 @@ export const calculateEigen = (a: number, b: number, c: number, d: number) => {
     }
 
     const v2 = { x: 0, y: 0 };
-    if (Math.abs(b) > 0.001) {
-        v2.x = 1;
-        v2.y = (lambda2 - a) / b;
-    } else if (Math.abs(c) > 0.001) {
-        v2.y = 1;
-        v2.x = (lambda2 - d) / c;
+    if (Math.abs(c) > 0.001) {
+        v2.x = lambda2 - d;
+        v2.y = c;
+    } else if (Math.abs(b) > 0.001) {
+        v2.x = b;
+        v2.y = lambda2 - a;
     } else {
         v2.x = 0;
         v2.y = 1;
