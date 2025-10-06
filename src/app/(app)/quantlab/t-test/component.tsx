@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, type FC } from 'react';
@@ -12,20 +11,12 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Label as RechartsLabel } from 'recharts';
+import { Label as RechartsLabel, Tooltip, XAxis, YAxis, Legend, Cell, Bar, Line, CartesianGrid, ReferenceLine } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Dynamically import ONLY the main chart containers
 const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
 const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
-const ReferenceLine = dynamic(() => import('recharts').then(mod => mod.ReferenceLine), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
-const Legend = dynamic(() => import('recharts').then(mod => mod.Legend), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
-const Line = dynamic(() => import('recharts').then(mod => mod.Line), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
 
 
 // Helper function to generate normally distributed data
@@ -281,10 +272,6 @@ const OneSampleTestChart = () => {
   );
 };
 
-const DynamicIndependentTestChart = dynamic(() => Promise.resolve(IndependentTestChart), { ssr: false });
-const DynamicPairedTestChart = dynamic(() => Promise.resolve(PairedTestChart), { ssr: false });
-const DynamicOneSampleTestChart = dynamic(() => Promise.resolve(OneSampleTestChart), { ssr: false });
-
 
 export default function TTestPage() {
   return (
@@ -357,7 +344,7 @@ export default function TTestPage() {
                   one is significantly more profitable.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicIndependentTestChart />
+                  <IndependentTestChart />
                 </div>
               </TabsContent>
               <TabsContent value="paired" className="mt-6">
@@ -379,7 +366,7 @@ export default function TTestPage() {
                   improvement.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicPairedTestChart />
+                  <PairedTestChart />
                 </div>
               </TabsContent>
               <TabsContent value="one-sample" className="mt-6">
@@ -401,7 +388,7 @@ export default function TTestPage() {
                   claim.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicOneSampleTestChart />
+                  <OneSampleTestChart />
                 </div>
               </TabsContent>
             </Tabs>
@@ -411,3 +398,5 @@ export default function TTestPage() {
     </>
   );
 }
+
+    

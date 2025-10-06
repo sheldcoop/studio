@@ -10,18 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {type ChartConfig, ChartContainer} from '@/components/ui/chart';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Area, Bar, Line, CartesianGrid, XAxis, YAxis, Tooltip, Cell, Legend } from 'recharts';
 
+// Dynamically import ONLY the main chart containers
 const RechartsAreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
 const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
 const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
-const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
-const Line = dynamic(() => import('recharts').then(mod => mod.Line), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
 
 
 // Helper function to generate normally distributed data
@@ -152,6 +146,7 @@ const TwoWayAnovaChart = () => {
                         <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis unit="$" />
                         <Tooltip content={<ChartTooltipContent indicator='dot' />} />
+                        <Legend />
                         <Line type="monotone" dataKey="stocks" strokeWidth={2} stroke="var(--color-stocks)" />
                         <Line type="monotone" dataKey="crypto" strokeWidth={2} stroke="var(--color-crypto)" />
                     </RechartsLineChart>
@@ -210,11 +205,6 @@ const RepeatedMeasuresAnovaChart = () => {
         </div>
     );
 };
-
-const DynamicOneWayAnovaChart = dynamic(() => Promise.resolve(OneWayAnovaChart), { ssr: false });
-const DynamicTwoWayAnovaChart = dynamic(() => Promise.resolve(TwoWayAnovaChart), { ssr: false });
-const DynamicRepeatedMeasuresAnovaChart = dynamic(() => Promise.resolve(RepeatedMeasuresAnovaChart), { ssr: false });
-
 
 export default function AnovaPage() {
   return (
@@ -277,7 +267,7 @@ export default function AnovaPage() {
                   A quant firm wants to compare the average monthly returns of three different algorithms ('Alpha', 'Beta', 'Gamma') when traded on the S&P 500. They run each algorithm independently for 50 months and use a One-Way ANOVA to see if any algorithm significantly outperforms the others.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicOneWayAnovaChart />
+                  <OneWayAnovaChart />
                 </div>
               </TabsContent>
               <TabsContent value="two-way" className="mt-6">
@@ -294,7 +284,7 @@ export default function AnovaPage() {
                   A trading desk wants to know how `Asset Class` (Factor 1: Stocks vs. Crypto) and `Time of Day` (Factor 2: Morning vs. Afternoon) affect trade profitability. A Two-Way ANOVA can tell them if stocks are more profitable overall, if morning trades are better overall, AND if there's an interaction (e.g., crypto is highly profitable in the morning but not the afternoon).
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicTwoWayAnovaChart />
+                  <TwoWayAnovaChart />
                 </div>
               </TabsContent>
               <TabsContent value="repeated-measures" className="mt-6">
@@ -310,7 +300,7 @@ export default function AnovaPage() {
                   An analyst tracks the risk-adjusted return (Sharpe Ratio) of a single portfolio over time. They measure it at the end of Year 1 (baseline), Year 2 (after adding international stocks), and Year 3 (after adding a hedging strategy) to see if these changes led to a statistically significant improvement in performance.
                 </p>
                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                  <DynamicRepeatedMeasuresAnovaChart />
+                  <RepeatedMeasuresAnovaChart />
                 </div>
               </TabsContent>
             </Tabs>
@@ -320,3 +310,5 @@ export default function AnovaPage() {
     </>
   );
 }
+
+    
