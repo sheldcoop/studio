@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { drawGrid as p5DrawGrid, drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, drawDashedLine as p5DrawDashedLine } from '@/lib/p5';
+import { drawGrid, drawVector, screenToWorld, drawDashedLine } from '@/lib/p5';
 
 const VectorProjectionVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -13,6 +13,8 @@ const VectorProjectionVisualizer = () => {
     const [dotBB, setDotBB] = useState(0);
     const [scalar, setScalar] = useState(0);
     const [projVector, setProjVector] = useState("(0.00, 0.00)");
+    const [aVec, setAVec] = useState({ x: 2, y: 2.5 });
+    const [bVec, setBVec] = useState({ x: 3, y: 1 });
 
     useEffect(() => {
         if (sketchRef.current) {
@@ -21,28 +23,43 @@ const VectorProjectionVisualizer = () => {
         if (!canvasRef.current) return;
 
         const sketch = (p: p5) => {
-            let a: p5.Vector, b: p5.Vector;
+            let p5a: p5.Vector, p5b: p5.Vector;
             let dragging: p5.Vector | null = null;
-            
+            let scaleFactor: number;
+
+            // This object will hold the state that p5 needs to draw.
+            const sketchState = {
+                a: p.createVector(aVec.x, aVec.y),
+                b: p.createVector(bVec.x, bVec.y),
+            };
+
+            // This function allows React to update the state within the p5 sketch.
+            (p as any).updateWithProps = (props: { a: {x:number, y:number}, b: {x:number, y:number} }) => {
+                sketchState.a.set(props.a.x, props.a.y);
+                sketchState.b.set(props.b.x, props.b.y);
+                p.redraw(); // Trigger a redraw whenever props change
+            };
+
             p.setup = () => {
                 p.createCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight).parent(canvasRef.current!);
-                a = p.createVector(2, 2.5);
-                b = p.createVector(3, 1);
+                p5a = sketchState.a;
+                p5b = sketchState.b;
+                p.noLoop();
             };
 
             p.draw = () => {
-                const scaleFactor = p.min(p.width, p.height) / 8;
+                scaleFactor = p.min(p.width, p.height) / 8;
                 p.background(17, 24, 39); // bg-gray-900
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
 
-                p5DrawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
+                drawGrid(p, p.createVector(1, 0), p.createVector(0, 1), p.color(55, 65, 81), 1, scaleFactor);
 
-                const b_norm = b.copy().normalize();
-                const dot_ab_val = a.dot(b);
-                const dot_bb_val = b.dot(b);
+                const b_norm = sketchState.b.copy().normalize();
+                const dot_ab_val = sketchState.a.dot(sketchState.b);
+                const dot_bb_val = sketchState.b.dot(sketchState.b);
                 const scalar_val = dot_bb_val === 0 ? 0 : dot_ab_val / dot_bb_val;
-                const proj = b.copy().mult(scalar_val);
+                const proj = sketchState.b.copy().mult(scalar_val);
 
                 // Update React state
                 setDotAB(dot_ab_val);
@@ -52,48 +69,62 @@ const VectorProjectionVisualizer = () => {
 
                 p.stroke(96, 165, 250, 50); // blue-400 with alpha
                 p.strokeWeight(2);
-                p.line(-b_norm.x * p.width, -b_norm.y * p.width, b_norm.x * p.width, b_norm.y * p.width);
+                if (b_norm.magSq() > 0) {
+                  p.line(-b_norm.x * p.width, -b_norm.y * p.width, b_norm.x * p.width, b_norm.y * p.width);
+                }
 
-                p5DrawVector(p, a, scaleFactor, p.color(134, 239, 172), 'a', 4);
-                p5DrawVector(p, b, scaleFactor, p.color(147, 197, 253), 'b', 4);
+                drawVector(p, sketchState.a, scaleFactor, p.color(134, 239, 172), 'a', 4);
+                drawVector(p, sketchState.b, scaleFactor, p.color(147, 197, 253), 'b', 4);
                 
                 if (proj.mag() > 0.01) {
-                    p5DrawVector(p, proj, scaleFactor, p.color(252, 165, 165), 'proj', 4);
+                    drawVector(p, proj, scaleFactor, p.color(252, 165, 165), 'proj', 4);
                 }
                 
-                const screenA = a.copy().mult(scaleFactor);
+                const screenA = sketchState.a.copy().mult(scaleFactor);
                 const screenProj = proj.copy().mult(scaleFactor);
-                p5DrawDashedLine(p, screenA, screenProj, p.color(255, 255, 255, 100), 2, [5, 10]);
+                drawDashedLine(p, screenA, screenProj, p.color(255, 255, 255, 100), 2, [5, 10]);
             };
 
-            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, p.min(p.width, p.height) / 8);
-
+            const p5ScreenToWorld = (mx: number, my: number) => screenToWorld(p, mx, my, p.min(p.width, p.height) / 8);
+            
             p.mousePressed = () => {
-                const mouseVec = screenToWorld(p.mouseX, p.mouseY);
-                if (p5.Vector.dist(mouseVec, a) < 0.4) dragging = a;
-                else if (p5.Vector.dist(mouseVec, b) < 0.4) dragging = b;
+                const mouseVec = p5ScreenToWorld(p.mouseX, p.mouseY);
+                if (p5.Vector.dist(mouseVec, sketchState.a) < 0.4) dragging = sketchState.a;
+                else if (p5.Vector.dist(mouseVec, sketchState.b) < 0.4) dragging = sketchState.b;
                 else dragging = null;
             };
 
-            p.mouseDragged = () => {
+            const handleDrag = () => {
                 if (dragging) {
-                    const mouseVec = screenToWorld(p.mouseX, p.mouseY);
-                    dragging.set(mouseVec);
+                    const mouseVec = p5ScreenToWorld(p.mouseX, p.mouseY);
+                    if (dragging === sketchState.a) setAVec({x: mouseVec.x, y: mouseVec.y});
+                    if (dragging === sketchState.b) setBVec({x: mouseVec.x, y: mouseVec.y});
                 }
+            }
+            
+            p.mouseDragged = () => handleDrag();
+            
+            p.touchMoved = () => {
+                if (dragging) {
+                    handleDrag();
+                    return false; // Prevent page scrolling
+                }
+                return true;
             };
 
-            p.mouseReleased = () => {
-                dragging = null;
-            };
-
-            p.windowResized = () => {
-                p.resizeCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight);
-            };
+            p.mouseReleased = () => { dragging = null; };
+            p.windowResized = () => p.resizeCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight);
         };
 
         sketchRef.current = new p5(sketch);
         return () => sketchRef.current?.remove();
     }, []);
+
+     useEffect(() => {
+        if (sketchRef.current && (sketchRef.current as any).updateWithProps) {
+            (sketchRef.current as any).updateWithProps({ a: aVec, b: bVec });
+        }
+    }, [aVec, bVec]);
 
     return (
         <div className="flex flex-col md:flex-row h-[700px] md:h-auto gap-6 antialiased text-white bg-gray-900 rounded-lg p-4">
