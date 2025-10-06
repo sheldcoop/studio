@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { Play, Pause, RotateCcw } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -190,3 +190,5 @@ const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 
 const drawVector = (v: p5.Vector, s: number, c: p5.Color, p: p5) => { if (!v) return; const sv = p5.Vector.mult(v, s); if (sv.magSq() < 1e-4) return; p.stroke(c); p.strokeWeight(4); p.line(0, 0, sv.x, sv.y); p.push(); p.translate(sv.x, sv.y); p.rotate(sv.heading()); p.fill(c); p.noStroke(); p.triangle(0, 0, -10, 5, -10, -5); p.pop(); };
 const drawTransformedGrid = (b1: p5.Vector, b2: p5.Vector, s: number, c: p5.Color, p: p5) => { p.stroke(c); p.strokeWeight(1); const r = 8; for (let i = -r; i <= r; i++) { p.beginShape(p.LINE_STRIP); for (let j = -r; j <= r; j++) { const v = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, j)); p.vertex(v.x * s, v.y * s); } p.endShape(); p.beginShape(p.LINE_STRIP); for (let j = -r; j <= r; j++) { const v = p5.Vector.add(p5.Vector.mult(b1, j), p5.Vector.mult(b2, i)); p.vertex(v.x * s, v.y * s); } p.endShape(); } };
 const drawTransformedCircle = (b1: p5.Vector, b2: p5.Vector, s: number, c: p5.Color, p: p5) => { p.noFill(); p.stroke(c); p.strokeWeight(3); p.beginShape(); for (let i = 0; i <= 64; i++) { const angle = p.map(i, 0, 64, 0, p.TWO_PI); const circVec = p.createVector(p.cos(angle), p.sin(angle)); const transformed = p5.Vector.add(p5.Vector.mult(b1, circVec.x), p5.Vector.mult(b2, circVec.y)); p.vertex(transformed.x * s, transformed.y * s); } p.endShape(p.CLOSE); };
+
+    
