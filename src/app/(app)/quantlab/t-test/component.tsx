@@ -17,15 +17,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
 const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
-const ReferenceLine = dynamic(() => import('recharts').then(mod => mod.ReferenceLine as FC<any>), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip as FC<any>), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis as FC<any>), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis as FC<any>), { ssr: false });
-const Legend = dynamic(() => import('recharts').then(mod => mod.Legend as FC<any>), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => mod.Cell as FC<any>), { ssr: false });
-const Bar = dynamic(() => import('recharts').then(mod => mod.Bar as FC<any>), { ssr: false });
-const Line = dynamic(() => import('recharts').then(mod => mod.Line as FC<any>), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid as FC<any>), { ssr: false });
+const ReferenceLine = dynamic(() => import('recharts').then(mod => mod.ReferenceLine as any), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip as any), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis as any), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis as any), { ssr: false });
+const Legend = dynamic(() => import('recharts').then(mod => mod.Legend as any), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell as any), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar as any), { ssr: false });
+const Line = dynamic(() => import('recharts').then(mod => mod.Line as any), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid as any), { ssr: false });
 
 
 // Helper function to generate normally distributed data
@@ -112,7 +112,7 @@ const IndependentTestChart = () => {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value}
+              tickFormatter={(value: string) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value}
             />
             <YAxis unit="%" />
             <Tooltip
@@ -179,7 +179,7 @@ const PairedTestChart = () => {
             />
             <YAxis unit="%" />
             <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Legend formatter={(value) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
+            <Legend formatter={(value: string) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
             <Line
               type="monotone"
               dataKey="before"
@@ -264,7 +264,7 @@ const OneSampleTestChart = () => {
             max={2.5}
             value={[meanValue]}
             step={0.05}
-            onValueChange={(value) => setMeanValue(value[0])}
+            onValueChange={(value: number[]) => setMeanValue(value[0])}
             className="my-4"
           />
         </div>
@@ -411,3 +411,4 @@ export default function TTestPage() {
     </>
   );
 }
+
