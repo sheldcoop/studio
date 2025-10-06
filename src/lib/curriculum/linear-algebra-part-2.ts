@@ -57,11 +57,6 @@ export const linearAlgebraPart2: Topic[] = [
         description: "The cornerstone of portfolio theory.",
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'cov-matrix-def', title: 'Defining Covariance Matrices' },
-            { id: 'corr-matrix-def', title: 'Defining Correlation Matrices' },
-            { id: 'portfolio-variance', title: 'Calculating Portfolio Variance' },
-        ]
     }),
      createTopic({
         parent: 'la-module-4',

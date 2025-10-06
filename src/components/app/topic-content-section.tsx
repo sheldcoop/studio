@@ -1,7 +1,7 @@
 
 'use client';
 
-import { type SubTopic } from '@/lib/curriculum';
+import { type Topic, type SubTopic } from '@/lib/curriculum';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { BookOpen, Code, BrainCircuit, BarChart, Scaling, Sigma, Waypoints, VenetianMask, Plane, Combine } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -284,82 +284,98 @@ function CovarianceTheory() {
     );
 }
 
-function FourSubspacesPage() {
+function FourSubspacesPage({ topic }: { topic: Topic }) {
+    if (!topic.subTopics) return null;
     return (
         <div className="space-y-12">
-            <section id="column-space" className="scroll-mt-24">
-                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">1. The Column Space C(A)</h2>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Plane className="text-primary"/> The Output World (Image/Range)</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <ColumnSpaceTheory />
-                    </CardContent>
-                </Card>
-                <div className="mt-8">
-                    <ColumnSpaceVisualizer />
-                </div>
-            </section>
-
-             <section id="row-space" className="scroll-mt-24">
-                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">2. The Row Space C(Aᵀ)</h2>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Plane className="text-primary"/> The Input World</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <RowSpaceTheory />
-                    </CardContent>
-                </Card>
-                <div className="mt-8">
-                    <RowSpaceVisualizer />
-                </div>
-            </section>
-
-             <section id="null-space" className="scroll-mt-24">
-                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">3. The Null Space N(A)</h2>
-                  <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><VenetianMask className="text-primary"/> The Kernel</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <NullSpaceTheory />
-                    </CardContent>
-                </Card>
-                <div className="mt-8">
-                    <NullSpaceVisualizer />
-                </div>
-            </section>
-
-             <section id="fundamental-theorem" className="scroll-mt-24">
-                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">4. The Fundamental Theorem</h2>
-                  <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Combine className="text-primary"/> Tying It All Together</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <FundamentalTheoremTheory />
-                    </CardContent>
-                </Card>
-            </section>
+            {topic.subTopics.map((subTopic) => {
+                switch(subTopic.id) {
+                    case 'column-space':
+                        return (
+                             <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
+                                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">{subTopic.title}</h2>
+                                 <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2"><Plane className="text-primary"/> The Output World (Image/Range)</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <ColumnSpaceTheory />
+                                    </CardContent>
+                                </Card>
+                                <div className="mt-8">
+                                    <ColumnSpaceVisualizer />
+                                </div>
+                            </section>
+                        );
+                    case 'row-space':
+                         return (
+                            <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
+                                <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">{subTopic.title}</h2>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2"><Plane className="text-primary"/> The Input World</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <RowSpaceTheory />
+                                    </CardContent>
+                                </Card>
+                                <div className="mt-8">
+                                    <RowSpaceVisualizer />
+                                </div>
+                            </section>
+                        );
+                    case 'null-space':
+                        return (
+                            <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
+                                <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">{subTopic.title}</h2>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2"><VenetianMask className="text-primary"/> The Kernel</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <NullSpaceTheory />
+                                    </CardContent>
+                                </Card>
+                                <div className="mt-8">
+                                    <NullSpaceVisualizer />
+                                </div>
+                            </section>
+                        );
+                    case 'fundamental-theorem':
+                        return (
+                            <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
+                                <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">{subTopic.title}</h2>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2"><Combine className="text-primary"/> Tying It All Together</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <FundamentalTheoremTheory />
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        );
+                    default: return null;
+                }
+            })}
         </div>
     )
 }
 
-export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
-    const isEigenTopic = subTopic.id.includes('eigen');
-    const isSvdTopic = subTopic.id.includes('svd');
-    const isDeterminantTopic = subTopic.id.includes('determinant');
-    const isChangeOfBasisTopic = subTopic.id.includes('change-of-basis');
-    const isLinearIndependenceTopic = subTopic.id.includes('linear-independence');
-    const isDiagonalizationTopic = subTopic.id.includes('diagonalization');
-    const isCovarianceTopic = subTopic.id.includes('covariance-and-correlation');
-    
-    const isFundamentalSubspace = ['column-space', 'null-space', 'row-space', 'fundamental-theorem'].includes(subTopic.id);
+export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
+    const { id: topicId, subTopics } = topicInfo;
 
-    if (isFundamentalSubspace) {
-        return <FourSubspacesPage />;
+    const isEigenTopic = topicId.includes('eigen');
+    const isSvdTopic = topicId.includes('svd');
+    const isDeterminantTopic = topicId.includes('determinant');
+    const isChangeOfBasisTopic = topicId.includes('change-of-basis');
+    const isLinearIndependenceTopic = topicId.includes('linear-independence');
+    const isDiagonalizationTopic = topicId.includes('diagonalization');
+    const isCovarianceTopic = topicId.includes('covariance-and-correlation');
+    const isFundamentalSubspaceTopic = topicId === 'the-four-fundamental-subspaces';
+    
+    if (isFundamentalSubspaceTopic) {
+        return <FourSubspacesPage topic={topicInfo} />;
     }
 
     const renderInteractiveDemo = () => {
@@ -388,58 +404,43 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         </div>
       );
     }
+    
+    // Default rendering for a single-topic page
+    if (!subTopics || subTopics.length === 0) {
+      return (
+          <div className="space-y-8">
+              <Card>
+                  <CardHeader>
+                      <CardTitle className="flex items-center gap-2"><Scaling className="text-primary"/> Theory</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                      {renderTheory()}
+                  </CardContent>
+              </Card>
+              <Card>
+                  <CardHeader>
+                      <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      {renderInteractiveDemo()}
+                  </CardContent>
+              </Card>
+          </div>
+      );
+    }
 
+    // Rendering for topics that have sub-topics
     return (
-        <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
-            <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">{subTopic.title}</h2>
-            <div className="space-y-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Scaling className="text-primary"/> Theory</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        {renderTheory()}
-                    </CardContent>
-                </Card>
-                
-                {isEigenTopic && (
-                    <Card>
-                        <CardHeader>
-                             <CardTitle className="flex items-center gap-2"><Waypoints className="text-primary"/> Properties of Eigenvalues &amp; Eigenvectors</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            <EigenvalueProperties />
-                        </CardContent>
-                    </Card>
-                )}
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {renderInteractiveDemo()}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-primary"/> Practice Problems</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
-                        <p className="text-sm text-muted-foreground">Practice problems coming soon.</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><BarChart className="text-primary"/> Quant Finance Application</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
-                        <p className="text-sm text-muted-foreground">Application examples coming soon.</p>
-                    </CardContent>
-                </Card>
-            </div>
-        </section>
+        <div className="space-y-12">
+            {subTopics.map(subTopic => (
+                 <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
+                    <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">{subTopic.title}</h2>
+                    <div className="space-y-8">
+                        {/* The logic for rendering will be based on the sub-topic ID */}
+                        <p className="text-muted-foreground">Content for {subTopic.title} coming soon.</p>
+                    </div>
+                </section>
+            ))}
+        </div>
     );
 }
-

@@ -14,18 +14,12 @@ import { TopicCommunityQA } from './topic-community-qa';
 
 
 function SimpleContentPage({ topicInfo }: { topicInfo: Topic }) {
-  const { title, description, content } = topicInfo;
+  const { title, description } = topicInfo;
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
         <PageHeader title={title} description={description} variant="aligned-left" />
-        {content ? (
-             <div className="prose prose-invert max-w-none space-y-8" dangerouslySetInnerHTML={{ __html: content }} />
-        ) : (
-            <div className="flex h-96 items-center justify-center rounded-lg border border-dashed mt-8">
-                <p className="text-muted-foreground">This topic is under construction. Content will be added here soon.</p>
-            </div>
-        )}
+         <TopicContentSection topicInfo={topicInfo} />
     </div>
   );
 }
@@ -76,10 +70,8 @@ export function TopicPageClient({ topicInfo }: { topicInfo: Topic }) {
 
 
                     {/* 3. Content Area */}
-                    <article className="space-y-16">
-                        {subTopics.map(sub => (
-                           <TopicContentSection key={sub.id} subTopic={sub} />
-                        ))}
+                    <article>
+                       <TopicContentSection topicInfo={topicInfo} />
                     </article>
                     
                     {/* 4. Additional Resources & Q&A */}
