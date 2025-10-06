@@ -62,9 +62,9 @@ export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, color: p5.Color, w
  */
 export const drawVector = (p: p5, v: p5.Vector, scaleFactor: number, color: p5.Color, label: string | null, weight = 4, offset: p5.Vector | null = null) => {
     if (!v) return;
-    const scaledV = p5.Vector.mult(v, scaleFactor);
+    let scaledV = p5.Vector.mult(v, scaleFactor);
     if (offset) {
-        scaledV.add(p5.Vector.mult(offset, scaleFactor));
+        scaledV = p5.Vector.add(scaledV, p5.Vector.mult(offset, scaleFactor));
     }
     if (v.magSq() < 1e-4) {
         p.fill(color);
@@ -116,7 +116,7 @@ export const drawPoint = (p: p5, pt: p5.Vector, s: number, col: p5.Color) => {
 export const drawLabel = (p: p5, v: p5.Vector, color: p5.Color, label: string) => {
     p.push();
     const labelOffset = v.copy().normalize().mult(20);
-    const labelPos = v.copy().add(labelOffset);
+    const labelPos = p5.Vector.add(v, labelOffset);
     p.noStroke();
     p.fill(color);
     p.textSize(18);
