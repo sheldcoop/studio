@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { drawGrid, drawVector, easeInOutCubic, drawTransformedCircle } from '@/lib/p5-helpers';
+import { drawGrid, drawVector, easeInOutCubic, drawTransformedCircle } from '@/lib/p5';
 
 const SVDVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -266,3 +266,5 @@ const SVDVisualizer = () => {
 };
 
 export default SVDVisualizer;
+
+    
