@@ -9,6 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
+import { applyMatrix } from '@/lib/math';
 
 const LUDecompositionVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -52,7 +53,8 @@ const LUDecompositionVisualizer = () => {
                 p5State.matrixA = props.matrix;
                 p5State.LU = props.luData;
                 if(props.luData) {
-                    p5State.bVec = applyMatrix(p5State.xVec, props.matrix);
+                    const bVec = applyMatrix(p5State.xVec, props.matrix);
+                    p5State.bVec = p.createVector(bVec.x, bVec.y);
                     const y1 = p5State.bVec.x;
                     const y2 = p5State.bVec.y - props.luData.L.c * y1;
                     p5State.yVec = p.createVector(y1, y2);
@@ -73,16 +75,20 @@ const LUDecompositionVisualizer = () => {
 
                 if (t < t1_end) {
                     const t1 = p.map(t, 0, t1_end, 0, 1);
-                    const b1_A = applyMatrix(p.createVector(1,0), matrixA), b2_A = applyMatrix(p.createVector(0,1), matrixA);
-                    const b1 = p5.Vector.lerp(p.createVector(1,0), b1_A, t1); const b2 = p5.Vector.lerp(p.createVector(0,1), b2_A, t1);
+                    const b1_A = applyMatrix({x: 1, y: 0}, matrixA); 
+                    const b2_A = applyMatrix({x: 0, y: 1}, matrixA);
+                    const b1 = p5.Vector.lerp(p.createVector(1,0), p.createVector(b1_A.x, b1_A.y), t1); 
+                    const b2 = p5.Vector.lerp(p.createVector(0,1), p.createVector(b2_A.x, b2_A.y), t1);
                     const currentVec = p5.Vector.lerp(xVec, bVec, t1);
                     drawGrid(p, b1, b2, p.color(55, 65, 81), 1, scaleFactor);
                     drawVector(p, xVec, scaleFactor, p.color(167, 139, 250, 100), 'x');
                     drawVector(p, currentVec, scaleFactor, p.color(248, 113, 113), 'Ax=b');
                 } else if (t < t2_end) {
                     const t2 = p.map(t, t1_end, t2_end, 0, 1);
-                    const b1_L_inv = applyMatrix(p.createVector(1,0), {a:1, b:0, c:-LU.L.c, d:1}); const b2_L_inv = applyMatrix(p.createVector(0,1), {a:1, b:0, c:-LU.L.c, d:1});
-                    const b1 = p5.Vector.lerp(p.createVector(1,0), b1_L_inv, t2); const b2 = p5.Vector.lerp(p.createVector(0,1), b2_L_inv, t2);
+                    const b1_L_inv = applyMatrix({x:1, y:0}, {a:1, b:0, c:-LU.L.c, d:1}); 
+                    const b2_L_inv = applyMatrix({x:0, y:1}, {a:1, b:0, c:-LU.L.c, d:1});
+                    const b1 = p5.Vector.lerp(p.createVector(1,0), p.createVector(b1_L_inv.x, b1_L_inv.y), t2); 
+                    const b2 = p5.Vector.lerp(p.createVector(0,1), p.createVector(b2_L_inv.x, b2_L_inv.y), t2);
                     const currentVec = p5.Vector.lerp(bVec, yVec, t2);
                     drawGrid(p, b1, b2, p.color(55, 65, 81), 1, scaleFactor);
                     drawVector(p, bVec, scaleFactor, p.color(244, 114, 182, 100), 'b');
@@ -90,8 +96,10 @@ const LUDecompositionVisualizer = () => {
                 } else {
                     const t3 = p.map(t, t2_end, t3_end, 0, 1);
                     const inv_u11=1/LU.U.a, inv_u12=-LU.U.b/(LU.U.a*LU.U.d), inv_u22=1/LU.U.d;
-                    const b1_U_inv = applyMatrix(p.createVector(1,0), {a:inv_u11, b:inv_u12, c:0, d:inv_u22}); const b2_U_inv = applyMatrix(p.createVector(0,1), {a:inv_u11, b:inv_u12, c:0, d:inv_u22});
-                    const b1 = p5.Vector.lerp(p.createVector(1,0), b1_U_inv, t3); const b2 = p5.Vector.lerp(p.createVector(0,1), b2_U_inv, t3);
+                    const b1_U_inv = applyMatrix({x:1, y:0}, {a:inv_u11, b:inv_u12, c:0, d:inv_u22}); 
+                    const b2_U_inv = applyMatrix({x:0, y:1}, {a:inv_u11, b:inv_u12, c:0, d:inv_u22});
+                    const b1 = p5.Vector.lerp(p.createVector(1,0), p.createVector(b1_U_inv.x, b1_U_inv.y), t3); 
+                    const b2 = p5.Vector.lerp(p.createVector(0,1), p.createVector(b2_U_inv.x, b2_U_inv.y), t3);
                     const currentVec = p5.Vector.lerp(yVec, xVec, t3);
                     drawGrid(p, b1, b2, p.color(55, 65, 81), 1, scaleFactor);
                     drawVector(p, yVec, scaleFactor, p.color(250, 204, 21, 100), 'y');
@@ -187,7 +195,3 @@ const LUDecompositionVisualizer = () => {
     );
 };
 export default LUDecompositionVisualizer;
-
-const applyMatrix = (v: p5.Vector, m: {a:number,b:number,c:number,d:number}) => new p5.Vector(m.a*v.x + m.b*v.y, m.c*v.x + m.d*v.y);
-
-    

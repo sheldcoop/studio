@@ -362,4 +362,17 @@ export const calculateEigen = (a: number, b: number, c: number, d: number) => {
     
     return { lambda1, lambda2, v1, v2 };
 };
+
+/**
+ * Applies a 2x2 matrix transformation to a 2D vector.
+ * @param v The vector to transform.
+ * @param m The matrix to apply.
+ * @returns The transformed vector.
+ */
+export const applyMatrix = (v: { x: number; y: number }, m: { a: number; b: number; c: number; d: number }) => {
+    return {
+        x: m.a * v.x + m.b * v.y,
+        y: m.c * v.x + m.d * v.y,
+    };
+};
     

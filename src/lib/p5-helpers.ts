@@ -175,6 +175,25 @@ export const drawLine = (p: p5, a: number, b: number, c: number, scaleFactor: nu
     p.pop();
 };
 
+/**
+ * Draws a transformed unit circle based on a transformation function.
+ * @param p - The p5 instance.
+ * @param transform - A function that takes x, y and returns the transformed coordinates.
+ * @param scaleFactor - The scaling factor for the drawing.
+ * @param color - The color of the circle.
+ */
+export const drawTransformedCircle = (p: p5, transform: (x: number, y: number) => { x: number; y: number }, scaleFactor: number, color: p5.Color) => {
+    p.noFill(); p.stroke(color); p.strokeWeight(3);
+    p.beginShape();
+    for (let i = 0; i <= 64; i++) {
+        const angle = p.map(i, 0, 64, 0, p.TWO_PI);
+        const { x, y } = transform(p.cos(angle), p.sin(angle));
+        p.vertex(x * scaleFactor, y * scaleFactor);
+    }
+    p.endShape(p.CLOSE);
+};
+
+
 // #endregion
 
 // #region --- Coordinate System ---

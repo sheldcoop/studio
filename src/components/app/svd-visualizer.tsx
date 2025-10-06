@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
+import { drawGrid, drawVector, easeInOutCubic, drawTransformedCircle } from '@/lib/p5-helpers';
 
 const SVDVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -265,18 +265,4 @@ const SVDVisualizer = () => {
     );
 };
 
-// This helper is specific enough to this visualization that it remains local.
-const drawTransformedCircle = (p: p5, transform: (x: number, y: number) => { x: number; y: number }, scaleFactor: number, c: p5.Color) => {
-    p.noFill(); p.stroke(c); p.strokeWeight(3);
-    p.beginShape();
-    for (let i = 0; i <= 64; i++) {
-        const angle = p.map(i, 0, 64, 0, p.TWO_PI);
-        const { x, y } = transform(p.cos(angle), p.sin(angle));
-        p.vertex(x * scaleFactor, y * scaleFactor);
-    }
-    p.endShape(p.CLOSE);
-};
-
 export default SVDVisualizer;
-
-    
