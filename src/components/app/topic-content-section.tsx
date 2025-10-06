@@ -25,8 +25,8 @@ const SvdVisualizer = dynamic(
   }
 );
 
-const DeterminantAnimation = dynamic(
-  () => import('@/components/app/determinant-animation').then(mod => mod.DeterminantAnimation),
+const DeterminantVisualizer = dynamic(
+  () => import('@/components/app/determinant-visualizer'),
   {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false,
@@ -150,7 +150,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
                         ) : isSvdTopic ? (
                             <SvdVisualizer />
                         ) : isDeterminantTopic ? (
-                            <DeterminantAnimation isHovered={true} />
+                            <DeterminantVisualizer />
                         ) : (
                             <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
                                 <p className="text-sm text-muted-foreground">Interactive demo coming soon.</p>
