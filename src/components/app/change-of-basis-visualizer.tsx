@@ -9,7 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5-helpers';
+import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5';
 import { calculateEigen } from '@/lib/math/linear-algebra';
 
 const ChangeOfBasisVisualizer = () => {
@@ -95,10 +95,10 @@ const ChangeOfBasisVisualizer = () => {
 
                     drawLinearCombination(p_custom_coords, b1, b2, scaleFactor);
                     drawPoint(p, p_standard, scaleFactor, p.color(255, 217, 61));
-                    drawVector(p, p.createVector(1, 0), scaleFactor, p.color(156, 163, 175), 'î');
-                    drawVector(p, p.createVector(0, 1), scaleFactor, p.color(156, 163, 175), 'ĵ');
-                    drawVector(p, b1, scaleFactor, p.color(248, 113, 113), 'b₁');
-                    drawVector(p, b2, scaleFactor, p.color(96, 165, 250), 'b₂');
+                    drawVector(p, p.createVector(1, 0), scaleFactor, p.color(156, 163, 175), 'î', 4);
+                    drawVector(p, p.createVector(0, 1), scaleFactor, p.color(156, 163, 175), 'ĵ', 4);
+                    drawVector(p, b1, scaleFactor, p.color(248, 113, 113), 'b₁', 4);
+                    drawVector(p, b2, scaleFactor, p.color(96, 165, 250), 'b₂', 4);
                 } else {
                     const t = easeInOutCubic(progress);
                     const eigen = calculateEigen(matrix.a, matrix.b, matrix.c, matrix.d);
@@ -148,10 +148,10 @@ const ChangeOfBasisVisualizer = () => {
 
                     if (progress > 0.99) {
                         const p_final = p.createVector(matrix.a * p_standard.x + matrix.b * p_standard.y, matrix.c * p_standard.x + matrix.d * p_standard.y);
-                        drawVector(p, p_standard, scaleFactor, p.color(255, 255, 255, 50), 'P_start');
-                        drawVector(p, p_final, scaleFactor, p.color(255, 217, 61), 'AP');
+                        drawVector(p, p_standard, scaleFactor, p.color(255, 255, 255, 50), 'P_start', 5);
+                        drawVector(p, p_final, scaleFactor, p.color(255, 217, 61), 'AP', 5);
                     } else {
-                        drawVector(p, p_display, scaleFactor, p.color(255, 217, 61), 'P');
+                        drawVector(p, p_display, scaleFactor, p.color(255, 217, 61), 'P', 5);
                     }
                 }
             };

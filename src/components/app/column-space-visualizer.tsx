@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
-import { drawGrid, drawVector, screenToWorld } from '@/lib/p5-helpers';
+import { drawGrid, drawVector, screenToWorld } from '@/lib/p5';
 
 const ColumnSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -180,6 +180,8 @@ const ColumnSpaceVisualizer = () => {
 };
 
 export default ColumnSpaceVisualizer;
+    
+
     
 
     
