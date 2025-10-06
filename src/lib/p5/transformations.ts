@@ -1,4 +1,3 @@
-
 'use client';
 
 import p5 from 'p5';
@@ -146,8 +145,8 @@ export const drawLinearCombination = (p: p5, v1: p5.Vector, v2: p5.Vector, scala
 
     if (showComponents) {
         // Draw component vectors
-        drawVector(p, c1, scaleFactor, p.color(255, 100, 100, 150), `${scalar1}v₁`, 3);
-        drawVector(p, c2, scaleFactor, p.color(100, 255, 100, 150), `${scalar2}v₂`, 3, c1);
+        drawVector(p, c1, scaleFactor, p.color(255, 100, 100, 150), `${scalar1.toFixed(1)}v₁`, 3);
+        drawVector(p, c2, scaleFactor, p.color(100, 255, 100, 150), `${scalar2.toFixed(1)}v₂`, 3, c1);
     }
     
     // Draw result
@@ -223,7 +222,6 @@ export const drawProjection = (p: p5, vector: p5.Vector, onto: p5.Vector, scaleF
 };
 
 export const drawLinearSystem = (p: p5, a1: number, b1: number, c1: number, a2: number, b2: number, c2: number, scaleFactor: number, line1Color: p5.Color, line2Color: p5.Color) => {
-    
     // Draw both lines
     drawLine(p, a1, b1, c1, scaleFactor, line1Color);
     drawLine(p, a2, b2, c2, scaleFactor, line2Color);
@@ -250,5 +248,3 @@ export const drawLinearSystem = (p: p5, a1: number, b1: number, c1: number, a2: 
         p.pop();
     }
 };
-
-    
