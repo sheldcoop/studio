@@ -184,7 +184,7 @@ const ChangeOfBasisVisualizer = () => {
             };
 
             p.mousePressed = () => { if (componentState.mode === 'explore' && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) { const m = screenToWorld(p, p.mouseX, p.mouseY, p.min(p.width, p.height)/8); if(p5.Vector.dist(m, b1) < 0.3) dragging = b1; else if(p5.Vector.dist(m, b2) < 0.3) dragging = b2; }};
-            p.mouseDragged = () => { if (dragging) dragging.set(screenToWorld(p, p.mouseX, p.mouseY, p.min(p.width, p.height)/8)); };
+            p.mouseDragged = () => { if (dragging) { const worldPos = screenToWorld(p, p.mouseX, p.mouseY, p.min(p.width, p.height)/8); if(worldPos) dragging.set(worldPos); } };
             p.mouseReleased = () => { dragging = null; };
             p.windowResized = () => p.resizeCanvas(canvasRef.current!.offsetWidth, 500);
         }, canvasRef.current!);
