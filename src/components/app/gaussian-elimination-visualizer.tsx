@@ -78,9 +78,17 @@ const GaussianEliminationVisualizer = () => {
             };
         };
 
-        sketchRef.current = new p5(sketch);
+        sketchRef.current = new p5(sketch, canvasRef.current!);
         return () => { sketchRef.current?.remove(); };
+    // We only want this to run once, so we pass an empty dependency array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    
+    // This effect redraws the p5 sketch when the matrix state changes.
+    useEffect(() => {
+        sketchRef.current?.redraw();
+    }, [matrix, animation.progress]);
+
 
     const updateMatrixFromUI = () => {
         const newMatrix: { [key: string]: number } = {};
@@ -176,5 +184,3 @@ const GaussianEliminationVisualizer = () => {
 };
 
 export default GaussianEliminationVisualizer;
-
-    
