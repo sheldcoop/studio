@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { RotateCcw, Play, Pause } from 'lucide-react';
-import { drawGrid, easeInOutCubic } from '@/lib/p5-helpers';
+import { drawGrid, easeInOutCubic } from '@/lib/p5';
 
 const NullSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,7 @@ const NullSpaceVisualizer = () => {
                 progress,
             };
 
-            p.updateWithProps = (props: any) => {
+            (p as any).updateWithProps = (props: any) => {
                 state.matrix = props.matrix;
                 state.progress = props.progress;
             };
@@ -69,6 +69,43 @@ const NullSpaceVisualizer = () => {
                 drawPointGrid(currentMatrix, scaleFactor, p);
             };
         };
+
+        const drawPointGrid = (m: {a:number,b:number,c:number,d:number}, s: number, p: p5) => {
+          p.noStroke();
+          const range = 8;
+          const det = m.a * m.d - m.b * m.c;
+          const isSingular = Math.abs(det) < 0.01;
+      
+          for (let i = -range; i <= range; i+=0.5) {
+              for (let j = -range; j <= range; j+=0.5) {
+                  const tx = (m.a*i + m.b*j)*s;
+                  const ty = (m.c*i + m.d*j)*s;
+                  
+                  let color = p.color(147, 197, 253, 50);
+                  
+                  if (isSingular) {
+                      const nullSpaceVector = p.createVector(-m.b, m.a);
+                      const inputVector = p.createVector(i, j);
+                      const dot = nullSpaceVector.dot(inputVector);
+                      if (Math.abs(dot) < 0.1) {
+                          const alpha = p.map(p.dist(tx,ty,0,0), 0, 30, 255, 50);
+                          color = p.color(239, 68, 68, alpha); // Red for null space vectors
+                      }
+                  }
+                  
+                  p.fill(color);
+                  p.ellipse(tx, ty, 4, 4);
+              }
+          }
+      };
+
+      const drawNullSpace = (v: p5.Vector, s: number, p: p5) => {
+          p.stroke(239, 68, 68, 150);
+          p.strokeWeight(3);
+          const p1 = v.copy().mult(-p.width);
+          const p2 = v.copy().mult(p.width);
+          p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+      };
 
         sketchRef.current = new p5(sketch, canvasRef.current!);
         return () => sketchRef.current?.remove();
@@ -156,46 +193,4 @@ const NullSpaceVisualizer = () => {
         </Card>
     );
 };
-
-// --- p5.js Drawing Helpers ---
-const drawPointGrid = (m: {a:number,b:number,c:number,d:number}, s: number, p: p5) => {
-    p.noStroke();
-    const range = 8;
-    const det = m.a * m.d - m.b * m.c;
-    const isSingular = Math.abs(det) < 0.01;
-
-    for (let i = -range; i <= range; i+=0.5) {
-        for (let j = -range; j <= range; j+=0.5) {
-            const tx = (m.a*i + m.b*j)*s;
-            const ty = (m.c*i + m.d*j)*s;
-            
-            let color = p.color(147, 197, 253, 50);
-            
-            if (isSingular) {
-                const nullSpaceVector = p.createVector(-m.b, m.a);
-                const inputVector = p.createVector(i, j);
-                const dot = nullSpaceVector.dot(inputVector);
-                if (Math.abs(dot) < 0.1) {
-                    const alpha = p.map(p.dist(tx,ty,0,0), 0, 30, 255, 50);
-                    color = p.color(239, 68, 68, alpha); // Red for null space vectors
-                }
-            }
-            
-            p.fill(color);
-            p.ellipse(tx, ty, 4, 4);
-        }
-    }
-};
-
-const drawNullSpace = (v: p5.Vector, s: number, p: p5) => {
-    p.stroke(239, 68, 68, 150);
-    p.strokeWeight(3);
-    const p1 = v.copy().mult(-p.width);
-    const p2 = v.copy().mult(p.width);
-    p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
-};
-
-
 export default NullSpaceVisualizer;
-
-    

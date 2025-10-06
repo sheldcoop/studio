@@ -347,7 +347,7 @@ export function CLT_Interactive_Dashboard() {
                <Card>
                   <CardHeader>
                       <CardTitle>1. Population Distribution</CardTitle>
-                      <CardDescription>This is the shape of the original barrel of tickets. We&apos;ll draw samples from here.</CardDescription>
+                      <CardDescription>This is the shape of the original barrel of tickets. We'll draw samples from here.</CardDescription>
                   </CardHeader>
                   <CardContent>
                       <PopulationChart distribution={distribution} />

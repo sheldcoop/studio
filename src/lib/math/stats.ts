@@ -1,3 +1,4 @@
+
 /**
  * Generates normally distributed random data using the central limit theorem approximation.
  * @param mean - The desired mean.
@@ -285,6 +286,8 @@ export const inverseStandardNormalCdf = (p: number): number => {
     } else {
         const q = p - 0.5;
         const r = q * q;
-        return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1));
+        return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
     }
 }
+
+    

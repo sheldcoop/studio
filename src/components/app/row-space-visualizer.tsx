@@ -3,9 +3,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { drawVector as p5DrawVector, screenToWorld, drawGrid as p5DrawGrid } from '@/lib/p5-helpers';
+import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, drawGrid as p5DrawGrid } from '@/lib/p5';
 
 const RowSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -39,7 +43,7 @@ const RowSpaceVisualizer = () => {
 
                 const handleDragging = () => {
                     if (!p.mouseIsPressed) return;
-                    const mouseVec = screenToWorld(p, p.mouseX, p.mouseY, scaleFactor);
+                    const mouseVec = screenToWorld(p.mouseX, p.mouseY);
 
                     if (draggingR1) r1.set(mouseVec);
                     else if (draggingR2) r2.set(mouseVec);
@@ -74,11 +78,13 @@ const RowSpaceVisualizer = () => {
                 p5DrawVector(p, r2, scaleFactor, p.color(147, 197, 253), 'row₂');
             };
 
-            p.mousePressed = () => { const m = screenToWorld(p, p.mouseX, p.mouseY, scaleFactor); if (p5.Vector.dist(m, r1) < 0.5) draggingR1 = true; else if (p5.Vector.dist(m, r2) < 0.5) draggingR2 = true;};
-            p.mouseDragged = () => { if (draggingR1) r1.set(screenToWorld(p, p.mouseX, p.mouseY, scaleFactor)); if (draggingR2) r2.set(screenToWorld(p, p.mouseX, p.mouseY, scaleFactor));};
+            p.mousePressed = () => { const m = screenToWorld(p.mouseX, p.mouseY); if (p5.Vector.dist(m, r1) < 0.5) draggingR1 = true; else if (p5.Vector.dist(m, r2) < 0.5) draggingR2 = true;};
+            p.mouseDragged = () => { if (draggingR1) r1.set(screenToWorld(p.mouseX, p.mouseY)); if (draggingR2) r2.set(screenToWorld(p.mouseX, p.mouseY));};
             p.mouseReleased = () => { draggingR1 = false; draggingR2 = false;};
             
-             p.windowResized = () => { if (canvasRef.current) p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); };
+            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, scaleFactor);
+
+            p.windowResized = () => { if (canvasRef.current) p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); };
         };
 
         sketchRef.current = new p5(sketch, canvasRef.current!);
@@ -119,6 +125,3 @@ const RowSpaceVisualizer = () => {
 };
 
 export default RowSpaceVisualizer;
-    
-
-    

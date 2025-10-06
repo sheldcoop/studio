@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
-import { drawGrid as p5DrawGrid, drawVector as p5DrawVector } from '@/lib/p5-helpers';
+import { drawGrid as p5DrawGrid, drawVector as p5DrawVector } from '@/lib/p5';
 
 const DeterminantVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -73,8 +73,8 @@ const DeterminantVisualizer = () => {
                 p.vertex(j_hat_x, j_hat_y);
                 p.endShape(p.CLOSE);
                 
-                p5DrawVector(p, p.createVector(a, c), scaleFactor, p.color(110, 231, 183), 'î');
-                p5DrawVector(p, p.createVector(b, d), scaleFactor, p.color(248, 113, 113), 'ĵ');
+                p5DrawVector(p, p.createVector(a, c), scaleFactor, p.color(110, 231, 183), 'î', 4);
+                p5DrawVector(p, p.createVector(b, d), scaleFactor, p.color(248, 113, 113), 'ĵ', 4);
                 p.noLoop();
             };
             

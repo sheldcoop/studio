@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, drawGrid as p5DrawGrid } from '@/lib/p5-helpers';
+import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, drawGrid as p5DrawGrid } from '@/lib/p5';
 
 const LinearIndependenceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -52,9 +52,9 @@ const LinearIndependenceVisualizer = () => {
                 setIsDependent(dependent);
 
                 if (dependent) {
+                    const dominantVec = v1.magSq() > v2.magSq() ? v1 : v2;
                     p.stroke(239, 68, 68, 150); // red
                     p.strokeWeight(3);
-                    const dominantVec = v1.magSq() > v2.magSq() ? v1 : v2;
                     if (dominantVec.magSq() > 0.01) {
                         const p1 = dominantVec.copy().mult(-100);
                         const p2 = dominantVec.copy().mult(100);
@@ -64,8 +64,8 @@ const LinearIndependenceVisualizer = () => {
                     p5DrawGrid(p, v1, v2, p.color(55, 65, 81, 150), 1.5, scaleFactor);
                 }
 
-                p5DrawVector(p, v1, scaleFactor, p.color(248, 113, 113), 'v₁');
-                p5DrawVector(p, v2, scaleFactor, p.color(96, 165, 250), 'v₂');
+                p5DrawVector(p, v1, scaleFactor, p.color(248, 113, 113), 'v₁', 4);
+                p5DrawVector(p, v2, scaleFactor, p.color(96, 165, 250), 'v₂', 4);
             };
             
             const handleDragging = () => {

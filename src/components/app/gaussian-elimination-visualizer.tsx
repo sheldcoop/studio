@@ -10,8 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
-import { drawGrid as p5DrawGrid, easeInOutCubic, drawLine, lerpMatrix } from '@/lib/p5-helpers';
-import { calculate2x2Solution } from '@/lib/math/linear-algebra';
+import { drawGrid as p5DrawGrid, easeInOutCubic, drawLine, lerpMatrix } from '@/lib/p5';
+import { calculate2x2Solution } from '@/lib/math';
 
 const GaussianEliminationVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);

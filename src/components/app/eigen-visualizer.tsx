@@ -8,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
-import { calculateEigen } from '@/lib/math/linear-algebra';
+import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5';
+import { calculateEigen } from '@/lib/math';
 
 
 const EigenVisualizer = () => {
@@ -68,7 +68,7 @@ const EigenVisualizer = () => {
             }
         };
         
-        const drawEigenvector = (vx: number, vy: number, lambda: number, color: p5.Color, t: number, label: string) => {
+        const drawSingleEigenvector = (vx: number, vy: number, lambda: number, color: p5.Color, t: number, label: string) => {
             const ev = p.createVector(vx, vy);
             
             p.stroke(color);
@@ -155,8 +155,8 @@ const EigenVisualizer = () => {
             drawRandomVectors(t, 6);
             
             if (eigenData) {
-              drawEigenvector(eigenData.v1.x, eigenData.v1.y, eigenData.lambda1, p.color('#ff6b6b'), t, 'v₁');
-              drawEigenvector(eigenData.v2.x, eigenData.v2.y, eigenData.lambda2, p.color('#4ecdc4'), t, 'v₂');
+              drawSingleEigenvector(eigenData.v1.x, eigenData.v1.y, eigenData.lambda1, p.color('#ff6b6b'), t, 'v₁');
+              drawSingleEigenvector(eigenData.v2.x, eigenData.v2.y, eigenData.lambda2, p.color('#4ecdc4'), t, 'v₂');
             }
           }
         };

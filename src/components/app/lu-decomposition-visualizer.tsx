@@ -8,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
-import { applyMatrix } from '@/lib/math/linear-algebra';
+import { drawGrid, drawVector, easeInOutCubic, lerpMatrix } from '@/lib/p5';
+import { applyMatrix } from '@/lib/math';
 
 const LUDecompositionVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ const LUDecompositionVisualizer = () => {
                 bVec: p.createVector(0,0),
             };
 
-            p.updateWithProps = (props: any) => {
+            (p as any).updateWithProps = (props: any) => {
                 p5State.progress = props.progress;
                 p5State.matrixA = props.matrix;
                 p5State.LU = props.luData;

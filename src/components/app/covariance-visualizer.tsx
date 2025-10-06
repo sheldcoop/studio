@@ -6,7 +6,7 @@ import p5 from 'p5';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { drawGrid as p5DrawGrid } from '@/lib/p5-helpers';
+import { drawGrid as p5DrawGrid } from '@/lib/p5';
 
 const CovarianceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,7 @@ const CovarianceVisualizer = () => {
             const asset1 = { mean: 0, stdDev: 1.0 };
             const asset2 = { mean: 0, stdDev: 1.5 };
 
-            p.updateWithProps = (props: any) => {
+            (p as any).updateWithProps = (props: any) => {
                 if (state.correlation !== props.correlation) {
                     state.correlation = props.correlation;
                     generateData();
@@ -125,5 +125,3 @@ const CovarianceVisualizer = () => {
     );
 };
 export default CovarianceVisualizer;
-
-    
