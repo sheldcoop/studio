@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
+import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5';
 
 const DiagonalizationVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -31,7 +31,7 @@ const DiagonalizationVisualizer = () => {
         if (discriminant >= 0) {
             const sqrt_discriminant = Math.sqrt(discriminant);
             const l1 = (trace + sqrt_discriminant) / 2;
-            const l2 = (trace - sqrt_discriminant) / 2;
+            const l2 = (trace - discriminant) / 2;
             let v1 = {x: b, y: l1 - a}; if (v1.x*v1.x + v1.y*v1.y < 1e-4) v1 = {x: l1 - d, y: c};
             let v2 = {x: b, y: l2 - a}; if (v2.x*v2.x + v2.y*v2.y < 1e-4) v2 = {x: l2 - d, y: c};
             const len1 = Math.sqrt(v1.x*v1.x + v1.y*v1.y); if (len1 > 1e-4) { v1.x /= len1; v1.y /= len1; }
@@ -55,7 +55,7 @@ const DiagonalizationVisualizer = () => {
                 svdData: null as any
             };
 
-            p.updateWithProps = (props: any) => { Object.assign(state, props); };
+            (p as any).updateWithProps = (props: any) => { Object.assign(state, props); };
             
             p.setup = () => p.createCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight).parent(canvasRef.current!);
 
