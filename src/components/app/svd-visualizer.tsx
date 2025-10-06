@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
 
 const SVDVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -71,7 +72,7 @@ const SVDVisualizer = () => {
                 svdData: null as any
             }
             
-            p.updateWithProps = props => {
+            p.updateWithProps = (props: any) => {
                 state.progress = props.progress;
                 state.mode = props.mode;
                 state.currentStep = props.currentStep;
@@ -129,50 +130,14 @@ const SVDVisualizer = () => {
                     }
                 }
                 
-                drawTransformedGrid(currentTransform, scaleFactor, p.color(72, 144, 226, 50));
-                drawTransformedCircle(currentTransform, scaleFactor, p.color('#ffd93d'));
+                // Extract transformed basis vectors to use with the shared drawGrid helper
+                const b1 = p.createVector(currentTransform(1, 0).x, currentTransform(1, 0).y);
+                const b2 = p.createVector(currentTransform(0, 1).x, currentTransform(0, 1).y);
+                drawGrid(p, b1, b2, p.color(72, 144, 226, 50), 1, scaleFactor);
+                drawTransformedCircle(p, currentTransform, scaleFactor, p.color('#ffd93d'));
 
-                const transformed_e1 = currentTransform(1, 0);
-                const transformed_e2 = currentTransform(0, 1);
-                drawVector(0, 0, transformed_e1.x * scaleFactor, transformed_e1.y * scaleFactor, p.color('#ff6b6b'));
-                drawVector(0, 0, transformed_e2.x * scaleFactor, transformed_e2.y * scaleFactor, p.color('#4ecdc4'));
-            };
-            
-            const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-            const drawTransformedGrid = (transform: (x: number, y: number) => { x: number, y: number }, scale: number, c: p5.Color) => {
-                p.stroke(c); p.strokeWeight(1);
-                const gridSize = 8;
-                for (let i = -gridSize; i <= gridSize; i++) {
-                    p.beginShape(p.LINE_STRIP);
-                    for (let j = -gridSize; j <= gridSize; j++) { const { x, y } = transform(i, j); p.vertex(x * scale, y * scale); }
-                    p.endShape();
-                    p.beginShape(p.LINE_STRIP);
-                    for (let j = -gridSize; j <= gridSize; j++) { const { x, y } = transform(j, i); p.vertex(x * scale, y * scale); }
-                    p.endShape();
-                }
-            };
-
-            const drawTransformedCircle = (transform: (x: number, y: number) => { x: number, y: number }, scale: number, c: p5.Color) => {
-                p.noFill(); p.stroke(c); p.strokeWeight(3);
-                p.beginShape();
-                for (let i = 0; i <= 64; i++) {
-                    const angle = p.map(i, 0, 64, 0, p.TWO_PI);
-                    const { x, y } = transform(p.cos(angle), p.sin(angle));
-                    p.vertex(x * scale, y * scale);
-                }
-                p.endShape(p.CLOSE);
-            };
-
-            const drawVector = (x1: number, y1: number, x2: number, y2: number, c: p5.Color) => {
-                p.stroke(c); p.strokeWeight(4); p.line(x1, y1, x2, y2);
-                p.push();
-                p.translate(x2, y2);
-                const angle = p.atan2(y2 - y1, x2 - x1);
-                p.rotate(angle);
-                p.noStroke(); p.fill(c);
-                p.triangle(0, 0, -10, 5, -10, -5);
-                p.pop();
+                drawVector(p, b1, scaleFactor, p.color('#ff6b6b'), 'î', 4);
+                drawVector(p, b2, scaleFactor, p.color('#4ecdc4'), 'ĵ', 4);
             };
 
             p.windowResized = () => {
@@ -298,6 +263,18 @@ const SVDVisualizer = () => {
             </CardContent>
         </Card>
     );
+};
+
+// This helper is specific enough to this visualization that it remains local.
+const drawTransformedCircle = (p: p5, transform: (x: number, y: number) => { x: number; y: number }, scaleFactor: number, c: p5.Color) => {
+    p.noFill(); p.stroke(c); p.strokeWeight(3);
+    p.beginShape();
+    for (let i = 0; i <= 64; i++) {
+        const angle = p.map(i, 0, 64, 0, p.TWO_PI);
+        const { x, y } = transform(p.cos(angle), p.sin(angle));
+        p.vertex(x * scaleFactor, y * scaleFactor);
+    }
+    p.endShape(p.CLOSE);
 };
 
 export default SVDVisualizer;
