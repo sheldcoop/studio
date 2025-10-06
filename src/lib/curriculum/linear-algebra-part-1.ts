@@ -36,6 +36,30 @@ export const linearAlgebraPart1: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-1',
+        title: 'Determinant (Geometric Meaning) 📐',
+        icon: 'Waypoints',
+        description: "Understanding how transformations scale space.",
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+        subTopics: [
+            { id: 'determinant-intro', title: 'Introduction' },
+            { id: 'determinant-properties', title: 'Properties' },
+        ]
+    }),
+    createTopic({
+        parent: 'la-module-1',
+        title: 'Change of Basis / Coordinate Systems',
+        icon: 'Waypoints',
+        description: "Viewing vectors in different reference frames.",
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+        subTopics: [
+            { id: 'change-of-basis-intro', title: 'Introduction' },
+            { id: 'change-of-basis-matrix', title: 'Change of Basis Matrix' },
+        ]
+    }),
+    createTopic({
+        parent: 'la-module-1',
         title: 'Linear Independence',
         icon: 'Waypoints',
         description: "Crucial for diversification and factor models.",
