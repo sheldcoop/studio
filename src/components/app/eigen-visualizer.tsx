@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Sliders } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 const EigenVisualizer = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
