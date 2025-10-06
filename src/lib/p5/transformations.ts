@@ -2,7 +2,7 @@
 'use client';
 
 import p5 from 'p5';
-import { applyMatrix as applyMatrixMath } from '../math/linear-algebra';
+import { applyMatrix as applyMatrixMath } from '@/lib/math/linear-algebra';
 
 /**
  * Applies a matrix transformation to a p5 vector.

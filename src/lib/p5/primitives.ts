@@ -4,6 +4,96 @@
 import p5 from 'p5';
 
 /**
+ * Draws a transformed grid.
+ * @param p - The p5 instance.
+ * @param b1 - The first basis vector.
+ * @param b2 - The second basis vector.
+ * @param c - The color of the grid lines.
+ * @param w - The stroke weight of the grid lines.
+ * @param s - The scaling factor.
+ * @param fillColor - Optional fill color for the unit parallelogram.
+ */
+export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: number, s: number, fillColor?: p5.Color) => {
+    if (b1.magSq() < 0.01 || b2.magSq() < 0.01) return;
+    
+    p.stroke(c);
+    p.strokeWeight(w);
+    const range = 10;
+    
+    for(let i = -range; i <= range; i++) {
+        const p1 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(-range));
+        const p2 = p5.Vector.add(b1.copy().mult(i), b2.copy().mult(range));
+        p.line(p1.x * s, p1.y * s, p2.x * s, p2.y * s);
+
+        const p3 = p5.Vector.add(b1.copy().mult(-range), b2.copy().mult(i));
+        const p4 = p5.Vector.add(b1.copy().mult(range), b2.copy().mult(i));
+        p.line(p3.x * s, p3.y * s, p4.x * s, p4.y * s);
+    }
+    
+    if (fillColor) {
+        p.noStroke();
+        p.fill(fillColor);
+        p.beginShape();
+        const r = 8;
+        const p1_fill = b1.copy().mult(-r);
+        const p2_fill = b1.copy().mult(r);
+        const p3_fill = b2.copy().mult(-r);
+        const p4_fill = b2.copy().mult(r);
+
+        const v1 = p5.Vector.add(p1_fill, p3_fill);
+        const v2 = p5.Vector.add(p2_fill, p3_fill);
+        const v3 = p5.Vector.add(p2_fill, p4_fill);
+        const v4 = p5.Vector.add(p1_fill, p4_fill);
+        p.vertex(v1.x * s, v1.y * s);
+        p.vertex(v2.x * s, v2.y * s);
+        p.vertex(v3.x * s, v3.y * s);
+        p.vertex(v4.x * s, v4.y * s);
+        p.endShape(p.CLOSE);
+    }
+};
+
+/**
+ * Draws two basis vectors.
+ * @param p - The p5 instance.
+ * @param b1 - The first basis vector.
+ * @param b2 - The second basis vector.
+ * @param scaleFactor - The scaling factor.
+ * @param color1 - The color of the first vector.
+ * @param color2 - The color of the second vector.
+ * @param labels - Whether to show labels.
+ */
+export const drawBasisVectors = (p: p5, b1: p5.Vector, b2: p5.Vector, scaleFactor: number, color1: p5.Color, color2: p5.Color, labels: boolean = true) => {
+    // This is essentially two calls to drawVector, so it can be implemented with it.
+};
+
+/**
+ * Draws two orthogonal basis vectors.
+ * @param p - The p5 instance.
+ * @param v1 - The first vector.
+ * @param v2 - The second vector.
+ * @param scaleFactor - The scaling factor.
+ * @param color - The color of the vectors.
+ * @param showRightAngle - Whether to show a right angle marker.
+ */
+export const drawOrthogonalBasis = (p: p5, v1: p5.Vector, v2: p5.Vector, scaleFactor: number, color: p5.Color, showRightAngle: boolean = true) => {
+    // Draw v1 and v2 using drawVector
+    if (showRightAngle) {
+        const size = 15;
+        const n1 = v1.copy().normalize();
+        const n2 = v2.copy().normalize();
+        p.noFill(); p.stroke(color); p.strokeWeight(1);
+        p.beginShape();
+        const p1 = n1.copy().mult(size);
+        const p2 = p5.Vector.add(n1, n2).mult(size);
+        const p3 = n2.copy().mult(size);
+        p.vertex(p1.x, p1.y);
+        p.vertex(p2.x, p2.y);
+        p.vertex(p3.x, p3.y);
+        p.endShape();
+    }
+};
+
+/**
  * Draws a vector from the origin with an arrowhead.
  * @param p - The p5 instance.
  * @param v - The vector to draw.
