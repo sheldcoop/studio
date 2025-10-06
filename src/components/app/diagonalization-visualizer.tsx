@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5-helpers';
 
 const DiagonalizationVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -15,10 +16,10 @@ const DiagonalizationVisualizer = () => {
 
     const [matrix, setMatrix] = useState({ a: 1.5, b: 0.5, c: 0.5, d: 1.0 });
     const [svdData, setSvdData] = useState<any>(null);
-    const [progress, setProgress] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [storyText, setStoryText] = useState("");
     const [storyDesc, setStoryDesc] = useState("");
+    const [progress, setProgress] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
     const animationFrameId = useRef<number | null>(null);
 
     // SVD Calculation Effect
@@ -81,10 +82,10 @@ const DiagonalizationVisualizer = () => {
                 } else if (t < t2_end) { const t2 = p.map(t, t1_end, t2_end, 0, 1); b1 = v1.copy(); b2 = v2.copy(); b1.mult(p.lerp(1,l1,t2)); b2.mult(p.lerp(1,l2,t2));
                 } else { const t3 = p.map(t, t2_end, 1, 0, 1); const scaled_v1 = p5.Vector.mult(v1,l1); const scaled_v2 = p5.Vector.mult(v2,l2); b1 = p5.Vector.lerp(scaled_v1, iHat.copy().mult(matrix.a).add(jHat.copy().mult(matrix.c)), t3); b2 = p5.Vector.lerp(scaled_v2, iHat.copy().mult(matrix.b).add(jHat.copy().mult(matrix.d)), t3); }
 
-                drawTransformedGrid(b1, b2, scaleFactor, p.color(72, 144, 226, 50), p);
-                drawTransformedCircle(b1, b2, scaleFactor, p.color('#ffd93d'), p);
-                drawVector(b1, scaleFactor, p.color('#ff6b6b'), p);
-                drawVector(b2, scaleFactor, p.color('#4ecdc4'), p);
+                drawGrid(p, b1, b2, p.color(72, 144, 226, 50), 1, scaleFactor);
+                drawTransformedCircle(p, b1, b2, scaleFactor, p.color('#ffd93d'));
+                drawVector(p, b1, scaleFactor, p.color('#ff6b6b'), null, 4);
+                drawVector(p, b2, scaleFactor, p.color('#4ecdc4'), null, 4);
             };
 
             p.windowResized = () => p.resizeCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight);
@@ -186,9 +187,4 @@ const DiagonalizationVisualizer = () => {
 export default DiagonalizationVisualizer;
 
 // --- p5.js Drawing Helpers ---
-const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-const drawVector = (v: p5.Vector, s: number, c: p5.Color, p: p5) => { if (!v) return; const sv = p5.Vector.mult(v, s); if (sv.magSq() < 1e-4) return; p.stroke(c); p.strokeWeight(4); p.line(0, 0, sv.x, sv.y); p.push(); p.translate(sv.x, sv.y); p.rotate(sv.heading()); p.fill(c); p.noStroke(); p.triangle(0, 0, -10, 5, -10, -5); p.pop(); };
-const drawTransformedGrid = (b1: p5.Vector, b2: p5.Vector, s: number, c: p5.Color, p: p5) => { p.stroke(c); p.strokeWeight(1); const r = 8; for (let i = -r; i <= r; i++) { p.beginShape(p.LINE_STRIP); for (let j = -r; j <= r; j++) { const v = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, j)); p.vertex(v.x * s, v.y * s); } p.endShape(); p.beginShape(p.LINE_STRIP); for (let j = -r; j <= r; j++) { const v = p5.Vector.add(p5.Vector.mult(b1, j), p5.Vector.mult(b2, i)); p.vertex(v.x * s, v.y * s); } p.endShape(); } };
-const drawTransformedCircle = (b1: p5.Vector, b2: p5.Vector, s: number, c: p5.Color, p: p5) => { p.noFill(); p.stroke(c); p.strokeWeight(3); p.beginShape(); for (let i = 0; i <= 64; i++) { const angle = p.map(i, 0, 64, 0, p.TWO_PI); const circVec = p.createVector(p.cos(angle), p.sin(angle)); const transformed = p5.Vector.add(p5.Vector.mult(b1, circVec.x), p5.Vector.mult(b2, circVec.y)); p.vertex(transformed.x * s, transformed.y * s); } p.endShape(p.CLOSE); };
-
-    
+const drawTransformedCircle = (p: p5, b1: p5.Vector, b2: p5.Vector, s: number, c: p5.Color) => { p.noFill(); p.stroke(c); p.strokeWeight(3); p.beginShape(); for (let i = 0; i <= 64; i++) { const angle = p.map(i, 0, 64, 0, p.TWO_PI); const circVec = p.createVector(p.cos(angle), p.sin(angle)); const transformed = p5.Vector.add(p5.Vector.mult(b1, circVec.x), p5.Vector.mult(b2, circVec.y)); p.vertex(transformed.x * s, transformed.y * s); } p.endShape(p.CLOSE); };
