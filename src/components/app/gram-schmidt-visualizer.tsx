@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RotateCcw, Play } from 'lucide-react';
+import { drawGrid as p5DrawGrid, drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, easeInOutCubic } from '@/lib/p5';
 
 const GramSchmidtVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -32,7 +33,7 @@ const GramSchmidtVisualizer = () => {
                 v1, v2, progress, isPlaying
             };
 
-            p.updateWithProps = (props: any) => {
+            (p as any).updateWithProps = (props: any) => {
                 componentState = { ...componentState, ...props };
                 p5v1.set(props.v1.x, props.v1.y);
                 p5v2.set(props.v2.x, props.v2.y);
@@ -72,46 +73,44 @@ const GramSchmidtVisualizer = () => {
                 
                 const t = easeInOutCubic(progress);
                 
-                drawGrid(p5v1, p5v2, p.color(55, 65, 81, 255 * (1 - t)), 1, scaleFactor, p);
+                p5DrawGrid(p, p5v1, p5v2, p.color(55, 65, 81, 255 * (1 - t)), 1, scaleFactor);
                 if (u1 && u2) {
-                    drawGrid(u1.copy().normalize(), u2.copy().normalize(), p.color(55, 65, 81, 255 * t), 2, scaleFactor, p);
+                    p5DrawGrid(p, u1.copy().normalize(), u2.copy().normalize(), p.color(55, 65, 81, 255 * t), 2, scaleFactor);
                 }
 
                 const t1_end = 0.2, t2_end = 0.5, t3_end = 0.9;
-                if (t < t2_end) drawVector(p5v1, scaleFactor, p.color(248, 113, 113, 255 * (1 - p.map(t, t1_end, t2_end, 0, 1))), 'v₁', 4, null, p);
+                if (t < t2_end) p5DrawVector(p, p5v1, scaleFactor, p.color(248, 113, 113, 255 * (1 - p.map(t, t1_end, t2_end, 0, 1))), 'v₁', 4);
                 if (t > 0) {
                     const u1_alpha = p.constrain(p.map(t, 0, t1_end, 0, 1), 0, 1);
-                    drawVector(u1, scaleFactor, p.color(250, 204, 21, 255 * u1_alpha), 'u₁', 5, null, p);
+                    p5DrawVector(p, u1, scaleFactor, p.color(250, 204, 21, 255 * u1_alpha), 'u₁', 5);
                 }
                 if (t > t1_end) {
                     const t2 = p.constrain(p.map(t, t1_end, t2_end, 0, 1), 0, 1);
-                    drawVector(p5v2, scaleFactor, p.color(96, 165, 250), 'v₂', 4, null, p);
-                    const proj_tip = p5.Vector.mult(u1, proj.mag() / u1.mag());
+                    p5DrawVector(p, p5v2, scaleFactor, p.color(96, 165, 250), 'v₂', 4);
+                    const proj_tip = u1.copy().mult(proj.mag() / u1.mag());
                     p.stroke(167, 139, 250, 150 * t2); p.strokeWeight(2); p.drawingContext.setLineDash([5, 5]);
                     p.line(p5v2.x * scaleFactor, p5v2.y * scaleFactor, proj_tip.x * scaleFactor, proj_tip.y * scaleFactor);
                     p.drawingContext.setLineDash([]);
-                    drawVector(proj.copy().mult(t2), scaleFactor, p.color(167, 139, 250), 'proj', 3, null, p);
+                    p5DrawVector(p, proj.copy().mult(t2), scaleFactor, p.color(167, 139, 250), 'proj', 3);
                 }
                 if (t > t2_end) {
                     const t3 = p.constrain(p.map(t, t2_end, t3_end, 0, 1), 0, 1);
                     const subtraction_offset = p5.Vector.lerp(p5v2, p.createVector(0,0), t3);
-                    drawVector(proj.copy().mult(-1), scaleFactor, p.color(167, 139, 250, 100), null, 3, subtraction_offset, p);
+                    p5DrawVector(p, proj.copy().mult(-1), scaleFactor, p.color(167, 139, 250, 100), null, 3, subtraction_offset);
                     const u2_final_pos = p5.Vector.lerp(p5v2, u2, t3);
-                    drawVector(u2_final_pos, scaleFactor, p.color(74, 222, 128), 'u₂', 5, null, p);
+                    p5DrawVector(p, u2_final_pos, scaleFactor, p.color(74, 222, 128), 'u₂', 5);
                 }
             };
             
-            const screenToWorld = (mx: number, my: number) => { const s = p.min(p.width, p.height) / 10; return p.createVector((mx - p.width / 2) / s, (p.height / 2 - my) / s); };
-
             const handleDragging = () => {
-                const mouseWorld = screenToWorld(p.mouseX, p.mouseY);
+                const mouseWorld = p5ScreenToWorld(p, p.mouseX, p.mouseY, p.min(p.width, p.height)/10);
                 if (isDraggingV1) setV1({x: mouseWorld.x, y: mouseWorld.y});
                 if (isDraggingV2) setV2({x: mouseWorld.x, y: mouseWorld.y});
             };
 
             p.mousePressed = () => {
                 if (componentState.isPlaying) return;
-                const mouseWorld = screenToWorld(p.mouseX, p.mouseY);
+                const mouseWorld = p5ScreenToWorld(p, p.mouseX, p.mouseY, p.min(p.width, p.height)/10);
                 if (p5.Vector.dist(mouseWorld, p5v1) < 0.5) isDraggingV1 = true;
                 else if (p5.Vector.dist(mouseWorld, p5v2) < 0.5) isDraggingV2 = true;
                 if(isDraggingV1 || isDraggingV2) document.body.style.cursor = 'grabbing';
@@ -203,7 +202,4 @@ const GramSchmidtVisualizer = () => {
 };
 export default GramSchmidtVisualizer;
 
-// --- p5.js Drawing Helpers ---
-const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-const drawGrid = (b1: p5.Vector, b2: p5.Vector, c: p5.Color, w: number, s: number, p: p5) => { if(b1.magSq()<0.01||b2.magSq()<0.01)return; p.stroke(c); p.strokeWeight(w); const r=10; for(let i=-r;i<=r;i++){const p1=p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,-r));const p2=p5.Vector.add(p5.Vector.mult(b1,i),p5.Vector.mult(b2,r));p.line(p1.x*s,p1.y*s,p2.x*s,p2.y*s);const p3=p5.Vector.add(p5.Vector.mult(b1,-r),p5.Vector.mult(b2,i));const p4=p5.Vector.add(p5.Vector.mult(b1,r),p5.Vector.mult(b2,i));p.line(p3.x*s,p3.y*s,p4.x*s,p4.y*s);}}
-const drawVector = (v: p5.Vector, s: number, c: p5.Color, l: string | null, w: number, offset: p5.Vector | null, p: p5) => { if(!v)return;const sv=p5.Vector.mult(v,s);if(offset){sv.add(p5.Vector.mult(offset,s));} if(v.magSq()<1e-4){p.fill(c);p.noStroke();p.ellipse(offset?sv.x:0,offset?sv.y:0,8,8);return;}; p.push();if(offset){p.translate(offset.x*s,offset.y*s);} p.stroke(c);p.fill(c);p.strokeWeight(w);p.line(0,0,v.x*s,v.y*s);const hs=10;const a=v.heading();p.translate(v.x*s,v.y*s);p.rotate(a);p.triangle(0,0,-hs,hs/2,-hs,-hs/2);p.pop();if(l){p.push();const lp=sv.copy().add(v.copy().normalize().mult(20));p.noStroke();p.fill(c);p.textSize(18);p.textStyle(p.BOLD);p.translate(lp.x,lp.y);p.scale(1,-1);p.text(l,0,0);p.pop();}}
+    
