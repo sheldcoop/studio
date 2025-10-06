@@ -3,22 +3,41 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
-import { drawGrid, easeInOutCubic, drawLine, lerpMatrix, drawPoint } from '@/lib/p5';
+import { drawGrid, easeInOutCubic, drawLine, drawPoint } from '@/lib/p5';
 import { calculate2x2Solution } from '@/lib/math';
+
+// Type definition for our system of equations matrix
+type SystemMatrix = { a11: number; a12: number; b1: number; a21: number; a22: number; b2: number; };
+
+/**
+ * Linearly interpolates between two system matrices. This is a specific
+ * helper for this component to ensure type safety during animation.
+ */
+const lerpSystemMatrix = (p: p5, m1: SystemMatrix, m2: SystemMatrix, t: number): SystemMatrix => {
+    return {
+        a11: p.lerp(m1.a11, m2.a11, t),
+        a12: p.lerp(m1.a12, m2.a12, t),
+        b1: p.lerp(m1.b1, m2.b1, t),
+        a21: p.lerp(m1.a21, m2.a21, t),
+        a22: p.lerp(m1.a22, m2.a22, t),
+        b2: p.lerp(m1.b2, m2.b2, t),
+    };
+};
+
 
 const GaussianEliminationVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
     const sketchRef = useRef<p5 | null>(null);
 
-    const [matrix, setMatrix] = useState({ a11: 2, a12: -1, b1: 1, a21: 1, a22: 1, b2: 5 });
-    const [animation, setAnimation] = useState({ active: false, progress: 0, duration: 45, startState: null as any, endState: null as any, isScaling: false });
+    const [matrix, setMatrix] = useState<SystemMatrix>({ a11: 2, a12: -1, b1: 1, a21: 1, a22: 1, b2: 5 });
+    const [animation, setAnimation] = useState({ active: false, progress: 0, duration: 45, startState: null as SystemMatrix | null, endState: null as SystemMatrix | null, isScaling: false });
     const [sliders, setSliders] = useState({ k1: 0, k2: 0, s1: 1, s2: 1 });
     const [solution, setSolution] = useState<{ x: number, y: number } | null>(null);
 
@@ -44,9 +63,9 @@ const GaussianEliminationVisualizer = () => {
                 drawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
 
                 let currentMatrix = matrix;
-                if (animation.active) {
+                if (animation.active && animation.startState && animation.endState) {
                     const t = easeInOutCubic(animation.progress / animation.duration);
-                    currentMatrix = lerpMatrix(p, animation.startState!, animation.endState!, t);
+                    currentMatrix = lerpSystemMatrix(p, animation.startState, animation.endState, t);
                     const nextProgress = animation.progress + 1;
                     if (nextProgress >= animation.duration) {
                         setAnimation(a => ({...a, active: false}));
@@ -91,19 +110,21 @@ const GaussianEliminationVisualizer = () => {
 
 
     const updateMatrixFromUI = () => {
-        const newMatrix: { [key: string]: number } = {};
-        Object.keys(matrix).forEach(key => {
+        const newMatrix: Partial<SystemMatrix> = {};
+        (Object.keys(matrix) as Array<keyof SystemMatrix>).forEach(key => {
             const el = document.getElementById(key) as HTMLInputElement;
-            if (el) newMatrix[key] = parseFloat(el.value) || 0;
+            if (el) {
+                (newMatrix[key] as any) = parseFloat(el.value) || 0;
+            }
         });
-        setMatrix(newMatrix as any);
+        setMatrix(newMatrix as SystemMatrix);
         setAnimation(a => ({...a, active: false})); // Stop any running animation
     };
 
-    const startAnimation = (endState: any, isScaling = false) => {
+    const startAnimation = (endState: SystemMatrix, isScaling = false) => {
         if (animation.active) return;
         setAnimation({
-            startState: { ...matrix } as any,
+            startState: { ...matrix },
             endState: endState,
             progress: 0,
             active: true,
@@ -132,17 +153,17 @@ const GaussianEliminationVisualizer = () => {
                 <div className="bg-black/30 backdrop-blur-xl rounded-xl p-4 md:p-6 shadow-2xl border border-purple-500/20 flex flex-col lg:flex-row gap-6">
                     <div className="w-full lg:w-[32rem] flex-shrink-0 space-y-3">
                         <Card className="bg-gray-800/50">
-                            <CardHeader className="p-4">
-                                <CardTitle className="text-cyan-400">The Dance of Lines</CardTitle>
-                                <CardDescription className="text-gray-400">
-                                    Each row in the matrix represents a line. The solution to the system is where they intersect. Row operations are geometric moves: adding a multiple of one row to another **pivots** a line around the intersection point, while scaling a row doesn't move it at all. The goal is to make the lines horizontal and vertical to easily read the solution.
-                                </CardDescription>
+                             <CardHeader className="p-4">
+                                <h1 className="text-2xl font-bold text-cyan-400">The Dance of Lines</h1>
+                                <p className="text-gray-400 mt-1 text-sm">
+                                    Each row in the matrix represents a line. The solution is their intersection. Row operations are geometric moves: adding a multiple of one row to another **pivots** a line around the intersection point. The goal is to make the lines horizontal and vertical to easily read the solution.
+                                </p>
                             </CardHeader>
                             <CardContent className="p-4 pt-0">
                                 <div className="flex items-center justify-center space-x-2 p-4 rounded-lg bg-gray-900/50">
                                     <div className="p-2 border-r-2 border-l-2 border-gray-500 rounded">
                                         <div className="flex items-center space-x-2 mb-1">
-                                            <Input id="a11" type="number" defaultValue={matrix.a11} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a12) && "is-zero")} />
+                                            <Input id="a11" type="number" defaultValue={matrix.a11} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a11) && "is-zero")} />
                                             <Input id="a12" type="number" defaultValue={matrix.a12} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a12) && "is-zero")} />
                                             <span className="text-gray-500">|</span>
                                             <Input id="b1" type="number" defaultValue={matrix.b1} onChange={updateMatrixFromUI} step="0.5" className="matrix-val" />
@@ -159,7 +180,7 @@ const GaussianEliminationVisualizer = () => {
                             </CardContent>
                         </Card>
                         <Card className="bg-gray-800/50">
-                            <CardHeader className="p-4"><CardTitle className="text-cyan-400">Row Operations</CardTitle></CardHeader>
+                            <CardHeader className="p-4"><h2 className="text-lg font-semibold text-cyan-400">Row Operations</h2></CardHeader>
                             <CardContent className="p-4 pt-0 space-y-3">
                                 <div className="space-y-3 border-b border-gray-700 pb-3">
                                     <div className="flex items-center space-x-2"><span>R₂ → R₂ +</span><Slider min={-2} max={2} value={[sliders.k1]} step={0.1} onValueChange={v => setSliders(s => ({...s, k1: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.k1.toFixed(1)}) * R₁</span><Button onClick={() => handleOperation('op1')} className="op-button" size="sm" disabled={animation.active}>Go</Button></div>
@@ -184,3 +205,4 @@ const GaussianEliminationVisualizer = () => {
 };
 
 export default GaussianEliminationVisualizer;
+
