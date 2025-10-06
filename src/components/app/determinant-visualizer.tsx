@@ -18,125 +18,122 @@ const DeterminantVisualizer = () => {
     const area = Math.abs(determinant);
 
     useEffect(() => {
+        // If a sketch instance already exists, remove it before creating a new one.
         if (sketchRef.current) {
             sketchRef.current.remove();
         }
-        
+
+        // The sketch function is now defined inside the useEffect hook,
+        // so it has access to the current `matrix` state.
+        const sketch = (p: p5) => {
+            let scaleFactor: number;
+
+            p.setup = () => {
+                const container = canvasRef.current!;
+                p.createCanvas(container.offsetWidth, 400).parent(container);
+                p.noLoop(); // We will manually redraw
+            };
+
+            p.draw = () => {
+                const { a, b, c, d } = matrix; // Use the matrix state from the component
+                
+                p.background(17, 24, 39); // bg-gray-900
+                p.translate(p.width / 2, p.height / 2);
+                p.scale(1, -1);
+
+                scaleFactor = Math.min(p.width, p.height) / 5;
+
+                drawGrid(scaleFactor);
+
+                const i_hat_x = a * scaleFactor;
+                const i_hat_y = c * scaleFactor;
+                const j_hat_x = b * scaleFactor;
+                const j_hat_y = d * scaleFactor;
+
+                p.noStroke();
+                let fillColor = p.color(34, 211, 238, 100); // cyan-400
+                if (determinant < 0) {
+                    fillColor = p.color(250, 204, 21, 100); // yellow-400
+                }
+                if (area < 0.01) {
+                    fillColor = p.color(239, 68, 68, 150); // red-500
+                }
+                p.fill(fillColor);
+                
+                p.beginShape();
+                p.vertex(0, 0);
+                p.vertex(i_hat_x, i_hat_y);
+                p.vertex(i_hat_x + j_hat_x, i_hat_y + j_hat_y);
+                p.vertex(j_hat_x, j_hat_y);
+                p.endShape(p.CLOSE);
+                
+                drawVector(0, 0, i_hat_x, i_hat_y, p.color(110, 231, 183), 'î', scaleFactor); // green-400
+                drawVector(0, 0, j_hat_x, j_hat_y, p.color(248, 113, 113), 'ĵ', scaleFactor); // red-400
+            };
+
+            const drawVector = (x1: number, y1: number, x2: number, y2: number, c: p5.Color, label: string, sf: number) => {
+                p.stroke(c);
+                p.strokeWeight(4);
+                p.line(x1, y1, x2, y2);
+                
+                p.push();
+                p.translate(x2, y2);
+                const angle = p.atan2(y2 - y1, x2 - x1);
+                p.rotate(angle);
+                p.noStroke();
+                p.fill(c);
+                p.triangle(0, 0, -10, 5, -10, -5);
+                p.pop();
+                
+                p.push();
+                p.scale(1, -1);
+                p.noStroke();
+                p.fill(c);
+                p.textStyle(p.BOLD);
+                p.textSize(18);
+                const labelX = (x2 / sf);
+                const labelY = (y2 / sf);
+                p.text(label, x2 + (labelX > 0 ? 10 : -20), -y2 - (labelY < 0 ? 10 : -20));
+                p.pop();
+            };
+
+            const drawGrid = (scale: number) => {
+                p.stroke(55, 65, 81, 150);
+                p.strokeWeight(1);
+                
+                const gridSize = 10;
+                for (let x = -gridSize; x <= gridSize; x++) {
+                    p.line(x * scale, -p.height, x * scale, p.height);
+                }
+                for (let y = -gridSize; y <= gridSize; y++) {
+                    p.line(-p.width, y * scale, p.width, y * scale);
+                }
+
+                p.stroke(209, 213, 219);
+                p.strokeWeight(2);
+                p.line(-p.width, 0, p.width, 0); // X-axis
+                p.line(0, -p.height, 0, p.height); // Y-axis
+            };
+            
+             p.windowResized = () => {
+                const container = canvasRef.current!;
+                p.resizeCanvas(container.offsetWidth, 400);
+            };
+        };
+
+        // Create the p5 instance
         if (canvasRef.current) {
             sketchRef.current = new p5(sketch, canvasRef.current);
         }
         
+        // Cleanup function to remove the p5 sketch when the component unmounts or re-renders
         return () => {
             sketchRef.current?.remove();
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    // The useEffect hook now depends on the `matrix` state.
+    // This will re-create the sketch whenever the matrix changes.
+    }, [matrix, determinant, area]);
 
-    useEffect(() => {
-        if (sketchRef.current?.isLooping()) {
-            sketchRef.current.redraw();
-        }
-    }, [matrix]);
-
-    const sketch = (p: p5) => {
-        let scaleFactor: number;
-
-        p.setup = () => {
-            const container = canvasRef.current!;
-            p.createCanvas(container.offsetWidth, 400).parent(container);
-            p.noLoop();
-        };
-
-        p.draw = () => {
-            const { a, b, c, d } = matrix;
-            
-            p.background(17, 24, 39); // bg-gray-900
-            p.translate(p.width / 2, p.height / 2);
-            p.scale(1, -1);
-
-            scaleFactor = Math.min(p.width, p.height) / 5;
-
-            // Draw grid
-            drawGrid(scaleFactor);
-
-            const i_hat_x = a * scaleFactor;
-            const i_hat_y = c * scaleFactor;
-            const j_hat_x = b * scaleFactor;
-            const j_hat_y = d * scaleFactor;
-
-            // Draw transformed unit square
-            p.noStroke();
-            let fillColor = p.color(34, 211, 238, 100); // cyan-400
-            if (determinant < 0) {
-                fillColor = p.color(250, 204, 21, 100); // yellow-400
-            }
-            if (area < 0.01) {
-                fillColor = p.color(239, 68, 68, 150); // red-500
-            }
-            p.fill(fillColor);
-            
-            p.beginShape();
-            p.vertex(0, 0);
-            p.vertex(i_hat_x, i_hat_y);
-            p.vertex(i_hat_x + j_hat_x, i_hat_y + j_hat_y);
-            p.vertex(j_hat_x, j_hat_y);
-            p.endShape(p.CLOSE);
-            
-            // Draw transformed basis vectors
-            drawVector(0, 0, i_hat_x, i_hat_y, p.color(110, 231, 183), 'î', scaleFactor); // green-400
-            drawVector(0, 0, j_hat_x, j_hat_y, p.color(248, 113, 113), 'ĵ', scaleFactor); // red-400
-        };
-
-        const drawVector = (x1: number, y1: number, x2: number, y2: number, c: p5.Color, label: string, sf: number) => {
-            p.stroke(c);
-            p.strokeWeight(4);
-            p.line(x1, y1, x2, y2);
-            
-            p.push();
-            p.translate(x2, y2);
-            const angle = p.atan2(y2 - y1, x2 - x1);
-            p.rotate(angle);
-            p.noStroke();
-            p.fill(c);
-            p.triangle(0, 0, -10, 5, -10, -5);
-            p.pop();
-            
-            p.push();
-            p.scale(1, -1);
-            p.noStroke();
-            p.fill(c);
-            p.textStyle(p.BOLD);
-            p.textSize(18);
-            const labelX = (x2 / sf);
-            const labelY = (y2 / sf);
-            // Crude text positioning to avoid overlap
-            p.text(label, x2 + (labelX > 0 ? 10 : -20), -y2 - (labelY < 0 ? 10 : -20));
-            p.pop();
-        };
-
-        const drawGrid = (scale: number) => {
-            p.stroke(55, 65, 81, 150); // gray-700
-            p.strokeWeight(1);
-            
-            const gridSize = 10;
-            for (let x = -gridSize; x <= gridSize; x++) {
-                p.line(x * scale, -p.height, x * scale, p.height);
-            }
-            for (let y = -gridSize; y <= gridSize; y++) {
-                p.line(-p.width, y * scale, p.width, y * scale);
-            }
-
-            p.stroke(209, 213, 219); // gray-300
-            p.strokeWeight(2);
-            p.line(-p.width, 0, p.width, 0); // X-axis
-            p.line(0, -p.height, 0, p.height); // Y-axis
-        };
-        
-         p.windowResized = () => {
-            const container = canvasRef.current!;
-            p.resizeCanvas(container.offsetWidth, 400);
-        };
-    };
 
     const handleSliderChange = (key: 'a' | 'b' | 'c' | 'd', value: number) => {
         setMatrix(prev => ({ ...prev, [key]: value }));
