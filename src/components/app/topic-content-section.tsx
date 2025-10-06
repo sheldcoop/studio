@@ -17,6 +17,14 @@ const EigenVisualizer = dynamic(
   }
 );
 
+const SvdVisualizer = dynamic(
+  () => import('@/components/app/svd-visualizer').then(mod => mod.default),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
 
 function EigenvalueTheory() {
   return (
@@ -54,41 +62,36 @@ function EigenvalueTheory() {
 function EigenvalueProperties() {
   return (
     <div className="prose prose-invert max-w-none p-6 text-foreground/90">
-        <p>Eigenvalues and eigenvectors have several remarkable properties that are not just mathematical curiosities, but are fundamental to their application in quantitative finance and data science. Let's consider our example matrix:</p>
-        <div className="text-center my-4"><BlockMath math="A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}" /></div>
-        <p>We found its eigenvalues to be <InlineMath math="\lambda_1 = 3" /> and <InlineMath math="\lambda_2 = 1" />.</p>
-        <hr className="my-6" />
+      <h4 className="font-bold text-lg not-prose">1. Sum of Eigenvalues = Trace of the Matrix</h4>
+      <p>The <strong>trace</strong> of a square matrix is the sum of its diagonal elements. This property provides a quick check on your calculations.</p>
+      <div className="p-4 rounded-md bg-muted/50 my-4 not-prose">
+        <p className="font-semibold">Example:</p>
+        <p>For our matrix <InlineMath math="A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}" />, the trace is <InlineMath math="2 + 2 = 4" />. The sum of our eigenvalues is <InlineMath math="3 + 1 = 4" />. They match perfectly.</p>
+      </div>
+      <hr className="my-6" />
 
-        <h4 className="font-bold text-lg">1. Sum of Eigenvalues = Trace of the Matrix</h4>
-        <p>The <strong>trace</strong> of a square matrix is the sum of its diagonal elements. This property provides a quick check on your calculations.</p>
-        <div className="p-4 rounded-md bg-muted/50 my-4">
-            <p className="font-semibold">Example:</p>
-            <p>For our matrix A, the trace is <InlineMath math="2 + 2 = 4" />. The sum of our eigenvalues is <InlineMath math="3 + 1 = 4" />. They match perfectly.</p>
-        </div>
-        <hr className="my-6" />
+      <h4 className="font-bold text-lg not-prose">2. Product of Eigenvalues = Determinant of the Matrix</h4>
+      <p>The <strong>determinant</strong> represents the scaling factor of the transformation on an area (in 2D) or volume (in 3D). This property connects the scaling of individual eigenvectors to the overall scaling of space.</p>
+      <div className="p-4 rounded-md bg-muted/50 my-4 not-prose">
+        <p className="font-semibold">Example:</p>
+        <p>The determinant of A is <InlineMath math="(2 \times 2) - (1 \times 1) = 3" />. The product of our eigenvalues is <InlineMath math="3 \times 1 = 3" />. Again, a perfect match.</p>
+      </div>
+      <hr className="my-6" />
 
-        <h4 className="font-bold text-lg">2. Product of Eigenvalues = Determinant of the Matrix</h4>
-        <p>The <strong>determinant</strong> represents the scaling factor of the transformation on an area (in 2D) or volume (in 3D). This property connects the scaling of individual eigenvectors to the overall scaling of space.</p>
-         <div className="p-4 rounded-md bg-muted/50 my-4">
-            <p className="font-semibold">Example:</p>
-            <p>The determinant of A is <InlineMath math="(2 \times 2) - (1 \times 1) = 3" />. The product of our eigenvalues is <InlineMath math="3 \times 1 = 3" />. Again, a perfect match.</p>
-        </div>
-        <hr className="my-6" />
-
-        <h4 className="font-bold text-lg">3. Eigenvectors of a Symmetric Matrix are Orthogonal</h4>
-        <p>A matrix is <strong>symmetric</strong> if it is equal to its own transpose (<InlineMath math="A = A^T" />). Our matrix A is symmetric. A profound consequence is that its eigenvectors are perpendicular to each other. This is the foundation of the Spectral Theorem and why PCA works so well for financial data (covariance matrices are always symmetric).</p>
-         <div className="p-4 rounded-md bg-muted/50 my-4">
-            <p className="font-semibold">Example:</p>
-            <p>Our eigenvectors were <InlineMath math="v_1 = \begin{pmatrix} 1 \\ 1 \end{pmatrix}" /> and <InlineMath math="v_2 = \begin{pmatrix} -1 \\ 1 \end{pmatrix}" />. Their dot product is <InlineMath math="(1 \times -1) + (1 \times 1) = -1 + 1 = 0" />, which proves they are orthogonal.</p>
-        </div>
-        <hr className="my-6" />
-        
-        <h4 className="font-bold text-lg">4. Eigenvalues of a Diagonal/Triangular Matrix are its Diagonal Entries</h4>
-        <p>This is a convenient shortcut. If you have an upper or lower triangular matrix, the eigenvalues are simply the numbers on the main diagonal.</p>
-        <div className="p-4 rounded-md bg-muted/50 my-4">
-            <p className="font-semibold">Example:</p>
-            <p>For the matrix <InlineMath math="B = \begin{pmatrix} 5 & 10 & -1 \\ 0 & -2 & 3 \\ 0 & 0 & 7 \end{pmatrix}" />, you don't need to do any calculation. The eigenvalues are immediately known to be 5, -2, and 7.</p>
-        </div>
+      <h4 className="font-bold text-lg not-prose">3. Eigenvectors of a Symmetric Matrix are Orthogonal</h4>
+      <p>A matrix is <strong>symmetric</strong> if it is equal to its own transpose (<InlineMath math="A = A^T" />). Our matrix A is symmetric. A profound consequence is that its eigenvectors are perpendicular to each other. This is the foundation of the Spectral Theorem and why PCA works so well for financial data (covariance matrices are always symmetric).</p>
+      <div className="p-4 rounded-md bg-muted/50 my-4 not-prose">
+        <p className="font-semibold">Example:</p>
+        <p>Our eigenvectors were approximately <InlineMath math="v_1 \approx \begin{pmatrix} 0.707 \\ 0.707 \end{pmatrix}" /> and <InlineMath math="v_2 \approx \begin{pmatrix} -0.707 \\ 0.707 \end{pmatrix}" />. Their dot product is approximately 0, which proves they are orthogonal.</p>
+      </div>
+      <hr className="my-6" />
+      
+      <h4 className="font-bold text-lg not-prose">4. Eigenvalues of a Diagonal/Triangular Matrix are its Diagonal Entries</h4>
+      <p>This is a convenient shortcut. If you have an upper or lower triangular matrix, the eigenvalues are simply the numbers on the main diagonal.</p>
+      <div className="p-4 rounded-md bg-muted/50 my-4 not-prose">
+        <p className="font-semibold">Example:</p>
+        <p>For the matrix <InlineMath math="B = \begin{pmatrix} 5 & 10 & -1 \\ 0 & -2 & 3 \\ 0 & 0 & 7 \end{pmatrix}" />, you don't need to do any calculation. The eigenvalues are immediately known to be 5, -2, and 7.</p>
+      </div>
     </div>
   );
 }
@@ -96,6 +99,7 @@ function EigenvalueProperties() {
 
 export function TopicContentSection({ subTopic }: SubTopic) {
     const isEigenTopic = subTopic.id.includes('eigen');
+    const isSvdTopic = subTopic.id.includes('svd');
 
     return (
         <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
@@ -134,6 +138,10 @@ export function TopicContentSection({ subTopic }: SubTopic) {
                     {isEigenTopic ? (
                         <CardContent>
                             <EigenVisualizer />
+                        </CardContent>
+                    ) : isSvdTopic ? (
+                        <CardContent>
+                            <SvdVisualizer />
                         </CardContent>
                     ) : (
                          <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 m-6 mt-0">
