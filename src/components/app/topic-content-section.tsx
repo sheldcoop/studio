@@ -3,7 +3,7 @@
 
 import { type SubTopic } from '@/lib/curriculum';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { BookOpen, Code, BrainCircuit, BarChart, Scaling, Sigma, Waypoints } from 'lucide-react';
+import { BookOpen, Code, BrainCircuit, BarChart, Scaling, Sigma, Waypoints, VenetianMask, Plane, Combine } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
@@ -59,6 +59,14 @@ const NullSpaceVisualizer = dynamic(
 
 const ColumnSpaceVisualizer = dynamic(
   () => import('@/components/app/column-space-visualizer'),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
+const RowSpaceVisualizer = dynamic(
+  () => import('@/components/app/row-space-visualizer'),
   {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false,
@@ -169,15 +177,120 @@ function ColumnSpaceTheory() {
   );
 }
 
+function RowSpaceTheory() {
+    return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <p>The <strong>Row Space</strong> of a matrix <strong className="text-primary">A</strong> is the set of all possible linear combinations of its row vectors. In other words, it's the <strong>span</strong> of the rows of A.</p>
+            <p>While the Column Space tells us about the possible outputs of the transformation, the Row Space lives in the input space (<InlineMath math="\mathbb{R}^n" /> for an <InlineMath math="m \times n" /> matrix). It represents the part of the input space that actually gets "used" by the transformation. Any vector that is orthogonal (perpendicular) to the Row Space gets squashed to zero—these vectors form the Null Space.</p>
+            <hr/>
+            <h4 className="font-bold text-lg not-prose">The Fundamental Connection</h4>
+            <p>A crucial insight is that the Row Space of a matrix A is the same as the Column Space of its transpose, <InlineMath math="A^T" />. The dimension of the Row Space is equal to the dimension of the Column Space, and this number is the <strong>rank</strong> of the matrix.</p>
+            <p>Elementary row operations (like the ones used in Gaussian Elimination) do not change the Row Space of a matrix. This is why we can use row reduction to find a basis for the Row Space—the non-zero rows of the row-echelon form of A form a basis for the Row Space of A.</p>
+        </div>
+    );
+}
+
+function FundamentalTheoremTheory() {
+    return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <p>The Fundamental Theorem of Linear Algebra connects the four fundamental subspaces in a beautiful and profound way. For any <InlineMath math="m \times n" /> matrix A:</p>
+            
+            <h4 className="font-bold text-lg not-prose mt-6">Part 1: The Dimensions</h4>
+            <ul className="list-decimal pl-6 space-y-2">
+                <li>The **Column Space** and the **Row Space** have the same dimension, which is the rank of the matrix: <InlineMath math="\dim(C(A)) = \dim(C(A^T)) = r" />.</li>
+                <li>The dimension of the **Null Space** is <InlineMath math="n - r" />.</li>
+                <li>The dimension of the **Left Null Space** (the null space of <InlineMath math="A^T" />) is <InlineMath math="m - r" />.</li>
+            </ul>
+            <p>This leads to the Rank-Nullity Theorem: <InlineMath math="\text{rank}(A) + \text{nullity}(A) = n" />.</p>
+            <hr/>
+
+            <h4 className="font-bold text-lg not-prose mt-6">Part 2: The Orthogonality</h4>
+            <p>This is the most geometric part of the theorem. It describes how the subspaces are oriented relative to each other.</p>
+             <ul className="list-decimal pl-6 space-y-2">
+                <li>The **Null Space** is the orthogonal complement of the **Row Space** in <InlineMath math="\mathbb{R}^n" />. This means every vector in the null space is perpendicular to every vector in the row space. Together, they span the entire input space.</li>
+                <li>The **Left Null Space** is the orthogonal complement of the **Column Space** in <InlineMath math="\mathbb{R}^m" />. This means every vector in the left null space is perpendicular to every vector in the column space.</li>
+            </ul>
+            <p>This tells us that any vector in the input space can be uniquely split into a part that's in the Row Space (which gets transformed to a non-zero output) and a part that's in the Null Space (which gets squashed to zero).</p>
+        </div>
+    );
+}
+
+
+function FourSubspacesPage() {
+    return (
+        <div className="space-y-12">
+            <section id="column-space" className="scroll-mt-24">
+                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">1. The Column Space C(A)</h2>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Plane className="text-primary"/> The Output World (Image/Range)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <ColumnSpaceTheory />
+                    </CardContent>
+                </Card>
+                <div className="mt-8">
+                    <ColumnSpaceVisualizer />
+                </div>
+            </section>
+
+             <section id="row-space" className="scroll-mt-24">
+                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">2. The Row Space C(Aᵀ)</h2>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Plane className="text-primary"/> The Input World</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <RowSpaceTheory />
+                    </CardContent>
+                </Card>
+                <div className="mt-8">
+                    <RowSpaceVisualizer />
+                </div>
+            </section>
+
+             <section id="null-space" className="scroll-mt-24">
+                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">3. The Null Space N(A)</h2>
+                  <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><VenetianMask className="text-primary"/> The Kernel</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <NullSpaceTheory />
+                    </CardContent>
+                </Card>
+                <div className="mt-8">
+                    <NullSpaceVisualizer />
+                </div>
+            </section>
+
+             <section id="fundamental-theorem" className="scroll-mt-24">
+                 <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">4. The Fundamental Theorem</h2>
+                  <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Combine className="text-primary"/> Tying It All Together</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <FundamentalTheoremTheory />
+                    </CardContent>
+                </Card>
+            </section>
+        </div>
+    )
+}
+
 export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isEigenTopic = subTopic.id.includes('eigen');
     const isSvdTopic = subTopic.id.includes('svd');
     const isDeterminantTopic = subTopic.id.includes('determinant');
     const isChangeOfBasisTopic = subTopic.id.includes('change-of-basis');
     const isLinearIndependenceTopic = subTopic.id.includes('linear-independence');
-    const isNullSpaceTopic = subTopic.id.includes('null-space');
-    const isColumnSpaceTopic = subTopic.id.includes('column-space');
+    
+    const isFundamentalSubspace = ['column-space', 'null-space', 'row-space', 'fundamental-theorem'].includes(subTopic.id);
 
+    if (isFundamentalSubspace) {
+        return <FourSubspacesPage />;
+    }
 
     const renderInteractiveDemo = () => {
         if (isEigenTopic) return <EigenVisualizer />;
@@ -185,8 +298,6 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         if (isDeterminantTopic) return <DeterminantVisualizer />;
         if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
         if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
-        if (isNullSpaceTopic) return <NullSpaceVisualizer />;
-        if (isColumnSpaceTopic) return <ColumnSpaceVisualizer />;
 
         return (
              <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
@@ -197,8 +308,6 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
 
     const renderTheory = () => {
       if (isEigenTopic) return <EigenvalueTheory />;
-      if (isNullSpaceTopic) return <NullSpaceTheory />;
-      if (isColumnSpaceTopic) return <ColumnSpaceTheory />;
       return (
         <div className="prose prose-invert max-w-none p-6 text-foreground/90">
             <p>Theory explanation coming soon.</p>
