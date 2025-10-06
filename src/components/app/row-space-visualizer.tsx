@@ -1,9 +1,11 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
 
 const RowSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -74,23 +76,15 @@ const RowSpaceVisualizer = () => {
                     p.endShape(p.CLOSE);
                 }
 
-                drawVector(r1, scaleFactor, p.color(134, 239, 172), 'row₁');
-                drawVector(r2, scaleFactor, p.color(147, 197, 253), 'row₂');
+                p5DrawVector(p, r1, scaleFactor, p.color(134, 239, 172), 'row₁');
+                p5DrawVector(p, r2, scaleFactor, p.color(147, 197, 253), 'row₂');
             };
 
-            const screenToWorld = (mx: number, my: number) => p.createVector((mx - p.width / 2) / scaleFactor, (p.height / 2 - my) / scaleFactor);
+            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, scaleFactor);
             p.mousePressed = () => { const m = screenToWorld(p.mouseX, p.mouseY); if (p5.Vector.dist(m, r1) < 0.5) draggingR1 = true; else if (p5.Vector.dist(m, r2) < 0.5) draggingR2 = true;};
             p.mouseDragged = () => { if (draggingR1) r1.set(screenToWorld(p.mouseX, p.mouseY)); if (draggingR2) r2.set(screenToWorld(p.mouseX, p.mouseY));};
             p.mouseReleased = () => { draggingR1 = false; draggingR2 = false;};
             
-            const drawVector = (v: p5.Vector, s: number, c: p5.Color, l: string) => {
-                const sv = p5.Vector.mult(v, s);
-                p.push(); p.stroke(c); p.fill(c); p.strokeWeight(4);
-                p.line(0, 0, sv.x, sv.y);
-                const hs=10; const a=sv.heading(); p.translate(sv.x,sv.y); p.rotate(a); p.triangle(0,0,-hs,hs/2,-hs,-hs/2);
-                p.pop();
-                if(l){p.push();const lp=sv.copy().add(sv.copy().normalize().mult(20));p.noStroke();p.fill(c);p.textSize(18);p.textStyle(p.BOLD);p.translate(lp.x,lp.y);p.scale(1,-1);p.text(l,0,0);p.pop();}
-            }
              p.windowResized = () => { if (canvasRef.current) p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); };
         };
 
@@ -132,3 +126,5 @@ const RowSpaceVisualizer = () => {
 };
 
 export default RowSpaceVisualizer;
+
+    

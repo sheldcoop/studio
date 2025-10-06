@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
+import { drawGrid as p5DrawGrid, easeInOutCubic } from '@/lib/p5-helpers';
 
 
 const GaussianEliminationVisualizer = () => {
@@ -55,7 +56,7 @@ const GaussianEliminationVisualizer = () => {
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
 
-                drawGrid(p, scaleFactor);
+                p5DrawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
 
                 let currentMatrix = matrix;
                 if (currentAnimation.active) {
@@ -213,14 +214,6 @@ const GaussianEliminationVisualizer = () => {
 export default GaussianEliminationVisualizer;
 
 // --- p5.js Helper Functions (to be used within the sketch) ---
-const drawGrid = (p: p5, s: number) => {
-    p.stroke(55, 65, 81); p.strokeWeight(1);
-    for (let i = -10; i <= 10; i++) {
-        p.line(i * s, -p.height, i * s, p.height);
-        p.line(-p.width, i * s, p.width, i * s);
-    }
-};
-
 const drawLine = (p: p5, a: number, b: number, c: number, s: number, col: p5.Color) => {
     p.push();
     p.stroke(col); p.strokeWeight(3);
@@ -254,4 +247,4 @@ const lerpMatrix = (p: p5, m1: any, m2: any, t: number) => {
     return res as any;
 };
 
-const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    

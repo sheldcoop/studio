@@ -9,6 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { drawGrid, drawVector, easeInOutCubic, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
 
 const ChangeOfBasisVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -84,8 +85,8 @@ const ChangeOfBasisVisualizer = () => {
                 p.scale(1, -1);
 
                 if (mode === 'explore') {
-                    drawGrid(p.createVector(1,0), p.createVector(0,1), scaleFactor, p.color(55, 65, 81));
-                    drawGrid(b1, b2, scaleFactor, p.color(56, 189, 248, 80));
+                    drawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
+                    drawGrid(p, b1, b2, p.color(56, 189, 248, 80), 1, scaleFactor);
                     const p_custom_coords = getCustomCoords(p_standard, b1, b2);
                     
                     setStandardCoords(`(${p_standard.x.toFixed(2)}, ${p_standard.y.toFixed(2)})`);
@@ -93,10 +94,10 @@ const ChangeOfBasisVisualizer = () => {
 
                     drawLinearCombination(p_custom_coords, b1, b2, scaleFactor);
                     drawPoint(p_standard, scaleFactor, p.color(255, 217, 61));
-                    drawVector(p.createVector(1, 0), scaleFactor, p.color(156, 163, 175), 'î');
-                    drawVector(p.createVector(0, 1), scaleFactor, p.color(156, 163, 175), 'ĵ');
-                    drawVector(b1, scaleFactor, p.color(248, 113, 113), 'b₁');
-                    drawVector(b2, scaleFactor, p.color(96, 165, 250), 'b₂');
+                    drawVector(p, p.createVector(1, 0), scaleFactor, p.color(156, 163, 175), 'î');
+                    drawVector(p, p.createVector(0, 1), scaleFactor, p.color(156, 163, 175), 'ĵ');
+                    drawVector(p, b1, scaleFactor, p.color(248, 113, 113), 'b₁');
+                    drawVector(p, b2, scaleFactor, p.color(96, 165, 250), 'b₂');
                 } else {
                     const t = easeInOutCubic(progress);
                     const eigen = calculateEigen(matrix.a, matrix.b, matrix.c, matrix.d);
@@ -135,15 +136,15 @@ const ChangeOfBasisVisualizer = () => {
                     setStandardCoords(`(${p_display.x.toFixed(2)}, ${p_display.y.toFixed(2)})`);
                     setCustomCoords(live_custom_coords ? `(${live_custom_coords.x.toFixed(2)}, ${live_custom_coords.y.toFixed(2)})` : '(Invalid)');
                     
-                    drawGrid(grid_b1, grid_b2, scaleFactor, p.color(56, 189, 248, 80));
+                    drawGrid(p, grid_b1, grid_b2, p.color(56, 189, 248, 80), 1, scaleFactor);
                     drawPoint(p_display, scaleFactor, p.color(255, 217, 61));
 
                     if (progress > 0.99) {
                         const p_final = p.createVector(matrix.a * p_standard.x + matrix.b * p_standard.y, matrix.c * p_standard.x + matrix.d * p_standard.y);
-                        drawVector(p_standard, scaleFactor, p.color(255, 255, 255, 50), 'P_start');
-                        drawVector(p_final, scaleFactor, p.color(255, 217, 61), 'AP');
+                        drawVector(p, p_standard, scaleFactor, p.color(255, 255, 255, 50), 'P_start');
+                        drawVector(p, p_final, scaleFactor, p.color(255, 217, 61), 'AP');
                     } else {
-                        drawVector(p_display, scaleFactor, p.color(255, 217, 61), 'P');
+                        drawVector(p, p_display, scaleFactor, p.color(255, 217, 61), 'P');
                     }
                 }
             };
@@ -183,37 +184,6 @@ const ChangeOfBasisVisualizer = () => {
                 return { l1, l2, v1, v2 };
             };
 
-            const drawGrid = (b1: p5.Vector, b2: p5.Vector, s: number, col: p5.Color) => {
-                p.stroke(col); p.strokeWeight(1); p.noFill();
-                const invDet = 1 / (b1.x * b2.y - b1.y * b2.x);
-                if (p.abs(invDet) > 100) return;
-                const inv_b1x = b2.y * invDet; const inv_b1y = -b1.y * invDet;
-                const inv_b2x = -b2.x * invDet; const inv_b2y = b1.x * invDet;
-                const corners = [ screenToWorld(0,0), screenToWorld(p.width,0), screenToWorld(p.width, p.height), screenToWorld(0, p.height) ];
-                const customCorners = corners.map(pt => p.createVector(pt.x*inv_b1x + pt.y*inv_b1y, pt.x*inv_b2x + pt.y*inv_b2y));
-                const minX = Math.floor(p.min(customCorners.map(pt => pt.x)));
-                const maxX = Math.ceil(p.max(customCorners.map(pt => pt.x)));
-                const minY = Math.floor(p.min(customCorners.map(pt => pt.y)));
-                const maxY = Math.ceil(p.max(customCorners.map(pt => pt.y)));
-                for (let i = minX; i <= maxX; i++) {
-                    const p1 = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, minY));
-                    const p2 = p5.Vector.add(p5.Vector.mult(b1, i), p5.Vector.mult(b2, maxY));
-                    p.line(p1.x*s, p1.y*s, p2.x*s, p2.y*s);
-                }
-                for (let i = minY; i <= maxY; i++) {
-                    const p1 = p5.Vector.add(p5.Vector.mult(b1, minX), p5.Vector.mult(b2, i));
-                    const p2 = p5.Vector.add(p5.Vector.mult(b1, maxX), p5.Vector.mult(b2, i));
-                    p.line(p1.x*s, p1.y*s, p2.x*s, p2.y*s);
-                }
-            };
-            
-            const drawVector = (v: p5.Vector, s: number, c: p5.Color, label: string) => {
-                p.stroke(c); p.strokeWeight(4); p.fill(c);
-                p.line(0, 0, v.x * s, v.y * s);
-                p.push(); p.translate(v.x * s, v.y * s); p.rotate(v.heading()); p.triangle(0, 0, -10, 5, -10, -5); p.pop();
-                if (label) { p.noStroke(); p.push(); p.translate(v.x * s, v.y * s); p.scale(1,-1); p.text(label, 10, -10); p.pop(); }
-            };
-
             const drawPoint = (pt: p5.Vector, s: number, col: p5.Color) => { p.fill(col); p.noStroke(); p.ellipse(pt.x * s, pt.y * s, 12, 12); };
             
             const drawLinearCombination = (coords: p5.Vector | null, basis1: p5.Vector, basis2: p5.Vector, s: number) => {
@@ -224,8 +194,8 @@ const ChangeOfBasisVisualizer = () => {
                 p.stroke(96, 165, 250, 150); p.line(p1.x*s, p1.y*s, (p1.x+p2.x)*s, (p1.y+p2.y)*s);
             };
 
-            const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-            const screenToWorld = (mx: number, my: number) => p.createVector((mx - p.width / 2) / (p.min(p.width, p.height) / 8), (p.height / 2 - my) / (p.min(p.width, p.height) / 8));
+            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, p.min(p.width, p.height) / 8);
+
             p.mousePressed = () => { if (componentState.mode === 'explore' && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) { const m = screenToWorld(p.mouseX, p.mouseY); if(p5.Vector.dist(m, b1) < 0.3) dragging = b1; else if(p5.Vector.dist(m, b2) < 0.3) dragging = b2; }};
             p.mouseDragged = () => { if (dragging) dragging.set(screenToWorld(p.mouseX, p.mouseY)); };
             p.mouseReleased = () => { dragging = null; };

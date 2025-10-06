@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
+import { drawGrid as p5DrawGrid, drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
 
 const VectorProjectionVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -35,7 +36,7 @@ const VectorProjectionVisualizer = () => {
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
 
-                drawGrid(scaleFactor);
+                p5DrawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
 
                 const b_norm = b.copy().normalize();
                 const dot_ab_val = a.dot(b);
@@ -53,11 +54,11 @@ const VectorProjectionVisualizer = () => {
                 p.strokeWeight(2);
                 p.line(-b_norm.x * p.width, -b_norm.y * p.width, b_norm.x * p.width, b_norm.y * p.width);
 
-                drawVector(a, scaleFactor, p.color(134, 239, 172), 'a');
-                drawVector(b, scaleFactor, p.color(147, 197, 253), 'b');
+                p5DrawVector(p, a, scaleFactor, p.color(134, 239, 172), 'a');
+                p5DrawVector(p, b, scaleFactor, p.color(147, 197, 253), 'b');
                 
                 if (proj.mag() > 0.01) {
-                    drawVector(proj, scaleFactor, p.color(252, 165, 165), 'proj');
+                    p5DrawVector(p, proj, scaleFactor, p.color(252, 165, 165), 'proj');
                 }
                 
                 p.stroke(255, 255, 255, 100);
@@ -67,10 +68,7 @@ const VectorProjectionVisualizer = () => {
                 p.drawingContext.setLineDash([]);
             };
 
-            const screenToWorld = (mx: number, my: number) => {
-                const scaleFactor = p.min(p.width, p.height) / 8;
-                return p.createVector((mx - p.width / 2) / scaleFactor, (p.height / 2 - my) / scaleFactor);
-            };
+            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, p.min(p.width, p.height) / 8);
 
             p.mousePressed = () => {
                 const mouseVec = screenToWorld(p.mouseX, p.mouseY);
@@ -88,46 +86,6 @@ const VectorProjectionVisualizer = () => {
 
             p.mouseReleased = () => {
                 dragging = null;
-            };
-
-            const drawGrid = (s: number) => {
-                p.stroke(55, 65, 81);
-                p.strokeWeight(1);
-                const range = 10;
-                for (let i = -range; i <= range; i++) {
-                    p.line(i * s, -p.height, i * s, p.height);
-                    p.line(-p.width, i * s, p.width, i * s);
-                }
-            };
-            
-            const drawVector = (v: p5.Vector, s: number, c: p5.Color, label: string) => {
-                const screenV = p5.Vector.mult(v, s);
-                p.push();
-                p.stroke(c);
-                p.fill(c);
-                p.strokeWeight(5);
-                p.line(0, 0, screenV.x, screenV.y);
-                const headSize = 12;
-                const angle = screenV.heading();
-                p.translate(screenV.x, screenV.y);
-                p.rotate(angle);
-                p.triangle(0, 0, -headSize, headSize / 2, -headSize, -headSize / 2);
-                p.pop();
-                if (label) {
-                    p.push();
-                    const labelOffset = v.copy().normalize().mult(20);
-                    const labelPos = screenV.copy().add(labelOffset);
-                    p.noStroke();
-                    p.fill(c);
-                    p.textSize(20);
-                    p.textStyle(p.BOLD);
-                    if (v.x < 0) p.textAlign(p.RIGHT, p.CENTER);
-                    else p.textAlign(p.LEFT, p.CENTER);
-                    p.translate(labelPos.x, labelPos.y);
-                    p.scale(1,-1);
-                    p.text(label, 0, 0);
-                    p.pop();
-                }
             };
 
             p.windowResized = () => {
@@ -186,3 +144,5 @@ const VectorProjectionVisualizer = () => {
 };
 
 export default VectorProjectionVisualizer;
+
+    

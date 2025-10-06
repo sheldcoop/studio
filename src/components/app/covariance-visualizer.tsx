@@ -6,6 +6,7 @@ import p5 from 'p5';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { drawGrid as p5DrawGrid } from '@/lib/p5-helpers';
 
 const CovarianceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -54,7 +55,7 @@ const CovarianceVisualizer = () => {
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
 
-                drawGrid(scaleFactor, p);
+                p5DrawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
 
                 p.noStroke();
                 for (const pt of dataPoints) {
@@ -125,11 +126,4 @@ const CovarianceVisualizer = () => {
 };
 export default CovarianceVisualizer;
 
-const drawGrid = (s: number, p: p5) => {
-    p.stroke(55, 65, 81); p.strokeWeight(1);
-    for (let i = -10; i <= 10; i++) {
-        p.line(i * s, -p.height, i * s, p.height);
-        p.line(-p.width, i * s, p.width, i * s);
-    }
-};
-
+    

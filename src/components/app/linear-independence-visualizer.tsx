@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
 
 const LinearIndependenceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -57,8 +58,8 @@ const LinearIndependenceVisualizer = () => {
                     drawSpanGrid();
                 }
 
-                drawVector(v1, p.color(248, 113, 113), 'v₁');
-                drawVector(v2, p.color(96, 165, 250), 'v₂');
+                p5DrawVector(p, v1, scaleFactor, p.color(248, 113, 113), 'v₁');
+                p5DrawVector(p, v2, scaleFactor, p.color(96, 165, 250), 'v₂');
             };
             
             const handleDragging = () => {
@@ -105,32 +106,7 @@ const LinearIndependenceVisualizer = () => {
                 p.line(p1.x * scaleFactor, p1.y * scaleFactor, p2.x * scaleFactor, p2.y * scaleFactor);
             };
 
-            const drawVector = (v: p5.Vector, c: p5.Color, label: string) => {
-                const screenV = p5.Vector.mult(v, scaleFactor);
-                p.push();
-                p.stroke(c); p.fill(c); p.strokeWeight(4);
-                p.line(0, 0, screenV.x, screenV.y);
-                
-                const headSize = 10;
-                const angle = screenV.heading();
-                p.translate(screenV.x, screenV.y);
-                p.rotate(angle);
-                p.triangle(0, 0, -headSize, headSize / 2, -headSize, -headSize / 2);
-                p.pop();
-                
-                p.push();
-                const labelPos = screenV.copy().add(screenV.copy().normalize().mult(20));
-                p.noStroke(); p.fill(c); p.textSize(18); p.textStyle(p.BOLD);
-                p.translate(labelPos.x, labelPos.y); p.scale(1,-1);
-                p.text(label, 0, 0);
-                p.pop();
-            };
-
-            const screenToWorld = (mx: number, my: number) => {
-                const x = (mx - p.width / 2) / scaleFactor;
-                const y = (my - p.height / 2) / -scaleFactor;
-                return p.createVector(x, y);
-            }
+            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, scaleFactor);
 
             p.windowResized = () => {
                 if(canvasRef.current) {
@@ -190,3 +166,5 @@ const LinearIndependenceVisualizer = () => {
 };
 
 export default LinearIndependenceVisualizer;
+
+    

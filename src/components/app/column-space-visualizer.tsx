@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { drawVector, screenToWorld as p5ScreenToWorld } from '@/lib/p5-helpers';
 
 const ColumnSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -61,11 +62,11 @@ const ColumnSpaceVisualizer = () => {
                     drawSpanGrid(col1, col2, p.color(96, 165, 250, 80), 2, p.color(96, 165, 250, 20));
                 }
 
-                drawVector(col1, p.color(96, 165, 250), 'col₁', 4);
-                drawVector(col2, p.color(96, 165, 250), 'col₂', 4);
+                drawVector(p, col1, scaleFactor, p.color(96, 165, 250), 'col₁');
+                drawVector(p, col2, scaleFactor, p.color(96, 165, 250), 'col₂');
 
                 const outputVec = p5.Vector.add(p5.Vector.mult(col1, inputVec.x), p5.Vector.mult(col2, inputVec.y));
-                drawVector(outputVec, p.color(244, 114, 182), 'Ax', 5);
+                drawVector(p, outputVec, scaleFactor, p.color(244, 114, 182), 'Ax', 5);
                 setOutputCoords(`(${outputVec.x.toFixed(2)}, ${outputVec.y.toFixed(2)})`);
 
                 p.pop();
@@ -143,8 +144,7 @@ const ColumnSpaceVisualizer = () => {
             }
 
             const drawSpanLine = (v: p5.Vector, c: p5.Color, w: number) => { p.stroke(c); p.strokeWeight(w); if(v.magSq()<0.01)return;const p1=v.copy().mult(-100);const p2=v.copy().mult(100);p.line(p1.x*scaleFactor,p1.y*scaleFactor,p2.x*scaleFactor,p2.y*scaleFactor);}
-            const drawVector = (v: p5.Vector,c: p5.Color,l:string,w=4) => {if(!v)return;if(v.magSq()<1e-4){p.fill(c);p.noStroke();p.ellipse(0,0,8,8);return;};const sv=p5.Vector.mult(v,scaleFactor);p.push();p.stroke(c);p.fill(c);p.strokeWeight(w);p.line(0,0,sv.x,sv.y);const hs=10;const a=sv.heading();p.translate(sv.x,sv.y);p.rotate(a);p.triangle(0,0,-hs,hs/2,-hs,-hs/2);p.pop();if(l){p.push();const lp=sv.copy().add(sv.copy().normalize().mult(20));p.noStroke();p.fill(c);p.textSize(18);p.textStyle(p.BOLD);p.translate(lp.x,lp.y);p.scale(1,-1);p.text(l,0,0);p.pop();}}
-            const screenToWorld = (mx: number, my: number) => p.createVector((mx - p.width / 2) / scaleFactor, (my - p.height / 2) / -scaleFactor);
+            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, scaleFactor);
             p.windowResized = () => { if(canvasRef.current) { p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); inputArea.y = p.height - 170; }};
         };
 
@@ -195,3 +195,5 @@ const ColumnSpaceVisualizer = () => {
 };
 
 export default ColumnSpaceVisualizer;
+
+    

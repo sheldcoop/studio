@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { RotateCcw, Play, Pause } from 'lucide-react';
+import { drawGrid as p5DrawGrid, easeInOutCubic } from '@/lib/p5-helpers';
 
 const NullSpaceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -58,7 +59,7 @@ const NullSpaceVisualizer = () => {
 
                 const det = currentMatrix.a * currentMatrix.d - currentMatrix.b * currentMatrix.c;
 
-                drawGrid(currentMatrix, scaleFactor, p);
+                p5DrawGrid(p, p.createVector(currentMatrix.a, currentMatrix.c), p.createVector(currentMatrix.b, currentMatrix.d), p.color(72, 144, 226, 50), 1, scaleFactor);
 
                 if (Math.abs(det) < 0.01) {
                     const nullSpaceVector = p.createVector(-state.matrix.b, state.matrix.a).normalize();
@@ -157,22 +158,6 @@ const NullSpaceVisualizer = () => {
 };
 
 // --- p5.js Drawing Helpers ---
-
-const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-const drawGrid = (m: {a:number,b:number,c:number,d:number}, s: number, p: p5) => {
-    p.stroke(72, 144, 226, 50); p.strokeWeight(1);
-    const range = 8;
-    for (let i = -range; i <= range; i++) {
-        p.beginShape(p.LINE_STRIP);
-        for (let j = -range; j <= range; j++) { p.vertex((m.a*i + m.b*j)*s, (m.c*i + m.d*j)*s); }
-        p.endShape();
-        p.beginShape(p.LINE_STRIP);
-        for (let j = -range; j <= range; j++) { p.vertex((m.a*j + m.b*i)*s, (m.c*j + m.d*i)*s); }
-        p.endShape();
-    }
-};
-
 const drawPointGrid = (m: {a:number,b:number,c:number,d:number}, s: number, p: p5) => {
     p.noStroke();
     const range = 8;
@@ -212,3 +197,5 @@ const drawNullSpace = (v: p5.Vector, s: number, p: p5) => {
 
 
 export default NullSpaceVisualizer;
+
+    

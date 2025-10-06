@@ -8,6 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
+import { drawGrid as p5DrawGrid, drawVector as p5DrawVector } from '@/lib/p5-helpers';
 
 const DeterminantVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -43,7 +44,7 @@ const DeterminantVisualizer = () => {
 
                 scaleFactor = Math.min(p.width, p.height) / 5;
 
-                drawGrid(scaleFactor);
+                drawGrid(p);
 
                 const i_hat_x = a * scaleFactor;
                 const i_hat_y = c * scaleFactor;
@@ -67,34 +68,8 @@ const DeterminantVisualizer = () => {
                 p.vertex(j_hat_x, j_hat_y);
                 p.endShape(p.CLOSE);
                 
-                drawVector(0, 0, i_hat_x, i_hat_y, p.color(110, 231, 183), 'î', scaleFactor); // green-400
-                drawVector(0, 0, j_hat_x, j_hat_y, p.color(248, 113, 113), 'ĵ', scaleFactor); // red-400
-            };
-
-            const drawVector = (x1: number, y1: number, x2: number, y2: number, c: p5.Color, label: string, sf: number) => {
-                p.stroke(c);
-                p.strokeWeight(4);
-                p.line(x1, y1, x2, y2);
-                
-                p.push();
-                p.translate(x2, y2);
-                const angle = p.atan2(y2 - y1, x2 - x1);
-                p.rotate(angle);
-                p.noStroke();
-                p.fill(c);
-                p.triangle(0, 0, -10, 5, -10, -5);
-                p.pop();
-                
-                p.push();
-                p.scale(1, -1);
-                p.noStroke();
-                p.fill(c);
-                p.textStyle(p.BOLD);
-                p.textSize(18);
-                const labelX = (x2 / sf);
-                const labelY = (y2 / sf);
-                p.text(label, x2 + (labelX > 0 ? 10 : -20), -y2 - (labelY < 0 ? 10 : -20));
-                p.pop();
+                p5DrawVector(p, p.createVector(a, c), scaleFactor, p.color(110, 231, 183), 'î');
+                p5DrawVector(p, p.createVector(b, d), scaleFactor, p.color(248, 113, 113), 'ĵ');
             };
 
             const drawGrid = (scale: number) => {
@@ -219,3 +194,5 @@ const DeterminantVisualizer = () => {
 };
 
 export default DeterminantVisualizer;
+
+    
