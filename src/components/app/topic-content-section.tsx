@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 
-// Dynamically import the new animation component
+// Dynamically import the visualizer components
 const EigenVisualizer = dynamic(
   () => import('@/components/app/eigen-visualizer'),
   {
@@ -27,6 +27,14 @@ const SvdVisualizer = dynamic(
 
 const DeterminantVisualizer = dynamic(
   () => import('@/components/app/determinant-visualizer'),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
+const ChangeOfBasisVisualizer = dynamic(
+  () => import('@/components/app/change-of-basis-visualizer'),
   {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false,
@@ -55,7 +63,7 @@ function EigenvalueTheory() {
         <div className="text-center"><BlockMath math="Av - \lambda I v = 0" /></div>
         <div className="text-center"><BlockMath math="(A - \lambda I)v = 0" /></div>
         <p>This equation tells us that the matrix <InlineMath math="(A - \lambda I)" /> transforms the non-zero vector **v** into the zero vector. This can only happen if the matrix <InlineMath math="(A - \lambda I)" /> squishes space into a lower dimension (i.e., its determinant is zero).</p>
-        <p>This gives us the **characteristic equation**, which we can solve to find the eigenvalues:</p>
+        <p>This gives us the <strong>characteristic equation</strong>, which we can solve to find the eigenvalues:</p>
         <div className="text-center"><BlockMath math="\det(A - \lambda I) = 0" /></div>
         <p>Once we have the eigenvalues (<InlineMath math="\lambda" />), we can plug each one back into <InlineMath math="(A - \lambda I)v = 0" /> to solve for the corresponding eigenvectors (<InlineMath math="v" />).</p>
         <hr />
@@ -109,6 +117,21 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isEigenTopic = subTopic.id.includes('eigen');
     const isSvdTopic = subTopic.id.includes('svd');
     const isDeterminantTopic = subTopic.id.includes('determinant');
+    const isChangeOfBasisTopic = subTopic.id.includes('change-of-basis');
+
+
+    const renderInteractiveDemo = () => {
+        if (isEigenTopic) return <EigenVisualizer />;
+        if (isSvdTopic) return <SvdVisualizer />;
+        if (isDeterminantTopic) return <DeterminantVisualizer />;
+        if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
+
+        return (
+            <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
+                <p className="text-sm text-muted-foreground">Interactive demo coming soon.</p>
+            </div>
+        );
+    };
 
     return (
         <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
@@ -145,17 +168,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
                         <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {isEigenTopic ? (
-                            <EigenVisualizer />
-                        ) : isSvdTopic ? (
-                            <SvdVisualizer />
-                        ) : isDeterminantTopic ? (
-                            <DeterminantVisualizer />
-                        ) : (
-                            <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
-                                <p className="text-sm text-muted-foreground">Interactive demo coming soon.</p>
-                            </div>
-                        )}
+                        {renderInteractiveDemo()}
                     </CardContent>
                 </Card>
 
