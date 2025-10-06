@@ -81,6 +81,14 @@ const DiagonalizationVisualizer = dynamic(
   }
 );
 
+const CovarianceVisualizer = dynamic(
+  () => import('@/components/app/covariance-visualizer'),
+  {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+  }
+);
+
 
 function EigenvalueTheory() {
   return (
@@ -248,6 +256,33 @@ function DiagonalizationTheory() {
   );
 }
 
+function CovarianceTheory() {
+    return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <h4 className="font-bold text-lg not-prose">Defining Covariance Matrices</h4>
+            <p>Imagine a scatter plot of returns for two stocks. If the cloud of points is tilted upwards, the stocks tend to move together (positive covariance). If it's tilted downwards, they move oppositely (negative covariance). A circular cloud means no relationship (zero covariance).</p>
+            <p>A <strong>covariance matrix</strong>, often denoted as <InlineMath math="\Sigma" />, is a square matrix that summarizes this relationship for a set of assets. For two assets, it looks like this:</p>
+            <div className="text-center"><BlockMath math="\Sigma = \begin{pmatrix} \sigma_1^2 & \sigma_{12} \\ \sigma_{21} & \sigma_2^2 \end{pmatrix}" /></div>
+            <ul className="text-sm">
+                <li>The diagonal elements (<InlineMath math="\sigma_1^2" />, <InlineMath math="\sigma_2^2" />) are the <strong>variances</strong> of each asset—a measure of their individual risk or volatility.</li>
+                <li>The off-diagonal elements (<InlineMath math="\sigma_{12}" />, <InlineMath math="\sigma_{21}" />) are the <strong>covariances</strong> between the assets. Since <InlineMath math="\sigma_{12} = \sigma_{21}" />, the matrix is always symmetric.</li>
+            </ul>
+            <p>A positive covariance <InlineMath math="\sigma_{12}" /> means the assets tend to move in the same direction. A negative covariance means they move in opposite directions. The covariance matrix doesn't just give us numbers; it geometrically describes the shape and tilt of our data cloud.</p>
+            <hr className="my-6" />
+            <h4 className="font-bold text-lg not-prose">Defining Correlation Matrices</h4>
+            <p>Covariance is useful, but its magnitude depends on the volatility of the assets, making it hard to compare. A covariance of 100 might be huge for two low-volatility stocks but tiny for two high-volatility ones. To fix this, we normalize the covariance to get the <strong>correlation coefficient</strong>, <InlineMath math="\rho" /> (rho).</p>
+            <div className="text-center"><BlockMath math="\rho_{12} = \frac{\sigma_{12}}{\sigma_1 \sigma_2}" /></div>
+            <p>The correlation is always between -1 and +1, giving us a standardized measure of the linear relationship. A <strong>correlation matrix</strong> is simply the covariance matrix where every element has been normalized in this way:</p>
+            <div className="text-center"><BlockMath math="R = \begin{pmatrix} 1 & \rho_{12} \\ \rho_{21} & 1 \end{pmatrix}" /></div>
+            <p>The diagonal is always 1 because an asset is perfectly correlated with itself.</p>
+             <hr className="my-6" />
+            <h4 className="font-bold text-lg not-prose">Calculating Portfolio Variance</h4>
+            <p>This is where the covariance matrix becomes the engine of portfolio theory. The variance (risk) of a portfolio is not just the average of the individual asset risks. The interaction between assets—their covariance—is critical. For a portfolio with weights <InlineMath math="\mathbf{w} = \begin{pmatrix} w_1 \\ w_2 \end{pmatrix}" />, the portfolio variance is given by matrix multiplication:</p>
+            <div className="text-center"><BlockMath math="\sigma_p^2 = \mathbf{w}^T \Sigma \mathbf{w}" /></div>
+            <p>This elegant equation shows that by combining assets with low or negative covariance, we can build a portfolio where the total risk is lower than the sum of its parts. This is the mathematical heart of diversification.</p>
+        </div>
+    );
+}
 
 function FourSubspacesPage() {
     return (
@@ -319,6 +354,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const isChangeOfBasisTopic = subTopic.id.includes('change-of-basis');
     const isLinearIndependenceTopic = subTopic.id.includes('linear-independence');
     const isDiagonalizationTopic = subTopic.id.includes('diagonalization');
+    const isCovarianceTopic = subTopic.id.includes('covariance-and-correlation');
     
     const isFundamentalSubspace = ['column-space', 'null-space', 'row-space', 'fundamental-theorem'].includes(subTopic.id);
 
@@ -333,6 +369,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         if (isChangeOfBasisTopic) return <ChangeOfBasisVisualizer />;
         if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
         if (isDiagonalizationTopic) return <DiagonalizationVisualizer />;
+        if (isCovarianceTopic) return <CovarianceVisualizer />;
 
         return (
              <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
@@ -344,6 +381,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
     const renderTheory = () => {
       if (isEigenTopic) return <EigenvalueTheory />;
       if (isDiagonalizationTopic) return <DiagonalizationTheory />;
+      if (isCovarianceTopic) return <CovarianceTheory />;
       return (
         <div className="prose prose-invert max-w-none p-6 text-foreground/90">
             <p>Theory explanation coming soon.</p>
@@ -367,7 +405,7 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
                 {isEigenTopic && (
                     <Card>
                         <CardHeader>
-                             <CardTitle className="flex items-center gap-2"><Waypoints className="text-primary"/> Properties of Eigenvalues & Eigenvectors</CardTitle>
+                             <CardTitle className="flex items-center gap-2"><Waypoints className="text-primary"/> Properties of Eigenvalues &amp; Eigenvectors</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <EigenvalueProperties />
@@ -404,3 +442,4 @@ export function TopicContentSection({ subTopic }: { subTopic: SubTopic }) {
         </section>
     );
 }
+
