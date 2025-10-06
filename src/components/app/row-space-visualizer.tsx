@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -35,6 +34,14 @@ const RowSpaceVisualizer = () => {
                 p.background(17, 24, 39);
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
+
+                const handleDragging = () => {
+                    if (!p.mouseIsPressed) return;
+                    const mouseVec = screenToWorld(p.mouseX, p.mouseY);
+
+                    if (draggingR1) r1.set(mouseVec);
+                    else if (draggingR2) r2.set(mouseVec);
+                };
 
                 handleDragging();
 
