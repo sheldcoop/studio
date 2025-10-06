@@ -9,7 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5';
+import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5/index.ts';
 import { calculateEigen } from '@/lib/math/linear-algebra';
 
 const ChangeOfBasisVisualizer = () => {
