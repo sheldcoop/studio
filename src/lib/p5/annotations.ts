@@ -12,7 +12,7 @@ import p5 from 'p5';
  */
 export const drawLabel = (p: p5, v: p5.Vector, color: p5.Color, label: string) => {
     p.push();
-    const labelOffset = p5.Vector.mult(v.copy().normalize(), 20);
+    const labelOffset = v.copy().normalize().mult(20);
     const labelPos = p5.Vector.add(v, labelOffset);
     p.noStroke();
     p.fill(color);
@@ -42,7 +42,7 @@ export const drawAngleBetweenVectors = (p: p5, v1: p5.Vector, v2: p5.Vector, sca
     p.arc(0, 0, arcSize, arcSize, p.min(v1.heading(), v2.heading()), p.max(v1.heading(), v2.heading()));
 
     if (showDotProduct) {
-        const textPos = p5.Vector.mult(p5.Vector.add(v1, v2).normalize(), arcSize * 1.2);
+        const textPos = p5.Vector.add(v1, v2).normalize().mult(arcSize * 1.2);
         p.fill(color); p.noStroke(); p.textSize(12);
         p.text(`θ = ${p.degrees(angle).toFixed(1)}°`, textPos.x, textPos.y);
     }
