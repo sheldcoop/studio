@@ -199,7 +199,6 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'descriptive-statistics-explorer-interactive-guide': DescriptiveStatsPage,
   'z-table-interactive-guide': ZTablePage,
   'confidence-intervals-interactive-guide': ConfidenceIntervalsPage,
-  'mental-math': MentalMathPage,
   'monte-carlo-simulation-interactive-guide': MonteCarloPage,
   'time-series-decomposition-interactive-guide': TimeSeriesDecompositionPage,
   'autocorrelation-acf-pacf-interactive-guide': AcfPacfPage,
