@@ -65,7 +65,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        {/* Prism.js Toolbar CSS (retained for non-runnable blocks) */}
+        {/* Prism.js Toolbar CSS */}
         <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
         
         {/* PyScript CSS */}
