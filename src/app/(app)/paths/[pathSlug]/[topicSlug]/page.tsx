@@ -56,6 +56,7 @@ import GaussianEliminationPage from '@/app/(app)/paths/linear-algebra-for-quanti
 import GramSchmidtPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/gram-schmidt-orthogonalization/component';
 import DiagonalizationPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/diagonalization/component';
 import LUDecompositionPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/lu-decomposition/component';
+import CholeskyDecompositionPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/cholesky-decomposition/component';
 
 
 type TopicPageProps = {
@@ -231,6 +232,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'gram-schmidt-orthogonalization': GramSchmidtPage,
   'diagonalization': DiagonalizationPage,
   'lu-decomposition': LUDecompositionPage,
+  'cholesky-decomposition': CholeskyDecompositionPage,
 };
 
 

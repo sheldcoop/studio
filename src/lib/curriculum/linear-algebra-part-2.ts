@@ -23,9 +23,9 @@ export const linearAlgebraPart2: Topic[] = [
     createTopic({
         id: 'lu-decomposition',
         parent: 'la-module-3',
-        title: 'LU Decomposition: The Secret of Easy Steps',
+        title: 'LU Decomposition: The Ultimate Guide',
         icon: 'Waypoints',
-        description: "Factoring a matrix to efficiently solve systems of equations.",
+        description: "Factoring a complex problem into two simple ones.",
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
     }),
@@ -80,16 +80,12 @@ export const linearAlgebraPart2: Topic[] = [
         ]
     }),
      createTopic({
+        id: 'cholesky-decomposition',
         parent: 'la-module-4',
-        title: 'Cholesky Decomposition',
+        title: 'Cholesky Decomposition: The Ultimate Guide',
         icon: 'Waypoints',
-        description: "The key to generating correlated random asset paths for Monte Carlo simulations.",
+        description: "The elegant 'matrix square root' for specialized, high-speed applications.",
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'cholesky-intro', title: 'Introduction to Cholesky' },
-            { id: 'cholesky-calculation', title: 'Calculating the Decomposition' },
-            { id: 'cholesky-monte-carlo', title: 'Application in Monte Carlo' },
-        ]
     }),
 ];
