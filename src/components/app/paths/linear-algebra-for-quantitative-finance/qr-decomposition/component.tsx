@@ -10,7 +10,7 @@ import 'katex/dist/katex.min.css';
 import { PyScriptRunner } from "@/components/app/pyscript-runner";
 
 function PythonImplementation() {
-    const A = [[1, 0], [1, 1], [1, 2]];
+    const A = [[1, 2], [0, 1], [1, 0]];
     const b = [1, 3, 4];
     
     return (
