@@ -39,8 +39,8 @@ function ChangeOfBasisTheory() {
             <p>It's a key detail in linear algebra that the order of multiplication matters and changes the interpretation.
             </p>
             <ul className="text-sm space-y-4">
-                <li><strong><code className="bg-background px-1.5 py-0.5 rounded">A\vec{v}</code> (Matrix x Column Vector):</strong> This is the most common use. The result is a new <strong>column vector</strong> that is a linear combination of the <strong>COLUMNS</strong> of A. The components of <InlineMath math="\vec{v}" /> act as the weights. This is best thought of as transforming a point in space.</li>
-                <li><strong><code className="bg-background px-1.5 py-0.5 rounded">\vec{v}A</code> (Row Vector x Matrix):</strong> This is conceptually different. The result is a new <strong>row vector</strong> that is a linear combination of the <strong>ROWS</strong> of A. The components of the row vector <InlineMath math="\vec{v}" /> are the weights. This is often used when changing coordinate systems.</li>
+                <li><strong><code className="bg-background px-1.5 py-0.5 rounded">A{'\\'}vec v</code> (Matrix x Column Vector):</strong> This is the most common use. The result is a new <strong>column vector</strong> that is a linear combination of the <strong>COLUMNS</strong> of A. The components of <InlineMath math="\vec{v}" /> act as the weights. This is best thought of as transforming a point in space.</li>
+                <li><strong><code className="bg-background px-1.5 py-0.5 rounded">{'\\'}vec vA</code> (Row Vector x Matrix):</strong> This is conceptually different. The result is a new <strong>row vector</strong> that is a linear combination of the <strong>ROWS</strong> of A. The components of the row vector <InlineMath math="\vec{v}" /> are the weights. This is often used when changing coordinate systems.</li>
             </ul>
              <p>In summary: the orientation of the vector determines whether you are combining the columns or the rows of the matrix.</p>
             
@@ -357,3 +357,4 @@ const ChangeOfBasisVisualizer = () => {
 export default ChangeOfBasisVisualizer;
 
     
+
