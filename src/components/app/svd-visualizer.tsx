@@ -13,17 +13,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-import { PyScriptRunner } from './pyscript-runner';
 
-
-function PythonImplementation() {
-    return (
-        <PyScriptRunner
-            operation="svd"
-            outputId="output-svd-solver"
-        />
-    );
-}
 
 const SVDVisualizer = () => {
   return (
@@ -134,8 +124,8 @@ const SVDVisualizer = () => {
             <CardTitle>5. Making It Real: Python for Image Compression</CardTitle>
             <CardDescription>This code will download a sample image, compress it using SVD with different numbers of singular values, and display the result. This visually demonstrates the power of low-rank approximation.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <PythonImplementation />
+          <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
+              <p className="text-muted-foreground">Python implementation coming soon.</p>
           </CardContent>
         </Card>
       </div>

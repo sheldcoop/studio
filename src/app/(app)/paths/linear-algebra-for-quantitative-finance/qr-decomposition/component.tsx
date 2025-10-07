@@ -8,47 +8,6 @@ import { BlockMath, InlineMath } from 'react-katex';
 import { ShieldCheck, Cpu, Code, Trophy, HardHat, SwissFranc } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 
-const pythonCode = `
-import numpy as np
-from pyscript import document
-
-def solve_qr_decomposition(event):
-    A = np.array([[1, 0], [1, 1], [1, 2]])
-    b = np.array([1, 3, 4])
-    output_element = document.querySelector("#output-qr-solver")
-
-    try:
-        Q, R = np.linalg.qr(A)
-        # Solve Rx = Q.T @ b
-        b_transformed = Q.T @ b
-        x = np.linalg.solve(R, b_transformed)
-
-        output = f"""Solving Ax = b using QR Decomposition\\n
-Matrix A:\\n{A}\\n
-Vector b:\\n{b}\\n
-1. Decompose A into Q and R:
-   Q (Orthogonal Matrix):\\n{Q}\\n
-   R (Upper Triangular Matrix):\\n{R}\\n
-2. Solve Rx = Q^T * b:
-   Q^T * b = \\n{b_transformed}\\n
-3. Least Squares Solution x:\\n{x}"""
-        output_element.innerText = output
-    except Exception as e:
-        output_element.innerText = f"An error occurred: {e}"
-`;
-
-function PythonImplementation() {
-    return (
-      <div>
-        <py-script>
-          {pythonCode}
-        </py-script>
-        <button id="run-qr-button" pys-onClick="solve_qr_decomposition" className="text-white bg-blue-600 px-4 py-2 rounded">Run QR Solver</button>
-        <div id="output-qr-solver" className="mt-4 p-4 bg-gray-800 text-white font-mono rounded">Click the button to run the Python code.</div>
-      </div>
-    );
-}
-
 export default function QRDecompositionPage() {
   return (
     <>
@@ -156,8 +115,8 @@ export default function QRDecompositionPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> 7. Making It Real: Python Implementation</CardTitle>
             </CardHeader>
-            <CardContent>
-                <PythonImplementation />
+            <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
+                <p className="text-muted-foreground">Python implementation coming soon.</p>
             </CardContent>
         </Card>
       </div>
