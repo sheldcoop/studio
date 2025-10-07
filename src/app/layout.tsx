@@ -7,6 +7,8 @@ import './globals.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
 import { AuthProvider } from '@/app/auth-provider';
 import { OrientationBanner } from '@/components/app/orientation-banner';
+import Script from 'next/script';
+
 
 const fontBody = Inter({
   subsets: ['latin'],
@@ -63,6 +65,8 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
+        {/* Prism.js Okaidia theme */}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
       </head>
       <body 
         className={cn(
@@ -83,6 +87,9 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
+         {/* Prism.js core and autoloader for language detection */}
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js" strategy="lazyOnload" />
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" strategy="lazyOnload" />
       </body>
     </html>
   );

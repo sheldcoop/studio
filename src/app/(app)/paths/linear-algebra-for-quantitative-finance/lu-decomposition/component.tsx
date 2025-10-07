@@ -147,8 +147,7 @@ function TheCompetition() {
 }
 
 function PythonImplementation() {
-    const code = `
-import numpy as np
+    const code = `import numpy as np
 from scipy.linalg import lu, lu_solve, lu_factor
 
 # Define our matrix A and vector b
@@ -170,10 +169,9 @@ lu_piv = lu_factor(A)
 x_fast = lu_solve(lu_piv, b)
 
 print("Solution x:", x)
-# Expected Output: [1. 2. 1.]
-    `;
+# Expected Output: [1. 2. 1.]`;
     return (
-        <pre className="p-4 rounded-lg bg-gray-900/50 text-sm overflow-x-auto"><code className="language-python">{code}</code></pre>
+        <pre className="language-python rounded-lg bg-gray-900/50 text-sm overflow-x-auto"><code className="language-python">{code}</code></pre>
     );
 }
 
