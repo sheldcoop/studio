@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -13,7 +13,6 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-import { Button } from '@/components/ui/button';
 import { PyScriptRunner } from './pyscript-runner';
 
 
