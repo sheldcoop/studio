@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -28,7 +29,7 @@ export default function PyScriptLoader({ pythonCode }: PyScriptLoaderProps) {
   return (
     <>
       <py-config>
-          packages = ["numpy", "matplotlib"]
+          packages = ["numpy", "matplotlib", "scipy"]
       </py-config>
       <py-script>
         {pythonCode}
