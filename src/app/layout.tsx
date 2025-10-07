@@ -65,8 +65,11 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        {/* Prism.js Toolbar CSS */}
+        {/* Prism.js Toolbar CSS (retained for non-runnable blocks) */}
         <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
+        
+        {/* PyScript CSS */}
+        <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/css/pyscript.css" />
       </head>
       <body 
         className={cn(
@@ -93,6 +96,9 @@ export default function RootLayout({
         {/* Prism.js Toolbar and Copy to Clipboard plugins */}
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" strategy="lazyOnload" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" strategy="lazyOnload" />
+        
+        {/* PyScript Core JS */}
+        <Script defer src="https://pyscript.net/releases/2023.11.1/core.js"></Script>
       </body>
     </html>
   );
