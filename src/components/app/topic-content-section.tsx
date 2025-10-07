@@ -3,7 +3,7 @@
 'use client';
 
 import { type Topic, type SubTopic } from '@/lib/curriculum';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { BookOpen, Code, BrainCircuit, BarChart, Scaling, Sigma, Waypoints, VenetianMask, Plane, Combine, AppWindow } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
