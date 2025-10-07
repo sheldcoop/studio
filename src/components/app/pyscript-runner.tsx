@@ -38,36 +38,44 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
   const [outputContent, setOutputContent] = useState<React.ReactNode>(null);
   const { toast } = useToast();
 
-  const initializePyScript = useCallback(async () => {
-    // Wait for the pyscript object to be available on the window
-    if (!window.pyscript) {
-      setTimeout(initializePyScript, 100); // Poll until the script is loaded
-      return;
-    }
-
-    try {
-      // Step 1: Programmatically configure Pyodide with the required packages
-      // This bypasses the need for a <py-config> tag entirely.
-      if (packages.length > 0) {
-        setStatus('loading_packages');
-        console.log(`PyScript: Loading packages: ${packages.join(', ')}`);
-        await window.pyscript.pyodide.loadPackage(packages);
-      }
-      
-      // Step 2: Once packages are loaded, the environment is ready
-      setStatus('ready');
-      console.log("PyScript: Environment is ready.");
-    } catch (e: any) {
-      console.error("PyScript Package Loading Error:", e);
-      setError(e.message || "Failed to load Python packages.");
-      setStatus('error');
-    }
-  }, [packages]);
-
-  // Main effect to kick off the initialization process
+  // --- THIS IS THE FIX (PART 2) ---
+  // This effect now listens for the custom event fired by the layout.
   useEffect(() => {
-    initializePyScript();
-  }, [initializePyScript]);
+    const initialize = async () => {
+      console.log("PyScriptRunner: Initializing...");
+      setStatus('loading_packages');
+      try {
+        if (!window.pyscript) {
+          throw new Error("PyScript object not found on window.");
+        }
+        if (packages && packages.length > 0) {
+          console.log(`PyScriptRunner: Loading packages: ${packages.join(', ')}`);
+          await window.pyscript.pyodide.loadPackage(packages);
+        }
+        console.log("PyScriptRunner: Environment is ready.");
+        setStatus('ready');
+      } catch (e: any) {
+        console.error("PyScriptRunner: Initialization failed.", e);
+        setError(e.message);
+        setStatus('error');
+      }
+    };
+
+    // Check if the script has already loaded and fired the event before this component mounted.
+    if (window.pyscript?.interpreter) {
+      console.log("PyScriptRunner: PyScript already initialized. Running setup.");
+      initialize();
+    } else {
+      console.log("PyScriptRunner: Waiting for 'pyscript-loaded' event from layout.");
+      // If not, add an event listener for our custom event.
+      document.addEventListener('pyscript-loaded', initialize);
+    }
+
+    // Crucial cleanup function to remove the listener when the component unmounts.
+    return () => {
+      document.removeEventListener('pyscript-loaded', initialize);
+    };
+  }, [packages]);
 
   // Effect for syntax highlighting
   useEffect(() => {
@@ -102,9 +110,8 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
       await window.pyscript.run(code);
       
       setStatus('ready');
-      // Check if output was written to, if not, show a message
-      // This part now runs correctly after the status is set back to ready.
-      if (typeof outputContent === 'object' && 'props' in outputContent && outputContent.props.children[1] === 'Running...') {
+      // If the Python code ran but didn't call pyscript.write, clear the "Running..." message.
+      if (outputContent && typeof outputContent === 'object' && 'props' in outputContent && outputContent.props.children[1] === 'Running...') {
           setOutputContent(null);
       }
     } catch (e: any) {
@@ -121,8 +128,8 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
   };
 
   const statusMessages: Record<Status, string> = {
-    loading_script: 'Loading Environment...',
-    loading_packages: 'Loading Packages...',
+    loading_script: 'Loading Env...',
+    loading_packages: 'Loading Pkgs...',
     ready: 'Run Code',
     running: 'Running...',
     error: 'Error Occurred',
@@ -165,6 +172,8 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
               <div className="text-sm text-muted-foreground">
                 {(status === 'ready' || status === 'running') && 'Click "Run Code" to see the output.'}
                 {status === 'error' && 'An error occurred. Check the error message above.'}
+                 {status === 'loading_script' && 'Initializing Python environment...'}
+                 {status === 'loading_packages' && 'Downloading required packages...'}
               </div>
             )}
           </div>

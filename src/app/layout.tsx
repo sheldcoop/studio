@@ -1,4 +1,3 @@
-
 // src/app/layout.tsx (Final Corrected Version)
 
 import type { Metadata } from 'next';
@@ -7,6 +6,7 @@ import { cn } from '@/lib/utils';
 import './globals.css';
 import { OrientationBanner } from '@/components/app/orientation-banner';
 import { Providers } from '@/components/app/providers'; // Import the new component
+import Script from 'next/script'; // Make sure this import is present
 
 const fontBody = Inter({
   subsets: ['latin'],
@@ -67,8 +67,17 @@ export default function RootLayout({
         <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/css/pyscript.css" />
 
-        {/* This is the reliable way to load PyScript */}
-        <script type="module" async src="https://pyscript.net/releases/2023.11.1/core.js"></script>
+        {/* --- THIS IS THE FIX (PART 1) --- */}
+        {/* We use next/script's onLoad to fire a custom event when PyScript is truly ready. */}
+        <Script
+          src="https://pyscript.net/releases/2023.11.1/core.js"
+          strategy="afterInteractive"
+          onLoad={() => {
+            // This code runs ONLY after core.js has loaded.
+            console.log("Next.js onLoad: PyScript core.js has loaded. Firing custom event.");
+            document.dispatchEvent(new Event('pyscript-loaded'));
+          }}
+        />
       </head>
       <body 
         className={cn(
