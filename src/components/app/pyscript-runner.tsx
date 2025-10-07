@@ -39,38 +39,32 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
   const { toast } = useToast();
 
   const initialize = useCallback(async () => {
-    console.log("PyScriptRunner: Initialize function called.");
     setStatus('loading_packages');
     try {
       if (!window.pyscript?.interpreter) {
         throw new Error("PyScript interpreter not found on window object.");
       }
       if (packages.length > 0) {
-        console.log(`PyScriptRunner: Loading packages: ${packages.join(', ')}`);
         await window.pyscript.pyodide.loadPackage(packages);
       }
-      console.log("PyScriptRunner: Environment is ready.");
       setStatus('ready');
     } catch (e: any) {
-      console.error("PyScriptRunner: Initialization failed.", e);
       setError(e.message);
       setStatus('error');
     }
   }, [packages]);
 
   useEffect(() => {
-    if (window.pyscript?.interpreter) {
-      console.log("PyScriptRunner: Interpreter already available. Initializing immediately.");
-      initialize();
-    } else {
-      console.log("PyScriptRunner: Waiting for 'pyscript-ready' event from layout.");
-      document.addEventListener('pyscript-ready', initialize);
-    }
-
-    return () => {
-      document.removeEventListener('pyscript-ready', initialize);
+    const checkPyScript = () => {
+      if (window.pyscript?.interpreter) {
+        initialize();
+      } else {
+        setTimeout(checkPyScript, 100); // Poll every 100ms
+      }
     };
+    checkPyScript();
   }, [initialize]);
+
 
   useEffect(() => {
     if (codeRef.current && window.Prism) {
@@ -84,6 +78,7 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
     setStatus('running');
     setError(null);
     setOutputContent(null); // Clear previous output before running
+    let errorOccurred = false;
 
     try {
       window.pyscript.interpreter.globals.set("pyscript", {
@@ -97,8 +92,9 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
     } catch (e: any) {
       setError(e.message || String(e));
       setStatus('error');
+      errorOccurred = true;
     } finally {
-      if (status !== 'error') {
+      if (!errorOccurred) {
         setStatus('ready');
       }
     }
@@ -153,8 +149,8 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
             {outputContent || (
               <div className="text-sm text-muted-foreground">
                 {status === 'ready' && 'Click "Run Code" to see the output.'}
-                {status !== 'ready' && !error && 'The Python environment is preparing...'}
-                {status === 'error' && 'An error occurred.'}
+                {(status === 'loading_packages' || status === 'waiting_for_script') && 'The Python environment is preparing...'}
+                {status === 'error' && 'An error occurred. You can try running the code again.'}
               </div>
             )}
           </div>
