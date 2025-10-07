@@ -122,6 +122,15 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
     }),
+    createTopic({
+        id: 'qr-decomposition',
+        parent: 'la-module-2',
+        title: 'QR Decomposition: The Ultimate Guide',
+        icon: 'Waypoints',
+        description: 'The robust and versatile "Swiss Army knife" of matrix factorizations.',
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+    }),
      createTopic({
         parent: 'la-module-2',
         title: 'The Four Fundamental Subspaces',
