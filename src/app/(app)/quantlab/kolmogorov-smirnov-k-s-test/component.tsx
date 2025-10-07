@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartTooltipContent } from '@/lib/chart-config';
 import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
+import { Code } from 'lucide-react';
 
 // --- Math Helpers ---
 
@@ -103,6 +104,7 @@ const KSTestChart = () => {
   );
 };
 
+
 export default function KolmogorovSmirnovTestPage() {
   return (
     <>
@@ -155,12 +157,12 @@ export default function KolmogorovSmirnovTestPage() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">Python Implementation</CardTitle>
-          </CardHeader>
-          <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
-            <p className="text-muted-foreground">Python implementation coming soon.</p>
-          </CardContent>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Python Implementation</CardTitle>
+            </CardHeader>
+            <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
+                <p className="text-muted-foreground">Python implementation coming soon.</p>
+            </CardContent>
         </Card>
       </div>
     </>

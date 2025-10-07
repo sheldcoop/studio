@@ -64,16 +64,6 @@ export const probabilityForQuantsPart1: Topic[] = [
             { id: 'bayes-application', title: 'Application: The Disease Test' },
         ]
     }),
-    createTopic({
-        parent: 'prob-quant-mod-1',
-        id: 'python-normal-distribution',
-        title: "Probability Distribution with Python",
-        icon: 'Code',
-        description: "Using Python to visualize the Normal Distribution.",
-        category: 'sub-topic',
-        duration: 15,
-        pathPrefix: 'probability-for-quants'
-    }),
 
     // --- Module 2: Random Variables & Distributions ---
     createTopic({

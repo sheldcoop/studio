@@ -2,39 +2,7 @@
 
 import { PageHeader } from "@/components/app/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { PyScriptRunner } from "@/components/app/pyscript-runner";
 import { Code } from "lucide-react";
-
-// The Python script is now more robust.
-// It clears the previous figure to prevent plots from overlapping on subsequent runs.
-const pythonCode = `
-import matplotlib.pyplot as plt
-import numpy as np
-from pyscript import display
-
-# --- Create the plot ---
-# Clear the figure to ensure we start fresh on each run
-plt.clf()
-
-# Define parameters for the normal distribution
-mu = 0      # mean
-sigma = 1   # standard deviation
-x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
-pdf = (1/(sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mu)/sigma)**2)
-
-# Create the plot elements
-fig, ax = plt.subplots(figsize=(8, 4))
-ax.plot(x, pdf, label=f"μ={mu}, σ={sigma}")
-ax.set_title("Normal Distribution PDF")
-ax.set_xlabel("Value")
-ax.set_ylabel("Density")
-ax.grid(True)
-ax.legend()
-
-# Display the plot in the specified HTML element
-# This is the crucial part that targets the output div
-display(fig, target="normal-dist-output")
-`;
 
 export default function PythonNormalDistributionPage() {
   return (
@@ -49,15 +17,11 @@ export default function PythonNormalDistributionPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Python Implementation</CardTitle>
                 <CardDescription>
-                    This script uses NumPy to generate the data points for a Normal Distribution's Probability Density Function (PDF) and Matplotlib to plot it. Click "Run" to execute the code in your browser.
+                    This script uses NumPy to generate the data points for a Normal Distribution's Probability Density Function (PDF) and Matplotlib to plot it.
                 </CardDescription>
             </CardHeader>
-            <CardContent>
-                <PyScriptRunner 
-                    code={pythonCode}
-                    outputId="normal-dist-output"
-                    title="Normal Distribution Plot"
-                />
+            <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
+                <p className="text-muted-foreground">Interactive Python runner coming soon.</p>
             </CardContent>
         </Card>
       </div>

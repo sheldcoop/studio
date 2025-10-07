@@ -7,67 +7,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BlockMath, InlineMath } from 'react-katex';
 import { ShieldCheck, Cpu, Code, Trophy, HardHat, SwissFranc } from 'lucide-react';
 import 'katex/dist/katex.min.css';
-import { PyScriptRunner } from "@/components/app/pyscript-runner";
-
-function PythonImplementation() {
-    const pythonCode = `
-import numpy as np
-from scipy.linalg import solve_triangular
-from pyscript import display
-import matplotlib.pyplot as plt
-
-# Clear any previous plots to avoid duplication on re-run
-plt.clf()
-
-# --- Define the overdetermined system Ax = b ---
-# A is non-square, so there is no exact solution. We find the best fit.
-A = np.array([[1, 2], [0, 1], [1, 0]])
-b = np.array([1, 3, 4])
-
-# --- Step 1: Perform QR Decomposition (A = QR) ---
-Q, R = np.linalg.qr(A)
-
-# --- Step 2: Transform b using Q's transpose (y = Q^T * b) ---
-# This changes the problem from Ax=b to the simpler Rx = y
-y = Q.T @ b
-
-# --- Step 3: Solve the simple upper-triangular system (Rx = y) ---
-# This is fast and numerically stable.
-x_solution = solve_triangular(R, y)
-
-# --- Display the results as formatted text ---
-output_str = f"""
-<div style='font-family: monospace; white-space: pre;'>
-Input Matrix A:\\n{A}\\n
-Input Vector b:\\n{b}\\n
-------------------------------------
-Step 1: QR Decomposition (A = QR)
-------------------------------------
-Orthogonal Matrix Q:\\n{np.round(Q, 4)}\\n
-Upper-Triangular Matrix R:\\n{np.round(R, 4)}\\n
-------------------------------------
-Step 2: Transform b (y = Q^T * b)
-------------------------------------
-Transformed Vector y:\\n{np.round(y, 4)}\\n
-------------------------------------
-Step 3: Solve Rx = y
-------------------------------------
-Least-Squares Solution x:\\n{np.round(x_solution, 4)}
-</div>
-"""
-
-display(output_str, target="output-qr-solver")
-`;
-
-    return (
-        <PyScriptRunner
-            code={pythonCode}
-            outputId="output-qr-solver"
-            title="Solving Least Squares with QR"
-        />
-    );
-}
-
 
 export default function QRDecompositionPage() {
   return (
@@ -176,8 +115,8 @@ export default function QRDecompositionPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> 7. Making It Real: Python Implementation</CardTitle>
             </CardHeader>
-            <CardContent>
-                <PythonImplementation />
+            <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
+                <p className="text-muted-foreground">Python implementation coming soon.</p>
             </CardContent>
         </Card>
       </div>
