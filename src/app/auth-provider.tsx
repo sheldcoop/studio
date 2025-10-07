@@ -1,30 +1,73 @@
-
 'use client';
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
+import {
+  getAuth,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signOut,
+  type AuthError,
+  type User,
+} from 'firebase/auth';
 import { app } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+export const getFriendlyErrorMessage = (error: AuthError): string => {
+    switch (error.code) {
+        case 'auth/invalid-email':
+            return 'Please enter a valid email address.';
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+            return 'Invalid credentials. Please check your email and password.';
+        case 'auth/email-already-in-use':
+            return 'An account with this email address already exists.';
+        case 'auth/weak-password':
+            return 'The password must be at least 6 characters long.';
+        case 'auth/popup-closed-by-user':
+            return 'The sign-in popup was closed before completion. Please try again.';
+        case 'auth/requires-recent-login':
+            return 'This operation is sensitive and requires recent authentication. Please log in again before retrying.';
+        case 'auth/too-many-requests':
+            return 'We have detected too many requests from your device. Please wait a while before trying again.';
+        default:
+            return 'An unexpected authentication error occurred. Please try again later.';
+    }
+}
+
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  handleSuccessfulLogin: (user: User) => void;
+  handleAuthAction: (action: 'signUp' | 'signIn', email: string, password?: string) => Promise<{ success: boolean; message: string; }>;
+  handlePasswordReset: (email: string) => Promise<{ success: boolean; message: string; }>;
+  handleGoogleSignIn: () => Promise<{ success: boolean; message: string; }>;
+  handleLogout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => useContext(AuthContext);
-
-// No longer needed as all pages are public by default.
-// const PUBLIC_ROUTES = ['/login', '/reset-password', '/actions'];
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -34,10 +77,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => unsubscribe();
   }, []);
+  
+  const handleSuccessfulLogin = (loggedInUser: User) => {
+    if (loggedInUser.emailVerified) {
+      router.push('/');
+    } else {
+      sendEmailVerification(loggedInUser); // Resend verification email
+      signOut(auth); // Sign out the non-verified user
+      throw new Error("Please verify your email address before logging in. We've sent you another verification link.");
+    }
+  }
+
+  const handleAuthAction = async (action: 'signUp' | 'signIn', email: string, password = ''): Promise<{ success: boolean; message: string; }> => {
+    try {
+      if (action === 'signUp') {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(userCredential.user);
+        await signOut(auth); // Sign out user immediately after registration
+        return { success: true, message: 'Your account has been created. Please check your email to verify your account before logging in.' };
+      } else {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        handleSuccessfulLogin(userCredential.user);
+        return { success: true, message: 'Login successful!' };
+      }
+    } catch (err) {
+        if (err instanceof Error && err.message.startsWith("Please verify your email")) {
+            return { success: false, message: err.message };
+        }
+      return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
+    }
+  };
+
+  const handlePasswordReset = async (email: string): Promise<{ success: boolean; message: string; }> => {
+     if (!email) {
+        return { success: false, message: 'Please enter your email address to reset your password.'};
+    }
+    try {
+        await sendPasswordResetEmail(auth, email);
+        return { success: true, message: 'A password reset link has been sent to your email address.' };
+    } catch (err) {
+        return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
+    }
+  };
+
+  const handleGoogleSignIn = async (): Promise<{ success: boolean; message: string; }> => {
+    try {
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      handleSuccessfulLogin(userCredential.user);
+      return { success: true, message: 'Login successful!' };
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith("Please verify your email")) {
+          return { success: false, message: err.message };
+      }
+      return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
+    }
+  }
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
 
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, handleSuccessfulLogin, handleAuthAction, handlePasswordReset, handleGoogleSignIn, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );
