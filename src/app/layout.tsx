@@ -1,3 +1,4 @@
+
 // src/app/layout.tsx (Final Corrected Version)
 
 import type { Metadata } from 'next';

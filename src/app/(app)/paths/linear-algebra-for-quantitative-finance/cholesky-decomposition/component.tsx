@@ -7,36 +7,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BlockMath, InlineMath } from 'react-katex';
 import { Trophy, ShieldCheck, Cpu, Code, Zap, HeartPulse } from 'lucide-react';
 import 'katex/dist/katex.min.css';
+import { PyScriptRunner } from "@/components/app/pyscript-runner";
+import { choleskyDecompositionSolverCode } from "@/lib/python/cholesky_decomposition_solver";
 
 function PythonImplementation() {
-    const code = `import numpy as np
-from scipy.linalg import cholesky, cho_solve
-
-# Our symmetric positive definite matrix A and vector b
-A = np.array([[4., 2., -2.],
-              [2., 10., 2.],
-              [-2., 2., 6.]])
-b = np.array([2., 14., 6.])
-
-# 1. Decompose the matrix A
-# The 'cholesky' function expects a lower triangular matrix by default
-L = cholesky(A, lower=True)
-
-# 2. Solve the system Ax = b using the factor L
-# This internally solves Ly=b and then L^T x = y
-x = cho_solve((L, True), b)
-
-print("The matrix A is:\\n", A)
-print("\\nThe Cholesky factor L is:\\n", L)
-print("\\nThe solution x is:\\n", x)
-
-# Verification: Check if A @ x is close to b
-print("\\nVerification (A @ x):\\n", A @ x)
-# Output should be [ 2. 14.  6.]`;
     return (
-        <div className="relative">
-            <pre className="language-python rounded-lg bg-gray-900/50 text-sm overflow-x-auto p-4 pt-8"><code className="language-python">{code}</code></pre>
-        </div>
+      <PyScriptRunner
+        code={choleskyDecompositionSolverCode}
+        outputId="output-cholesky-solver"
+        packages={['numpy', 'scipy']}
+      />
     );
 }
 
