@@ -96,7 +96,7 @@ export default function RootLayout({
           {children}
           <OrientationBanner />
         </Providers>
-        <script type="py" src="/python/solver.py" config="/pyscript.json" worker="false"></script>
+        <script type="py" src="/python/solver.py" config="/pyscript.json"></script>
       </body>
     </html>
   );
