@@ -7,6 +7,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BlockMath, InlineMath } from 'react-katex';
 import { ShieldCheck, Cpu, Code, Trophy, HardHat, SwissFranc } from 'lucide-react';
 import 'katex/dist/katex.min.css';
+import { PyScriptRunner } from "@/components/app/pyscript-runner";
+
+function PythonImplementation() {
+    const A = [[1, 2], [0, 1], [1, 0]];
+    const b = [1, 3, 4];
+    
+    return (
+      <PyScriptRunner
+        matrix={A}
+        vector={b}
+        operation="qr"
+        outputId="output-qr-solver"
+      />
+    );
+}
 
 export default function QRDecompositionPage() {
   return (
@@ -115,8 +130,8 @@ export default function QRDecompositionPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> 7. Making It Real: Python Implementation</CardTitle>
             </CardHeader>
-            <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
-                <p className="text-muted-foreground">Python implementation coming soon.</p>
+            <CardContent>
+                <PythonImplementation />
             </CardContent>
         </Card>
       </div>

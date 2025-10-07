@@ -35,7 +35,7 @@ export function PyScriptRunner({ matrix, vector, operation, outputId }: PyScript
     window.addEventListener('py:ready', onPyScriptReady);
     
     // If PyScript is already on the page (from another component), set ready immediately.
-    if (window.pyscript) {
+    if ((window as any).pyscript) {
       setIsPyScriptReady(true);
     }
     
