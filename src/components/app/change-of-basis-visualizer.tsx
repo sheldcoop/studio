@@ -9,9 +9,42 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { drawGrid, drawVector, easeInOutCubic, screenToWorld, drawPoint } from '@/lib/p5';
+import { drawGrid, drawVector, easeInOutCubic, screenToWorld } from '@/lib/p5';
 import { calculateEigen } from '@/lib/math/linear-algebra';
 import { VectorDisplay } from './vector-display';
+import { BlockMath, InlineMath } from 'react-katex';
+
+function ChangeOfBasisTheory() {
+    return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <h4 className="font-bold text-lg not-prose">What is a Basis?</h4>
+            <p>A <strong>basis</strong> is a set of vectors that can be used as a coordinate system for a vector space. It's the fundamental set of building blocks for that space. For a 2D plane, the standard basis is a set of two vectors:</p>
+            <ul className="text-sm">
+                <li><InlineMath math="\hat{\imath} = \begin{pmatrix} 1 \\ 0 \end{pmatrix}" /> (a step of 1 unit along the x-axis)</li>
+                <li><InlineMath math="\hat{\jmath} = \begin{pmatrix} 0 \\ 1 \end{pmatrix}" /> (a step of 1 unit along the y-axis)</li>
+            </ul>
+            <p>The coordinates of a vector <InlineMath math="\vec{v} = \begin{pmatrix} 3 \\ 2 \end{pmatrix}" /> simply mean "3 steps in the <InlineMath math="\hat{\imath}" /> direction and 2 steps in the <InlineMath math="\hat{\jmath}" /> direction."</p>
+            <p>However, we can choose any two linearly independent vectors to be our basis. A **change of basis** is the process of re-expressing a vector in terms of this new set of basis vectors. It's like translating a description of a location from one language (e.g., "3 steps east, 2 steps north") to another (e.g., "1.5 steps northeast, 0.5 steps northwest"). The location itself doesn't change, just how we describe it.</p>
+            
+            <hr className="my-6" />
+
+            <h4 className="font-bold text-lg not-prose">Matrix-Vector Multiplication: A Transformation</h4>
+            <p>It's crucial to distinguish a change of basis from a transformation. Think of a matrix as an **action** (like rotating or stretching) and a vector as an **object** you apply that action to. The result of the multiplication <InlineMath math="A\vec{v}" /> is the object (the vector) in its new position or state after the transformation.</p>
+            <div className="p-4 rounded-md bg-muted/50 my-4 not-prose">
+                <p className="font-semibold">Example:</p>
+                <p>Imagine a vector <InlineMath math="\vec{v} = \begin{pmatrix} 2 \\ 1 \end{pmatrix}" />. Let's apply a rotation matrix <InlineMath math="A = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}" /> (which rotates vectors 90° counter-clockwise). The output is a new vector <InlineMath math="\vec{w} = A\vec{v} = \begin{pmatrix} -1 \\ 2 \end{pmatrix}" />. We started with one vector and ended with one new, rotated vector.</p>
+            </div>
+            
+            <h4 className="font-bold text-lg not-prose mt-6">The Change of Basis Matrix</h4>
+            <p>If we have a new basis B = &#123;<b className="text-red-400"><InlineMath math="\vec{b}_1" /></b>, <b className="text-blue-400"><InlineMath math="\vec{b}_2" /></b>&#125;, we can create a "change of basis matrix" <InlineMath math="P_B" /> whose columns are these new basis vectors. To find the standard coordinates of a vector given in the new basis, we simply multiply:</p>
+            <div className="text-center"><BlockMath math="[\vec{v}]_B = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}" /></div>
+            <div className="text-center"><BlockMath math="\vec{v}_{\text{std}} = P_B [\vec{v}]_B = c_1\vec{b}_1 + c_2\vec{b}_2" /></div>
+             <p>To go the other way—from standard coordinates to the new basis—we use the inverse matrix:</p>
+             <div className="text-center"><BlockMath math="[\vec{v}]_B = P_B^{-1} \vec{v}_{\text{std}}" /></div>
+            <p>This is extremely powerful in quantitative finance, particularly in Principal Component Analysis (PCA), where we change the basis of our data to a new set of orthogonal axes (the eigenvectors of the covariance matrix) that represent the directions of maximum variance.</p>
+        </div>
+    );
+}
 
 const ChangeOfBasisVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -31,7 +64,7 @@ const ChangeOfBasisVisualizer = () => {
     const animationFrameId = useRef<number | null>(null);
 
     const story = {
-        explore: "Standard coordinates use the familiar <b class='text-gray-400'>î</b> and <b class='text-gray-400'>ĵ</b>. By dragging <b class='text-red-400'>b₁</b> and <b class='text-blue-400'>b₂</b>, you define a new language—a new basis—to describe the same vector.",
+        explore: "Standard coordinates use the familiar <b class='text-gray-400'><span class='font-mono'>î</span></b> and <b class='text-gray-400'><span class='font-mono'>ĵ</span></b>. By dragging <b class='text-red-400'><span class='font-mono'>b₁</span></b> and <b class='text-blue-400'><span class='font-mono'>b₂</span></b>, you define a new language—a new basis—to describe the same vector.",
         transform: [
             "<b>Start:</b> A vector and a transformation matrix A. Applying A gives a sheared result.",
             "<b>Act 1: Change Basis (P⁻¹)</b> We shift our view to a special basis: the eigenvectors of A. The vector itself doesn't move, but its coordinates change.",
@@ -230,69 +263,83 @@ const ChangeOfBasisVisualizer = () => {
     }
 
     return (
-        <Card className="bg-transparent border-0 shadow-none">
-            <CardContent className="p-0">
-                <div className="bg-black/30 backdrop-blur-xl rounded-xl p-4 md:p-6 shadow-2xl border border-purple-500/20 flex flex-col lg:flex-row gap-6">
-                    <div className="w-full lg:w-[26rem] flex-shrink-0 space-y-4">
-                        <div>
-                            <h1 className="text-2xl font-bold text-cyan-400">A New Perspective</h1>
-                            <h2 className="text-lg text-gray-300">The Story of Basis Change</h2>
-                            <p className="text-gray-400 mt-1 text-sm h-28" dangerouslySetInnerHTML={{ __html: storyText }}></p>
-                        </div>
+        <div className="space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Theory: A New Language for Vectors</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <ChangeOfBasisTheory />
+                </CardContent>
+            </Card>
 
-                        <div id="exploration-panel" className={mode !== 'transform' ? '' : 'space-y-4'}>
-                            <div className="bg-gray-900 p-4 rounded-lg text-center space-y-2">
-                                <h3 className="text-lg font-semibold text-gray-300">{mode === 'explore' ? 'The Same Vector, Two Languages' : 'Live Vector Coordinates'}</h3>
-                                <p className="text-sm text-gray-400">
-                                    {mode === 'explore' 
-                                        ? <>Drag the colored vectors (<b className="text-red-400">b₁</b>, <b className="text-blue-400">b₂</b>) to define your basis. The gray vectors are the standard basis (<b className="text-gray-400">î</b>, <b className="text-gray-400">ĵ</b>).</>
-                                        : 'Watch how coordinates change as the basis (grid) and vector transform.'
-                                    }
-                                </p>
-                                <div className="flex justify-around items-start pt-2">
-                                    <VectorDisplay 
-                                        label={<>Standard Basis (<span className="text-gray-400">î, ĵ</span>)</>}
-                                        coords={standardCoords}
-                                        labelClassName="text-gray-400"
-                                    />
-                                    <VectorDisplay 
-                                        label={<>Your Basis (<span className="text-red-400">b₁</span>, <span className="text-blue-400">b₂</span>)</>}
-                                        coords={customCoords}
-                                        labelClassName="text-cyan-400"
-                                    />
+             <Card>
+                 <CardHeader>
+                    <CardTitle>Interactive Demo</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="bg-background/50 rounded-xl p-4 md:p-6 flex flex-col lg:flex-row gap-6">
+                        <div className="w-full lg:w-[26rem] flex-shrink-0 space-y-4">
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground">A New Perspective</h3>
+                                <h4 className="text-lg text-muted-foreground">The Story of Basis Change</h4>
+                                <p className="text-muted-foreground mt-1 text-sm h-28" dangerouslySetInnerHTML={{ __html: storyText }}></p>
+                            </div>
+
+                            <div id="exploration-panel" className={mode !== 'transform' ? '' : 'space-y-4'}>
+                                <div className="bg-muted p-4 rounded-lg text-center space-y-2">
+                                    <h3 className="text-lg font-semibold text-foreground">{mode === 'explore' ? 'The Same Vector, Two Languages' : 'Live Vector Coordinates'}</h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        {mode === 'explore' 
+                                            ? <>Drag the colored vectors (<b className="text-red-400 font-mono">b₁</b>, <b className="text-blue-400 font-mono">b₂</b>) to define your basis. The gray vectors are the standard basis (<b className="text-gray-400 font-mono">î</b>, <b className="text-gray-400 font-mono">ĵ</b>).</>
+                                            : 'Watch how coordinates change as the basis (grid) and vector transform.'
+                                        }
+                                    </p>
+                                    <div className="flex justify-around items-start pt-2">
+                                        <VectorDisplay 
+                                            label={<>Standard Basis (<span className="text-gray-400 font-mono">î, ĵ</span>)</>}
+                                            coords={standardCoords}
+                                            labelClassName="text-muted-foreground"
+                                        />
+                                        <VectorDisplay 
+                                            label={<>Your Basis (<span className="text-red-400 font-mono">b₁</span>, <span className="text-blue-400 font-mono">b₂</span>)</>}
+                                            coords={customCoords}
+                                            labelClassName="text-primary"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div id="transformation-panel" className={cn(mode !== 'transform' && 'hidden')}>
-                            <div className="bg-gray-900 p-4 rounded-lg">
-                                <h3 className="text-lg font-semibold text-gray-300 mb-2">Transformation Matrix A</h3>
-                                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-center">
-                                    <div><Label className="text-green-400">a: {matrixA.toFixed(1)}</Label><Slider value={[matrixA]} onValueChange={(v) => setMatrixA(v[0])} min={-2} max={3} step={0.1} /></div>
-                                    <div><Label className="text-red-400">b: {matrixB.toFixed(1)}</Label><Slider value={[matrixB]} onValueChange={(v) => setMatrixB(v[0])} min={-2} max={3} step={0.1} /></div>
-                                    <div><Label className="text-green-400">c: {matrixC.toFixed(1)}</Label><Slider value={[matrixC]} onValueChange={(v) => setMatrixC(v[0])} min={-2} max={3} step={0.1} /></div>
-                                    <div><Label className="text-red-400">d: {matrixD.toFixed(1)}</Label><Slider value={[matrixD]} onValueChange={(v) => setMatrixD(v[0])} min={-2} max={3} step={0.1} /></div>
+                            <div id="transformation-panel" className={cn(mode !== 'transform' && 'hidden')}>
+                                <div className="bg-muted p-4 rounded-lg">
+                                    <h3 className="text-lg font-semibold text-foreground mb-2">Transformation Matrix A</h3>
+                                    <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-center">
+                                        <div><Label className="text-green-400">a: {matrixA.toFixed(1)}</Label><Slider value={[matrixA]} onValueChange={(v) => setMatrixA(v[0])} min={-2} max={3} step={0.1} /></div>
+                                        <div><Label className="text-red-400">b: {matrixB.toFixed(1)}</Label><Slider value={[matrixB]} onValueChange={(v) => setMatrixB(v[0])} min={-2} max={3} step={0.1} /></div>
+                                        <div><Label className="text-green-400">c: {matrixC.toFixed(1)}</Label><Slider value={[matrixC]} onValueChange={(v) => setMatrixC(v[0])} min={-2} max={3} step={0.1} /></div>
+                                        <div><Label className="text-red-400">d: {matrixD.toFixed(1)}</Label><Slider value={[matrixD]} onValueChange={(v) => setMatrixD(v[0])} min={-2} max={3} step={0.1} /></div>
+                                    </div>
                                 </div>
                             </div>
+                            
+                            <div className="grid grid-cols-2 gap-2">
+                                <Button onClick={() => setMode('explore')} variant={mode === 'explore' ? 'default' : 'secondary'}>Basis Explorer</Button>
+                                <Button onClick={() => setMode('transform')} variant={mode === 'transform' ? 'default' : 'secondary'}>Transformation Story</Button>
+                            </div>
+                            
+                            <div className={cn("items-center gap-4", mode === 'transform' ? 'flex' : 'hidden')}>
+                                <Button onClick={togglePlay}>
+                                    {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                </Button>
+                                <Slider value={[progress]} onValueChange={(v) => setProgress(v[0])} min={0} max={1} step={0.01} />
+                                <Button onClick={reset} variant="ghost"><RotateCcw className="w-4 h-4"/></Button>
+                            </div>
                         </div>
-                        
-                        <div className="grid grid-cols-2 gap-2">
-                            <Button onClick={() => setMode('explore')} variant={mode === 'explore' ? 'default' : 'secondary'}>Basis Explorer</Button>
-                            <Button onClick={() => setMode('transform')} variant={mode === 'transform' ? 'default' : 'secondary'}>Transformation Story</Button>
-                        </div>
-                        
-                        <div className={cn("items-center gap-4", mode === 'transform' ? 'flex' : 'hidden')}>
-                            <Button onClick={togglePlay}>
-                                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                            </Button>
-                            <Slider value={[progress]} onValueChange={(v) => setProgress(v[0])} min={0} max={1} step={0.01} />
-                            <Button onClick={reset} variant="ghost"><RotateCcw className="w-4 h-4"/></Button>
-                        </div>
+                        <div ref={canvasRef} className="flex-grow min-h-[300px] lg:min-h-[500px] rounded-lg border bg-muted/80 overflow-hidden" />
                     </div>
-                    <div ref={canvasRef} className="flex-grow min-h-[300px] lg:min-h-[500px] rounded-lg border bg-gray-900 overflow-hidden" />
-                </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        </div>
     );
 };
 
