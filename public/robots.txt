@@ -1,5 +1,8 @@
-# https://www.robotstxt.org/robotstxt.html
+# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+#
+# To allow all crawlers to access all content
 User-agent: *
 Allow: /
 
+# Sitemap
 Sitemap: https://quantfinancelab.com/sitemap.xml
