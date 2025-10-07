@@ -32,7 +32,7 @@ This project uses `npm` as the package manager.
     npm run dev
     ```
 
-The application will be available at [http://localhost:9002](http://localhost:9002).
+The application will be available at [http://localhost:9003](http://localhost:9003).
 
 ## Available Scripts
 
