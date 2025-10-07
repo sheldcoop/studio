@@ -1,5 +1,4 @@
 
-
 // src/app/layout.tsx (Correct Version)
 
 import type { Metadata } from 'next';
