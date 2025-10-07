@@ -6,12 +6,12 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 // Your web app's Firebase configuration
 // This is a public configuration and is safe to be exposed on the client side.
 const firebaseConfig = {
-  apiKey: "AIzaSyCOhU2Tg9lj6e_MlqrFQdPEgoZ_Kw8VyWU",
-  authDomain: "studio-9175235396-fa433.firebaseapp.com",
-  projectId: "studio-9175235396-fa433",
-  storageBucket: "studio-9175235396-fa433.appspot.com",
-  messagingSenderId: "544052929385",
-  appId: "1:544052929385:web:17d9d296c4c55ee9ecd3f8"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 
