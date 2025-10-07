@@ -1,3 +1,4 @@
+// src/app/layout.tsx  (Corrected Version)
 
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
@@ -7,8 +8,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
 import { AuthProvider } from '@/app/auth-provider';
 import { OrientationBanner } from '@/components/app/orientation-banner';
-import Script from 'next/script';
-
+import Script from 'next/script'; // This is still needed for Prism.js
 
 const fontBody = Inter({
   subsets: ['latin'],
@@ -70,6 +70,11 @@ export default function RootLayout({
         
         {/* PyScript CSS */}
         <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/css/pyscript.css" />
+
+        {/* --- THIS IS THE FIX --- */}
+        {/* Load PyScript as a module using a standard script tag with 'async' */}
+        {/* This will solve the "await is only valid in modules" SyntaxError */}
+        <script type="module" async src="https://pyscript.net/releases/2023.11.1/core.js"></script>
       </head>
       <body 
         className={cn(
@@ -90,16 +95,14 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
-         {/* Prism.js scripts are loaded lazily, which is fine for them. */}
+
+         {/* Prism.js scripts are fine to load with next/script */}
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js" strategy="lazyOnload" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" strategy="lazyOnload" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" strategy="lazyOnload" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" strategy="lazyOnload" />
         
-        <Script 
-          src="https://pyscript.net/releases/2023.11.1/core.js"
-          strategy="afterInteractive" 
-        />
+        {/* The problematic PyScript <Script> tag has been REMOVED from here */}
       </body>
     </html>
   );
