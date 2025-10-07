@@ -96,7 +96,6 @@ export default function RootLayout({
           {children}
           <OrientationBanner />
         </Providers>
-        {/* Configure the Python environment once for the entire application */}
         <script type="py" src="/python/solver.py" config="/pyscript.json"></script>
       </body>
     </html>
