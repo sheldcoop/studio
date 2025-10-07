@@ -1,9 +1,8 @@
-
 'use client';
 
 import { quantJourney } from '@/lib/site';
 import { AnimatedTagline } from '@/components/app/animated-tagline';
-import { AnimatedJourneyCard, StaticJourneyCard } from '@/components/app/animated-journey-card';
+import { JourneyCard } from '@/components/app/journey-card';
 
 export default function HomePageClient() {
   return (
@@ -16,12 +15,9 @@ export default function HomePageClient() {
         </p>
       </div>
       <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {quantJourney.map((item) => {
-          if (item.animation) {
-             return <AnimatedJourneyCard key={item.id} item={item} />
-          }
-          return <StaticJourneyCard key={item.id} item={item} />
-        })}
+        {quantJourney.map((item) => (
+          <JourneyCard key={item.id} item={item} />
+        ))}
       </div>
     </div>
   );
