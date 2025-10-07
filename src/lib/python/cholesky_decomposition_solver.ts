@@ -18,24 +18,24 @@ L = cholesky(A, lower=True)
 x = cho_solve((L, True), b)
 
 # Prepare the output string
-result_string = f"""--- System Matrices ---
+result_string = """--- System Matrices ---
 Matrix A:
-{A}
+{}
 
 Vector b:
-{b}
+{}
 
 --- Decomposition ---
 Cholesky Factor L:
-{np.round(L, 4)}
+{}
 
 --- Solution ---
 The solution vector x is:
-{np.round(x, 4)}
+{}
 
 --- Verification (A @ x) ---
-{np.round(A @ x, 4)}
-"""
+{}
+""".format(A, b, np.round(L, 4), np.round(x, 4), np.round(A @ x, 4))
 pyscript.write("output-cholesky-solver", result_string)
 `
 

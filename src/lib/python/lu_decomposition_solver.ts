@@ -16,20 +16,20 @@ lu_piv = lu_factor(A)
 x = lu_solve(lu_piv, b)
 
 # Prepare the output string
-result_string = f"""--- System Matrices ---
+result_string = """--- System Matrices ---
 Matrix A:
-{A}
+{}
 
 Vector b:
-{b}
+{}
 
 --- Solution ---
 The solution vector x is:
-{np.round(x, 4)}
+{}
 
 --- Verification (A @ x) ---
-{np.round(A @ x, 4)}
-"""
+{}
+""".format(A, b, np.round(x, 4), np.round(A @ x, 4))
 pyscript.write("output-lu-solver", result_string)
 `
 

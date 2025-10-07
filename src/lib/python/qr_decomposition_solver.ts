@@ -29,19 +29,19 @@ coeffs = np.linalg.solve(R, QTb)
 
 c, m = coeffs[0], coeffs[1]
 
-result_string = f"""--- Matrix A ---
-{A}
+result_string = """--- Matrix A ---
+{}
 
 --- Decomposed Matrices ---
 Q (Orthogonal):
-{np.round(Q, 4)}
+{}
 
 R (Upper Triangular):
-{np.round(R, 4)}
+{}
 
 --- Solution ---
-The best fit line is y = {m:.2f}x + {c:.2f}
-"""
+The best fit line is y = {:.2f}x + {:.2f}
+""".format(A, np.round(Q, 4), np.round(R, 4), m, c)
 
 pyscript.write("output-qr-solver", result_string)
 `
