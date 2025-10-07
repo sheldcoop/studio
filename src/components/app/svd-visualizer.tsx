@@ -14,43 +14,67 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { Button } from '@/components/ui/button';
+import { PyScriptRunner } from './pyscript-runner';
+
 
 function PythonImplementation() {
-    const code = `import numpy as np
+    const code = `
+import numpy as np
 import matplotlib.pyplot as plt
 from skimage import io
 from skimage.color import rgb2gray
+import base64
+from io import BytesIO
 
 # 1. Load and prepare the image
 # Using a URL for a standard test image
 url = 'https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png'
-image_rgb = io.imread(url)
-image_gray = rgb2gray(image_rgb)
+try:
+    image_rgb = io.imread(url)
+    image_gray = rgb2gray(image_rgb)
 
-# 2. Perform SVD
-U, S, VT = np.linalg.svd(image_gray, full_matrices=False)
+    # 2. Perform SVD
+    U, S, VT = np.linalg.svd(image_gray, full_matrices=False)
 
-# 3. Reconstruct the image with a varying number of singular values
-k_values = [10, 30, 50, 100]
-fig, axes = plt.subplots(1, len(k_values) + 1, figsize=(15, 5))
-
-axes[0].imshow(image_gray, cmap='gray')
-axes[0].set_title(f'Original\\nRank: {len(S)}')
-
-for i, k in enumerate(k_values):
-    # Keep only the top k singular values
-    reconstructed_matrix = U[:, :k] @ np.diag(S[:k]) @ VT[:k, :]
+    # 3. Reconstruct the image with a varying number of singular values
+    k_values = [5, 15, 50]
+    fig, axes = plt.subplots(1, len(k_values) + 1, figsize=(12, 4))
     
-    axes[i+1].imshow(reconstructed_matrix, cmap='gray')
-    axes[i+1].set_title(f'k = {k}\\n(Top {k} values)')
+    axes[0].imshow(image_gray, cmap='gray')
+    axes[0].set_title(f'Original\\nRank ≈ {len(S)}')
+    axes[0].axis('off')
 
-plt.tight_layout()
-plt.show()`;
+    for i, k in enumerate(k_values):
+        # Keep only the top k singular values
+        reconstructed_matrix = U[:, :k] @ np.diag(S[:k]) @ VT[:k, :]
+        
+        axes[i+1].imshow(reconstructed_matrix, cmap='gray')
+        axes[i+1].set_title(f'k = {k}')
+        axes[i+1].axis('off')
+
+    plt.tight_layout()
+    
+    # Save the plot to a buffer and encode it
+    buf = BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight')
+    buf.seek(0)
+    img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
+    
+    # Create an HTML img tag
+    img_html = f'<img src="data:image/png;base64,{img_str}" alt="SVD Image Compression" />'
+    pyscript.write("output-svd-solver", img_html)
+
+except Exception as e:
+    pyscript.write("output-svd-solver", f"Error: Could not load image or perform SVD. Please check the network connection.\\n{e}")
+
+`;
 
     return (
-        <div className="relative">
-            <pre className="language-python rounded-lg bg-gray-900/50 text-sm overflow-x-auto p-4 pt-8"><code className="language-python">{code}</code></pre>
-        </div>
+        <PyScriptRunner
+            code={code}
+            outputId="output-svd-solver"
+            packages={['numpy', 'matplotlib', 'scikit-image']}
+        />
     );
 }
 
@@ -161,7 +185,7 @@ const SVDVisualizer = () => {
         <Card>
           <CardHeader>
             <CardTitle>5. Making It Real: Python for Image Compression</CardTitle>
-            <CardDescription>This code will produce a stunning visual, showing how a recognizable image emerges from using just a small fraction of the total singular values.</CardDescription>
+            <CardDescription>This code will download a sample image, compress it using SVD with different numbers of singular values, and display the result. This visually demonstrates the power of low-rank approximation.</CardDescription>
           </CardHeader>
           <CardContent>
             <PythonImplementation />

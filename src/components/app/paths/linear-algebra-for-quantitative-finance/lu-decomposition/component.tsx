@@ -1,3 +1,4 @@
+
 'use client';
 
 import { PageHeader } from "@/components/app/page-header";
@@ -176,7 +177,6 @@ Vector b:
 The solution vector x is:
 {x}
 """
-# Write the result to the HTML element with id="output-lu-solver"
 pyscript.write("output-lu-solver", result_string)
 `;
     return (
