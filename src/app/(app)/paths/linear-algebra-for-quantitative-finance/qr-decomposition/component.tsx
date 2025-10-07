@@ -7,20 +7,81 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BlockMath, InlineMath } from 'react-katex';
 import { ShieldCheck, Cpu, Code, Trophy, HardHat, SwissFranc } from 'lucide-react';
 import 'katex/dist/katex.min.css';
-import { PyScriptRunner } from "@/components/app/pyscript-runner";
+import { Button } from "@/components/ui/button";
 
 function PythonImplementation() {
-    const A = [[1, 0], [1, 1], [1, 2]];
-    const b = [1, 3, 4];
+  const code = `
+import numpy as np
+from pyscript import document
+
+def solve_qr_decomposition(event):
+    A_matrix = np.array([[1, 0], [1, 1], [1, 2]])
+    b_vector = np.array([1, 3, 4])
+    output_element = document.querySelector("#output-qr-solver")
     
-    return (
-      <PyScriptRunner
-        matrix={A}
-        vector={b}
-        operation="qr"
-        outputId="output-qr-solver"
-      />
-    );
+    try:
+        Q, R = np.linalg.qr(A)
+        # Solve Rx = Q.T @ b
+        b_transformed = Q.T @ b
+        x = np.linalg.solve(R, b_transformed)
+        
+        output = "Solving Ax = b using QR Decomposition\\n"
+        output += "---------------------------------------\\n"
+        output += f"Matrix A:\\n{A_matrix}\\n\\n"
+        output += f"Vector b:\\n{b_vector}\\n\\n"
+        output += f"1. Decompose A into Q and R:\\n"
+        output += f"   Q (Orthogonal Matrix):\\n{Q}\\n\\n"
+        output += f"   R (Upper Triangular Matrix):\\n{R}\\n\\n"
+        output += "2. Solve Rx = Q^T * b:\\n"
+        output += f"   Q^T * b = {b_transformed}\\n\\n"
+        output += f"3. Least Squares Solution x:\\n{x}\\n"
+        output_element.innerText = output
+    except Exception as e:
+        output_element.innerText = f"An error occurred: {e}"
+
+# Make the function available to be called from JS
+pyscript.sync.solve_qr_decomposition = solve_qr_decomposition
+`;
+
+  return (
+    <div>
+        <py-script>
+            import numpy as np
+            from pyscript import document
+
+            def solve_qr_decomposition(event):
+                A = np.array([[1, 0], [1, 1], [1, 2]])
+                b = np.array([1, 3, 4])
+                output_element = document.querySelector("#output-qr-solver")
+                
+                try:
+                    Q, R = np.linalg.qr(A)
+                    # Solve Rx = Q.T @ b
+                    b_transformed = Q.T @ b
+                    x = np.linalg.solve(R, b_transformed)
+                    
+                    output = "Solving Ax = b using QR Decomposition\\n\\n"
+                    output += "Matrix A:\\n{}\\n\\n".format(A)
+                    output += "Vector b:\\n{}\\n\\n".format(b)
+                    output += "1. Decompose A into Q and R:\\n"
+                    output += "   Q (Orthogonal Matrix):\\n{}\\n\\n".format(Q)
+                    output += "   R (Upper Triangular Matrix):\\n{}\\n\\n".format(R)
+                    output += "2. Solve Rx = Q^T * b:\\n"
+                    output += "   Q^T * b = {}\\n\\n".format(b_transformed)
+                    output += "3. Least Squares Solution x:\\n{}\\n".format(x)
+                    output_element.innerText = output
+                except Exception as e:
+                    output_element.innerText = "An error occurred: {}".format(e)
+        </py-script>
+        <Button py-click="solve_qr_decomposition">Run Calculation</Button>
+        <Card className="mt-4">
+            <CardHeader><CardTitle>Python Output</CardTitle></CardHeader>
+            <CardContent>
+                <pre id="output-qr-solver" className="min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md"></pre>
+            </CardContent>
+        </Card>
+    </div>
+  );
 }
 
 export default function QRDecompositionPage() {
