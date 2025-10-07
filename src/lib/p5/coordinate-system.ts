@@ -106,7 +106,7 @@ export const drawAxes = (p: p5, scaleFactor: number, color: p5.Color, showLabels
  */
 export const drawGrid = (p: p5, b1: p5.Vector, b2: p5.Vector, gridColor: p5.Color, weight: number, scaleFactor: number) => {
     // Always draw the standard cartesian axes first as a reference.
-    const axisColor = p.color(gridColor.levels[0], gridColor.levels[1], gridColor.levels[2], 50);
+    const axisColor = p.color(p.red(gridColor), p.green(gridColor), p.blue(gridColor), 50);
     drawAxes(p, scaleFactor, axisColor);
     
     if (b1.magSq() < 0.01 || b2.magSq() < 0.01) return;
