@@ -44,17 +44,13 @@ export const linearAlgebraPart2: Topic[] = [
         ]
     }),
      createTopic({
+        id: 'svd-visualizer',
         parent: 'la-module-3',
         title: 'Singular Value Decomposition (SVD)',
         icon: 'Waypoints',
         description: "The master decomposition for any matrix.",
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'svd-intro', title: 'Introduction to SVD' },
-            { id: 'svd-calculation', title: 'Calculating SVD' },
-            { id: 'svd-applications', title: 'Applications of SVD' },
-        ]
     }),
 
     // --- Module 4 ---

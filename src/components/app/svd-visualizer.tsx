@@ -2,269 +2,173 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import p5 from 'p5';
-import { Play, Pause, RotateCcw, Sliders, ArrowLeft, ArrowRight } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
+import { PageHeader } from '@/components/app/page-header';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { BlockMath, InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 import { Button } from '@/components/ui/button';
-import { drawGrid, drawVector, easeInOutCubic, drawTransformedCircle } from '@/lib/p5';
 
-const SVDVisualizer = () => {
-    const canvasRef = useRef<HTMLDivElement>(null);
-    const sketchRef = useRef<p5 | null>(null);
+function PythonImplementation() {
+    const code = `import numpy as np
+import matplotlib.pyplot as plt
+from skimage import io
+from skimage.color import rgb2gray
 
-    // --- State Management ---
-    const [mode, setMode] = useState<'geometric' | 'steps'>('geometric');
-    const [currentStep, setCurrentStep] = useState(0); // 0=original, 1=U, 2=Σ, 3=V
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [matrix, setMatrix] = useState({ a: 1.5, b: 0.5, c: 0.5, d: 1.0 });
-    const [svdData, setSvdData] = useState<any>(null);
-    const [showControls, setShowControls] = useState(false);
-    const animationFrameId = useRef<number | null>(null);
+# 1. Load and prepare the image
+# Using a URL for a standard test image
+url = 'https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png'
+image_rgb = io.imread(url)
+image_gray = rgb2gray(image_rgb)
+
+# 2. Perform SVD
+U, S, VT = np.linalg.svd(image_gray, full_matrices=False)
+
+# 3. Reconstruct the image with a varying number of singular values
+k_values = [10, 30, 50, 100]
+fig, axes = plt.subplots(1, len(k_values) + 1, figsize=(15, 5))
+
+axes[0].imshow(image_gray, cmap='gray')
+axes[0].set_title(f'Original\\nRank: {len(S)}')
+
+for i, k in enumerate(k_values):
+    # Keep only the top k singular values
+    reconstructed_matrix = U[:, :k] @ np.diag(S[:k]) @ VT[:k, :]
     
-    const stepDescriptions = [
-        "Start: We begin with a standard grid and a unit circle.",
-        "Step 1: Rotate with Vᵀ. The first rotation aligns the space so the 'stretch' directions are on the axes.",
-        "Step 2: Scale with Σ. A pure stretch along the new axes by the singular values (σ₁ and σ₂).",
-        "Step 3: Rotate with U. The final rotation aligns the stretched space to its final destination."
-    ];
+    axes[i+1].imshow(reconstructed_matrix, cmap='gray')
+    axes[i+1].set_title(f'k = {k}\\n(Top {k} values)')
 
-    // --- SVD Calculation ---
-    useEffect(() => {
-        const { a, b, c, d } = matrix;
-        const ata_11 = a * a + c * c;
-        const ata_12 = a * b + c * d;
-        const ata_22 = b * b + d * d;
-        const trace = ata_11 + ata_22;
-        const det = ata_11 * ata_22 - ata_12 * ata_12;
-        const discriminant = Math.sqrt(Math.max(0, trace * trace - 4 * det));
-        const lambda1 = (trace + discriminant) / 2;
-        const lambda2 = (trace - discriminant) / 2;
-        const s1 = Math.sqrt(lambda1);
-        const s2 = Math.sqrt(lambda2);
-        let v1x = (Math.abs(ata_12) < 0.001) ? 1 : lambda1 - ata_22;
-        let v1y = (Math.abs(ata_12) < 0.001) ? 0 : ata_12;
-        const len1 = Math.sqrt(v1x * v1x + v1y * v1y);
-        if (len1 > 0.001) { v1x /= len1; v1y /= len1; }
-        let v2x = -v1y; let v2y = v1x;
-        let u1x = 0, u1y = 0, u2x = 0, u2y = 0;
-        if (s1 > 0.001) { u1x = (a * v1x + b * v1y) / s1; u1y = (c * v1x + d * v1y) / s1; }
-        if (s2 > 0.001) { u2x = (a * v2x + b * v2y) / s2; u2y = (c * v2x + d * v2y) / s2; }
-        if (u1x * u2y - u1y * u2x < 0) { u2x *= -1; u2y *= -1; }
-        setSvdData({ U: { u1: { x: u1x, y: u1y }, u2: { x: u2x, y: u2y } }, Sigma: { s1, s2 }, V: { v1: { x: v1x, y: v1y }, v2: { x: v2x, y: v2y } } });
-    }, [matrix]);
-
-    // --- p5.js Sketch ---
-    useEffect(() => {
-        if (sketchRef.current) {
-            sketchRef.current.remove();
-        }
-        if (!canvasRef.current) return;
-
-        const sketch = (p: p5) => {
-            const state = {
-                progress: 0,
-                mode: 'geometric' as 'geometric' | 'steps',
-                currentStep: 0,
-                matrix: { a: 1.5, b: 0.5, c: 0.5, d: 1.0 },
-                svdData: null as any
-            };
-            
-            (p as any).updateWithProps = (props: any) => {
-                state.progress = props.progress;
-                state.mode = props.mode;
-                state.currentStep = props.currentStep;
-                state.matrix = props.matrix;
-                state.svdData = props.svdData;
-            }
-
-            p.setup = () => {
-                p.createCanvas(canvasRef.current!.offsetWidth, 400).parent(canvasRef.current!);
-            };
-
-            p.draw = () => {
-                const {progress, mode, currentStep, matrix, svdData} = state;
-
-                if (!svdData) return;
-
-                const t = easeInOutCubic(progress);
-                const scaleFactor = p.min(p.width, p.height) / 6;
-
-                p.background(17, 24, 39);
-                p.translate(p.width / 2, p.height / 2);
-                p.scale(1, -1);
-
-                const applyMatrix = (x: number, y: number, m11: number, m12: number, m21: number, m22: number) => ({ x: m11 * x + m12 * y, y: m21 * x + m22 * y });
-                const lerpPoint = (p1: { x: number, y: number }, p2: { x: number, y: number }, t: number) => ({ x: p.lerp(p1.x, p2.x, t), y: p.lerp(p1.y, p2.y, t) });
-
-                let currentTransform: (x: number, y: number) => { x: number, y: number };
-
-                if (mode === 'geometric') {
-                    currentTransform = (x, y) => {
-                        const final = applyMatrix(x, y, matrix.a, matrix.b, matrix.c, matrix.d);
-                        return lerpPoint({ x, y }, final, t);
-                    };
-                } else { // steps mode
-                    switch (currentStep) {
-                        case 1:
-                            currentTransform = (x, y) => lerpPoint({ x, y }, applyMatrix(x, y, svdData.V.v1.x, svdData.V.v2.x, svdData.V.v1.y, svdData.V.v2.y), t);
-                            break;
-                        case 2:
-                            currentTransform = (x, y) => {
-                                const rotated = applyMatrix(x, y, svdData.V.v1.x, svdData.V.v2.x, svdData.V.v1.y, svdData.V.v2.y);
-                                return lerpPoint(rotated, applyMatrix(rotated.x, rotated.y, svdData.Sigma.s1, 0, 0, svdData.Sigma.s2), t);
-                            };
-                            break;
-                        case 3:
-                            currentTransform = (x, y) => {
-                                const rotatedV = applyMatrix(x, y, svdData.V.v1.x, svdData.V.v2.x, svdData.V.v1.y, svdData.V.v2.y);
-                                const scaled = { x: rotatedV.x * svdData.Sigma.s1, y: rotatedV.y * svdData.Sigma.s2 };
-                                return lerpPoint(scaled, applyMatrix(scaled.x, scaled.y, svdData.U.u1.x, svdData.U.u2.x, svdData.U.u1.y, svdData.U.u2.y), t);
-                            };
-                            break;
-                        default:
-                            currentTransform = (x, y) => ({ x, y });
-                            break;
-                    }
-                }
-                
-                // Extract transformed basis vectors to use with the shared drawGrid helper
-                const b1 = p.createVector(currentTransform(1, 0).x, currentTransform(1, 0).y);
-                const b2 = p.createVector(currentTransform(0, 1).x, currentTransform(0, 1).y);
-                drawGrid(p, b1, b2, p.color(72, 144, 226, 50), 1, scaleFactor);
-                drawTransformedCircle(p, currentTransform, scaleFactor, p.color('#ffd93d'));
-
-                drawVector(p, b1, scaleFactor, p.color('#ff6b6b'), 'î', 4);
-                drawVector(p, b2, scaleFactor, p.color('#4ecdc4'), 'ĵ', 4);
-            };
-
-            p.windowResized = () => {
-                if (canvasRef.current) p.resizeCanvas(canvasRef.current.offsetWidth, 400);
-            };
-        };
-
-        sketchRef.current = new p5(sketch, canvasRef.current!);
-        return () => sketchRef.current?.remove();
-    }, []);
-
-    useEffect(() => {
-        if(sketchRef.current && (sketchRef.current as any).updateWithProps) {
-            (sketchRef.current as any).updateWithProps({ progress, mode, currentStep, matrix, svdData });
-        }
-    }, [progress, mode, currentStep, matrix, svdData]);
-
-    useEffect(() => {
-        if (isPlaying) {
-            const animate = () => {
-                setProgress(prev => {
-                    const next = prev + 0.005;
-                    if (next >= 1) { setIsPlaying(false); return 1; }
-                    return next;
-                });
-                animationFrameId.current = requestAnimationFrame(animate);
-            };
-            animationFrameId.current = requestAnimationFrame(animate);
-        }
-        return () => { if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current); };
-    }, [isPlaying]);
-
-    const resetAnimation = () => { setIsPlaying(false); setProgress(0); };
-    const togglePlay = () => { if (progress >= 1) setProgress(0); setIsPlaying(!isPlaying); };
-
-    const handleUIModeChange = (newMode: 'geometric' | 'steps') => {
-        setMode(newMode);
-        if (newMode === 'steps') setCurrentStep(0);
-        resetAnimation();
-    };
-
-    const handleStepChange = (direction: number) => {
-        let newStep = currentStep + direction;
-        newStep = Math.max(0, Math.min(3, newStep));
-        setCurrentStep(newStep);
-        resetAnimation();
-    };
-    
-    const renderSVDVectors = (key: 'U' | 'V') => {
-        if (!svdData) return '';
-        const data = svdData[key];
-        const v1 = key === 'U' ? data.u1 : data.v1;
-        const v2 = key === 'U' ? data.u2 : data.v2;
-        const v1_label = key === 'U' ? 'u₁' : 'v₁';
-        const v2_label = key === 'U' ? 'u₂' : 'v₂';
-    
-        return `${v1_label}=(${v1.x.toFixed(2)},${v1.y.toFixed(2)}) ${v2_label}=(${v2.x.toFixed(2)},${v2.y.toFixed(2)})`;
-    };
-
+plt.tight_layout()
+plt.show()`;
 
     return (
-        <Card className="bg-transparent border-0 shadow-none">
-            <CardContent className="p-0">
-                <div className="bg-black/30 backdrop-blur-xl rounded-xl p-4 md:p-6 shadow-2xl border border-purple-500/20">
-                    <div ref={canvasRef} className="w-full h-auto aspect-[5/3] rounded-xl shadow-2xl bg-gray-900/50 mb-4" />
-                    
-                    <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 p-4 rounded-xl border border-indigo-400/30 mb-4">
-                        <h3 className="text-lg font-bold text-white mb-1">
-                             {mode === 'geometric' ? "The Geometric Picture" : stepDescriptions[currentStep]}
-                        </h3>
-                         <p className="text-purple-100 leading-relaxed text-sm">
-                            {mode === 'geometric' ? "Watch the unit circle transform into an ellipse! SVD decomposes this complex transformation into simple rotations and stretches." : stepDescriptions[currentStep]}
-                        </p>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2 md:gap-3 mb-4">
-                        <Button onClick={() => handleUIModeChange('geometric')} variant={mode === 'geometric' ? 'default' : 'secondary'}>Geometric View</Button>
-                        <Button onClick={() => handleUIModeChange('steps')} variant={mode === 'steps' ? 'default' : 'secondary'}>Step-by-Step</Button>
-                        <Button onClick={() => setShowControls(!showControls)} variant="outline"><Sliders className="w-4 h-4 mr-2" />Controls</Button>
-                    </div>
+        <div className="relative">
+            <pre className="language-python rounded-lg bg-gray-900/50 text-sm overflow-x-auto p-4 pt-8"><code className="language-python">{code}</code></pre>
+        </div>
+    );
+}
 
-                    {showControls && (
-                        <div className="bg-black/40 p-4 rounded-xl mb-4 border border-cyan-500/30">
-                            <h4 className="text-white font-bold mb-3 text-base">Adjust Matrix A</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {(['a', 'b', 'c', 'd'] as const).map(key => (
-                                    <div key={key}>
-                                        <Label htmlFor={key} className="text-purple-200 text-xs block mb-1">{key}: {matrix[key].toFixed(2)}</Label>
-                                        <Slider id={key} min={-2} max={2} step={0.1} value={[matrix[key]]} onValueChange={(v) => setMatrix(prev => ({...prev, [key]: v[0]}))} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                
-                    <div className="flex items-center gap-2 md:gap-3">
-                        {mode === 'steps' && <Button size="icon" onClick={() => handleStepChange(-1)} disabled={currentStep === 0}><ArrowLeft/></Button>}
-                        <Button onClick={togglePlay} className="px-4 py-3">
-                            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                        </Button>
-                        <Slider value={[progress]} min={0} max={1} step={0.01} onValueChange={(v) => {setProgress(v[0]); setIsPlaying(false);}} />
-                        {mode === 'steps' && <Button size="icon" onClick={() => handleStepChange(1)} disabled={currentStep === 3}><ArrowRight/></Button>}
-                    </div>
+const SVDVisualizer = () => {
+  return (
+    <>
+      <PageHeader
+        title="The Ultimate Guide to Singular Value Decomposition (SVD)"
+        description="The master decomposition that reveals the deep anatomy of any matrix transformation."
+        variant="aligned-left"
+      />
+      <div className="mx-auto max-w-5xl space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>1. The Intuition: The Anatomy of Any Transformation</CardTitle>
+          </CardHeader>
+          <CardContent className="prose prose-invert max-w-none text-foreground/90 space-y-4">
+            <p>
+              Imagine any linear transformation as a single, complex action. It
+              might stretch, shrink, shear, and rotate space all at once. SVD
+              is like a magical MRI that reveals the deep, simple anatomy
+              hidden within that complex action.
+            </p>
+            <p>
+              It tells us that{' '}
+              <strong>
+                every single linear transformation, no matter how complicated,
+                can be broken down into three fundamental, pure actions:
+              </strong>
+            </p>
+            <div className="text-center">
+                <BlockMath math="A = U \Sigma V^T" />
+            </div>
+            <ol className="list-decimal pl-6">
+              <li>
+                <strong>A Rotation (or reflection):</strong> ($V^T$)
+              </li>
+              <li>
+                <strong>A Scaling:</strong> ($\Sigma$)
+              </li>
+              <li>
+                <strong>Another Rotation (or reflection):</strong> ($U$)
+              </li>
+            </ol>
+          </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>2. The Components: The Three Fundamental Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="prose prose-invert max-w-none text-foreground/90 space-y-4">
+                 <div>
+                    <h4 className="font-semibold text-primary">Vᵀ: The "Input" Rotation Matrix</h4>
+                    <p>This is an orthogonal matrix. Its rows (the columns of V) are called the <strong>right singular vectors</strong>. Its job is to find the perfect set of perpendicular axes in your input space that are the most "interesting" to the transformation.</p>
                 </div>
-            
-                {svdData && (
-                    <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {(['U', 'Sigma', 'V'] as const).map(key => (
-                            <Card key={key} className="bg-background/50">
-                                <CardHeader className="p-3">
-                                    <CardTitle className="text-base">{key === 'U' ? 'U (Left Vectors)' : key === 'Sigma' ? 'Σ (Singular Values)' : 'V (Right Vectors)'}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-3 pt-0 text-xs font-mono text-muted-foreground">
-                                   {key === 'Sigma'
-                                        ? `σ₁=${svdData.Sigma.s1.toFixed(3)}, σ₂=${svdData.Sigma.s2.toFixed(3)}`
-                                        : renderSVDVectors(key)
-                                    }
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                )}
+                 <div>
+                    <h4 className="font-semibold text-primary">Σ (Sigma): The "Stretching" Matrix</h4>
+                    <p>This is a diagonal matrix. The values on its diagonal, $\sigma_1, \sigma_2, ...$, are the <strong>singular values</strong>. It represents a pure scaling. The singular values are always non-negative and sorted in descending order: $\sigma_1 \ge \sigma_2 \ge \sigma_3 \ge ... \ge 0$.</p>
+                </div>
+                <div>
+                    <h4 className="font-semibold text-primary">U: The "Output" Rotation Matrix</h4>
+                    <p>This is another orthogonal matrix. Its columns are the <strong>left singular vectors</strong>. It takes the stretched axes and rotates them into their final orientation in the output space.</p>
+                </div>
             </CardContent>
         </Card>
-    );
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>3. The "Why": SVD as an Analytical Super-Tool</CardTitle>
+          </CardHeader>
+          <CardContent className="prose prose-invert max-w-none text-foreground/90 space-y-4">
+            <p>While SVD can be used to solve systems of equations, its true power lies in **analyzing and approximating data.**</p>
+            <h5 className="font-semibold not-prose">Dimensionality Reduction (PCA)</h5>
+            <p>This is the #1 application. The sorted singular values in Σ tell you how important each dimension is. By keeping only the top singular values and their vectors, you get the best possible lower-dimensional approximation of your data. This is the core of Principal Component Analysis (PCA).</p>
+            <h5 className="font-semibold not-prose">Image Compression</h5>
+            <p>A beautiful example of low-rank approximation. By performing SVD on an image matrix and keeping only the top, say, 30 singular values, you can reconstruct a good version of the image with a fraction of the data.</p>
+            <h5 className="font-semibold not-prose">Noise Reduction</h5>
+            <p>In experimental data, small singular values often correspond to noise. Setting these to zero before reconstructing the matrix can effectively "denoise" your data.</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>4. The Showdown: The Supreme Court of Decompositions</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Feature</TableHead>
+                            <TableHead>SVD</TableHead>
+                            <TableHead>QR</TableHead>
+                            <TableHead>LU / Cholesky</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow><TableCell className="font-semibold">Generality</TableCell><TableCell className="font-bold text-green-400">Works on ANY matrix.</TableCell><TableCell>Any m x n matrix.</TableCell><TableCell>Square (and specific types).</TableCell></TableRow>
+                        <TableRow><TableCell className="font-semibold">Primary Use</TableCell><TableCell className="font-bold text-green-400">Analysis & Approximation.</TableCell><TableCell>Solving least-squares.</TableCell><TableCell>Solving square systems `Ax=b`.</TableCell></TableRow>
+                        <TableRow><TableCell className="font-semibold">Output Insight</TableCell><TableCell className="font-bold text-green-400">The most insightful.</TableCell><TableCell>Good. Provides stable basis.</TableCell><TableCell>Limited. Purely computational.</TableCell></TableRow>
+                        <TableRow><TableCell className="font-semibold">Speed</TableCell><TableCell className="font-bold text-red-400">Slowest.</TableCell><TableCell>Medium.</TableCell><TableCell>Fastest.</TableCell></TableRow>
+                         <TableRow><TableCell className="font-semibold">Verdict</TableCell><TableCell className="font-bold text-green-400">The ultimate tool for understanding structure.</TableCell><TableCell>The workhorse for data fitting.</TableCell><TableCell>The high-speed engine for solving.</TableCell></TableRow>
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>5. Making It Real: Python for Image Compression</CardTitle>
+            <CardDescription>This code will produce a stunning visual, showing how a recognizable image emerges from using just a small fraction of the total singular values.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PythonImplementation />
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  );
 };
-
 export default SVDVisualizer;
-
-    
