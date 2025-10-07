@@ -1,5 +1,4 @@
 
-export const qrDecompositionSolverCode = `
 import numpy as np
 
 # Let's solve a simple least-squares problem
