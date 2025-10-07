@@ -1,101 +1,52 @@
 
 import numpy as np
-from scipy.linalg import cholesky, cho_solve, lu_solve, lu_factor
-from pyscript.ffi import to_py
-
-def solve_cholesky(A_js, b_js):
-    """Solves Ax = b using Cholesky decomposition."""
-    try:
-        A = np.array(to_py(A_js))
-        b = np.array(to_py(b_js))
-        
-        L = cholesky(A, lower=True)
-        x = cho_solve((L, True), b)
-        
-        return f"""--- Cholesky Decomposition ---
-Matrix A:
-{A}
-
-Vector b:
-{b}
-
---- Decomposition ---
-Factor L:
-{np.round(L, 4)}
-
---- Solution ---
-Solution x: {np.round(x, 4)}
-Verification (A @ x): {np.round(A @ x, 4)}
-"""
-    except Exception as e:
-        return f"Error in Cholesky decomposition: {e}"
-
-def solve_lu(A_js, b_js):
-    """Solves Ax = b using LU decomposition."""
-    try:
-        A = np.array(to_py(A_js))
-        b = np.array(to_py(b_js))
-
-        lu_piv = lu_factor(A)
-        x = lu_solve(lu_piv, b)
-
-        return f"""--- LU Decomposition ---
-Matrix A:
-{A}
-
-Vector b:
-{b}
-
---- Solution ---
-Solution x: {np.round(x, 4)}
-Verification (A @ x): {np.round(A @ x, 4)}
-"""
-    except Exception as e:
-        return f"Error in LU decomposition: {e}"
-
-def solve_qr(A_js, b_js):
-    """Solves Ax = b using QR decomposition for least-squares."""
-    try:
-        A = np.array(to_py(A_js))
-        b = np.array(to_py(b_js))
-
-        Q, R = np.linalg.qr(A)
-        QTb = Q.T @ b
-        coeffs = np.linalg.solve(R, QTb)
-        
-        c, m = coeffs[0], coeffs[1]
-
-        return f"""--- QR Decomposition (Least Squares) ---
-Matrix A (for y=mx+c):
-{A}
-
-Vector b:
-{b}
-
---- Decomposed Matrices ---
-Q (Orthogonal):
-{np.round(Q, 4)}
-
-R (Upper Triangular):
-{np.round(R, 4)}
-
---- Solution ---
-The best fit line is y = {m:.2f}x + {c:.2f}
-"""
-    except Exception as e:
-        return f"Error in QR decomposition: {e}"
+from scipy.linalg import cholesky, lu_solve, lu_factor, qr, solve_triangular
+from pyscript import document
 
 def solve_decomposition(matrix_js, vector_js, operation):
-    """Main function to be called from JavaScript."""
-    if operation == 'cholesky':
-        return solve_cholesky(matrix_js, vector_js)
-    elif operation == 'lu':
-        return solve_lu(matrix_js, vector_js)
-    elif operation == 'qr':
-        return solve_qr(matrix_js, vector_js)
-    else:
-        return f"Unknown operation: {operation}"
+    """
+    Solves a linear system based on the specified decomposition method.
+    Writes the output to a designated HTML element.
+    """
+    output_id = f"output-{operation}-solver"
+    output_div = document.getElementById(output_id)
+    
+    try:
+        # Convert JavaScript proxy objects to Python lists/arrays
+        # .to_py() is not needed, numpy can handle the JS proxy directly
+        A = np.array(matrix_js)
+        if vector_js:
+            b = np.array(vector_js)
+        else:
+            b = None
+        
+        result = ""
+        
+        if operation == 'cholesky':
+            L = cholesky(A, lower=True)
+            y = solve_triangular(L, b, lower=True)
+            x = solve_triangular(L.T, y)
+            result = f"Cholesky Factor L:\n{L}\n\nSolution x:\n{x}"
+        
+        elif operation == 'lu':
+            lu, piv = lu_factor(A)
+            x = lu_solve((lu, piv), b)
+            result = f"LU Factors (packed):\n{lu}\n\nPivot indices:\n{piv}\n\nSolution x:\n{x}"
+        
+        elif operation == 'qr':
+            Q, R = qr(A)
+            # For Ax = b, we solve Rx = Q^T b
+            y = np.dot(Q.T, b)
+            x = solve_triangular(R, y)
+            result = f"Orthogonal Matrix Q:\n{Q}\n\nUpper Triangular R:\n{R}\n\nSolution x:\n{x}"
 
-# Make the function available in the global scope for JS to call
-from pyscript import __all__
-__all__.append('solve_decomposition')
+        elif operation == 'svd':
+            result = "SVD operation is for analysis, not direct solving. Please use another decomposition for solving Ax=b."
+            # In a real scenario for SVD you might do image compression or analysis,
+            # which would require a different setup. This is a placeholder.
+
+        output_div.innerText = result
+
+    except Exception as e:
+        output_div.innerText = f"An error occurred:\n{e}"
+
