@@ -39,14 +39,13 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
   const { toast } = useToast();
 
   // --- THIS IS THE FIX (PART 2) ---
-  // This effect now listens for the custom event fired by the layout.
+  // This effect now uses polling to wait for the PyScript environment.
   useEffect(() => {
     const initialize = async () => {
-      console.log("PyScriptRunner: Initializing...");
       setStatus('loading_packages');
       try {
-        if (!window.pyscript) {
-          throw new Error("PyScript object not found on window.");
+        if (!window.pyscript?.interpreter) {
+          throw new Error("PyScript interpreter not found on window.");
         }
         if (packages && packages.length > 0) {
           console.log(`PyScriptRunner: Loading packages: ${packages.join(', ')}`);
@@ -60,21 +59,17 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
         setStatus('error');
       }
     };
+    
+    // Poll for the pyscript interpreter to be ready.
+    const intervalId = setInterval(() => {
+        if (window.pyscript?.interpreter) {
+            clearInterval(intervalId);
+            initialize();
+        }
+    }, 100);
 
-    // Check if the script has already loaded and fired the event before this component mounted.
-    if (window.pyscript?.interpreter) {
-      console.log("PyScriptRunner: PyScript already initialized. Running setup.");
-      initialize();
-    } else {
-      console.log("PyScriptRunner: Waiting for 'pyscript-loaded' event from layout.");
-      // If not, add an event listener for our custom event.
-      document.addEventListener('pyscript-loaded', initialize);
-    }
-
-    // Crucial cleanup function to remove the listener when the component unmounts.
-    return () => {
-      document.removeEventListener('pyscript-loaded', initialize);
-    };
+    // Cleanup function to clear the interval if the component unmounts.
+    return () => clearInterval(intervalId);
   }, [packages]);
 
   // Effect for syntax highlighting
@@ -102,18 +97,28 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
       window.pyscript.interpreter.globals.set("pyscript", {
         write: (id: string, value: any) => {
           if (id === outputId) {
-            setOutputContent(String(value));
+             // Use a function with setOutputContent to get the previous state
+             // and append to it, rather than replacing it.
+            setOutputContent(prev => 
+                prev ? <>{prev}{String(value)}</> : String(value)
+            );
           }
         },
       });
+      
+      // Before running, clear previous output if it exists from a prior run.
+      // We check if it's not the initial "Running..." message.
+      if (typeof outputContent !== 'object') {
+          setOutputContent(null);
+      }
 
       await window.pyscript.run(code);
       
-      setStatus('ready');
-      // If the Python code ran but didn't call pyscript.write, clear the "Running..." message.
-      if (outputContent && typeof outputContent === 'object' && 'props' in outputContent && outputContent.props.children[1] === 'Running...') {
-          setOutputContent(null);
+      // After running, if no new output was generated, clear the "Running..." message.
+      if (status === 'running') {
+        setOutputContent(null);
       }
+      setStatus('ready');
     } catch (e: any) {
       const errorMessage = e.message || String(e);
       setError(errorMessage);
