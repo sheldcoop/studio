@@ -80,9 +80,12 @@ export default function RootLayout({
       >
       
         <py-config>
-          packages = ["numpy", "scipy", "matplotlib", "scikit-image"]
-          terminal = false
+          {`
+            packages = ["numpy", "scipy", "matplotlib", "scikit-image"]
+            terminal = false
+          `}
         </py-config>
+
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -101,7 +104,6 @@ export default function RootLayout({
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" strategy="lazyOnload" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" strategy="lazyOnload" />
         
-        {/* Load PyScript using the Next.js Script component with the 'afterInteractive' strategy. */}
         <Script 
           src="https://pyscript.net/releases/2023.11.1/core.js"
           strategy="afterInteractive" 
