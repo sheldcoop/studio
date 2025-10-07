@@ -88,24 +88,14 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        {/* External CSS files are safe to keep in the head */}
         <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/css/pyscript.css" />
-
-        {/* Load PyScript using a standard script tag. This avoids Next.js server/client prop issues. */}
-        <script defer src="https://pyscript.net/releases/2023.11.1/core.js"></script>
       </head>
       <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
         <Providers>
           {children}
           <OrientationBanner />
         </Providers>
-        
-        {/* Prism.js scripts can be loaded here at the end of the body */}
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
       </body>
     </html>
   );
