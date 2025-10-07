@@ -171,7 +171,9 @@ x_fast = lu_solve(lu_piv, b)
 print("Solution x:", x)
 # Expected Output: [1. 2. 1.]`;
     return (
-        <pre className="language-python rounded-lg bg-gray-900/50 text-sm overflow-x-auto"><code className="language-python">{code}</code></pre>
+        <div className="relative">
+            <pre className="language-python rounded-lg bg-gray-900/50 text-sm overflow-x-auto p-4 pt-8"><code className="language-python">{code}</code></pre>
+        </div>
     );
 }
 
