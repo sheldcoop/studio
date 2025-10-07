@@ -7,51 +7,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BlockMath, InlineMath } from 'react-katex';
 import { ShieldCheck, Cpu, Code, Trophy, HardHat, SwissFranc } from 'lucide-react';
 import 'katex/dist/katex.min.css';
-import { PyScriptRunner } from "@/components/app/pyscript-runner";
-
-
-function PythonImplementation() {
-  const code = `
-import numpy as np
-from pyscript import display
-
-# --- QR Decomposition for Least Squares ---
-# Overdetermined system Ax = b
-A = np.array([[1, 2], [0, 1], [1, 0]])
-b = np.array([1, 3, 4])
-
-output = "<h3>Solving Ax = b for the least-squares solution using QR Decomposition</h3>"
-output += f"<p><b>Matrix A:</b><br>{A}</p>"
-output += f"<p><b>Vector b:</b><br>{b}</p>"
-
-# 1. Decompose A into Q and R
-Q, R = np.linalg.qr(A)
-output += "<h4>1. Decompose A into Q and R:</h4>"
-output += f"<p><b>Q (Orthogonal Matrix):</b><br>{np.round(Q, 4)}</p>"
-output += f"<p><b>R (Upper Triangular Matrix):</b><br>{np.round(R, 4)}</p>"
-
-# 2. Transform b into Q.T * b
-# The equation Rx = Q.T*b is equivalent to the normal equations A.T*Ax = A.T*b
-b_transformed = Q.T @ b
-output += f"<h4>2. Solve Rx = Q<sup>T</sup>b:</h4>"
-output += f"<p><b>Q<sup>T</sup>b =</b> {np.round(b_transformed, 4)}</p>"
-
-# 3. Solve the simple upper triangular system Rx = (Q.T*b) for x
-x = np.linalg.solve(R, b_transformed)
-output += f"<h4>3. Least Squares Solution x̂:</h4><p><b>x̂ =</b> {np.round(x, 4)}</p>"
-
-display(output, target="output-qr-solver")
-`;
-
-  return (
-    <PyScriptRunner
-      code={code}
-      outputId="output-qr-solver"
-      title="QR Decomposition with Python"
-    />
-  );
-}
-
 
 export default function QRDecompositionPage() {
   return (
@@ -160,8 +115,8 @@ export default function QRDecompositionPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> 7. Making It Real: Python Implementation</CardTitle>
             </CardHeader>
-            <CardContent>
-                <PythonImplementation />
+            <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
+                <p className="text-muted-foreground">Python implementation coming soon.</p>
             </CardContent>
         </Card>
       </div>
