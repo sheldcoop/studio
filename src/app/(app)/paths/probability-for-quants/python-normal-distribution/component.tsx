@@ -1,4 +1,3 @@
-
 'use client';
 
 import { PageHeader } from "@/components/app/page-header";
@@ -6,18 +5,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { PyScriptRunner } from "@/components/app/pyscript-runner";
 import { Code } from "lucide-react";
 
+// The Python script is now more robust.
+// It clears the previous figure to prevent plots from overlapping on subsequent runs.
 const pythonCode = `
 import matplotlib.pyplot as plt
 import numpy as np
 from pyscript import display
 
+# --- Create the plot ---
+# Clear the figure to ensure we start fresh on each run
+plt.clf()
+
 # Define parameters for the normal distribution
-mu = 0  # mean
-sigma = 1  # standard deviation
+mu = 0      # mean
+sigma = 1   # standard deviation
 x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
 pdf = (1/(sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mu)/sigma)**2)
 
-# Create the plot
+# Create the plot elements
 fig, ax = plt.subplots(figsize=(8, 4))
 ax.plot(x, pdf, label=f"μ={mu}, σ={sigma}")
 ax.set_title("Normal Distribution PDF")
@@ -27,6 +32,7 @@ ax.grid(True)
 ax.legend()
 
 # Display the plot in the specified HTML element
+# This is the crucial part that targets the output div
 display(fig, target="normal-dist-output")
 `;
 
