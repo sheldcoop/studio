@@ -20,11 +20,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <Toaster />
 
       {/* External Scripts are managed here, in a Client Component */}
-      <Script
-        src="https://pyscript.net/releases/2023.11.1/core.js"
-        strategy="afterInteractive"
-      />
-      
       <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js" strategy="afterInteractive" />
       <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" strategy="afterInteractive" />
       <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" strategy="afterInteractive" />

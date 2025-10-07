@@ -1,5 +1,4 @@
 
-
 // src/app/layout.tsx (Correct Version)
 
 import type { Metadata } from 'next';
@@ -8,6 +7,7 @@ import { cn } from '@/lib/utils';
 import './globals.css';
 import { OrientationBanner } from '@/components/app/orientation-banner';
 import { Providers } from '@/components/app/providers';
+import Script from 'next/script';
 
 const fontBody = Inter({ subsets: ['latin'], variable: '--font-body' });
 const fontHeadline = Space_Grotesk({ subsets: ['latin'], variable: '--font-headline' });
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     shortcut: '/favicon-16x16.png',
     apple: '/apple-touch-icon.png',
   },
-  manifest: `${siteUrl}/site.webmanifest`,
+  // manifest: `${siteUrl}/site.webmanifest`, // Removed to prevent network error
 };
 
 const organizationSchema = {
@@ -91,14 +91,16 @@ export default function RootLayout({
         />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/css/pyscript.css" />
-        {/* THIS IS THE FIX: Added type="module" */}
-        <script type="module" src="https://pyscript.net/releases/2023.11.1/core.js"></script>
       </head>
       <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
         <Providers>
           {children}
           <OrientationBanner />
         </Providers>
+         <Script
+          src="https://pyscript.net/releases/2023.11.1/core.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
