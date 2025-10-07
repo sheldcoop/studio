@@ -81,22 +81,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      {`<!DOCTYPE html>`}
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-          />
-        </head>
-        <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
-          <Providers>
-            {children}
-            <OrientationBanner />
-          </Providers>
-        </body>
-      </html>
-    </>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+      </head>
+      <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
+        <Providers>
+          {children}
+          <OrientationBanner />
+        </Providers>
+      </body>
+    </html>
   );
 }
