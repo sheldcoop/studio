@@ -1,4 +1,5 @@
 
+'use client';
 import { Header } from '@/components/app/header';
 import { Footer } from '@/components/app/footer';
 import HomePageClient from '@/components/app/home-page-client';
