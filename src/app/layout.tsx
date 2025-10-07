@@ -78,6 +78,11 @@ export default function RootLayout({
           fontHeadline.variable
         )}
       >
+        {/* @ts-ignore */}
+        <py-config>
+          packages = ["numpy", "scipy", "matplotlib", "scikit-image"]
+          terminal = false
+        </py-config>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
