@@ -16,32 +16,96 @@ declare global {
 interface PyScriptRunnerProps {
   matrix?: number[][];
   vector?: number[];
-  operation: 'cholesky' | 'lu' | 'qr' | 'svd'; // Added 'svd'
+  operation: 'cholesky' | 'lu' | 'qr' | 'svd';
   outputId: string;
 }
+
+// Function to load a script and return a promise
+const loadScript = (src: string, isModule: boolean): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = src;
+    if (isModule) {
+      script.type = 'module';
+    }
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    document.head.appendChild(script);
+  });
+};
+
+// Function to load a stylesheet
+const loadStylesheet = (href: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        if (document.querySelector(`link[href="${href}"]`)) {
+            resolve();
+            return;
+        }
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.onload = () => resolve();
+        link.onerror = () => reject(new Error(`Failed to load stylesheet: ${href}`));
+        document.head.appendChild(link);
+    });
+};
 
 export function PyScriptRunner({ matrix, vector, operation, outputId }: PyScriptRunnerProps) {
   const [isReady, setIsReady] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState("Initializing Python environment...");
 
-  // Poll for PyScript to be ready
+  // Load PyScript assets and initialize the Python environment
   useEffect(() => {
-    if (typeof window.pyscript?.interpreter !== 'undefined') {
-      setIsReady(true);
-      setOutput(""); // Clear the initializing message
-      return;
-    }
+    let isMounted = true;
+    
+    const setupPyScript = async () => {
+      try {
+        await loadStylesheet("https://pyscript.net/releases/2024.1.1/core.css");
+        await loadScript("https://pyscript.net/releases/2024.1.1/core.js", true);
+        
+        // Now that scripts are loaded, we can add the py-config and py-script tags
+        const pyConfig = document.createElement('py-config');
+        pyConfig.innerHTML = `
+          packages = ["numpy", "scipy"]
+        `;
+        document.head.appendChild(pyConfig);
+        
+        const pyScript = document.createElement('script');
+        pyScript.type = 'py';
+        pyScript.src = '/python/solver.py';
+        document.head.appendChild(pyScript);
 
-    const interval = setInterval(() => {
-      if (typeof window.pyscript?.interpreter !== 'undefined') {
-        setIsReady(true);
-        setOutput("");
-        clearInterval(interval);
+        // Poll for the interpreter to be ready
+        const interval = setInterval(() => {
+          if (window.pyscript?.interpreter) {
+            if (isMounted) {
+              setIsReady(true);
+              setOutput("");
+            }
+            clearInterval(interval);
+          }
+        }, 100);
+
+        return () => clearInterval(interval);
+
+      } catch (error) {
+        console.error("Failed to load PyScript:", error);
+        if (isMounted) {
+          setOutput("Failed to initialize Python environment.");
+        }
       }
-    }, 100);
+    };
+    
+    setupPyScript();
 
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const runCode = async () => {
@@ -51,15 +115,9 @@ export function PyScriptRunner({ matrix, vector, operation, outputId }: PyScript
     setOutput("Running calculation...");
 
     try {
-      // Get the Python function from the global scope
       const solve_decomposition = window.pyscript.interpreter.globals.get('solve_decomposition');
-      
-      // Call the Python function with data
       const result = await solve_decomposition(matrix, vector, operation);
-      
-      // Set the output
       setOutput(result);
-
     } catch (error) {
       console.error("PyScript execution error:", error);
       if (error instanceof Error) {

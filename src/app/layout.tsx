@@ -88,15 +88,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        <link rel="stylesheet" href="https://pyscript.net/releases/2025.8.1/core.css" />
-        <script type="module" src="https://pyscript.net/releases/2025.8.1/core.js"></script>
       </head>
       <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
         <Providers>
           {children}
           <OrientationBanner />
         </Providers>
-        <script type="py" src="/python/solver.py" config="/pyscript.json"></script>
       </body>
     </html>
   );
