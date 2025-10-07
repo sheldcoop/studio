@@ -2,13 +2,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
-import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
@@ -61,11 +59,6 @@ const GarchChart = ({ alpha, beta }: { alpha: number; beta: number }) => {
     </div>
   );
 };
-
-const DynamicGarchChart = dynamic(() => Promise.resolve(GarchChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[420px] w-full" />,
-});
 
 // --- Main Page Component ---
 export default function GarchPage() {
@@ -131,7 +124,7 @@ export default function GarchPage() {
                     <Slider id="beta-slider" min={0.6} max={0.99} step={0.01} value={[beta]} onValueChange={(val) => setBeta(val[0])} />
                 </div>
             </div>
-            <DynamicGarchChart alpha={alpha} beta={beta} />
+            <GarchChart alpha={alpha} beta={beta} />
           </CardContent>
         </Card>
       </div>

@@ -2,10 +2,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { BlockMath, InlineMath } from 'react-katex';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
 import { laplacePdf } from '@/lib/math/stats';
@@ -35,11 +32,11 @@ const LaplaceDistributionChart = ({ location = 0, scale = 1 }: { location?: numb
   return (
     <div>
         <ChartContainer config={{}} className="h-[300px] w-full">
-            <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="value" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(val) => val.toFixed(1)} name="Value" />
-                <YAxis name="Density" domain={[0, 'dataMax']} />
-                <Tooltip
+            <Chart.AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <Chart.CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <Chart.XAxis dataKey="value" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(val) => val.toFixed(1)} name="Value" />
+                <Chart.YAxis name="Density" domain={[0, 'dataMax']} />
+                <Chart.Tooltip
                     content={<ChartTooltipContent
                         labelFormatter={(label) => `Value: ${Number(label).toFixed(2)}`}
                         formatter={(value) => [Number(value).toFixed(4), 'Density']}
@@ -51,8 +48,8 @@ const LaplaceDistributionChart = ({ location = 0, scale = 1 }: { location?: numb
                         <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
                     </linearGradient>
                 </defs>
-                <Area type="monotone" dataKey="density" stroke="hsl(var(--chart-1))" fill="url(#fillLaplace)" strokeWidth={2} dot={false} />
-            </AreaChart>
+                <Chart.Area type="monotone" dataKey="density" stroke="hsl(var(--chart-1))" fill="url(#fillLaplace)" strokeWidth={2} dot={false} />
+            </Chart.AreaChart>
         </ChartContainer>
          <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-4">
             <div>
@@ -65,12 +62,6 @@ const LaplaceDistributionChart = ({ location = 0, scale = 1 }: { location?: numb
     </div>
   );
 };
-
-const DynamicLaplaceDistributionChart = dynamic(() => Promise.resolve(LaplaceDistributionChart), {
-  ssr: false,
-  loading: () => <div className="h-[340px] w-full bg-muted rounded-lg animate-pulse" />,
-});
-
 
 // --- Main Page Component ---
 export default function LaplaceDistributionComponent() {
@@ -106,7 +97,7 @@ export default function LaplaceDistributionComponent() {
         <ProbabilityDistributionPageClient
             distribution={distribution}
             parameters={parameters}
-            ChartComponent={DynamicLaplaceDistributionChart}
+            ChartComponent={LaplaceDistributionChart}
         />
     );
 }

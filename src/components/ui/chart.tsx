@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -360,14 +359,14 @@ function getPayloadConfigFromPayload(
 
 const Chart = {
   ...RechartsPrimitive,
-  AreaChart: dynamic(() => import("recharts").then(mod => mod.AreaChart), {ssr: false}),
-  BarChart: dynamic(() => import("recharts").then(mod => mod.BarChart), {ssr: false}),
-  LineChart: dynamic(() => import("recharts").then(mod => mod.LineChart), {ssr: false}),
-  ComposedChart: dynamic(() => import("recharts").then(mod => mod.ComposedChart), {ssr: false}),
-  PieChart: dynamic(() => import("recharts").then(mod => mod.PieChart), {ssr: false}),
-  RadarChart: dynamic(() => import("recharts").then(mod => mod.RadarChart), {ssr: false}),
-  RadialBarChart: dynamic(() => import("recharts").then(mod => mod.RadialBarChart), {ssr: false}),
-  ScatterChart: dynamic(() => import("recharts").then(mod => mod.ScatterChart), {ssr: false}),
+  AreaChart: dynamic(async () => (await import("recharts")).AreaChart),
+  BarChart: dynamic(async () => (await import("recharts")).BarChart),
+  LineChart: dynamic(async () => (await import("recharts")).LineChart),
+  ComposedChart: dynamic(async () => (await import("recharts")).ComposedChart),
+  PieChart: dynamic(async () => (await import("recharts")).PieChart),
+  RadarChart: dynamic(async () => (await import("recharts")).RadarChart),
+  RadialBarChart: dynamic(async () => (await import("recharts")).RadialBarChart),
+  ScatterChart: dynamic(async () => (await import("recharts")).ScatterChart),
 };
 
 

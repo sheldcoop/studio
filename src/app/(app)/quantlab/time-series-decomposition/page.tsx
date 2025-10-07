@@ -2,13 +2,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
-import { Skeleton } from '@/components/ui/skeleton';
 import 'katex/dist/katex.min.css';
 
 type ModelType = 'additive' | 'multiplicative';
@@ -82,11 +80,6 @@ const DecompositionChart = ({ model, data }: { model: ModelType, data: any[] }) 
   );
 };
 
-const DynamicDecompositionChart = dynamic(() => Promise.resolve(DecompositionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[450px] w-full" />,
-});
-
 
 // --- Main Page Component ---
 export default function TimeSeriesDecompositionPage() {
@@ -141,7 +134,7 @@ export default function TimeSeriesDecompositionPage() {
                 </RadioGroup>
             </div>
             
-            <DynamicDecompositionChart model={model} data={timeSeriesData} />
+            <DecompositionChart model={model} data={timeSeriesData} />
             
              <p className="text-sm text-center text-muted-foreground mt-4">
                 {model === 'additive'

@@ -1,10 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { BlockMath, InlineMath } from 'react-katex';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
+import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
 import { negativeBinomialProbability } from '@/lib/math/stats';
@@ -28,27 +26,22 @@ const NegativeBinomialDistributionChart = ({ r = 5, p = 0.5 }: { r?: number; p?:
   return (
     <div>
         <ChartContainer config={{}} className="h-[300px] w-full">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="trials" name="Number of Trials (k)" />
-                <YAxis name="Probability" domain={[0, 'dataMax']} />
-                <Tooltip
+            <Chart.BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <Chart.CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <Chart.XAxis dataKey="trials" name="Number of Trials (k)" />
+                <Chart.YAxis name="Probability" domain={[0, 'dataMax']} />
+                <Chart.Tooltip
                     content={<ChartTooltipContent
                         labelFormatter={(label) => `Trials: ${label}`}
                         formatter={(value) => [Number(value).toFixed(4), 'Probability']}
                     />}
                 />
-                <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
+                <Chart.Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+            </Chart.BarChart>
         </ChartContainer>
     </div>
   );
 };
-
-const DynamicNegativeBinomialDistributionChart = dynamic(() => Promise.resolve(NegativeBinomialDistributionChart), {
-  ssr: false,
-  loading: () => <div className="h-[300px] w-full bg-muted rounded-lg animate-pulse" />,
-});
 
 
 // --- Main Page Component ---
@@ -86,7 +79,7 @@ export default function NegativeBinomialDistributionComponent() {
         <ProbabilityDistributionPageClient
             distribution={distribution}
             parameters={parameters}
-            ChartComponent={DynamicNegativeBinomialDistributionChart}
+            ChartComponent={NegativeBinomialDistributionChart}
         />
     );
 }

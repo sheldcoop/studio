@@ -2,10 +2,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { BlockMath, InlineMath } from 'react-katex';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
+import { InlineMath } from 'react-katex';
 import { standardNormalPdf, tDistributionPdf } from '@/lib/math/stats';
 import 'katex/dist/katex.min.css';
 import ProbabilityDistributionPageClient from '@/components/app/probability-distribution-page-client';
@@ -33,11 +31,11 @@ const TDistributionChart = ({ df = 5 }: { df?: number }) => {
   return (
     <div>
       <ChartContainer config={{}} className="h-[300px] w-full">
-        <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="value" type="number" domain={[-4, 4]} tickFormatter={(val) => val.toFixed(1)} name="Value" />
-          <YAxis name="Density" domain={[0, 0.45]} />
-          <Tooltip
+        <Chart.AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+          <Chart.CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <Chart.XAxis dataKey="value" type="number" domain={[-4, 4]} tickFormatter={(val) => val.toFixed(1)} name="Value" />
+          <Chart.YAxis name="Density" domain={[0, 0.45]} />
+          <Chart.Tooltip
             content={<ChartTooltipContent labelFormatter={(label) => `Value: ${Number(label).toFixed(2)}`} />}
           />
           <defs>
@@ -46,9 +44,9 @@ const TDistributionChart = ({ df = 5 }: { df?: number }) => {
               <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
             </linearGradient>
           </defs>
-          <Area type="monotone" dataKey="t_density" name="t-Distribution" stroke="hsl(var(--chart-1))" fill="url(#fillT)" strokeWidth={2} dot={false} />
-          <Area type="monotone" dataKey="normal_density" name="Normal Distribution" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" fill="transparent" strokeWidth={1.5} dot={false} />
-        </AreaChart>
+          <Chart.Area type="monotone" dataKey="t_density" name="t-Distribution" stroke="hsl(var(--chart-1))" fill="url(#fillT)" strokeWidth={2} dot={false} />
+          <Chart.Area type="monotone" dataKey="normal_density" name="Normal Distribution" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" fill="transparent" strokeWidth={1.5} dot={false} />
+        </Chart.AreaChart>
       </ChartContainer>
       <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-4">
         <div>
@@ -61,11 +59,6 @@ const TDistributionChart = ({ df = 5 }: { df?: number }) => {
     </div>
   );
 };
-
-const DynamicTDistributionChart = dynamic(() => Promise.resolve(TDistributionChart), {
-  ssr: false,
-  loading: () => <div className="h-[340px] w-full bg-muted rounded-lg animate-pulse" />,
-});
 
 // --- Main Page Component ---
 export default function TDistributionComponent() {
@@ -99,7 +92,7 @@ export default function TDistributionComponent() {
         <ProbabilityDistributionPageClient
             distribution={distribution}
             parameters={parameters}
-            ChartComponent={DynamicTDistributionChart}
+            ChartComponent={TDistributionChart}
         />
     );
 }

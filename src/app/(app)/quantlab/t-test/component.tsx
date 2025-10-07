@@ -2,20 +2,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/app/page-header';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartTooltipContent } from '@/lib/chart-config';
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart';
-import { Label as RechartsLabel, Tooltip, XAxis, YAxis, Legend, Cell, Bar, Line, CartesianGrid, ReferenceLine } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ChartContainer, type ChartConfig, Chart } from '@/components/ui/chart';
 import { InteractiveTestWrapper } from '@/components/app/interactive-test-wrapper';
 import { allTopics, Topic } from '@/lib/data';
-
-const RechartsBarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
-const RechartsLineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false, loading: () => <Skeleton className="h-full w-full" /> });
 
 // Helper function to generate normally distributed data
 const generateNormalData = (mean: number, stdDev: number, n: number) =>
@@ -90,30 +84,30 @@ const IndependentTestChart = () => {
           config={independentTestChartConfig}
           className="h-full w-full"
         >
-          <RechartsBarChart
+          <Chart.BarChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
-            <CartesianGrid vertical={false} />
-            <XAxis
+            <Chart.CartesianGrid vertical={false} />
+            <Chart.XAxis
               dataKey="name"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value: string) => independentTestChartConfig[value as keyof typeof independentTestChartConfig]?.label || value}
             />
-            <YAxis unit="%" />
-            <Tooltip
+            <Chart.YAxis unit="%" />
+            <Chart.Tooltip
               cursor={{ fill: 'hsl(var(--muted))' }}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Bar dataKey="value" radius={8}>
+            <Chart.Bar dataKey="value" radius={8}>
                 {chartData.map((entry) => (
-                    <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                    <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
                 ))}
-            </Bar>
-          </RechartsBarChart>
+            </Chart.Bar>
+          </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -154,34 +148,34 @@ const PairedTestChart = () => {
           config={pairedTestChartConfig}
           className="h-full w-full"
         >
-          <RechartsLineChart
+          <Chart.LineChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
           >
-            <CartesianGrid vertical={false} />
-            <XAxis
+            <Chart.CartesianGrid vertical={false} />
+            <Chart.XAxis
               dataKey="name"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
             />
-            <YAxis unit="%" />
-            <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-            <Legend formatter={(value: string) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
-            <Line
+            <Chart.YAxis unit="%" />
+            <Chart.Tooltip content={<ChartTooltipContent indicator="dot" />} />
+            <Chart.Legend formatter={(value: string) => pairedTestChartConfig[value as keyof typeof pairedTestChartConfig]?.label || value} />
+            <Chart.Line
               type="monotone"
               dataKey="before"
               strokeWidth={2}
               stroke="var(--color-before)"
             />
-            <Line
+            <Chart.Line
               type="monotone"
               dataKey="after"
               strokeWidth={2}
               stroke="var(--color-after)"
             />
-          </RechartsLineChart>
+          </Chart.LineChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">
@@ -204,42 +198,42 @@ const OneSampleTestChart = () => {
           config={oneSampleTestChartConfig}
           className="h-full w-full"
         >
-          <RechartsBarChart
+          <Chart.BarChart
             accessibilityLayer
             data={chartData}
             layout="vertical"
             margin={{ top: 20, right: 40, bottom: 20, left: 40 }}
           >
-            <CartesianGrid horizontal={false} />
-            <YAxis
+            <Chart.CartesianGrid horizontal={false} />
+            <Chart.YAxis
               type="category"
               dataKey="name"
               tickLine={false}
               axisLine={false}
               width={80}
             />
-            <XAxis type="number" unit="%" domain={[0, 3]} />
-            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar
+            <Chart.XAxis type="number" unit="%" domain={[0, 3]} />
+            <Chart.Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Chart.Bar
               dataKey="value"
               radius={8}
               fill="var(--color-value)"
             />
-            <ReferenceLine
+            <Chart.ReferenceLine
               x={target}
               stroke="hsl(var(--destructive))"
               strokeWidth={2}
               strokeDasharray="3 3"
             >
-              <RechartsLabel
+              <Chart.Label
                 position="insideTopRight"
                 fill="hsl(var(--destructive))"
                 fontSize={12}
               >
                 {`Claimed: ${target}%`}
-              </RechartsLabel>
-            </ReferenceLine>
-          </RechartsBarChart>
+              </Chart.Label>
+            </Chart.ReferenceLine>
+          </Chart.BarChart>
         </ChartContainer>
       </div>
       <div className="mt-4 flex-shrink-0 text-center">

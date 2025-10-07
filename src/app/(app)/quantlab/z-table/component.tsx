@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -13,9 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis, Tooltip, Label as RechartsLabel } from 'recharts';
+import { ChartContainer, ChartTooltipContent, Chart } from '@/components/ui/chart';
 import { standardNormalCdf, standardNormalPdf, inverseStandardNormalCdf } from '@/lib/math/stats';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
@@ -58,11 +55,11 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
 
   return (
     <ChartContainer config={{}} className="h-[250px] w-full">
-      <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis type="number" dataKey="x" domain={[-4, 4]} ticks={[-4, -3, -2, -1, 0, 1, 2, 3, 4]} name="Z-Score" />
-        <YAxis tick={false} axisLine={false} domain={[0, 0.45]} />
-        <Tooltip
+      <Chart.AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <Chart.CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <Chart.XAxis type="number" dataKey="x" domain={[-4, 4]} ticks={[-4, -3, -2, -1, 0, 1, 2, 3, 4]} name="Z-Score" />
+        <Chart.YAxis tick={false} axisLine={false} domain={[0, 0.45]} />
+        <Chart.Tooltip
           content={<ChartTooltipContent indicator="line" labelFormatter={(value: number) => `Z: ${Number(value).toFixed(2)}`} formatter={(value: any, name: string | number) => {
             if (typeof value !== 'number') return [];
             return [Number(value).toFixed(4), 'Density'];
@@ -74,33 +71,29 @@ const ZScoreChart = ({ shadeFrom, shadeTo, zToPType, zScore, zScore1, zScore2 }:
             <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
           </linearGradient>
         </defs>
-        <Area type="monotone" dataKey="y" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted-foreground))" fillOpacity={0.2} strokeWidth={1.5} dot={false} name="Normal Curve" />
-        <Area type="monotone" dataKey="shaded" stroke="hsl(var(--primary))" fill="url(#fillShaded)" strokeWidth={2} dot={false} name="P-Value Area" />
+        <Chart.Area type="monotone" dataKey="y" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted-foreground))" fillOpacity={0.2} strokeWidth={1.5} dot={false} name="Normal Curve" />
+        <Chart.Area type="monotone" dataKey="shaded" stroke="hsl(var(--primary))" fill="url(#fillShaded)" strokeWidth={2} dot={false} name="P-Value Area" />
         
         {zToPType === 'two-tailed' && absZScore !== null ? (
             <>
-                <ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${(-absZScore).toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
-                <ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                <Chart.ReferenceLine x={-absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${(-absZScore).toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+                <Chart.ReferenceLine x={absZScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${absZScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
             </>
         ) : typeof zScore === 'number' ? (
-            <ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            <Chart.ReferenceLine x={zScore} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z = ${zScore.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         ) : null}
 
         {typeof zScore1 === 'number' && (
-            <ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            <Chart.ReferenceLine x={zScore1} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₁ = ${zScore1.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
         {typeof zScore2 === 'number' && (
-            <ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
+            <Chart.ReferenceLine x={zScore2} stroke="hsl(var(--primary))" strokeWidth={1.5} label={{ value: `Z₂ = ${zScore2.toFixed(2)}`, position: 'top', fill: 'hsl(var(--primary))' }} />
         )}
 
-      </AreaChart>
+      </Chart.AreaChart>
     </ChartContainer>
   );
 };
-const DynamicZScoreChart = dynamic(() => Promise.resolve(ZScoreChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[250px] w-full" />,
-});
 
 // Z-Table Component
 const ZTable = ({ highlightedZ }: { highlightedZ: number | null }) => {
@@ -300,7 +293,7 @@ export default function ZTableComponent() {
                             <AlertCircle className="h-5 w-5 mt-1 flex-shrink-0" />
                             <div>
                                 <h4 className="font-semibold">Normality or Large Sample Size</h4>
-                                <p className="text-sm mt-1">The data should either be drawn from a normally distributed population or the sample size must be large enough (typically n &gt 30) for the Central Limit Theorem to apply. This theorem guarantees that the distribution of sample means will be approximately normal, even if the original population is not.</p>
+                                <p className="text-sm mt-1">The data should either be drawn from a normally distributed population or the sample size must be large enough (typically n > 30) for the Central Limit Theorem to apply. This theorem guarantees that the distribution of sample means will be approximately normal, even if the original population is not.</p>
                             </div>
                         </div>
                     </div>
@@ -343,12 +336,12 @@ export default function ZTableComponent() {
                     <TableBody>
                         <TableRow>
                             <TableCell className="font-semibold text-primary">Right Tail</TableCell>
-                            <TableCell>"What is the chance of being greater than this?" (&gt; Z)</TableCell>
+                            <TableCell>"What is the chance of being greater than this?" (> Z)</TableCell>
                             <TableCell>The area of the far right tail.</TableCell>
                         </TableRow>
                          <TableRow>
                             <TableCell className="font-semibold text-primary">Left Tail</TableCell>
-                            <TableCell>"What is the chance of being less than this?" (&lt; Z)</TableCell>
+                            <TableCell>"What is the chance of being less than this?" (< Z)</TableCell>
                             <TableCell>The area of the far left tail.</TableCell>
                         </TableRow>
                          <TableRow>
@@ -408,7 +401,7 @@ export default function ZTableComponent() {
                             </div>
                         </div>
                         <div>
-                            <DynamicZScoreChart {...chartParams} />
+                            <ZScoreChart {...chartParams} />
                         </div>
                         </div>
                     </TabsContent>
@@ -427,7 +420,7 @@ export default function ZTableComponent() {
                             <p className="text-sm text-muted-foreground">This is the Z-score such that the area to its left under the standard normal curve is equal to the specified probability.</p>
                         </div>
                         <div>
-                           <DynamicZScoreChart {...chartParams} />
+                           <ZScoreChart {...chartParams} />
                         </div>
                         </div>
                     </TabsContent>
@@ -452,7 +445,7 @@ export default function ZTableComponent() {
                             <p className="text-sm text-muted-foreground">This is the area under the curve between Z-Score 1 and Z-Score 2. This is what you calculate for a confidence interval.</p>
                         </div>
                         <div>
-                            <DynamicZScoreChart {...chartParams} />
+                            <ZScoreChart {...chartParams} />
                         </div>
                         </div>
                     </TabsContent>
@@ -483,7 +476,7 @@ export default function ZTableComponent() {
                             <p><strong className="text-primary">The Question:</strong> After a week of intense social media hype, the stock is trading $9.50 above its 50-day moving average. Is the stock now "overbought" and due for a fall back to its average?</p>
                             <p><strong className="text-primary">The Z-Score Solution:</strong> You calculate the Z-score of this spread: <code className="font-mono bg-muted p-1 rounded-md">Z = ($9.50 - $0) / $3.00 ≈ +3.17</code></p>
                             <p><strong className="text-primary">The Trading Insight:</strong> The stock is currently priced more than +3 standard deviations away from its recent average behavior. In trader's terms, the rubber band is stretched very tight.</p>
-                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z &gt +2.0, consider short-selling; if Z &lt -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
+                            <p>This Z-score can be a direct, automated trading signal. An algorithm could be programmed with a rule: If Z > +2.0, consider short-selling; if Z < -2.0, consider buying. The Z-score of +3.17 provides a strong, quantitative signal that the stock is in "overbought" territory.</p>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
