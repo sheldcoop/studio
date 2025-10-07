@@ -353,6 +353,22 @@ function LUDecompositionTheory() {
     );
 }
 
+function LinearIndependenceTheory() {
+    return (
+        <div className="prose prose-invert max-w-none p-6 text-foreground/90">
+            <h4 className="font-bold text-lg not-prose">Defining Linear Independence</h4>
+            <p>A set of vectors is <strong>linearly independent</strong> if no vector in the set can be written as a linear combination of the others. Geometrically, this means none of the vectors lie on the "span" (the line, plane, or hyperplane) created by the other vectors. They all point in genuinely different directions, contributing new information and new dimensions to the space they span.</p>
+             <p>Conversely, a set of vectors is <strong>linearly dependent</strong> if at least one vector is redundant. For two vectors, this means they lie on the same line—one is just a scaled version of the other.</p>
+            <hr />
+            <h4 className="font-bold text-lg not-prose">Spanning Sets</h4>
+            <p>The <strong>span</strong> of a set of vectors is the set of all possible vectors you can reach by taking linear combinations of them. In 2D, two linearly independent vectors can span the entire 2D plane. You can reach any point by taking some amount of one vector and adding some amount of the other. However, if the two vectors are linearly dependent, their span is just a single line.</p>
+            <hr />
+            <h4 className="font-bold text-lg not-prose">Basis and Dimension</h4>
+            <p>A <strong>basis</strong> for a vector space is a set of linearly independent vectors that spans the entire space. It's the minimum set of "building blocks" you need to describe any vector in that space. The number of vectors in a basis is called the <strong>dimension</strong> of the space. For the 2D plane (ℝ²), the dimension is 2, and any two linearly independent vectors can form a basis.</p>
+        </div>
+    )
+}
+
 
 function FourSubspacesPage({ topic }: { topic: Topic }) {
     if (!topic.subTopics) return null;
@@ -478,6 +494,29 @@ function ChangeOfBasisPage() {
     );
 }
 
+function LinearIndependencePage({ topic }: { topic: Topic }) {
+    return (
+        <div className="space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Scaling className="text-primary"/> Theory</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <LinearIndependenceTheory />
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> Interactive Demo</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <LinearIndependenceVisualizer />
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
 function MatrixOperationsPage({ topic }: { topic: Topic }) {
     if (!topic.subTopics) return null;
     return (
@@ -549,6 +588,10 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
         return <ChangeOfBasisPage />;
     }
 
+    if (isLinearIndependenceTopic) {
+        return <LinearIndependencePage topic={topicInfo} />;
+    }
+
     if (isMatrixOperationsTopic) {
         return <MatrixOperationsPage topic={topicInfo} />;
     }
@@ -556,7 +599,6 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
     const renderInteractiveDemo = () => {
         if (isEigenTopic) return <EigenVisualizer />;
         if (isSvdTopic) return <SvdVisualizer />;
-        if (isLinearIndependenceTopic) return <LinearIndependenceVisualizer />;
         if (isDiagonalizationTopic) return <DiagonalizationVisualizer />;
         if (isCovarianceTopic) return <CovarianceVisualizer />;
         if (isLUDecompositionTopic) return <LUDecompositionVisualizer />;

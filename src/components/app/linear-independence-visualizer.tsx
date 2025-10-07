@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, drawGrid as p5DrawGrid } from '@/lib/p5';
 
