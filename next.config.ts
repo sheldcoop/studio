@@ -7,7 +7,7 @@ const nextConfig = {
     // Add rule to handle .py files
     config.module.rules.push({
       test: /\.py$/,
-      type: 'asset/source',
+      use: 'raw-loader',
     });
 
     return config;
