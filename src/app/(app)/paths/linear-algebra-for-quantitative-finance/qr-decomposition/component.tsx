@@ -40,7 +40,7 @@ output += f"<p><b>Q<sup>T</sup>b =</b> {np.round(b_transformed, 4)}</p>"
 x = np.linalg.solve(R, b_transformed)
 output += f"<h4>3. Least Squares Solution x̂:</h4><p><b>x̂ =</b> {np.round(x, 4)}</p>"
 
-display(output, target="output-qr-solver", append=False)
+display(output, target="output-qr-solver")
 `;
 
   return (
