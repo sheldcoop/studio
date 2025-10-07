@@ -204,8 +204,9 @@ function ChangeOfBasisTheory() {
             <p>However, we can choose any two linearly independent vectors to be our basis. A **change of basis** is the process of re-expressing a vector in terms of a new set of basis vectors. It's like translating a description of a location from one language (e.g., "3 steps east, 2 steps north") to another language (e.g., "1.5 steps northeast, 0.5 steps northwest"). The location itself doesn't change, just how we describe it.</p>
              <hr />
             <h4 className="font-bold text-lg not-prose">The Change of Basis Matrix</h4>
-            <p>If we have a new basis B = {<b className="text-red-400">b₁</b>, <b className="text-blue-400">b₂</b>}, we can create a "change of basis matrix" <InlineMath math="P_B" /> whose columns are these new basis vectors. To find the standard coordinates of a vector <InlineMath math="[\mathbf{v}]_B = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}" /> given in the new basis, we simply multiply:</p>
-             <div className="text-center"><BlockMath math="\mathbf{v}_{\text{std}} = P_B [\mathbf{v}]_B = c_1\mathbf{b}_1 + c_2\mathbf{b}_2" /></div>
+            <p>If we have a new basis B = &#123;<b className="text-red-400">b₁</b>, <b className="text-blue-400">b₂</b>&#125;, we can create a "change of basis matrix" <InlineMath math="P_B" /> whose columns are these new basis vectors. To find the standard coordinates of a vector given in the new basis, we simply multiply:</p>
+            <div className="text-center"><BlockMath math="[\mathbf{v}]_B = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}" /></div>
+            <div className="text-center"><BlockMath math="\mathbf{v}_{\text{std}} = P_B [\mathbf{v}]_B = c_1\mathbf{b}_1 + c_2\mathbf{b}_2" /></div>
              <p>To go the other way—from standard coordinates to the new basis—we use the inverse matrix:</p>
              <div className="text-center"><BlockMath math="[\mathbf{v}]_B = P_B^{-1} \mathbf{v}_{\text{std}}" /></div>
             <p>This is extremely powerful in quantitative finance, particularly in Principal Component Analysis (PCA), where we change the basis of our data to a new set of orthogonal axes (the eigenvectors of the covariance matrix) that represent the directions of maximum variance.</p>
