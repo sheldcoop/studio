@@ -18,23 +18,19 @@ export function PyScriptRunner({ code, outputId, title }: PyScriptRunnerProps) {
   const [codeToRun, setCodeToRun] = useState('');
 
   useEffect(() => {
-    // Correct URLs based on user feedback
     const scriptUrl = 'https://pyscript.net/releases/2025.8.1/core.js';
     const cssUrl = 'https://pyscript.net/releases/2025.8.1/core.css';
 
-    // Check if PyScript is already loaded
     if (document.querySelector(`script[src="${scriptUrl}"]`)) {
       setIsPyScriptReady(true);
       return;
     }
 
-    // Load PyScript CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = cssUrl;
     document.head.appendChild(link);
 
-    // Load PyScript JS
     const script = document.createElement('script');
     script.src = scriptUrl;
     script.async = true;
@@ -42,7 +38,6 @@ export function PyScriptRunner({ code, outputId, title }: PyScriptRunnerProps) {
     document.head.appendChild(script);
 
     return () => {
-      // Basic cleanup on unmount
       const existingLink = document.querySelector(`link[href="${cssUrl}"]`);
       if (existingLink) document.head.removeChild(existingLink);
       const existingScript = document.querySelector(`script[src="${scriptUrl}"]`);
@@ -52,14 +47,11 @@ export function PyScriptRunner({ code, outputId, title }: PyScriptRunnerProps) {
 
   const handleRunCode = () => {
     setIsRunning(true);
-    // Clear previous output before running new code
     const outputElement = document.getElementById(outputId);
     if (outputElement) {
       outputElement.innerHTML = '';
     }
-    // Setting the code to run triggers the py-script tag to execute
     setCodeToRun(code);
-    // Add a timeout to give PyScript time to process
     setTimeout(() => setIsRunning(false), 2000);
   };
 
