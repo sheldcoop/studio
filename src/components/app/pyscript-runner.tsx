@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -26,21 +25,33 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
   const [isReady, setIsReady] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [outputContent, setOutputContent] = useState<React.ReactNode>(null);
   const { toast } = useToast();
   
-  // This effect checks for the global pyscript object to determine readiness.
+  // This is the corrected effect that uses the official 'py:ready' event.
   useEffect(() => {
-    const checkReady = () => {
-      if (window.pyscript && typeof window.pyscript.run === 'function') {
-        setIsReady(true);
-      } else {
-        setTimeout(checkReady, 150); // Check again shortly
-      }
+    const handleReady = () => {
+      // This function will be called ONLY when PyScript is fully loaded.
+      console.log("PyScript environment is ready.");
+      setIsReady(true);
     };
-    checkReady();
-  }, []);
 
-  // This effect is for syntax highlighting via Prism.js
+    // First, check if PyScript is already ready (e.g., on page navigation)
+    if (window.pyscript && window.pyscript.interpreter) {
+      handleReady();
+    } else {
+      // If not, add an event listener to wait for it.
+      document.addEventListener('py:ready', handleReady);
+    }
+
+    // This is a crucial cleanup function. It removes the event listener 
+    // when the component is removed from the page to prevent memory leaks.
+    return () => {
+      document.removeEventListener('py:ready', handleReady);
+    };
+  }, []); // The empty dependency array means this effect runs only once.
+
+  // This effect for Prism.js syntax highlighting is perfect as-is.
   useEffect(() => {
     if (codeRef.current && window.Prism) {
       window.Prism.highlightElement(codeRef.current);
@@ -52,27 +63,32 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
     
     setIsRunning(true);
     setError(null);
-
-    const outputElement = document.getElementById(outputId);
-    if (outputElement) {
-        outputElement.innerHTML = '<div class="flex items-center text-sm text-muted-foreground"><span class="loader-spin mr-2 h-4 w-4"></span>Running...</div>';
-        const loaderSpan = outputElement.querySelector('.loader-spin');
-        if (loaderSpan) {
-            const loader = new Loader2({className: 'animate-spin'});
-            loader.render(loaderSpan as any);
-        }
-    }
+    // Set the output to a "Running..." message immediately
+    setOutputContent(
+      <div className="flex items-center text-sm text-muted-foreground">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        Running code...
+      </div>
+    );
 
     try {
-      // Use the pyscript.run API to execute the code
+      // This is a more robust way to capture output.
+      // We temporarily redefine pyscript.write to update our React state.
+      window.pyscript.interpreter.globals.set("pyscript", {
+        write: (id: string, value: any) => {
+          if (id === outputId) {
+            setOutputContent(String(value));
+          }
+        },
+      });
+
+      // Execute the Python code
       await window.pyscript.run(code);
+
     } catch (e: any) {
       const errorMessage = e.message || String(e);
       setError(errorMessage);
-       if (outputElement) {
-          // Clear "Running..." message and show error
-          outputElement.innerHTML = '';
-      }
+      setOutputContent(null); // Clear the output area if there's an error
     } finally {
       setIsRunning(false);
     }
@@ -88,7 +104,6 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
 
   return (
     <div className="space-y-4">
-      {/* The pre tag MUST have the language-python class for the Prism toolbar to appear */}
       <div className="relative group">
           <pre className="language-python rounded-lg !m-0 border !py-4 !px-6">
               <code ref={codeRef} className="language-python">
@@ -106,15 +121,14 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
             </Button>
       </div>
 
-
-      <div className="flex items-center gap-4 rounded-b-lg border-t-0 p-2">
+      <div className="flex items-center gap-4">
             <Button onClick={handleRunCode} disabled={!isReady || isRunning} size="sm">
               {isRunning ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Play className="mr-2 h-4 w-4" />
               )}
-              {isRunning ? 'Running...' : (isReady ? 'Run Code' : 'Loading Python...')}
+              {isRunning ? 'Running...' : (isReady ? 'Run Code' : 'Loading Environment...')}
             </Button>
       </div>
      
@@ -130,16 +144,12 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
             )}
             <div 
               id={outputId} 
-              className={cn(
-                  "min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md overflow-x-auto",
-                  error && 'text-destructive'
-                )}
+              className="min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md overflow-x-auto"
             >
-              {!isReady && (
+              {outputContent ? outputContent : (
+                isReady ? 
+                <div className="text-sm text-muted-foreground">Click "Run Code" to see the output.</div> :
                 <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Python environment is loading...</div>
-              )}
-              {isReady && !isRunning && !error && (
-                <div className="text-sm text-muted-foreground">Click "Run Code" to see the output.</div>
               )}
             </div>
         </CardContent>
@@ -147,5 +157,3 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
     </div>
   );
 }
-
-    
