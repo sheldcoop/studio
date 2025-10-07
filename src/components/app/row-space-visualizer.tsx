@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { drawVector as p5DrawVector, screenToWorld as p5ScreenToWorld, drawGrid as p5DrawGrid } from '@/lib/p5';
 
@@ -71,11 +71,11 @@ const RowSpaceVisualizer = () => {
                         p.line(p1.x * scaleFactor, p1.y * scaleFactor, p2.x * scaleFactor, p2.y * scaleFactor);
                     }
                 } else {
-                    p5DrawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor, p.color(34, 211, 238, 20));
+                    p5DrawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
                 }
 
-                p5DrawVector(p, r1, scaleFactor, p.color(134, 239, 172), 'row₁');
-                p5DrawVector(p, r2, scaleFactor, p.color(147, 197, 253), 'row₂');
+                p5DrawVector(p, r1, scaleFactor, p.color(134, 239, 172), 'row₁', 4);
+                p5DrawVector(p, r2, scaleFactor, p.color(147, 197, 253), 'row₂', 4);
             };
 
             p.mousePressed = () => { const m = screenToWorld(p.mouseX, p.mouseY); if (p5.Vector.dist(m, r1) < 0.5) draggingR1 = true; else if (p5.Vector.dist(m, r2) < 0.5) draggingR2 = true;};
@@ -125,3 +125,5 @@ const RowSpaceVisualizer = () => {
 };
 
 export default RowSpaceVisualizer;
+
+    
