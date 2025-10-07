@@ -71,11 +71,11 @@ const ColumnSpaceVisualizer = () => {
                          p.line(p1.x * scaleFactor, p1.y * scaleFactor, p2.x * scaleFactor, p2.y * scaleFactor);
                      }
                 } else {
-                    drawGrid(p, col1, col2, p.color(96, 165, 250, 80), 2, scaleFactor, p.color(96, 165, 250, 20));
+                    drawGrid(p, col1, col2, p.color(96, 165, 250, 80), 2, scaleFactor);
                 }
 
-                drawVector(p, col1, scaleFactor, p.color(96, 165, 250), 'col₁');
-                drawVector(p, col2, scaleFactor, p.color(96, 165, 250), 'col₂');
+                drawVector(p, col1, scaleFactor, p.color(96, 165, 250), 'col₁', 4);
+                drawVector(p, col2, scaleFactor, p.color(96, 165, 250), 'col₂', 4);
 
                 const outputVec = p5.Vector.add(col1.copy().mult(inputVec.x), col2.copy().mult(inputVec.y));
                 drawVector(p, outputVec, scaleFactor, p.color(244, 114, 182), 'Ax', 5);
@@ -185,3 +185,5 @@ export default ColumnSpaceVisualizer;
     
 
     
+
+  
