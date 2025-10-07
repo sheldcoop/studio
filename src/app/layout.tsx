@@ -1,18 +1,17 @@
-
-
 // src/app/layout.tsx (Correct Version)
 
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import './globals.css';
+import '../styles/codeblock.css';
 import 'katex/dist/katex.min.css';
 import { OrientationBanner } from '@/components/app/orientation-banner';
 import { Providers } from '@/components/app/providers';
 
 const fontBody = Inter({ subsets: ['latin'], variable: '--font-body' });
 const fontHeadline = Space_Grotesk({ subsets: ['latin'], variable: '--font-headline' });
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

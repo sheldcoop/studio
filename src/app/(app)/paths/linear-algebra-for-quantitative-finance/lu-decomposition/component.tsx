@@ -1,4 +1,3 @@
-
 'use client';
 
 import { PageHeader } from "@/components/app/page-header";
@@ -6,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BlockMath, InlineMath } from 'react-katex';
 import { Scaling, Cpu, Link as LinkIcon, AlertTriangle, Code, Trophy, Bot } from 'lucide-react';
+import CodeBlock from '@/components/CodeBlock';
+import luCode from '@/code-examples/linear-algebra/lu-decomposition.py';
 
 
 function TheIntuition() {
@@ -210,8 +211,12 @@ export default function LUDecompositionPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> 7. Making It Real: Python Implementation</CardTitle>
             </CardHeader>
-            <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
-                <p className="text-muted-foreground">Python implementation coming soon.</p>
+            <CardContent>
+                <CodeBlock 
+                  code={luCode}
+                  language="python"
+                  title="lu-decomposition.py"
+                />
             </CardContent>
         </Card>
       </div>
