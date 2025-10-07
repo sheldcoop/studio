@@ -44,7 +44,7 @@ print(f"\\nThe best fit line is y = {m:.2f}x + {c:.2f}")
 # Output should be close to y = 1.50x + 1.00`;
     return (
         <div className="relative">
-            <pre className="language-python rounded-lg"><code className="language-python">{code}</code></pre>
+            <pre className="language-python rounded-lg bg-gray-900/50 text-sm overflow-x-auto p-4 pt-8"><code className="language-python">{code}</code></pre>
         </div>
     );
 }
