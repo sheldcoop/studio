@@ -7,19 +7,49 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BlockMath, InlineMath } from 'react-katex';
 import { ShieldCheck, Cpu, Code, Trophy, HardHat, SwissFranc } from 'lucide-react';
 import 'katex/dist/katex.min.css';
-import { PyScriptRunner } from "@/components/app/pyscript-runner";
 
 function PythonImplementation() {
-    const A = [[1, 0], [1, 1], [1, 2]];
-    const b = [1, 3, 4];
+    const pythonCode = `
+import numpy as np
+from pyscript import document
+
+def solve_qr_decomposition(event):
+    A = np.array([[1, 0], [1, 1], [1, 2]])
+    b = np.array([1, 3, 4])
+    output_element = document.querySelector("#output-qr-solver")
     
+    try:
+        Q, R = np.linalg.qr(A)
+        # Solve Rx = Q.T @ b
+        b_transformed = Q.T @ b
+        x = np.linalg.solve(R, b_transformed)
+
+        output = "Solving Ax = b using QR Decomposition\\n\\n"
+        output += "Matrix A:\\n{}\\n\\n".format(A)
+        output += "Vector b:\\n{}\\n\\n".format(b)
+        output += "1. Decompose A into Q and R:\\n"
+        output += "   Q (Orthogonal Matrix):\\n{}\\n\\n".format(Q)
+        output += "   R (Upper Triangular Matrix):\\n{}\\n\\n".format(R)
+        output += "2. Solve Rx = Q^T * b:\\n"
+        output += "   Q^T * b = \\n{}\\n\\n".format(b_transformed)
+        output += "3. Least Squares Solution x:\\n{}\\n".format(x)
+
+        output_element.innerText = output
+    except Exception as e:
+        output_element.innerText = "An error occurred: {}".format(e)
+`;
+
     return (
-      <PyScriptRunner
-        matrix={A}
-        vector={b}
-        operation="qr"
-        outputId="output-qr-solver"
-      />
+        <div>
+            <py-config>
+                packages = ["numpy", "scipy"]
+            </py-config>
+            <py-script>
+                {pythonCode}
+            </py-script>
+            <button py-click="solve_qr_decomposition" className="text-white bg-blue-500 p-2 rounded">Run Calculation</button>
+            <div id="output-qr-solver" className="min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md mt-4"></div>
+        </div>
     );
 }
 
