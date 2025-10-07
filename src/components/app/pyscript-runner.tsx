@@ -18,8 +18,12 @@ export function PyScriptRunner({ code, outputId, title }: PyScriptRunnerProps) {
   const [codeToRun, setCodeToRun] = useState('');
 
   useEffect(() => {
-    // Check if PyScript is already loaded to avoid duplicates
-    if (document.querySelector('script[src="https://pyscript.net/latest/pyscript.js"]')) {
+    // Correct URLs based on user feedback
+    const scriptUrl = 'https://pyscript.net/releases/2025.8.1/core.js';
+    const cssUrl = 'https://pyscript.net/releases/2025.8.1/core.css';
+
+    // Check if PyScript is already loaded
+    if (document.querySelector(`script[src="${scriptUrl}"]`)) {
       setIsPyScriptReady(true);
       return;
     }
@@ -27,20 +31,22 @@ export function PyScriptRunner({ code, outputId, title }: PyScriptRunnerProps) {
     // Load PyScript CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://pyscript.net/latest/pyscript.css';
+    link.href = cssUrl;
     document.head.appendChild(link);
 
     // Load PyScript JS
     const script = document.createElement('script');
-    script.src = 'https://pyscript.net/latest/pyscript.js';
+    script.src = scriptUrl;
     script.async = true;
     script.onload = () => setIsPyScriptReady(true);
     document.head.appendChild(script);
 
     return () => {
-      // Clean up on unmount if needed, though usually not necessary for scripts/links
-      document.head.removeChild(link);
-      document.head.removeChild(script);
+      // Basic cleanup on unmount
+      const existingLink = document.querySelector(`link[href="${cssUrl}"]`);
+      if (existingLink) document.head.removeChild(existingLink);
+      const existingScript = document.querySelector(`script[src="${scriptUrl}"]`);
+      if (existingScript) document.head.removeChild(existingScript);
     };
   }, []);
 
@@ -53,8 +59,7 @@ export function PyScriptRunner({ code, outputId, title }: PyScriptRunnerProps) {
     }
     // Setting the code to run triggers the py-script tag to execute
     setCodeToRun(code);
-    // We add a small timeout to allow PyScript to start processing.
-    // A more robust solution might involve callbacks from the Python code itself.
+    // Add a timeout to give PyScript time to process
     setTimeout(() => setIsRunning(false), 2000);
   };
 
