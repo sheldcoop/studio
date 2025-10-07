@@ -1,3 +1,4 @@
+
 // src/app/layout.tsx (Correct Version)
 
 import type { Metadata } from 'next';
@@ -6,14 +7,74 @@ import { cn } from '@/lib/utils';
 import './globals.css';
 import { OrientationBanner } from '@/components/app/orientation-banner';
 import { Providers } from '@/components/app/providers';
-import Script from 'next/script'; // Import the Next.js Script component
 
-// ... (font definitions and metadata can stay the same) ...
 const fontBody = Inter({ subsets: ['latin'], variable: '--font-body' });
 const fontHeadline = Space_Grotesk({ subsets: ['latin'], variable: '--font-headline' });
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
-export const metadata: Metadata = { /* ... */ };
-const organizationSchema = { /* ... */ };
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
+    template: `%s | QuantPrep`,
+  },
+  description: "Master the core concepts of quantitative finance with AI-powered tools, interactive guides, and a community of learners.",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
+    description: 'The ultimate platform for mastering quantitative finance, from theory to application.',
+    url: siteUrl,
+    siteName: 'QuantPrep',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'QuantPrep Open Graph Image',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
+    description: 'The ultimate platform for mastering quantitative finance, from theory to application.',
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: `${siteUrl}/site.webmanifest`,
+};
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'QuantPrep',
+  url: siteUrl,
+  logo: `${siteUrl}/logo.png`,
+  sameAs: [
+    'https://twitter.com/QuantPrep',
+    'https://www.linkedin.com/company/quantprep',
+  ],
+};
+
 
 export default function RootLayout({
   children,
@@ -27,21 +88,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        {/* All CSS links go here */}
+        {/* External CSS files are safe to keep in the head */}
         <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/css/pyscript.css" />
 
-        {/* --- THIS IS THE KEY --- */}
-        {/* Use next/script's onLoad to fire a custom event when PyScript is truly ready. */}
-        <Script
-          src="https://pyscript.net/releases/2023.11.1/core.js"
-          strategy="afterInteractive"
-          onLoad={() => {
-            // This code runs ONLY after core.js has loaded and executed.
-            console.log("layout.tsx: PyScript core.js has loaded. Firing 'pyscript-ready' event.");
-            document.dispatchEvent(new Event('pyscript-ready'));
-          }}
-        />
+        {/* Load PyScript using a standard script tag. This avoids Next.js server/client prop issues. */}
+        <script defer src="https://pyscript.net/releases/2023.11.1/core.js"></script>
       </head>
       <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
         <Providers>
@@ -49,7 +101,7 @@ export default function RootLayout({
           <OrientationBanner />
         </Providers>
         
-        {/* Prism.js scripts can be loaded here at the end */}
+        {/* Prism.js scripts can be loaded here at the end of the body */}
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>

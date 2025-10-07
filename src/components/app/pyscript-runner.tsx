@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Play, Loader2, Terminal, Copy } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 // Define the global window types
@@ -53,16 +52,18 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
       setStatus('error');
     }
   }, [packages]);
-
+  
+  // This useEffect hook implements the reliable polling strategy.
   useEffect(() => {
-    const checkPyScript = () => {
+    const interval = setInterval(() => {
       if (window.pyscript?.interpreter) {
+        clearInterval(interval);
         initialize();
-      } else {
-        setTimeout(checkPyScript, 100); // Poll every 100ms
       }
-    };
-    checkPyScript();
+    }, 100); // Check every 100ms
+
+    // Cleanup function to clear the interval if the component unmounts
+    return () => clearInterval(interval);
   }, [initialize]);
 
 
@@ -77,10 +78,11 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
     
     setStatus('running');
     setError(null);
-    setOutputContent(null); // Clear previous output before running
+    setOutputContent(null);
     let errorOccurred = false;
 
     try {
+      // Redirect Python's print() function to update our React state
       window.pyscript.interpreter.globals.set("pyscript", {
         write: (id: string, value: any) => {
           if (id === outputId) {
@@ -91,8 +93,8 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
       await window.pyscript.run(code);
     } catch (e: any) {
       setError(e.message || String(e));
-      setStatus('error');
       errorOccurred = true;
+      setStatus('error');
     } finally {
       if (!errorOccurred) {
         setStatus('ready');
