@@ -1,3 +1,4 @@
+// src/components/app/pyscript-runner.tsx (Final, Correct Version)
 
 'use client';
 
@@ -9,7 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
-// Define a more specific type for the PyScript object for better type safety
+// Define the global window types
 declare global {
     interface Window {
         pyscript: {
@@ -28,102 +29,78 @@ interface PyScriptRunnerProps {
   packages?: string[];
 }
 
-// Define the possible states for our component
-type Status = 'loading_script' | 'loading_packages' | 'ready' | 'running' | 'error';
+type Status = 'waiting_for_script' | 'loading_packages' | 'ready' | 'running' | 'error';
 
 export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunnerProps) {
   const codeRef = useRef<HTMLElement>(null);
-  const [status, setStatus] = useState<Status>('loading_script');
+  const [status, setStatus] = useState<Status>('waiting_for_script');
   const [error, setError] = useState<string | null>(null);
   const [outputContent, setOutputContent] = useState<React.ReactNode>(null);
   const { toast } = useToast();
 
-  // --- THIS IS THE FIX (PART 2) ---
-  // This effect now uses polling to wait for the PyScript environment.
-  useEffect(() => {
-    const initialize = async () => {
-      setStatus('loading_packages');
-      try {
-        if (!window.pyscript?.interpreter) {
-          throw new Error("PyScript interpreter not found on window.");
-        }
-        if (packages && packages.length > 0) {
-          console.log(`PyScriptRunner: Loading packages: ${packages.join(', ')}`);
-          await window.pyscript.pyodide.loadPackage(packages);
-        }
-        console.log("PyScriptRunner: Environment is ready.");
-        setStatus('ready');
-      } catch (e: any) {
-        console.error("PyScriptRunner: Initialization failed.", e);
-        setError(e.message);
-        setStatus('error');
+  const initialize = useCallback(async () => {
+    console.log("PyScriptRunner: Initialize function called.");
+    setStatus('loading_packages');
+    try {
+      if (!window.pyscript?.interpreter) {
+        throw new Error("PyScript interpreter not found on window object.");
       }
-    };
-    
-    // Poll for the pyscript interpreter to be ready.
-    const intervalId = setInterval(() => {
-        if (window.pyscript?.interpreter) {
-            clearInterval(intervalId);
-            initialize();
-        }
-    }, 100);
-
-    // Cleanup function to clear the interval if the component unmounts.
-    return () => clearInterval(intervalId);
+      if (packages.length > 0) {
+        console.log(`PyScriptRunner: Loading packages: ${packages.join(', ')}`);
+        await window.pyscript.pyodide.loadPackage(packages);
+      }
+      console.log("PyScriptRunner: Environment is ready.");
+      setStatus('ready');
+    } catch (e: any) {
+      console.error("PyScriptRunner: Initialization failed.", e);
+      setError(e.message);
+      setStatus('error');
+    }
   }, [packages]);
 
-  // Effect for syntax highlighting
   useEffect(() => {
-    if (codeRef.current && status !== 'loading_script' && window.Prism) {
+    if (window.pyscript?.interpreter) {
+      console.log("PyScriptRunner: Interpreter already available. Initializing immediately.");
+      initialize();
+    } else {
+      console.log("PyScriptRunner: Waiting for 'pyscript-ready' event from layout.");
+      document.addEventListener('pyscript-ready', initialize);
+    }
+
+    return () => {
+      document.removeEventListener('pyscript-ready', initialize);
+    };
+  }, [initialize]);
+
+  useEffect(() => {
+    if (codeRef.current && window.Prism) {
       window.Prism.highlightElement(codeRef.current);
     }
-  }, [code, status]);
+  }, [code]);
 
   const handleRunCode = async () => {
     if (status !== 'ready') return;
     
     setStatus('running');
     setError(null);
-    setOutputContent(
-      <div className="flex items-center text-sm text-muted-foreground">
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        Running...
-      </div>
-    );
+    setOutputContent(null); // Clear previous output before running
 
     try {
-      // Define a custom pyscript.write function in Python's global scope
-      // This intercepts output and sends it to our React state.
       window.pyscript.interpreter.globals.set("pyscript", {
         write: (id: string, value: any) => {
           if (id === outputId) {
-             // Use a function with setOutputContent to get the previous state
-             // and append to it, rather than replacing it.
-            setOutputContent(prev => 
-                prev ? <>{prev}{String(value)}</> : String(value)
-            );
+            setOutputContent(prev => prev ? <>{prev}{String(value)}</> : String(value));
           }
         },
       });
-      
-      // Before running, clear previous output if it exists from a prior run.
-      // We check if it's not the initial "Running..." message.
-      if (typeof outputContent !== 'object') {
-          setOutputContent(null);
-      }
-
       await window.pyscript.run(code);
-      
-      // After running, if no new output was generated, clear the "Running..." message.
-      if (status === 'running') {
-        setOutputContent(null);
-      }
-      setStatus('ready');
     } catch (e: any) {
-      const errorMessage = e.message || String(e);
-      setError(errorMessage);
-      setOutputContent(null);
+      setError(e.message || String(e));
       setStatus('error');
+    } finally {
+      if (status !== 'error') {
+        setStatus('ready');
+      }
     }
   };
   
@@ -133,8 +110,8 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
   };
 
   const statusMessages: Record<Status, string> = {
-    loading_script: 'Loading Env...',
-    loading_packages: 'Loading Pkgs...',
+    waiting_for_script: 'Loading Environment...',
+    loading_packages: 'Loading Packages...',
     ready: 'Run Code',
     running: 'Running...',
     error: 'Error Occurred',
@@ -153,7 +130,7 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
 
       <div className="flex items-center gap-4">
         <Button onClick={handleRunCode} disabled={status !== 'ready'} size="sm">
-          {status === 'running' || status === 'loading_packages' || status === 'loading_script' ? (
+          {status === 'running' || status === 'loading_packages' || status === 'waiting_for_script' ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             <Play className="mr-2 h-4 w-4" />
@@ -175,10 +152,9 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
           <div id={outputId} className="min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md">
             {outputContent || (
               <div className="text-sm text-muted-foreground">
-                {(status === 'ready' || status === 'running') && 'Click "Run Code" to see the output.'}
-                {status === 'error' && 'An error occurred. Check the error message above.'}
-                 {status === 'loading_script' && 'Initializing Python environment...'}
-                 {status === 'loading_packages' && 'Downloading required packages...'}
+                {status === 'ready' && 'Click "Run Code" to see the output.'}
+                {status !== 'ready' && !error && 'The Python environment is preparing...'}
+                {status === 'error' && 'An error occurred.'}
               </div>
             )}
           </div>
