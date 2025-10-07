@@ -3,10 +3,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Loader2, Terminal } from 'lucide-react';
+import { Play, Loader2, Terminal, Copy } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 declare global {
     interface Window {
@@ -25,22 +26,22 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
   const [isReady, setIsReady] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [output, setOutput] = useState('Click "Run Code" to see the output.');
+  const { toast } = useToast();
   
+  // This effect checks for the global pyscript object to determine readiness.
   useEffect(() => {
-    // Check if PyScript is loaded and ready
     const checkReady = () => {
       if (window.pyscript && typeof window.pyscript.run === 'function') {
         setIsReady(true);
       } else {
-        setTimeout(checkReady, 100);
+        setTimeout(checkReady, 150); // Check again shortly
       }
     };
     checkReady();
   }, []);
 
+  // This effect is for syntax highlighting via Prism.js
   useEffect(() => {
-    // Highlight the code block when the component mounts or code changes
     if (codeRef.current && window.Prism) {
       window.Prism.highlightElement(codeRef.current);
     }
@@ -51,31 +52,60 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
     
     setIsRunning(true);
     setError(null);
-    setOutput(''); // Clear previous output
 
     const outputElement = document.getElementById(outputId);
     if (outputElement) {
-        outputElement.innerHTML = '';
+        outputElement.innerHTML = '<div class="flex items-center text-sm text-muted-foreground"><span class="loader-spin mr-2 h-4 w-4"></span>Running...</div>';
+        const loaderSpan = outputElement.querySelector('.loader-spin');
+        if (loaderSpan) {
+            const loader = new Loader2({className: 'animate-spin'});
+            loader.render(loaderSpan as any);
+        }
     }
 
     try {
+      // Use the pyscript.run API to execute the code
       await window.pyscript.run(code);
     } catch (e: any) {
       const errorMessage = e.message || String(e);
       setError(errorMessage);
+       if (outputElement) {
+          // Clear "Running..." message and show error
+          outputElement.innerHTML = '';
+      }
     } finally {
       setIsRunning(false);
     }
   };
 
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(code.trim());
+    toast({
+      title: "Copied to Clipboard",
+      description: "The Python code has been copied.",
+    })
+  }
+
   return (
     <div className="space-y-4">
       {/* The pre tag MUST have the language-python class for the Prism toolbar to appear */}
-      <pre className="language-python rounded-lg !m-0 border">
-          <code ref={codeRef} className="language-python">
-            {code.trim()}
-          </code>
-      </pre>
+      <div className="relative group">
+          <pre className="language-python rounded-lg !m-0 border !py-4 !px-6">
+              <code ref={codeRef} className="language-python">
+                {code.trim()}
+              </code>
+          </pre>
+           <Button 
+                variant="ghost" 
+                size="icon" 
+                className="absolute top-3 right-3 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={handleCopyCode}
+            >
+                <Copy className="h-4 w-4" />
+                <span className="sr-only">Copy Code</span>
+            </Button>
+      </div>
+
 
       <div className="flex items-center gap-4 rounded-b-lg border-t-0 p-2">
             <Button onClick={handleRunCode} disabled={!isReady || isRunning} size="sm">
@@ -101,7 +131,7 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
             <div 
               id={outputId} 
               className={cn(
-                  "min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md",
+                  "min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md overflow-x-auto",
                   error && 'text-destructive'
                 )}
             >
@@ -111,12 +141,11 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
               {isReady && !isRunning && !error && (
                 <div className="text-sm text-muted-foreground">Click "Run Code" to see the output.</div>
               )}
-               {isRunning && (
-                <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Running...</div>
-              )}
             </div>
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    

@@ -15,7 +15,6 @@ function PythonImplementation() {
       <PyScriptRunner
         code={qrDecompositionSolverCode}
         outputId="output-qr-solver"
-        packages={['numpy', 'scipy']}
       />
     );
 }
@@ -135,3 +134,5 @@ export default function QRDecompositionPage() {
     </>
   );
 }
+
+    

@@ -25,7 +25,12 @@ Vector b:
 
 --- Solution ---
 The solution vector x is:
-{x}
+{np.round(x, 4)}
+
+--- Verification (A @ x) ---
+{np.round(A @ x, 4)}
 """
 pyscript.write("output-lu-solver", result_string)
-`;
+`
+
+    

@@ -27,14 +27,16 @@ Vector b:
 
 --- Decomposition ---
 Cholesky Factor L:
-{L}
+{np.round(L, 4)}
 
 --- Solution ---
 The solution vector x is:
-{x}
+{np.round(x, 4)}
 
 --- Verification (A @ x) ---
-{A @ x}
+{np.round(A @ x, 4)}
 """
 pyscript.write("output-cholesky-solver", result_string)
-`;
+`
+
+    

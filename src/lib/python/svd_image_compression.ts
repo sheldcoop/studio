@@ -41,11 +41,15 @@ try:
     buf.seek(0)
     img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
     
-    # Create an HTML img tag
+    # Create an HTML img tag to display the plot
     img_html = f'<img src="data:image/png;base64,{img_str}" alt="SVD Image Compression" />'
-    pyscript.write("output-svd-solver", img_html)
+    
+    # Get the output element
+    output_element = pyscript.dom.get_element_by_id("output-svd-solver")
+    output_element.innerHTML = img_html
 
 except Exception as e:
     pyscript.write("output-svd-solver", f"Error: Could not load image or perform SVD. Please check the network connection.\\n{e}")
+`
 
-`;
+    

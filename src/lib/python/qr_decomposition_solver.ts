@@ -34,14 +34,16 @@ result_string = f"""--- Matrix A ---
 
 --- Decomposed Matrices ---
 Q (Orthogonal):
-{Q}
+{np.round(Q, 4)}
 
 R (Upper Triangular):
-{R}
+{np.round(R, 4)}
 
 --- Solution ---
 The best fit line is y = {m:.2f}x + {c:.2f}
 """
 
 pyscript.write("output-qr-solver", result_string)
-`;
+`
+
+    
