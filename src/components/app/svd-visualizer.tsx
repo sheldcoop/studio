@@ -23,6 +23,7 @@ function PythonImplementation() {
         <PyScriptRunner
             code={svdImageCompressionCode}
             outputId="output-svd-solver"
+            packages={['numpy', 'matplotlib', 'scikit-image']}
         />
     );
 }
@@ -145,5 +146,3 @@ const SVDVisualizer = () => {
   );
 };
 export default SVDVisualizer;
-
-    

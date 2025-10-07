@@ -15,6 +15,7 @@ function PythonImplementation() {
       <PyScriptRunner
         code={choleskyDecompositionSolverCode}
         outputId="output-cholesky-solver"
+        packages={['numpy', 'scipy']}
       />
     );
 }
@@ -155,5 +156,3 @@ export default function CholeskyDecompositionPage() {
     </>
   );
 }
-
-    

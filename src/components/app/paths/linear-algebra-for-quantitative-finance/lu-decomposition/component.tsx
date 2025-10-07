@@ -154,6 +154,7 @@ function PythonImplementation() {
       <PyScriptRunner
         code={luDecompositionSolverCode}
         outputId="output-lu-solver"
+        packages={['numpy', 'scipy']}
       />
     );
 }
@@ -230,5 +231,3 @@ export default function LUDecompositionPage() {
     </>
   );
 }
-
-    
