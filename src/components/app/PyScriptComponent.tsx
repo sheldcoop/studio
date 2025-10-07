@@ -1,4 +1,3 @@
-
 'use client'; // This directive is ESSENTIAL. It tells Next.js to only render this component in the browser.
 
 import { useEffect } from 'react';
@@ -29,8 +28,7 @@ export default function PyScriptComponent({ pythonCode }: { pythonCode: string }
   }, []); // The empty dependency array [] ensures this effect runs only ONCE.
 
   return (
-    <div className="pyscript-container" style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', marginBlock: '1rem' }}>
-      <h4>Python Output:</h4>
+    <div>
       {/* The <py-script> tag is where your Python code is executed.
         We use the `key` prop with the pythonCode itself. This is a crucial React trick.
         When the `pythonCode` prop changes, the key changes, forcing React to destroy the old
