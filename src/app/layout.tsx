@@ -89,7 +89,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://pyscript.net/releases/2025.8.1/core.css" />
         <script type="module" src="https://pyscript.net/releases/2025.8.1/core.js"></script>
       </head>
@@ -98,6 +97,8 @@ export default function RootLayout({
           {children}
           <OrientationBanner />
         </Providers>
+        {/* Configure the Python environment once for the entire application */}
+        <script type="py" src="/python/solver.py" config="/pyscript.json"></script>
       </body>
     </html>
   );

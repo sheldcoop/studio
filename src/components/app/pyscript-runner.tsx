@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -13,10 +14,9 @@ declare global {
 }
 
 interface PyScriptRunnerProps {
-  // We no longer pass code directly. Instead, we pass the data the python script will use.
   matrix?: number[][];
   vector?: number[];
-  operation: 'cholesky' | 'lu' | 'qr';
+  operation: 'cholesky' | 'lu' | 'qr' | 'svd'; // Added 'svd'
   outputId: string;
 }
 
@@ -74,9 +74,6 @@ export function PyScriptRunner({ matrix, vector, operation, outputId }: PyScript
 
   return (
     <div className="space-y-4">
-        {/* The script tag is now simplified and points to the external files */}
-        <script type="py" src="/python/solver.py" config="/pyscript.json"></script>
-        
       <Button onClick={runCode} disabled={!isReady || isRunning}>
         {isRunning ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
