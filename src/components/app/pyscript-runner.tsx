@@ -3,15 +3,17 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Loader2 } from 'lucide-react';
+import { Play, Loader2, Terminal, Copy, Check } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+
 
 declare global {
     interface Window {
         pyscript: any;
+        Prism: any;
     }
 }
 
@@ -26,6 +28,8 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
   const [isReady, setIsReady] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasCopied, setHasCopied] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check if PyScript is loaded and ready to run code
@@ -65,6 +69,24 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
     }
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code).then(() => {
+      setHasCopied(true);
+      toast({
+        title: 'Copied to clipboard!',
+        description: 'The Python code has been copied to your clipboard.',
+      });
+      setTimeout(() => setHasCopied(false), 2000);
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+      toast({
+        variant: 'destructive',
+        title: 'Copy Failed',
+        description: 'Could not copy code to clipboard.',
+      });
+    });
+  };
+
   useEffect(() => {
     if (codeRef.current && (window as any).Prism) {
       (window as any).Prism.highlightElement(codeRef.current);
@@ -79,6 +101,12 @@ export function PyScriptRunner({ code, outputId }: PyScriptRunnerProps) {
             {code.trim()}
           </code>
         </pre>
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy}>
+                {hasCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                <span className="sr-only">Copy code</span>
+            </Button>
+        </div>
       </div>
       <div className="flex items-center gap-4 rounded-b-lg border border-t-0 p-2">
         <Button onClick={handleRunCode} disabled={!isReady || isRunning} size="sm">
