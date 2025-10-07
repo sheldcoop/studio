@@ -3,9 +3,9 @@
 
 import p5 from 'p5';
 import { applyMatrix as applyMatrixMath, calculateDeterminant, invertMatrix, matrixMultiply, calculateSVD as calculateSVDMath } from '@/lib/math/linear-algebra';
-import { drawVector, drawParallelogram, drawGrid, drawDashedLine } from './primitives';
+import { drawVector, drawParallelogram, drawDashedLine } from './primitives';
 import { easeInOutCubic } from './animation';
-import { drawLine } from './coordinate-system';
+import { drawLine, drawGrid } from './coordinate-system';
 
 /**
  * Applies a matrix transformation to a p5 vector.
@@ -447,4 +447,5 @@ export const drawPCA = (p: p5, dataPoints: p5.Vector[], scaleFactor: number) => 
     drawVector(p, v2.copy().mult(Math.sqrt(trace - l1)*2), scaleFactor, p.color(100,255,100), 'PC2', 3, mean);
 };
 
+    
     
