@@ -153,6 +153,15 @@ export default function KolmogorovSmirnovTestPage() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">Python Implementation</CardTitle>
+          </CardHeader>
+          <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
+            <p className="text-muted-foreground">Python implementation coming soon.</p>
+          </CardContent>
+        </Card>
       </div>
     </>
   );
