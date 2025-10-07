@@ -4,10 +4,11 @@
 
 import { type Topic, type SubTopic } from '@/lib/curriculum';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { BookOpen, Code, BrainCircuit, BarChart, Scaling, Sigma, Waypoints, VenetianMask, Plane, Combine } from 'lucide-react';
+import { BookOpen, Code, BrainCircuit, BarChart, Scaling, Sigma, Waypoints, VenetianMask, Plane, Combine, AppWindow } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
+import { MatrixAdditionTheory, MatrixMultiplicationTheory, MatrixTransposeTheory, ScalarMultiplicationTheory } from '@/lib/curriculum/matrix-operations';
 
 // Dynamically import the visualizer components
 const EigenVisualizer = dynamic(
@@ -96,6 +97,14 @@ const LUDecompositionVisualizer = dynamic(
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false,
   }
+);
+
+const MatrixOperationsVisualizer = dynamic(
+    () => import('@/components/app/matrix-operations-visualizer'),
+    {
+      loading: () => <Skeleton className="h-[400px] w-full" />,
+      ssr: false,
+    }
 );
 
 
@@ -469,6 +478,50 @@ function ChangeOfBasisPage() {
     );
 }
 
+function MatrixOperationsPage({ topic }: { topic: Topic }) {
+    if (!topic.subTopics) return null;
+    return (
+        <div className="space-y-12">
+            {topic.subTopics.map((subTopic) => {
+                let theory, visualizer;
+                switch (subTopic.id) {
+                    case 'matrix-addition-subtraction':
+                        theory = MatrixAdditionTheory();
+                        break;
+                    case 'scalar-multiplication':
+                        theory = ScalarMultiplicationTheory();
+                        break;
+                    case 'matrix-multiplication':
+                        theory = MatrixMultiplicationTheory();
+                        break;
+                    case 'matrix-transpose':
+                        theory = MatrixTransposeTheory();
+                        break;
+                }
+
+                return (
+                    <section key={subTopic.id} id={subTopic.id} className="scroll-mt-24">
+                        <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">{subTopic.title}</h2>
+                        <div className="prose prose-invert max-w-none p-6 bg-card rounded-lg" dangerouslySetInnerHTML={{ __html: theory || '' }} />
+                    </section>
+                );
+            })}
+             <section className="scroll-mt-24">
+                <h2 className="font-headline text-3xl font-bold border-b pb-4 mb-8">Interactive Visualizer</h2>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><AppWindow className="text-primary" /> Interactive Demo</CardTitle>
+                        <CardDescription>See how these operations affect vectors and the grid space in real-time.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                       <MatrixOperationsVisualizer />
+                    </CardContent>
+                </Card>
+             </section>
+        </div>
+    );
+}
+
 
 export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
     const { id: topicId, subTopics } = topicInfo;
@@ -482,6 +535,7 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
     const isCovarianceTopic = topicId === 'covariance-and-correlation-matrices';
     const isFundamentalSubspaceTopic = topicId === 'the-four-fundamental-subspaces';
     const isLUDecompositionTopic = topicId === 'lu-decomposition';
+    const isMatrixOperationsTopic = topicId === 'matrix-operations';
     
     if (isFundamentalSubspaceTopic) {
         return <FourSubspacesPage topic={topicInfo} />;
@@ -493,6 +547,10 @@ export function TopicContentSection({ topicInfo }: { topicInfo: Topic }) {
     
     if (isChangeOfBasisTopic) {
         return <ChangeOfBasisPage />;
+    }
+
+    if (isMatrixOperationsTopic) {
+        return <MatrixOperationsPage topic={topicInfo} />;
     }
 
     const renderInteractiveDemo = () => {

@@ -1,6 +1,7 @@
 
 import { type Topic } from './types';
 import { createTopic } from './utils';
+import { matrixOperationsTheory } from './matrix-operations';
 
 const PATH_PREFIX = 'linear-algebra-for-quantitative-finance';
 
@@ -27,12 +28,7 @@ export const linearAlgebraPart1: Topic[] = [
         description: "Aggregating data across assets and time.",
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'matrix-add-subtract', title: 'Matrix Addition & Subtraction' },
-            { id: 'scalar-multiplication', title: 'Scalar Multiplication' },
-            { id: 'matrix-multiplication', title: 'Matrix Multiplication' },
-            { id: 'matrix-transpose', title: 'The Matrix Transpose' },
-        ]
+        subTopics: matrixOperationsTheory
     }),
     createTopic({
         parent: 'la-module-1',
