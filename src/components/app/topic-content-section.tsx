@@ -172,7 +172,9 @@ function EigenvalueProperties() {
       <p>This is a convenient shortcut. If you have an upper or lower triangular matrix, the eigenvalues are simply the numbers on the main diagonal.</p>
       <div className="p-4 rounded-md bg-muted/50 my-4 not-prose">
         <p className="font-semibold">Example:</p>
-        <p>For the matrix <InlineMath math="B = \begin{pmatrix} 5 & 10 & -1 \\ 0 & -2 & 3 \\ 0 & 0 & 7 \end{pmatrix}" />, you don't need to do any calculation. The eigenvalues are immediately known to be 5, -2, and 7.</p>
+        <>
+            <p>For the matrix <InlineMath math="B = \begin{pmatrix} 5 & 10 & -1 \\ 0 & -2 & 3 \\ 0 & 0 & 7 \end{pmatrix}" />, you don't need to do any calculation.</p><p> The eigenvalues are immediately known to be 5, -2, and 7.</p>
+        </>
       </div>
     </div>
   );
