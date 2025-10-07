@@ -59,6 +59,7 @@ import LUDecompositionPage from '@/app/(app)/paths/linear-algebra-for-quantitati
 import CholeskyDecompositionPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/cholesky-decomposition/component';
 import QRDecompositionPage from '@/app/(app)/paths/linear-algebra-for-quantitative-finance/qr-decomposition/component';
 import SvdVisualizer from '@/components/app/svd-visualizer';
+import PythonNormalDistributionPage from '@/app/(app)/paths/probability-for-quants/python-normal-distribution/component';
 
 
 type TopicPageProps = {
@@ -237,6 +238,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'cholesky-decomposition': CholeskyDecompositionPage,
   'qr-decomposition': QRDecompositionPage,
   'svd-visualizer': SvdVisualizer,
+  'python-normal-distribution': PythonNormalDistributionPage,
 };
 
 
