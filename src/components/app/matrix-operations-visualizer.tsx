@@ -3,13 +3,20 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Play, Pause, RotateCcw, Sliders } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { drawGrid, drawVector, easeInOutCubic } from '@/lib/p5';
-import { applyMatrix } from '@/lib/math';
+import { applyMatrix as applyMatrixMath } from '@/lib/math';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+// Helper to convert plain {x,y} object to p5.Vector
+const toP5Vector = (p: p5, vec: { x: number, y: number }): p5.Vector => {
+    return p.createVector(vec.x, vec.y);
+};
+
 
 const MatrixOperationsVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -52,16 +59,16 @@ const MatrixOperationsVisualizer = () => {
                 switch (state.op) {
                     case 'add':
                         M_res = { a: M1.a + M2.a, b: M1.b + M2.b, c: M1.c + M2.c, d: M1.d + M2.d };
-                        v_final = applyMatrix(p, M_res, v);
+                        v_final = toP5Vector(p, applyMatrixMath(v, M_res));
                         break;
                     case 'scalar':
                         M_res = { a: M1.a * state.scalar, b: M1.b * state.scalar, c: M1.c * state.scalar, d: M1.d * state.scalar };
-                        v_final = applyMatrix(p, M_res, v);
+                        v_final = toP5Vector(p, applyMatrixMath(v, M_res));
                         break;
                     case 'multiply':
                         M_res = { a: M1.a*M2.a + M1.b*M2.c, b: M1.a*M2.b + M1.b*M2.d, c: M1.c*M2.a + M1.d*M2.c, d: M1.c*M2.b + M1.d*M2.d };
-                        v_intermediate = applyMatrix(p, M2, v);
-                        v_final = applyMatrix(p, M1, v_intermediate);
+                        v_intermediate = toP5Vector(p, applyMatrixMath(v, M2));
+                        v_final = toP5Vector(p, applyMatrixMath(v_intermediate, M1));
                         break;
                     default:
                         v_final = v_start;
