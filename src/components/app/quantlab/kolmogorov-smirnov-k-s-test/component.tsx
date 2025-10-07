@@ -109,6 +109,7 @@ function PythonImplementation() {
   const code = `
 import numpy as np
 from scipy.stats import norm, kstest
+from pyscript import display
 
 # Step 1: Generate a sample from a normal distribution
 np.random.seed(42)
@@ -123,19 +124,24 @@ ks_statistic, p_value = kstest(sample, 'norm')
 
 # Step 3: Comparing
 alpha = 0.05
-print(f"Kolmogorov-Smirnov Statistic: {ks_statistic:.4f}")
-print(f"P-value: {p_value:.4f}")
+
+output = f"""
+Kolmogorov-Smirnov Statistic: {ks_statistic:.4f}
+P-value: {p_value:.4f}
+"""
 
 if p_value < alpha:
-    print("Conclusion: The sample does not come from a standard normal distribution (Reject H0).")
+    output += "\\nConclusion: The sample does not come from a standard normal distribution (Reject H0)."
 else:
-    print("Conclusion: Cannot conclude the sample does not come from a standard normal distribution (Fail to reject H0).")
+    output += "\\nConclusion: Cannot conclude the sample does not come from a standard normal distribution (Fail to reject H0)."
+
+display(output, target="ks-test-output")
 `;
   return (
     <PyScriptRunner
       code={code}
       outputId="ks-test-output"
-      title="Kolmogorov-Smirnov Test Python One-Sample"
+      title="One-Sample Kolmogorov-Smirnov Test"
     />
   );
 }
