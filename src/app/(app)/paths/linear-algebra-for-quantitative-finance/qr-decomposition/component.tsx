@@ -16,7 +16,7 @@ from scipy.linalg import solve_triangular
 from pyscript import display
 import matplotlib.pyplot as plt
 
-# Clear any previous plots
+# Clear any previous plots to avoid duplication on re-run
 plt.clf()
 
 # --- Define the overdetermined system Ax = b ---
@@ -35,8 +35,9 @@ y = Q.T @ b
 # This is fast and numerically stable.
 x_solution = solve_triangular(R, y)
 
-# --- Display the results ---
+# --- Display the results as formatted text ---
 output_str = f"""
+<div style='font-family: monospace; white-space: pre;'>
 Input Matrix A:\\n{A}\\n
 Input Vector b:\\n{b}\\n
 ------------------------------------
@@ -52,6 +53,7 @@ Transformed Vector y:\\n{np.round(y, 4)}\\n
 Step 3: Solve Rx = y
 ------------------------------------
 Least-Squares Solution x:\\n{np.round(x_solution, 4)}
+</div>
 """
 
 display(output_str, target="output-qr-solver")
