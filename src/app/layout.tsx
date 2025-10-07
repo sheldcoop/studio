@@ -1,5 +1,4 @@
 
-
 // src/app/layout.tsx (Correct Version)
 
 import type { Metadata } from 'next';
@@ -82,19 +81,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-        />
-      </head>
-      <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
-        <Providers>
-          {children}
-          <OrientationBanner />
-        </Providers>
-      </body>
-    </html>
+    <>
+      {`<!DOCTYPE html>`}
+      <html lang="en" suppressHydrationWarning>
+        <head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          />
+        </head>
+        <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
+          <Providers>
+            {children}
+            <OrientationBanner />
+          </Providers>
+        </body>
+      </html>
+    </>
   );
 }
