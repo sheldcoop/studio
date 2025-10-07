@@ -1,13 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Explicitly disable the Pages Router to resolve build errors.
-  // Our application uses the App Router exclusively.
-  pagesRouter: false,
   webpack: (config) => {
-    // Add rule to handle .py files
+    // Add rule to handle .py files as text using Webpack 5's built-in asset modules
     config.module.rules.push({
       test: /\.py$/,
-      use: 'raw-loader',
+      type: 'asset/source',
     });
 
     return config;
