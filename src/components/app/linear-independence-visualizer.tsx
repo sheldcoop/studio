@@ -11,8 +11,8 @@ const LinearIndependenceVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
     const sketchRef = useRef<p5 | null>(null);
 
-    const [v1Coords, setV1Coords] = useState("(2.50, 1.00)");
-    const [v2Coords, setV2Coords] = useState("(-1.00, 2.00)");
+    const [v1State, setV1State] = useState({ x: 2.5, y: 1.0 });
+    const [v2State, setV2State] = useState({ x: -1.0, y: 2.0 });
     const [determinant, setDeterminant] = useState(6.00);
     const [isDependent, setIsDependent] = useState(false);
 
@@ -26,11 +26,26 @@ const LinearIndependenceVisualizer = () => {
             let draggingV1 = false, draggingV2 = false;
             let scaleFactor: number;
 
+            const sketchState = {
+                v1: v1State,
+                v2: v2State,
+            };
+
+            (p as any).updateWithProps = (props: { v1: typeof v1State, v2: typeof v2State }) => {
+                sketchState.v1 = props.v1;
+                sketchState.v2 = props.v2;
+                if(v1) v1.set(props.v1.x, props.v1.y);
+                if(v2) v2.set(props.v2.x, props.v2.y);
+                p.redraw();
+            };
+
             p.setup = () => {
                 const container = canvasRef.current!;
                 p.createCanvas(container.offsetWidth, container.offsetHeight).parent(container);
-                v1 = p.createVector(2.5, 1);
-                v2 = p.createVector(-1, 2);
+                v1 = p.createVector(sketchState.v1.x, sketchState.v1.y);
+                v2 = p.createVector(sketchState.v2.x, sketchState.v2.y);
+                p.noLoop();
+                p.redraw();
             };
 
             p.draw = () => {
@@ -39,15 +54,11 @@ const LinearIndependenceVisualizer = () => {
                 p.translate(p.width / 2, p.height / 2);
                 p.scale(1, -1);
 
-                handleDragging();
-
                 const det = v1.x * v2.y - v1.y * v2.x;
                 const dependencyThreshold = 0.05;
                 const dependent = Math.abs(det) < dependencyThreshold;
                 
-                // Update React state
-                setV1Coords(`(${v1.x.toFixed(2)}, ${v1.y.toFixed(2)})`);
-                setV2Coords(`(${v2.x.toFixed(2)}, ${v2.y.toFixed(2)})`);
+                // Update React state via setters passed in props
                 setDeterminant(det);
                 setIsDependent(dependent);
 
@@ -67,19 +78,20 @@ const LinearIndependenceVisualizer = () => {
                 p5DrawVector(p, v1, scaleFactor, p.color(248, 113, 113), 'v₁', 4);
                 p5DrawVector(p, v2, scaleFactor, p.color(96, 165, 250), 'v₂', 4);
             };
-            
-            const handleDragging = () => {
-                if (!p.mouseIsPressed) return;
-                const mouseVec = screenToWorld(p.mouseX, p.mouseY);
-
-                if (draggingV1) v1.set(mouseVec);
-                else if (draggingV2) v2.set(mouseVec);
-            };
 
             p.mousePressed = () => {
-                const mouseVec = screenToWorld(p.mouseX, p.mouseY);
+                const mouseVec = p5ScreenToWorld(p, p.mouseX, p.mouseY, scaleFactor);
                 if (p5.Vector.dist(mouseVec, v1) < 0.5) draggingV1 = true;
                 else if (p5.Vector.dist(mouseVec, v2) < 0.5) draggingV2 = true;
+            };
+            
+            p.mouseDragged = () => {
+                const mouseVec = p5ScreenToWorld(p, p.mouseX, p.mouseY, scaleFactor);
+                 if (draggingV1) {
+                    setV1State({ x: mouseVec.x, y: mouseVec.y });
+                } else if (draggingV2) {
+                    setV2State({ x: mouseVec.x, y: mouseVec.y });
+                }
             };
 
             p.mouseReleased = () => {
@@ -87,11 +99,10 @@ const LinearIndependenceVisualizer = () => {
                 draggingV2 = false;
             };
 
-            const screenToWorld = (mx: number, my: number) => p5ScreenToWorld(p, mx, my, scaleFactor);
-
             p.windowResized = () => {
                 if(canvasRef.current) {
                     p.resizeCanvas(canvasRef.current.offsetWidth, canvasRef.current.offsetHeight);
+                    p.redraw();
                 }
             };
         };
@@ -102,6 +113,12 @@ const LinearIndependenceVisualizer = () => {
             sketchRef.current?.remove();
         };
     }, []);
+
+    useEffect(() => {
+        if (sketchRef.current && (sketchRef.current as any).updateWithProps) {
+            (sketchRef.current as any).updateWithProps({ v1: v1State, v2: v2State });
+        }
+    }, [v1State, v2State]);
 
     return (
         <div className="flex flex-col md:flex-row h-auto md:h-auto gap-6 bg-gray-900 rounded-lg p-4">
@@ -123,11 +140,11 @@ const LinearIndependenceVisualizer = () => {
                 <div className="bg-background/30 border border-cyan-500/30 rounded-lg p-4 space-y-3">
                     <div className="flex justify-between items-center">
                         <span className="text-lg text-red-300 font-bold">v₁ =</span>
-                        <span id="v1-coords" className="font-mono text-lg">{v1Coords}</span>
+                        <span id="v1-coords" className="font-mono text-lg">{`(${v1State.x.toFixed(2)}, ${v1State.y.toFixed(2)})`}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-lg text-blue-300 font-bold">v₂ =</span>
-                        <span id="v2-coords" className="font-mono text-lg">{v2Coords}</span>
+                        <span id="v2-coords" className="font-mono text-lg">{`(${v2State.x.toFixed(2)}, ${v2State.y.toFixed(2)})`}</span>
                     </div>
                 </div>
                 
