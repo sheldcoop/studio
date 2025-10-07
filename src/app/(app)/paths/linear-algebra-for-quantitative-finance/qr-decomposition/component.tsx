@@ -14,6 +14,10 @@ function PythonImplementation() {
 import numpy as np
 from scipy.linalg import solve_triangular
 from pyscript import display
+import matplotlib.pyplot as plt
+
+# Clear any previous plots
+plt.clf()
 
 # --- Define the overdetermined system Ax = b ---
 # A is non-square, so there is no exact solution. We find the best fit.
