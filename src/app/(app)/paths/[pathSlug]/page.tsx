@@ -1,4 +1,5 @@
 
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -13,7 +14,7 @@ type PathPageProps = {
   }>;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003';
 
 
 export async function generateMetadata({ params }: PathPageProps): Promise<Metadata> {

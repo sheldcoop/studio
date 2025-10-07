@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BlockMath, InlineMath } from 'react-katex';
 import { Trophy, ShieldCheck, Cpu, Code, Zap, HeartPulse } from 'lucide-react';
-import 'katex/dist/katex.min.css';
+
 
 export default function CholeskyDecompositionPage() {
   return (

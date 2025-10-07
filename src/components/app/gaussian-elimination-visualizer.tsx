@@ -6,7 +6,6 @@ import p5 from 'p5';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
@@ -37,24 +36,64 @@ const GaussianEliminationVisualizer = () => {
     const sketchRef = useRef<p5 | null>(null);
 
     const [matrix, setMatrix] = useState<SystemMatrix>({ a11: 2, a12: -1, b1: 1, a21: 1, a22: 1, b2: 5 });
-    const [animation, setAnimation] = useState({ active: false, progress: 0, duration: 45, startState: null as SystemMatrix | null, endState: null as SystemMatrix | null, isScaling: false });
+    const [animationState, setAnimationState] = useState({ 
+        active: false, 
+        progress: 0, 
+        duration: 45, 
+        startState: matrix, 
+        endState: matrix, 
+        isScaling: false 
+    });
     const [sliders, setSliders] = useState({ k1: 0, k2: 0, s1: 1, s2: 1 });
-    const [solution, setSolution] = useState<{ x: number, y: number } | null>(null);
-
+    const solution = calculate2x2Solution(matrix);
+    
+    // This effect runs the p5.js animation loop.
     useEffect(() => {
-        setSolution(calculate2x2Solution(matrix));
-    }, [matrix]);
+        let frameId: number;
+
+        const animate = () => {
+            if (animationState.active) {
+                setAnimationState(prev => {
+                    const nextProgress = prev.progress + 1;
+                    if (nextProgress >= prev.duration) {
+                        setMatrix(prev.endState);
+                        return { ...prev, active: false, progress: 0 };
+                    }
+                    return { ...prev, progress: nextProgress };
+                });
+            }
+            frameId = requestAnimationFrame(animate);
+        };
+
+        frameId = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(frameId);
+
+    }, [animationState.active, animationState.endState]);
+
 
     useEffect(() => {
         if (sketchRef.current) sketchRef.current.remove();
         if (!canvasRef.current) return;
 
         const sketch = (p: p5) => {
+             const componentState = {
+                matrix: matrix,
+                animation: animationState
+            };
+
+            // This function allows the p5 sketch to receive updated props from React
+            (p as any).updateWithProps = (props: any) => {
+                componentState.matrix = props.matrix;
+                componentState.animation = props.animation;
+            };
+
             p.setup = () => {
                 p.createCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight).parent(canvasRef.current!);
+                p.noLoop(); // We will manually redraw when state changes
             };
 
             p.draw = () => {
+                const { matrix: staticMatrix, animation } = componentState;
                 const scaleFactor = p.min(p.width, p.height) / 10;
                 p.background(17, 24, 39);
                 p.translate(p.width / 2, p.height / 2);
@@ -62,17 +101,10 @@ const GaussianEliminationVisualizer = () => {
 
                 drawGrid(p, p.createVector(1,0), p.createVector(0,1), p.color(55, 65, 81), 1, scaleFactor);
 
-                let currentMatrix = matrix;
-                if (animation.active && animation.startState && animation.endState) {
+                let currentMatrix = staticMatrix;
+                if (animation.active) {
                     const t = easeInOutCubic(animation.progress / animation.duration);
                     currentMatrix = lerpSystemMatrix(p, animation.startState, animation.endState, t);
-                    const nextProgress = animation.progress + 1;
-                    if (nextProgress >= animation.duration) {
-                        setAnimation(a => ({...a, active: false}));
-                        setMatrix(animation.endState as SystemMatrix);
-                    } else {
-                        setAnimation(a => ({...a, progress: nextProgress}));
-                    }
                 }
                 
                 drawLine(p, currentMatrix.a11, currentMatrix.a12, currentMatrix.b1, scaleFactor, p.color(134, 239, 172)); // green
@@ -99,31 +131,24 @@ const GaussianEliminationVisualizer = () => {
 
         sketchRef.current = new p5(sketch, canvasRef.current!);
         return () => { sketchRef.current?.remove(); };
-    // We only want this to run once, so we pass an empty dependency array.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     
-    // This effect redraws the p5 sketch when the matrix state changes.
+    // Pass updated state to p5 sketch and request redraw
     useEffect(() => {
-        sketchRef.current?.redraw();
-    }, [matrix, animation.progress]);
+        if (sketchRef.current && (sketchRef.current as any).updateWithProps) {
+            (sketchRef.current as any).updateWithProps({ matrix, animation: animationState });
+            sketchRef.current.redraw();
+        }
+    }, [matrix, animationState]);
 
-
-    const updateMatrixFromUI = () => {
-        const newMatrix: Partial<SystemMatrix> = {};
-        (Object.keys(matrix) as Array<keyof SystemMatrix>).forEach(key => {
-            const el = document.getElementById(key) as HTMLInputElement;
-            if (el) {
-                (newMatrix[key] as any) = parseFloat(el.value) || 0;
-            }
-        });
-        setMatrix(newMatrix as SystemMatrix);
-        setAnimation(a => ({...a, active: false})); // Stop any running animation
+    const handleInputChange = (key: keyof SystemMatrix, value: string) => {
+        setMatrix(prev => ({ ...prev, [key]: parseFloat(value) || 0 }));
+        setAnimationState(a => ({ ...a, active: false })); // Stop any running animation
     };
 
     const startAnimation = (endState: SystemMatrix, isScaling = false) => {
-        if (animation.active) return;
-        setAnimation({
+        if (animationState.active) return;
+        setAnimationState({
             startState: { ...matrix },
             endState: endState,
             progress: 0,
@@ -163,34 +188,34 @@ const GaussianEliminationVisualizer = () => {
                                 <div className="flex items-center justify-center space-x-2 p-4 rounded-lg bg-gray-900/50">
                                     <div className="p-2 border-r-2 border-l-2 border-gray-500 rounded">
                                         <div className="flex items-center space-x-2 mb-1">
-                                            <Input id="a11" type="number" defaultValue={matrix.a11} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a11) && "is-zero")} />
-                                            <Input id="a12" type="number" defaultValue={matrix.a12} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a12) && "is-zero")} />
+                                            <Input type="number" value={matrix.a11} onChange={(e) => handleInputChange('a11', e.target.value)} step="0.5" className={cn("matrix-val", isZero(matrix.a11) && "is-zero")} />
+                                            <Input type="number" value={matrix.a12} onChange={(e) => handleInputChange('a12', e.target.value)} step="0.5" className={cn("matrix-val", isZero(matrix.a12) && "is-zero")} />
                                             <span className="text-gray-500">|</span>
-                                            <Input id="b1" type="number" defaultValue={matrix.b1} onChange={updateMatrixFromUI} step="0.5" className="matrix-val" />
+                                            <Input type="number" value={matrix.b1} onChange={(e) => handleInputChange('b1', e.target.value)} step="0.5" className="matrix-val" />
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            <Input id="a21" type="number" defaultValue={matrix.a21} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a21) && "is-zero")} />
-                                            <Input id="a22" type="number" defaultValue={matrix.a22} onChange={updateMatrixFromUI} step="0.5" className={cn("matrix-val", isZero(matrix.a22) && "is-zero")} />
+                                            <Input type="number" value={matrix.a21} onChange={(e) => handleInputChange('a21', e.target.value)} step="0.5" className={cn("matrix-val", isZero(matrix.a21) && "is-zero")} />
+                                            <Input type="number" value={matrix.a22} onChange={(e) => handleInputChange('a22', e.target.value)} step="0.5" className={cn("matrix-val", isZero(matrix.a22) && "is-zero")} />
                                             <span className="text-gray-500">|</span>
-                                            <Input id="b2" type="number" defaultValue={matrix.b2} onChange={updateMatrixFromUI} step="0.5" className="matrix-val" />
+                                            <Input type="number" value={matrix.b2} onChange={(e) => handleInputChange('b2', e.target.value)} step="0.5" className="matrix-val" />
                                         </div>
                                     </div>
                                 </div>
-                                <Button id="reset-matrix" onClick={() => { setMatrix({ a11: 2, a12: -1, b1: 1, a21: 1, a22: 1, b2: 5 }); setAnimation(a => ({...a, active: false})); }} variant="outline" className="w-full mt-3"><RotateCcw className="w-4 h-4 mr-2"/>Reset Matrix</Button>
+                                <Button onClick={() => { setMatrix({ a11: 2, a12: -1, b1: 1, a21: 1, a22: 1, b2: 5 }); setAnimationState(a => ({...a, active: false})); }} variant="outline" className="w-full mt-3"><RotateCcw className="w-4 h-4 mr-2"/>Reset Matrix</Button>
                             </CardContent>
                         </Card>
                         <Card className="bg-gray-800/50">
                             <CardHeader className="p-4"><h2 className="text-lg font-semibold text-cyan-400">Row Operations</h2></CardHeader>
                             <CardContent className="p-4 pt-0 space-y-3">
                                 <div className="space-y-3 border-b border-gray-700 pb-3">
-                                    <div className="flex items-center space-x-2"><span>R₂ → R₂ +</span><Slider min={-2} max={2} value={[sliders.k1]} step={0.1} onValueChange={v => setSliders(s => ({...s, k1: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.k1.toFixed(1)}) * R₁</span><Button onClick={() => handleOperation('op1')} className="op-button" size="sm" disabled={animation.active}>Go</Button></div>
-                                    <div className="flex items-center space-x-2"><span>R₁ → R₁ +</span><Slider min={-2} max={2} value={[sliders.k2]} step={0.1} onValueChange={v => setSliders(s => ({...s, k2: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.k2.toFixed(1)}) * R₂</span><Button onClick={() => handleOperation('op2')} className="op-button" size="sm" disabled={animation.active}>Go</Button></div>
+                                    <div className="flex items-center space-x-2"><span>R₂ → R₂ +</span><Slider min={-2} max={2} value={[sliders.k1]} step={0.1} onValueChange={v => setSliders(s => ({...s, k1: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.k1.toFixed(1)}) * R₁</span><Button onClick={() => handleOperation('op1')} className="op-button" size="sm" disabled={animationState.active}>Go</Button></div>
+                                    <div className="flex items-center space-x-2"><span>R₁ → R₁ +</span><Slider min={-2} max={2} value={[sliders.k2]} step={0.1} onValueChange={v => setSliders(s => ({...s, k2: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.k2.toFixed(1)}) * R₂</span><Button onClick={() => handleOperation('op2')} className="op-button" size="sm" disabled={animationState.active}>Go</Button></div>
                                 </div>
                                 <div className="space-y-3 pt-2">
-                                    <div className="flex items-center space-x-2"><span>R₁ →</span><Slider min={0.1} max={3} value={[sliders.s1]} step={0.1} onValueChange={v => setSliders(s => ({...s, s1: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.s1.toFixed(1)}) * R₁</span><Button onClick={() => handleOperation('scale1')} className="op-button bg-purple-600" size="sm" disabled={animation.active}>Go</Button></div>
-                                    <div className="flex items-center space-x-2"><span>R₂ →</span><Slider min={0.1} max={3} value={[sliders.s2]} step={0.1} onValueChange={v => setSliders(s => ({...s, s2: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.s2.toFixed(1)}) * R₂</span><Button onClick={() => handleOperation('scale2')} className="op-button bg-purple-600" size="sm" disabled={animation.active}>Go</Button></div>
+                                    <div className="flex items-center space-x-2"><span>R₁ →</span><Slider min={0.1} max={3} value={[sliders.s1]} step={0.1} onValueChange={v => setSliders(s => ({...s, s1: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.s1.toFixed(1)}) * R₁</span><Button onClick={() => handleOperation('scale1')} className="op-button bg-purple-600" size="sm" disabled={animationState.active}>Go</Button></div>
+                                    <div className="flex items-center space-x-2"><span>R₂ →</span><Slider min={0.1} max={3} value={[sliders.s2]} step={0.1} onValueChange={v => setSliders(s => ({...s, s2: v[0]}))} className="w-full" /><span className="font-mono w-20 text-center">({sliders.s2.toFixed(1)}) * R₂</span><Button onClick={() => handleOperation('scale2')} className="op-button bg-purple-600" size="sm" disabled={animationState.active}>Go</Button></div>
                                 </div>
-                                <Button onClick={() => handleOperation('swap')} variant="secondary" className="w-full !mt-4" disabled={animation.active}>Swap R₁ and R₂</Button>
+                                <Button onClick={() => handleOperation('swap')} variant="secondary" className="w-full !mt-4" disabled={animationState.active}>Swap R₁ and R₂</Button>
                             </CardContent>
                         </Card>
                         <div className="text-center text-lg font-mono p-2 rounded bg-gray-900/50">

@@ -13,7 +13,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { BlockMath } from 'react-katex';
-import 'katex/dist/katex.min.css';
+
 
 const PopulationGrid = ({
   prevalence,

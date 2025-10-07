@@ -1,10 +1,12 @@
 
+
 // src/app/layout.tsx (Correct Version)
 
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import './globals.css';
+import 'katex/dist/katex.min.css';
 import { OrientationBanner } from '@/components/app/orientation-banner';
 import { Providers } from '@/components/app/providers';
 

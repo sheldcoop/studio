@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BlockMath, InlineMath } from 'react-katex';
 import { Scaling, Cpu, Link as LinkIcon, AlertTriangle, Code, Trophy, Bot } from 'lucide-react';
-import 'katex/dist/katex.min.css';
+
 
 function TheIntuition() {
   return (
