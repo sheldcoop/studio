@@ -12,7 +12,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-import PyScriptRunner from '@/components/app/pyscript-runner';
+import CodeBlock from '@/components/CodeBlock';
 import svdCompressionCode from '@/lib/python/svd_compression.py';
 
 
@@ -126,7 +126,14 @@ const SVDVisualizer = () => {
             <CardDescription>This code will download a sample image, compress it using SVD with different numbers of singular values, and display the result. This visually demonstrates the power of low-rank approximation.</CardDescription>
           </CardHeader>
           <CardContent>
-              <PyScriptRunner code={svdCompressionCode} outputId="output-svd" />
+              <CodeBlock 
+                code={svdCompressionCode} 
+                language="python"
+                title="svd_compression.py"
+              />
+              <div id="output-svd" className="mt-4 p-4 border rounded-lg bg-muted text-muted-foreground text-sm">
+                Code execution output will appear here. Currently, this is a static display.
+              </div>
           </CardContent>
         </Card>
       </div>
