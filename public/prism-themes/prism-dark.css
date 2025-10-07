@@ -16,7 +16,6 @@ pre[class*="language-"] {
 }
 
 pre[class*="language-"] {
-  padding: 1.5em;
   margin: 1.5em 0;
   overflow: auto;
   border-radius: 0.5em;
