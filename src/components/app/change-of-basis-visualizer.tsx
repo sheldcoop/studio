@@ -29,13 +29,24 @@ function ChangeOfBasisTheory() {
             <hr className="my-6" />
 
             <h4 className="font-bold text-lg not-prose">Matrix-Vector Multiplication: A Transformation</h4>
-            <p>It's crucial to distinguish a change of basis from a transformation. Think of a matrix as an **action** (like rotating or stretching) and a vector as an **object** you apply that action to. The result of the multiplication <InlineMath math="A\vec{v}" /> is the object (the vector) in its new position or state after the transformation.</p>
+            <p>Think of a matrix as an **action** (like rotating or stretching) and a vector as an **object** you apply that action to. The result of the multiplication <InlineMath math="A\vec{v}" /> is the object (the vector) in its new position or state after the transformation. The matrix <InlineMath math="A" /> has transformed vector <InlineMath math="\vec{v}" /> into vector <InlineMath math="\vec{w}" />.</p>
             <div className="p-4 rounded-md bg-muted/50 my-4 not-prose">
                 <p className="font-semibold">Example:</p>
                 <p>Imagine a vector <InlineMath math="\vec{v} = \begin{pmatrix} 2 \\ 1 \end{pmatrix}" />. Let's apply a rotation matrix <InlineMath math="A = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}" /> (which rotates vectors 90° counter-clockwise). The output is a new vector <InlineMath math="\vec{w} = A\vec{v} = \begin{pmatrix} -1 \\ 2 \end{pmatrix}" />. We started with one vector and ended with one new, rotated vector.</p>
             </div>
             
-            <h4 className="font-bold text-lg not-prose mt-6">The Change of Basis Matrix</h4>
+            <h5 className="font-semibold text-base mt-6">Two Sides of the Same Coin: Columns vs. Rows</h5>
+            <p>It's a key detail in linear algebra that the order of multiplication matters and changes the interpretation.
+            </p>
+            <ul className="text-sm space-y-4">
+                <li><strong><code className="bg-background px-1.5 py-0.5 rounded">A\vec{v}</code> (Matrix x Column Vector):</strong> This is the most common use. The result is a new <strong>column vector</strong> that is a linear combination of the <strong>COLUMNS</strong> of A. The components of <InlineMath math="\vec{v}" /> act as the weights. This is best thought of as transforming a point in space.</li>
+                <li><strong><code className="bg-background px-1.5 py-0.5 rounded">\vec{v}A</code> (Row Vector x Matrix):</strong> This is conceptually different. The result is a new <strong>row vector</strong> that is a linear combination of the <strong>ROWS</strong> of A. The components of the row vector <InlineMath math="\vec{v}" /> are the weights. This is often used when changing coordinate systems.</li>
+            </ul>
+             <p>In summary: the orientation of the vector determines whether you are combining the columns or the rows of the matrix.</p>
+            
+            <hr className="my-6" />
+
+            <h4 className="font-bold text-lg not-prose">The Change of Basis Matrix</h4>
             <p>If we have a new basis B = &#123;<b className="text-red-400"><InlineMath math="\vec{b}_1" /></b>, <b className="text-blue-400"><InlineMath math="\vec{b}_2" /></b>&#125;, we can create a "change of basis matrix" <InlineMath math="P_B" /> whose columns are these new basis vectors. To find the standard coordinates of a vector given in the new basis, we simply multiply:</p>
             <div className="text-center"><BlockMath math="[\vec{v}]_B = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}" /></div>
             <div className="text-center"><BlockMath math="\vec{v}_{\text{std}} = P_B [\vec{v}]_B = c_1\vec{b}_1 + c_2\vec{b}_2" /></div>
@@ -291,7 +302,7 @@ const ChangeOfBasisVisualizer = () => {
                                     <h3 className="text-lg font-semibold text-foreground">{mode === 'explore' ? 'The Same Vector, Two Languages' : 'Live Vector Coordinates'}</h3>
                                     <p className="text-sm text-muted-foreground">
                                         {mode === 'explore' 
-                                            ? <>Drag the colored vectors (<b className="text-red-400 font-mono">b₁</b>, <b className="text-blue-400 font-mono">b₂</b>) to define your basis. The gray vectors are the standard basis (<b className="text-gray-400 font-mono">î</b>, <b className="text-gray-400 font-mono">ĵ</b>).</>
+                                            ? <React.Fragment>Drag the colored vectors (<b className="text-red-400 font-mono">b₁</b>, <b className="text-blue-400 font-mono">b₂</b>) to define your basis. The gray vectors are the standard basis (<b className="text-gray-400 font-mono">î</b>, <b className="text-gray-400 font-mono">ĵ</b>).</React.Fragment>
                                             : 'Watch how coordinates change as the basis (grid) and vector transform.'
                                         }
                                     </p>
