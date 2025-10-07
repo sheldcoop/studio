@@ -95,15 +95,17 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
-         {/* Prism.js core and autoloader for language detection */}
+         {/* Prism.js scripts are loaded lazily, which is fine for them. */}
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js" strategy="lazyOnload" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" strategy="lazyOnload" />
-        {/* Prism.js Toolbar and Copy to Clipboard plugins */}
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" strategy="lazyOnload" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" strategy="lazyOnload" />
         
-        {/* PyScript Core JS */}
-        <Script defer src="https://pyscript.net/releases/2023.11.1/core.js"></Script>
+        {/* Load PyScript using the Next.js Script component with the 'afterInteractive' strategy. */}
+        <Script 
+          src="https://pyscript.net/releases/2023.11.1/core.js"
+          strategy="afterInteractive" 
+        />
       </body>
     </html>
   );
