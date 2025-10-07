@@ -26,7 +26,8 @@ export function MatrixAdditionTheory() {
         <p>If you have two matrices, A and B, their sum C = A + B is calculated by adding the corresponding elements: C<sub>ij</sub> = A<sub>ij</sub> + B<sub>ij</sub>.</p>
         <div class="text-center my-4 text-sm md:text-base">
             <pre class="bg-muted/50 p-2 rounded-md inline-block">
-[ a , b ] + [ e , f ] = [ a+e , b+f ]
+[ a , b ]   [ e , f ]   [ a+e , b+f ]
+          +           =
 [ c , d ]   [ g , h ]   [ c+g , d+h ]
             </pre>
         </div>
@@ -54,7 +55,8 @@ export function MatrixMultiplicationTheory() {
         <p>To multiply two matrices, the number of columns in the first matrix must equal the number of rows in the second. The element C<sub>ij</sub> in the resulting matrix is found by taking the <strong>dot product</strong> of the i-th row of the first matrix and the j-th column of the second matrix.</p>
         <div class="text-center my-4 text-sm md:text-base">
              <pre class="bg-muted/50 p-2 rounded-md inline-block">
-[ a , b ] * [ e , f ] = [ ae+bg , af+bh ]
+[ a , b ]   [ e , f ]   [ ae+bg , af+bh ]
+          *           =
 [ c , d ]   [ g , h ]   [ ce+dg , cf+dh ]
             </pre>
         </div>
