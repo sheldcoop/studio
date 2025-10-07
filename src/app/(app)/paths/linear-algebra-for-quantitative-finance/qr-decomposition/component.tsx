@@ -1,26 +1,17 @@
 
 'use client';
 
-import dynamic from 'next/dynamic';
 import { PageHeader } from "@/components/app/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BlockMath, InlineMath } from 'react-katex';
 import { ShieldCheck, Cpu, Code, Trophy, HardHat, SwissFranc } from 'lucide-react';
 import 'katex/dist/katex.min.css';
-import { Skeleton } from '@/components/ui/skeleton';
-
-const PyScriptComponentWithNoSSR = dynamic(
-  () => import('@/components/app/PyScriptComponent'),
-  { 
-    ssr: false,
-    loading: () => <Skeleton className="h-48 w-full" />
-  }
-);
+import { PyScriptRunner } from "@/components/app/pyscript-runner";
 
 
 function PythonImplementation() {
-  const pythonCode = `
+  const code = `
 import numpy as np
 from pyscript import display
 
@@ -49,17 +40,15 @@ output += f"<p><b>Q<sup>T</sup>b =</b> {np.round(b_transformed, 4)}</p>"
 x = np.linalg.solve(R, b_transformed)
 output += f"<h4>3. Least Squares Solution x̂:</h4><p><b>x̂ =</b> {np.round(x, 4)}</p>"
 
-display(output, target="qr-output", append=False)
-  `;
+display(output, target="output-qr-solver", append=False)
+`;
 
   return (
-    <div>
-      <py-config>
-        packages = ["numpy", "scipy"]
-      </py-config>
-      <PyScriptComponentWithNoSSR pythonCode={pythonCode} />
-      <pre id="qr-output" className="mt-4 p-4 rounded-lg bg-muted/50 text-sm overflow-x-auto min-h-[200px] whitespace-pre-wrap"></pre>
-    </div>
+    <PyScriptRunner
+      code={code}
+      outputId="output-qr-solver"
+      title="QR Decomposition with Python"
+    />
   );
 }
 
