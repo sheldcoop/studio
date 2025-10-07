@@ -61,7 +61,6 @@ export const metadata: Metadata = {
     shortcut: '/favicon-16x16.png',
     apple: '/apple-touch-icon.png',
   },
-  // manifest: `${siteUrl}/site.webmanifest`, // Removed to prevent network error
 };
 
 const organizationSchema = {
@@ -99,6 +98,14 @@ export default function RootLayout({
         </Providers>
          <Script
           src="https://pyscript.net/releases/2023.11.1/core.js"
+          strategy="afterInteractive"
+        />
+        <Script 
+          src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
+          strategy="afterInteractive"
+        />
+        <Script 
+          src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"
           strategy="afterInteractive"
         />
       </body>
