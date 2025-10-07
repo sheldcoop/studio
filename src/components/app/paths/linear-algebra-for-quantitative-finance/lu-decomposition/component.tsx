@@ -8,7 +8,6 @@ import { BlockMath, InlineMath } from 'react-katex';
 import { Scaling, Cpu, Link as LinkIcon, AlertTriangle, Code, Trophy, Bot } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 import { PyScriptRunner } from "@/components/app/pyscript-runner";
-import { luDecompositionSolverCode } from "@/lib/python/lu_decomposition_solver";
 
 function TheIntuition() {
   return (
@@ -150,11 +149,15 @@ function TheCompetition() {
 }
 
 function PythonImplementation() {
+    const A = [[2, 1, 1], [4, 5, 2], [2, -2, 0]];
+    const b = [5, 14, -2];
+    
     return (
       <PyScriptRunner
-        code={luDecompositionSolverCode}
+        matrix={A}
+        vector={b}
+        operation="lu"
         outputId="output-lu-solver"
-        packages={['numpy', 'scipy']}
       />
     );
 }

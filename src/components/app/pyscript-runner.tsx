@@ -1,76 +1,96 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Loader2, Terminal, Copy } from 'lucide-react';
+import { Play, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { useToast } from '@/hooks/use-toast';
 
-interface PyScriptRunnerProps {
-  code: string;
-  outputId: string;
-  packages?: string[];
+declare global {
+  interface Window {
+    pyscript: any;
+  }
 }
 
-export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunnerProps) {
-  const codeRef = useRef<HTMLElement>(null);
+interface PyScriptRunnerProps {
+  // We no longer pass code directly. Instead, we pass the data the python script will use.
+  matrix?: number[][];
+  vector?: number[];
+  operation: 'cholesky' | 'lu' | 'qr';
+  outputId: string;
+}
+
+export function PyScriptRunner({ matrix, vector, operation, outputId }: PyScriptRunnerProps) {
+  const [isReady, setIsReady] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
-  const { toast } = useToast();
+  const [output, setOutput] = useState("Initializing Python environment...");
 
+  // Poll for PyScript to be ready
   useEffect(() => {
-    if (codeRef.current && window.Prism) {
-      window.Prism.highlightElement(codeRef.current);
+    if (typeof window.pyscript?.interpreter !== 'undefined') {
+      setIsReady(true);
+      setOutput(""); // Clear the initializing message
+      return;
     }
-  }, [code]);
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(code.trim());
-    toast({ title: "Copied to Clipboard" });
+    const interval = setInterval(() => {
+      if (typeof window.pyscript?.interpreter !== 'undefined') {
+        setIsReady(true);
+        setOutput("");
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const runCode = async () => {
+    if (!isReady || isRunning) return;
+
+    setIsRunning(true);
+    setOutput("Running calculation...");
+
+    try {
+      // Get the Python function from the global scope
+      const solve_decomposition = window.pyscript.interpreter.globals.get('solve_decomposition');
+      
+      // Call the Python function with data
+      const result = await solve_decomposition(matrix, vector, operation);
+      
+      // Set the output
+      setOutput(result);
+
+    } catch (error) {
+      console.error("PyScript execution error:", error);
+      if (error instanceof Error) {
+        setOutput(`Error: ${error.message}`);
+      } else {
+        setOutput("An unknown error occurred during Python execution.");
+      }
+    } finally {
+      setIsRunning(false);
+    }
   };
-  
-  // Create a JSON configuration string for the packages
-  const config = JSON.stringify({ packages });
 
   return (
     <div className="space-y-4">
-      <div className="relative group">
-        <pre className="language-python rounded-lg !m-0 border !py-4 !px-6">
-          <code ref={codeRef} className="language-python">{code.trim()}</code>
-        </pre>
-        <Button variant="ghost" size="icon" className="absolute top-3 right-3 h-7 w-7 opacity-0 group-hover:opacity-100" onClick={handleCopyCode}>
-          <Copy className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <div className="flex items-center gap-4">
-         <script
-            type="py"
-            config={config}
-            // The output attribute tells PyScript where to print()
-            output={outputId} 
-          >
-          {code}
-        </script>
+        {/* The script tag is now simplified and points to the external files */}
+        <script type="py" src="/python/solver.py" config="/pyscript.json"></script>
         
-        {/* We can simplify the UI. PyScript's tags now handle execution.
-            The button can be used to re-run if necessary, though it's
-            less common in this declarative model. For now, we can show a placeholder.
-        */}
-        <div className="text-sm text-muted-foreground">
-            The Python code above runs automatically. The output will appear below.
-        </div>
-      </div>
-     
+      <Button onClick={runCode} disabled={!isReady || isRunning}>
+        {isRunning ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Play className="mr-2 h-4 w-4" />
+        )}
+        Run Calculation
+      </Button>
+
       <Card>
         <CardContent className="p-4">
           <h4 className="font-semibold text-sm mb-2 text-muted-foreground">Output:</h4>
           <div id={outputId} className="min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md">
-            <div className="text-sm text-muted-foreground flex items-center">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Initializing Python environment...
-            </div>
+            {output}
           </div>
         </CardContent>
       </Card>

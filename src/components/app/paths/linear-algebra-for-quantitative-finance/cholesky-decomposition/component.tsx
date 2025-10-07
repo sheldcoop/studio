@@ -8,14 +8,17 @@ import { BlockMath, InlineMath } from 'react-katex';
 import { Trophy, ShieldCheck, Cpu, Code, Zap, HeartPulse } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 import { PyScriptRunner } from "@/components/app/pyscript-runner";
-import { choleskyDecompositionSolverCode } from "@/lib/python/cholesky_decomposition_solver";
 
 function PythonImplementation() {
+    const A = [[4, 2, -2], [2, 10, 2], [-2, 2, 6]];
+    const b = [2, 14, 6];
+
     return (
       <PyScriptRunner
-        code={choleskyDecompositionSolverCode}
+        matrix={A}
+        vector={b}
+        operation="cholesky"
         outputId="output-cholesky-solver"
-        packages={['numpy', 'scipy']}
       />
     );
 }

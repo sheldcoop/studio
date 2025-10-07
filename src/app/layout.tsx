@@ -1,4 +1,5 @@
 
+
 // src/app/layout.tsx (Correct Version)
 
 import type { Metadata } from 'next';
@@ -97,14 +98,6 @@ export default function RootLayout({
           {children}
           <OrientationBanner />
         </Providers>
-        <Script 
-          src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
-          strategy="afterInteractive"
-        />
-        <Script 
-          src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

@@ -15,15 +15,13 @@ import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { Button } from '@/components/ui/button';
 import { PyScriptRunner } from './pyscript-runner';
-import { svdImageCompressionCode } from '@/lib/python/svd_image_compression';
 
 
 function PythonImplementation() {
     return (
         <PyScriptRunner
-            code={svdImageCompressionCode}
+            operation="svd"
             outputId="output-svd-solver"
-            packages={['numpy', 'matplotlib', 'scikit-image']}
         />
     );
 }
