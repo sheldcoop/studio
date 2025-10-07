@@ -1,3 +1,4 @@
+
 'use client';
 
 import { PageHeader } from "@/components/app/page-header";
@@ -6,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BlockMath, InlineMath } from 'react-katex';
 import { Scaling, Cpu, Link as LinkIcon, AlertTriangle, Code, Trophy, Bot } from 'lucide-react';
 import 'katex/dist/katex.min.css';
+import { PyScriptRunner } from "@/components/app/pyscript-runner";
 
 function TheIntuition() {
   return (
@@ -147,33 +149,16 @@ function TheCompetition() {
 }
 
 function PythonImplementation() {
-    const code = `import numpy as np
-from scipy.linalg import lu, lu_solve, lu_factor
-
-# Define our matrix A and vector b
-A = np.array([[2, 1, 1], [4, 5, 2], [2, -2, 0]])
-b = np.array([5, 15, -2])
-
-# 1. Decompose A into P, L, and U
-# (P is the permutation matrix from pivoting)
-P, L, U = lu(A)
-
-# 2. Solve the system for x
-# This is equivalent to the two-step process:
-# Step 1: Solve Ly = Pb for y (forward substitution)
-# Step 2: Solve Ux = y for x (backward substitution)
-x = lu_solve((L, U), np.dot(P.T, b))
-
-# For performance, when solving for the same A many times:
-lu_piv = lu_factor(A)
-x_fast = lu_solve(lu_piv, b)
-
-print("Solution x:", x)
-# Expected Output: [1. 2. 1.]`;
+    const A = [[2, 1, 1], [4, 5, 2], [2, -2, 0]];
+    const b = [5, 14, -2];
+    
     return (
-        <div className="relative">
-            <pre className="language-python rounded-lg bg-gray-900/50 text-sm overflow-x-auto p-4 pt-8"><code className="language-python">{code}</code></pre>
-        </div>
+      <PyScriptRunner
+        matrix={A}
+        vector={b}
+        operation="lu"
+        outputId="output-lu-solver"
+      />
     );
 }
 

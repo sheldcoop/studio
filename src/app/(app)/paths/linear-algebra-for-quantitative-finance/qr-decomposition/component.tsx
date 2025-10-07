@@ -8,14 +8,17 @@ import { BlockMath, InlineMath } from 'react-katex';
 import { ShieldCheck, Cpu, Code, Trophy, HardHat, SwissFranc } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 import { PyScriptRunner } from "@/components/app/pyscript-runner";
-import { qrDecompositionSolverCode } from "@/lib/python/qr_decomposition_solver";
 
 function PythonImplementation() {
+    const A = [[1, 0], [1, 1], [1, 2]];
+    const b = [1, 3, 4];
+    
     return (
       <PyScriptRunner
-        code={qrDecompositionSolverCode}
+        matrix={A}
+        vector={b}
+        operation="qr"
         outputId="output-qr-solver"
-        packages={['numpy']}
       />
     );
 }
