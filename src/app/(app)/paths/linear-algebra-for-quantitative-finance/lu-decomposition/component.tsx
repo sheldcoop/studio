@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BlockMath, InlineMath } from 'react-katex';
 import { Scaling, Cpu, Link as LinkIcon, AlertTriangle, Code, Trophy, Bot } from 'lucide-react';
 import CodeBlock from '@/components/CodeBlock';
-import luCode from '@/code-examples/linear-algebra/lu-decomposition.py';
+import luCode from '@code-examples/linear-algebra/lu-decomposition.py';
 
 
 function TheIntuition() {
