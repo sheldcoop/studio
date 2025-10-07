@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -68,7 +69,7 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
     initializePyScript();
   }, [initializePyScript]);
 
-  // Effect for syntax highlighting (no changes needed)
+  // Effect for syntax highlighting
   useEffect(() => {
     if (codeRef.current && status !== 'loading_script' && window.Prism) {
       window.Prism.highlightElement(codeRef.current);
@@ -99,14 +100,19 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
       });
 
       await window.pyscript.run(code);
+      // If code runs without error but doesn't call pyscript.write, clear the running message
+       if (status === 'running') {
+            setStatus('ready');
+            // Check if output was written to, if not, show a message
+            if (!outputContent || (typeof outputContent === 'object' && 'props' in outputContent && outputContent.props.children[1] === 'Running...')) {
+               setOutputContent(null);
+            }
+       }
     } catch (e: any) {
       const errorMessage = e.message || String(e);
       setError(errorMessage);
       setOutputContent(null);
       setStatus('error');
-    } finally {
-      // Only set to ready if there wasn't an error
-      if (!error) setStatus('ready');
     }
   };
   
@@ -158,7 +164,7 @@ export function PyScriptRunner({ code, outputId, packages = [] }: PyScriptRunner
           <div id={outputId} className="min-h-[100px] whitespace-pre-wrap font-mono text-sm bg-muted/50 p-4 rounded-md">
             {outputContent || (
               <div className="text-sm text-muted-foreground">
-                {status === 'ready' && 'Click "Run Code" to see the output.'}
+                {(status === 'ready' || status === 'running') && 'Click "Run Code" to see the output.'}
                 {status === 'error' && 'An error occurred. Check the error message above.'}
               </div>
             )}
