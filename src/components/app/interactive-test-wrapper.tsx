@@ -54,7 +54,7 @@ export function InteractiveTestWrapper({ topic }: InteractiveTestWrapperProps) {
                                     {example.exampleText}
                                 </p>
                                 <div className="mt-4 rounded-lg bg-background/50 p-4">
-                                    <example.ChartComponent generateData={() => {}} />
+                                    <example.ChartComponent />
                                 </div>
                             </TabsContent>
                         ))}
