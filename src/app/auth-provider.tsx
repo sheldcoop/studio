@@ -14,7 +14,7 @@ import {
   type AuthError,
   type User,
 } from 'firebase/auth';
-import { useFirebaseAuth, useFirestore } from '@/firebase'; // Corrected import
+import { useFirebaseAuth, useFirestore } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -27,7 +27,7 @@ export const getFriendlyErrorMessage = (error: AuthError): string => {
         case 'auth/user-not-found':
         case 'auth/wrong-password':
         case 'auth/invalid-credential':
-            return 'Invalid credentials. Please check your email and password, or verify your email if you just signed up.';
+            return 'Invalid credentials. Please check your email and password.';
         case 'auth/email-already-in-use':
             return 'An account with this email address already exists.';
         case 'auth/weak-password':
@@ -103,14 +103,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
         await writeUserToFirestore(firestore, userCredential.user);
-        await signOut(auth); // Sign out the user immediately after sign-up
-        return { success: true, message: 'Your account has been created. Please check your email to verify your account before logging in.' };
+        return { success: true, message: 'Sign-up successful! Welcome.' };
       } else { // signIn
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         if (!userCredential.user.emailVerified) {
-          await signOut(auth); // Sign out if email is not verified
-          await sendEmailVerification(userCredential.user); // Re-send verification email
-          return { success: false, message: "Please verify your email before logging in. We've sent another verification link to be sure."};
+          // Optional: Remind user to verify their email, but still allow login.
+          console.log("User email not verified.");
         }
         await writeUserToFirestore(firestore, userCredential.user);
         return { success: true, message: 'Login successful!' };
