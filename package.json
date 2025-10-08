@@ -66,7 +66,6 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/chart.js": "^2.9.41",
     "@types/jest": "^29.5.12",
-    "@types/lru-cache": "^7.14.4",
     "@types/node": "^20.14.8",
     "@types/p5": "^1.7.6",
     "@types/prismjs": "^1.26.4",
