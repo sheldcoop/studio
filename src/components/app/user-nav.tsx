@@ -1,11 +1,6 @@
 
 'use client';
 
-import {
-  signOut,
-} from 'firebase/auth';
-import { useFirebaseAuth } from '@/firebase';
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,17 +16,9 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useAuth } from '@/app/auth-provider';
 import Link from 'next/link';
 
-
 export function UserNav() {
-  const { user } = useAuth();
-  const auth = useFirebaseAuth();
+  const { user, handleLogout } = useAuth();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar');
-
-  const handleLogout = async () => {
-    if (auth) {
-        await signOut(auth);
-    }
-  };
 
   if (!user) {
     return (
@@ -63,7 +50,7 @@ export function UserNav() {
               )
             )}
             <AvatarFallback>
-              {user.email ? user.email.charAt(0).toUpperCase() : 'A'}
+              {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email ? user.email.charAt(0).toUpperCase() : 'A'}
             </AvatarFallback>
           </Avatar>
         </Button>

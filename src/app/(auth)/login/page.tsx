@@ -1,8 +1,7 @@
-
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/app/auth-provider';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -16,268 +15,113 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/app/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, CheckCircle, ArrowLeft, Mail, Phone } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { type ConfirmationResult, type RecaptchaVerifier } from 'firebase/auth';
-import PhoneInput from 'react-phone-number-input';
 
-type AuthMode = 'signIn' | 'signUp' | 'resetPassword' | 'magicLink' | 'phoneAuth' | 'phoneVerify';
+type AuthMode = 'signIn' | 'signUp';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>('signIn');
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-  const [recaptchaVerifier, setRecaptchaVerifier] = useState<RecaptchaVerifier | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-
-  const { 
-    handleAuthAction, 
-    handlePasswordReset, 
-    handleGoogleSignIn, 
-    handleSendSignInLink,
-    handlePhoneSignIn,
-    handleVerifyPhoneCode,
-    setupRecaptcha,
-  } = useAuth();
-
-  // Set up reCAPTCHA when the phone auth component mounts
-  useEffect(() => {
-    if (authMode === 'phoneAuth' && !recaptchaVerifier && setupRecaptcha) {
-      const verifier = setupRecaptcha('recaptcha-container');
-      setRecaptchaVerifier(verifier);
-      verifier.render();
-    }
-  }, [authMode, setupRecaptcha, recaptchaVerifier]);
-  
-  const performAuthAction = async (action: 'signUp' | 'signIn') => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
     setError(null);
     setInfoMessage(null);
-    const result = await handleAuthAction(action, email, password, action === 'signUp' ? displayName : undefined);
-    if(result.success) {
-      setInfoMessage(action === 'signUp' ? 'Account created successfully! Welcome!' : 'Login successful!');
-      if(action === 'signUp') {
-        // Switch to sign in mode after successful sign up
-        setAuthMode('signIn');
+
+    const url = authMode === 'signIn' ? '/api/auth/login' : '/api/auth/signup';
+    const body = authMode === 'signIn' 
+      ? JSON.stringify({ email, password })
+      : JSON.stringify({ email, password, displayName });
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (authMode === 'signUp') {
+          setInfoMessage('Account created successfully! Please sign in.');
+          setAuthMode('signIn');
+        } else {
+          router.push('/'); // Redirect to dashboard on successful login
+        }
+      } else {
+        setError(data.error || 'An unexpected error occurred.');
       }
-    } else {
-      setError(result.message);
-    }
-  }
-
-  const performPasswordReset = async () => {
-    setError(null);
-    setInfoMessage(null);
-    const result = await handlePasswordReset(email);
-    if(result.success) {
-      setInfoMessage(result.message);
-    } else {
-      setError(result.message);
-    }
-  }
-
-  const performMagicLinkSignIn = async () => {
-    setError(null);
-    setInfoMessage(null);
-    const result = await handleSendSignInLink(email);
-    if (result.success) {
-      setInfoMessage(result.message);
-    } else {
-      setError(result.message);
-    }
-  };
-  
-  const performPhoneSignIn = async () => {
-    setError(null);
-    setInfoMessage(null);
-    if (!recaptchaVerifier) {
-        setError('reCAPTCHA not initialized. Please refresh.');
-        return;
-    }
-    const result = await handlePhoneSignIn(phoneNumber, recaptchaVerifier);
-    if (result.success && result.confirmationResult) {
-      setConfirmationResult(result.confirmationResult);
-      setAuthMode('phoneVerify');
-      setInfoMessage('SMS sent! Please enter the verification code.');
-    } else {
-      setError(result.message);
+    } catch (err) {
+      setError('Failed to connect to the server. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const performVerifyPhoneCode = async () => {
-    setError(null);
-    setInfoMessage(null);
-    if (!confirmationResult) {
-      setError("An error occurred. Please try sending the code again.");
-      return;
-    }
-    const result = await handleVerifyPhoneCode(confirmationResult, verificationCode);
-    if (result.success) {
-      setInfoMessage('Phone number verified successfully! You are now logged in.');
-    } else {
-      setError(result.message);
-    }
-  };
-
-  const performGoogleSignIn = async () => {
-    setError(null);
-    setInfoMessage(null);
-    const result = await handleGoogleSignIn();
-     if(!result.success) {
-      setError(result.message);
-    }
-  }
-
-  const clearMessages = () => {
-    setError(null);
-    setInfoMessage(null);
-  }
-  
   const changeMode = (newMode: AuthMode) => {
-    clearMessages();
+    setError(null);
+    setInfoMessage(null);
+    setEmail('');
+    setPassword('');
+    setDisplayName('');
     setAuthMode(newMode);
-  }
+  };
 
   const renderContent = () => {
     switch (authMode) {
-      case 'phoneAuth':
-        return (
-          <>
-            <CardHeader className="text-center">
-              <CardTitle className="font-headline">Sign In with Phone</CardTitle>
-              <CardDescription>
-                Enter your phone number to receive a verification code.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <PhoneInput
-                    id="phone"
-                    placeholder="Enter phone number"
-                    value={phoneNumber}
-                    onChange={(value) => setPhoneNumber(value || '')}
-                    className="input"
-                  />
-                </div>
-                <div id="recaptcha-container" className="flex justify-center"></div>
-            </CardContent>
-            <CardFooter className="flex-col gap-4">
-                <Button id="sign-in-button" className="w-full" onClick={performPhoneSignIn}>Send SMS Code</Button>
-                <Button variant="link" className="text-sm" onClick={() => changeMode('signIn')}>
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Login
-                </Button>
-            </CardFooter>
-          </>
-        );
-
-      case 'phoneVerify':
-        return (
-          <>
-            <CardHeader className="text-center">
-              <CardTitle className="font-headline">Enter Verification Code</CardTitle>
-              <CardDescription>
-                Check your SMS messages for the 6-digit code.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor="code">Verification Code</Label>
-                  <Input id="code" type="text" placeholder="123456" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
-                </div>
-            </CardContent>
-            <CardFooter className="flex-col gap-4">
-                <Button className="w-full" onClick={performVerifyPhoneCode}>Verify & Sign In</Button>
-                 <Button variant="link" className="text-sm" onClick={() => changeMode('phoneAuth')}>
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to phone number entry
-                </Button>
-            </CardFooter>
-          </>
-        );
-
-      case 'resetPassword':
-        return (
-          <>
-            <CardHeader className="text-center">
-              <CardTitle className="font-headline">Reset Your Password</CardTitle>
-              <CardDescription>
-                Enter your email to receive a reset link.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                </div>
-            </CardContent>
-            <CardFooter className="flex-col gap-4">
-                <Button className="w-full" onClick={performPasswordReset}>Send Reset Link</Button>
-                <Button variant="link" className="text-sm" onClick={() => changeMode('signIn')}>
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Login
-                </Button>
-            </CardFooter>
-          </>
-        );
-
-      case 'magicLink':
-        return (
-          <>
-            <CardHeader className="text-center">
-              <CardTitle className="font-headline">Sign In with a Magic Link</CardTitle>
-              <CardDescription>
-                We'll send a temporary sign-in link to your email. No password needed.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                </div>
-            </CardContent>
-            <CardFooter className="flex-col gap-4">
-                <Button className="w-full" onClick={performMagicLinkSignIn}><Mail className="mr-2 h-4 w-4" />Send Magic Link</Button>
-                <Button variant="link" className="text-sm" onClick={() => changeMode('signIn')}>
-                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Login
-                </Button>
-            </CardFooter>
-          </>
-        );
-
       case 'signUp':
         return (
           <>
             <CardHeader className="text-center">
               <CardTitle className="font-headline">Create an Account</CardTitle>
-              <CardDescription>
-                Enter your details below to get started.
-              </CardDescription>
+              <CardDescription>Enter your details below to get started.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="displayName">Display Name</Label>
-                <Input id="displayName" type="text" placeholder="Jane Doe" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+                <Input
+                  id="displayName"
+                  type="text"
+                  placeholder="Jane Doe"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
               </div>
             </CardContent>
             <CardFooter className="flex-col gap-4">
-              <Button className="w-full" onClick={() => performAuthAction('signUp')}>
-                Create Account
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
               <Button variant="link" className="text-sm" onClick={() => changeMode('signIn')}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -286,80 +130,66 @@ export default function LoginPage() {
             </CardFooter>
           </>
         );
-      
+
       case 'signIn':
       default:
         return (
-            <>
-                <CardHeader className="text-center">
-                    <CardTitle className="font-headline">Welcome Back</CardTitle>
-                    <CardDescription>
-                        Sign in to continue your journey.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email Address</Label>
-                            <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                        </div>
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="password">Password</Label>
-                                {/* <Button variant="link" className="h-auto p-0 text-xs" onClick={() => changeMode('resetPassword')}>
-                                    Forgot Password?
-                                </Button> */}
-                            </div>
-                            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                        </div>
-                    </div>
-                </CardContent>
-                <CardFooter className="flex-col gap-4">
-                    <div className="flex w-full">
-                        <Button className="w-full" onClick={() => performAuthAction('signIn')}>
-                        Sign In
-                        </Button>
-                    </div>
-                    {/* <div className="text-center text-sm">
-                        No account?{' '}
-                        <Button variant="link" className="p-0 h-auto" onClick={() => changeMode('signUp')}>
-                            Sign up now
-                        </Button>
-                    </div>
-                     <div className="relative w-full">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-card px-2 text-muted-foreground">Or</span>
-                        </div>
-                    </div>
-                    <div className='flex w-full gap-2'>
-                        <Button variant="outline" className="w-full" onClick={performGoogleSignIn}>
-                            Continue with Google
-                        </Button>
-                        <Button variant="outline" className="w-full" onClick={() => changeMode('magicLink')}>
-                            <Mail className="mr-2 h-4 w-4" /> Email Link
-                        </Button>
-                    </div>
-                    <Button variant="outline" className="w-full" onClick={() => changeMode('phoneAuth')}>
-                        <Phone className="mr-2 h-4 w-4" /> Continue with Phone
-                    </Button> */}
-                </CardFooter>
-            </>
+          <>
+            <CardHeader className="text-center">
+              <CardTitle className="font-headline">Welcome Back</CardTitle>
+              <CardDescription>Sign in to continue your journey.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex-col gap-4">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Signing In...' : 'Sign In'}
+              </Button>
+              <div className="text-center text-sm">
+                No account?{' '}
+                <Button variant="link" className="p-0 h-auto" onClick={() => changeMode('signUp')}>
+                  Sign up now
+                </Button>
+              </div>
+            </CardFooter>
+          </>
         );
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-md">
-       <div className="mb-6 flex justify-center">
+      <div className="mb-6 flex justify-center">
         <Link href="/" aria-label="Back to homepage">
           <Logo />
         </Link>
       </div>
       <Card>
-        {error && (
+        <form onSubmit={handleSubmit}>
+          {error && (
             <Alert variant="destructive" className="m-4 mb-0">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
@@ -368,20 +198,14 @@ export default function LoginPage() {
           )}
           {infoMessage && (
             <Alert variant="default" className="m-4 mb-0 border-green-500/50 text-green-700 dark:text-green-400 [&>svg]:text-green-700 dark:[&>svg]:text-green-400">
-               <CheckCircle className="h-4 w-4" />
-               <AlertTitle>Success!</AlertTitle>
-               <AlertDescription>{infoMessage}</AlertDescription>
+              <CheckCircle className="h-4 w-4" />
+              <AlertTitle>Success!</AlertTitle>
+              <AlertDescription>{infoMessage}</AlertDescription>
             </Alert>
           )}
-        {renderContent()}
+          {renderContent()}
+        </form>
       </Card>
-      {authMode === 'signIn' && (
-        <div className="mt-4 text-center">
-          <Button variant="link" className="text-muted-foreground" asChild>
-            <Link href="/">Back to homepage</Link>
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

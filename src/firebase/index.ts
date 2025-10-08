@@ -1,29 +1,28 @@
+import { getApps, initializeApp, cert, getApp, type App } from 'firebase-admin/app';
+import { getAuth, type Auth } from 'firebase-admin/auth';
+import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 
-'use client';
+// IMPORTANT: Do not use this in client-side code.
+// This is the server-side Firebase Admin SDK.
 
-import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, type Firestore } from 'firebase/firestore';
-import { firebaseConfig } from './config';
+let adminApp: App;
+let adminAuth: Auth;
+let adminFirestore: Firestore;
 
-let app: FirebaseApp;
-let auth: Auth;
-let firestore: Firestore;
-
-function initializeFirebase() {
+function initializeFirebaseAdmin() {
   if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    firestore = getFirestore(app);
+    const serviceAccount = JSON.parse(
+      process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
+    );
+    adminApp = initializeApp({
+      credential: cert(serviceAccount),
+    });
   } else {
-    app = getApps()[0];
-    auth = getAuth(app);
-    firestore = getFirestore(app);
+    adminApp = getApp();
   }
-  return { app, auth, firestore };
+  adminAuth = getAuth(adminApp);
+  adminFirestore = getFirestore(adminApp);
+  return { adminApp, adminAuth, adminFirestore };
 }
 
-// Export the initialization function and types
-export { initializeFirebase };
-export * from './provider'; // Export provider and hooks
-export type { FirebaseApp, Auth, Firestore };
+export { initializeFirebaseAdmin };
