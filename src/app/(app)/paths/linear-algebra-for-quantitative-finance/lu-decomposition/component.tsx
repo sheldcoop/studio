@@ -13,7 +13,7 @@ function TheIntuition() {
   return (
     <div className="prose prose-invert max-w-none p-6 text-foreground/90">
       <h4 className="font-bold text-lg not-prose">The Problem: A Tangled Mess</h4>
-      <p>Imagine a system of linear equations, <InlineMath math="A\\mathbf{x} = \\mathbf{b}" />. Visually, think of this as a tangled web of strings. Each equation is a string, and the variables (<InlineMath math="x_1, x_2, x_3" />) are points where the strings are knotted together. The matrix A describes the complexity of this tangle. Your job is to find the exact position of each knot (<InlineMath math="\\mathbf{x}" />) so that the whole system balances perfectly (<InlineMath math="\\mathbf{b}" />).</p>
+      <p>Imagine a system of linear equations, <InlineMath math="A\mathbf{x} = \mathbf{b}" />. Visually, think of this as a tangled web of strings. Each equation is a string, and the variables (<InlineMath math="x_1, x_2, x_3" />) are points where the strings are knotted together. The matrix A describes the complexity of this tangle. Your job is to find the exact position of each knot (<InlineMath math="\mathbf{x}" />) so that the whole system balances perfectly (<InlineMath math="\mathbf{b}" />).</p>
       <p>Pulling on one string affects all the others. Solving this directly is like trying to untangle all the knots at once. It's confusing and hard to keep track of.</p>
       
       <hr/>
@@ -34,15 +34,15 @@ function TheProcess() {
   return (
     <div className="prose prose-invert max-w-none p-6 text-foreground/90">
         <h4 className="font-bold text-lg not-prose">The Two-Step Journey</h4>
-        <p>By replacing A with LU, our hard problem <InlineMath math="A\\mathbf{x} = \\mathbf{b}" /> becomes the simpler <InlineMath math="LU\\mathbf{x} = \\mathbf{b}" />. We can now solve this by introducing an intermediate vector <InlineMath math="\\mathbf{y}" />:</p>
+        <p>By replacing A with LU, our hard problem <InlineMath math="A\mathbf{x} = \mathbf{b}" /> becomes the simpler <InlineMath math="LU\mathbf{x} = \mathbf{b}" />. We can now solve this by introducing an intermediate vector <InlineMath math="\mathbf{y}" />:</p>
         
-        <h5 className="font-semibold text-base mt-4">Step 1: Solve <InlineMath math="L\\mathbf{y} = \\mathbf{b}" /> for <InlineMath math="\\mathbf{y}" /> (Forward Substitution)</h5>
+        <h5 className="font-semibold text-base mt-4">Step 1: Solve <InlineMath math="L\mathbf{y} = \mathbf{b}" /> for <InlineMath math="\mathbf{y}" /> (Forward Substitution)</h5>
         <p>A lower triangular system is like a domino rally. The first equation gives you <InlineMath math="y_1" /> directly. You use that to solve for <InlineMath math="y_2" /> in the second equation, and so on.</p>
-        <div className="text-center"><BlockMath math="\\begin{pmatrix} 1 & 0 & 0 \\ l_{21} & 1 & 0 \\ l_{31} & l_{32} & 1 \\end{pmatrix} \\begin{pmatrix} y_1 \\ y_2 \\ y_3 \\end{pmatrix} = \\begin{pmatrix} b_1 \\ b_2 \\ b_3 \\end{pmatrix}" /></div>
+        <div className="text-center"><BlockMath math="\begin{pmatrix} 1 & 0 & 0 \\ l_{21} & 1 & 0 \\ l_{31} & l_{32} & 1 \end{pmatrix} \begin{pmatrix} y_1 \\ y_2 \\ y_3 \end{pmatrix} = \begin{pmatrix} b_1 \\ b_2 \\ b_3 \end{pmatrix}" /></div>
         
-        <h5 className="font-semibold text-base mt-6">Step 2: Solve <InlineMath math="U\\mathbf{x} = \\mathbf{y}" /> for <InlineMath math="\\mathbf{x}" /> (Backward Substitution)</h5>
-        <p>Now that you have <InlineMath math="\\mathbf{y}" />, you can solve for your original goal, <InlineMath math="\\mathbf{x}" />. An upper triangular system is like climbing down a ladder. You solve for <InlineMath math="x_3" /> in the last equation first, then use that to find <InlineMath math="x_2" /> in the equation above it, and so on.</p>
-        <div className="text-center"><BlockMath math="\\begin{pmatrix} u_{11} & u_{12} & u_{13} \\ 0 & u_{22} & u_{23} \\ 0 & 0 & u_{33} \\end{pmatrix} \\begin{pmatrix} x_1 \\ x_2 \\ x_3 \\end{pmatrix} = \\begin{pmatrix} y_1 \\ y_2 \\ y_3 \\end{pmatrix}" /></div>
+        <h5 className="font-semibold text-base mt-6">Step 2: Solve <InlineMath math="U\mathbf{x} = \mathbf{y}" /> for <InlineMath math="\mathbf{x}" /> (Backward Substitution)</h5>
+        <p>Now that you have <InlineMath math="\mathbf{y}" />, you can solve for your original goal, <InlineMath math="\mathbf{x}" />. An upper triangular system is like climbing down a ladder. You solve for <InlineMath math="x_3" /> in the last equation first, then use that to find <InlineMath math="x_2" /> in the equation above it, and so on.</p>
+        <div className="text-center"><BlockMath math="\begin{pmatrix} u_{11} & u_{12} & u_{13} \\ 0 & u_{22} & u_{23} \\ 0 & 0 & u_{33} \end{pmatrix} \begin{pmatrix} x_1 \\ x_2 \\ x_3 \end{pmatrix} = \begin{pmatrix} y_1 \\ y_2 \\ y_3 \end{pmatrix}" /></div>
         <p>We've successfully untangled the mess by breaking it into two simple tasks without ever facing the complicated matrix A directly!</p>
     </div>
   );
@@ -59,7 +59,7 @@ function TheMechanics() {
             <hr/>
             <h4 className="font-bold text-lg not-prose">A Concrete 3x3 Example</h4>
             <p>Let's decompose the matrix <InlineMath math="A" />:</p>
-            <div className="text-center"><BlockMath math="A = \\begin{pmatrix} 2 & 1 & 1 \\ 4 & 5 & 2 \\ 2 & -2 & 0 \\end{pmatrix}" /></div>
+            <div className="text-center"><BlockMath math="A = \begin{pmatrix} 2 & 1 & 1 \\ 4 & 5 & 2 \\ 2 & -2 & 0 \end{pmatrix}" /></div>
             <p><strong>Goal:</strong> Zero out the entries below the main diagonal.</p>
             
             <p className="mt-4"><strong>Action 1: Eliminate the first column.</strong></p>
@@ -69,7 +69,7 @@ function TheMechanics() {
             </ul>
             <p>The matrix becomes <InlineMath math="A'" /> and our logbook L begins to form:</p>
             <div className="text-center">
-              <BlockMath math="A' = \\begin{pmatrix} 2 & 1 & 1 \\ 0 & 3 & 0 \\ 0 & -3 & -1 \\end{pmatrix} \\quad L = \\begin{pmatrix} 1 & 0 & 0 \\ \\mathbf{2} & 1 & 0 \\ \\mathbf{1} & ? & 1 \\end{pmatrix}" />
+              <BlockMath math="A' = \begin{pmatrix} 2 & 1 & 1 \\ 0 & 3 & 0 \\ 0 & -3 & -1 \end{pmatrix} \quad L = \begin{pmatrix} 1 & 0 & 0 \\ \mathbf{2} & 1 & 0 \\ \mathbf{1} & ? & 1 \end{pmatrix}" />
             </div>
 
             <p className="mt-4"><strong>Action 2: Eliminate the second column.</strong></p>
@@ -78,9 +78,9 @@ function TheMechanics() {
             </ul>
             <p>The matrix is now in upper triangular form. This is our U. Our completed logbook is L.</p>
             <div className="text-center">
-              <BlockMath math="U = \\begin{pmatrix} 2 & 1 & 1 \\ 0 & 3 & 0 \\ 0 & 0 & -1 \\end{pmatrix} \\quad L = \\begin{pmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ 1 & \\mathbf{-1} & 1 \\end{pmatrix}" />
+              <BlockMath math="U = \begin{pmatrix} 2 & 1 & 1 \\ 0 & 3 & 0 \\ 0 & 0 & -1 \end{pmatrix} \quad L = \begin{pmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ 1 & \mathbf{-1} & 1 \end{pmatrix}" />
             </div>
-            <p>You can verify that multiplying <InlineMath math="L \\times U" /> gives you back the original matrix <InlineMath math="A" />.</p>
+            <p>You can verify that multiplying <InlineMath math="L \times U" /> gives you back the original matrix <InlineMath math="A" />.</p>
         </div>
     );
 }
@@ -103,7 +103,7 @@ function TheRealWorld() {
 function TheWhy() {
     return (
         <div className="prose prose-invert max-w-none p-6 text-foreground/90">
-             <p>LU decomposition is a computational workhorse. Its key advantage is efficiency: once you've done the expensive decomposition of <InlineMath math="A" />, you can solve for many different vectors <InlineMath math="\\mathbf{b}" /> very cheaply.</p>
+             <p>LU decomposition is a computational workhorse. Its key advantage is efficiency: once you've done the expensive decomposition of <InlineMath math="A" />, you can solve for many different vectors <InlineMath math="\mathbf{b}" /> very cheaply.</p>
              <h5 className="font-semibold text-base mt-6">Quantitative Finance</h5>
              <p>Used in numerical methods to solve the partial differential equations (like Black-Scholes) that price financial derivatives.</p>
              <h5 className="font-semibold text-base mt-6">Machine Learning</h5>
