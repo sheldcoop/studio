@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 210 40% 98%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 210 40% 98%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 259 55% 42%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 259 44% 51%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --chart-1: 259 55% 42%;
+    --chart-2: 173 58.3% 39.8%;
+    --chart-3: 0 72.2% 50.6%;
+    --chart-4: 43.2 95.5% 53.1%;
+    --chart-5: 270 95.5% 53.1%;
+    --animation-primary-color: hsl(259, 55%, 42%);
+    --animation-opacity: 0.85;
+  }
+
+  .dark {
+    --background: 231 39% 11%;
+    --foreground: 220 13% 91%;
+    --card: 231 39% 11%;
+    --card-foreground: 220 13% 91%;
+    --popover: 231 39% 11%;
+    --popover-foreground: 220 13% 91%;
+    --primary: 259 44% 80%;
+    --primary-foreground: 259 55% 26%;
+    --secondary: 226 24% 16%;
+    --secondary-foreground: 220 13% 91%;
+    --muted: 226 24% 16%;
+    --muted-foreground: 226 12% 46%;
+    --accent: 259 44% 51%;
+    --accent-foreground: 220 13% 91%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 220 13% 91%;
+    --border: 226 24% 20%;
+    --input: 226 24% 20%;
+    --ring: 259 44% 51%;
+    --chart-1: 259 44% 80%;
+    --chart-2: 173 58.3% 39.8%;
+    --chart-3: 0 72.2% 50.6%;
+    --chart-4: 43.2 95.5% 53.1%;
+    --chart-5: 270 95.5% 53.1%;
+    --animation-primary-color: hsl(259, 44%, 80%);
+    --animation-opacity: 0.85;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
