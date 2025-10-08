@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import {
-  getAuth,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -14,10 +13,9 @@ import {
   type AuthError,
   type User,
 } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { auth } from '@/firebase'; // Corrected import
 import { useRouter } from 'next/navigation';
 
-const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 export const getFriendlyErrorMessage = (error: AuthError): string => {

@@ -63,7 +63,7 @@ type TopicPageProps = {
   params: Promise<{ pathSlug: string; topicSlug: string }>;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003';
 
 // Statically generate all topic pages at build time
 export async function generateStaticParams() {
