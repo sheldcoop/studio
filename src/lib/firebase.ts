@@ -1,22 +1,18 @@
-// src/lib/firebase.ts
 
-// Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from "firebase/app";
+// This file is being deprecated in favor of the new src/firebase/index.ts structure.
+// For backward compatibility, we will keep the app export but move the config.
+import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 
-// Your web app's Firebase configuration
-// This is a public configuration and is safe to be exposed on the client side.
-const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "quantprep-backend.firebaseapp.com",
-  projectId: "quantprep-backend",
-  storageBucket: "quantprep-backend.appspot.com",
-  messagingSenderId: "740391494917",
-  appId: "1:740391494917:web:0d357038f729227f717709"
+const firebaseConfig: FirebaseOptions = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 
-// Initialize Firebase
-// We add a check to see if the app is already initialized to prevent errors in Next.js's hot-reloading environment.
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-export { app };
+export { app, firebaseConfig };
