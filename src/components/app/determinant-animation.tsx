@@ -35,6 +35,7 @@ export function DeterminantAnimation({ className, isHovered }: DeterminantAnimat
       p.setup = () => {
         const renderer = p.createCanvas(p.windowWidth, p.windowHeight);
         renderer.parent(currentMount);
+        p.remove(); // Disable p5.js default unload event listener
         p.windowResized();
         
         const computedStyle = getComputedStyle(document.documentElement);

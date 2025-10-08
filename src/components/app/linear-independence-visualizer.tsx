@@ -42,6 +42,7 @@ const LinearIndependenceVisualizer = () => {
             p.setup = () => {
                 const container = canvasRef.current!;
                 p.createCanvas(container.offsetWidth, container.offsetHeight).parent(container);
+                p.remove(); // Disable p5.js default unload event listener
                 v1 = p.createVector(sketchState.v1.x, sketchState.v1.y);
                 v2 = p.createVector(sketchState.v2.x, sketchState.v2.y);
                 p.noLoop();

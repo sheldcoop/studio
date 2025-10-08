@@ -46,6 +46,7 @@ const CovarianceVisualizer = () => {
 
             p.setup = () => {
                 p.createCanvas(canvasRef.current!.offsetWidth, canvasRef.current!.offsetHeight).parent(canvasRef.current!);
+                p.remove(); // Disable p5.js default unload event listener
                 generateData();
             };
 

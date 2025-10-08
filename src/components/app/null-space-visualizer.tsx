@@ -41,6 +41,7 @@ const NullSpaceVisualizer = () => {
 
             p.setup = () => {
                 p.createCanvas(canvasRef.current!.offsetWidth, 400).parent(canvasRef.current!);
+                p.remove(); // Disable p5.js default unload event listener
             };
 
             p.draw = () => {

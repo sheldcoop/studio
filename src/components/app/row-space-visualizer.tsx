@@ -31,6 +31,7 @@ const RowSpaceVisualizer = () => {
             p.setup = () => {
                 const container = canvasRef.current!;
                 p.createCanvas(container.offsetWidth, container.offsetHeight).parent(container);
+                p.remove(); // Disable p5.js default unload event listener
                 r1 = p.createVector(1.5, 0.5);
                 r2 = p.createVector(0.5, 1.0);
             };
@@ -125,5 +126,3 @@ const RowSpaceVisualizer = () => {
 };
 
 export default RowSpaceVisualizer;
-
-    

@@ -34,6 +34,7 @@ const ColumnSpaceVisualizer = () => {
             p.setup = () => {
                 const container = canvasRef.current!;
                 p.createCanvas(container.offsetWidth, container.offsetHeight).parent(container);
+                p.remove(); // Disable p5.js default unload event listener
                 
                 col1 = p.createVector(1.5, 0.5);
                 col2 = p.createVector(-1, 1);
@@ -180,10 +181,3 @@ const ColumnSpaceVisualizer = () => {
 };
 
 export default ColumnSpaceVisualizer;
-    
-
-    
-
-    
-
-  
