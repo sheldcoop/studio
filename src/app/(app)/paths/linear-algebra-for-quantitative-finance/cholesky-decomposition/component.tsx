@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BlockMath, InlineMath } from 'react-katex';
 import { Trophy, ShieldCheck, Cpu, Code, Zap, HeartPulse } from 'lucide-react';
+import CodeBlock from '@/components/CodeBlock';
+import choleskyCode from '@code-examples/linear-algebra/cholesky-decomposition.py';
 
 
 export default function CholeskyDecompositionPage() {
@@ -136,8 +138,13 @@ export default function CholeskyDecompositionPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="text-primary"/> 6. Making It Real: Python Implementation</CardTitle>
             </CardHeader>
-            <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-center">
-                <p className="text-muted-foreground">Python implementation coming soon.</p>
+            <CardContent>
+                <CodeBlock 
+                  code={choleskyCode}
+                  language="python"
+                  title="cholesky-decomposition.py"
+                  highlightLines={[12, 15, 18]}
+                />
             </CardContent>
         </Card>
       </div>
