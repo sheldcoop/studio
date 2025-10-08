@@ -11,7 +11,7 @@ import { OrientationBanner } from '@/components/app/orientation-banner';
 import { Providers } from '@/components/app/providers';
 import { Header } from '@/components/app/header';
 import { Footer } from '@/components/app/footer';
-import { FirebaseProvider } from '@/firebase'; // Corrected import
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 const fontBody = Inter({ subsets: ['latin'], variable: '--font-body' });
 const fontHeadline = Space_Grotesk({ subsets: ['latin'], variable: '--font-headline' });
@@ -94,7 +94,7 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
-        <FirebaseProvider>
+        <FirebaseClientProvider>
           <Providers>
             <div className="flex min-h-screen flex-col">
               <Header />
@@ -103,7 +103,7 @@ export default function RootLayout({
             </div>
             <OrientationBanner />
           </Providers>
-        </FirebaseProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );
