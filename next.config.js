@@ -22,7 +22,6 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     // Note: Server-only variables are not prefixed
     FIREBASE_SERVICE_ACCOUNT_KEY: process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
-    SESSION_SECRET: process.env.SESSION_SECRET,
   },
 };
 

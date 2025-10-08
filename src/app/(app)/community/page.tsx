@@ -48,16 +48,12 @@ export default function CommunityPage() {
         title="Community Forum"
         description="Connect with peers, ask questions, and grow together."
       >
-        <Button disabled>
-            <PlusCircle className="mr-2" />
-            Start a Discussion (Login Required)
-        </Button>
       </PageHeader>
        <Alert className="mb-6">
         <AlertTriangle className="h-4 w-4" />
         <CardTitle>Authentication Disabled</CardTitle>
         <CardDescription>
-          The community forum is currently using static placeholder data. User authentication and real-time database features have been temporarily removed.
+          The community forum is currently using static placeholder data. User authentication and real-time database features are not yet implemented.
         </CardDescription>
       </Alert>
       <Card>
