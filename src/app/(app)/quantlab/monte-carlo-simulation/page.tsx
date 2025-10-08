@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -95,10 +95,11 @@ export default function MonteCarloSimulationPage() {
         setFinalPrices(newFinalPrices);
     };
     
-    // Run once on load
-    useState(() => {
+    // Run simulation on the client after initial render
+    useEffect(() => {
         runSimulation();
-    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mu, sigma, numPaths]);
 
   return (
     <>

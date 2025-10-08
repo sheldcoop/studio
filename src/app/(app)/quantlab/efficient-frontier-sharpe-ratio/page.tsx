@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ReferenceLine } from 'recharts';
+import { Scatter, ScatterChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
@@ -52,7 +52,11 @@ const DynamicEfficientFrontierChart = dynamic(() => Promise.resolve(EfficientFro
 // --- Main Page Component ---
 export default function EfficientFrontierComponent() {
     const [rho, setRho] = useState(0.2); // Correlation
-    const portfolios = useMemo(() => generatePortfolio(0.08, 0.15, 0.12, 0.25, rho), [rho]);
+    const [portfolios, setPortfolios] = useState<any[]>([]);
+
+    useEffect(() => {
+        setPortfolios(generatePortfolio(0.08, 0.15, 0.12, 0.25, rho));
+    }, [rho]);
 
   return (
     <>

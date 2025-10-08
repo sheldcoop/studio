@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -61,7 +61,11 @@ const DynamicKalmanChart = dynamic(() => Promise.resolve(KalmanChart), {
 export default function KalmanFilterComponent() {
     const [processNoise, setProcessNoise] = useState(0.1);
     const [measurementNoise, setMeasurementNoise] = useState(1);
-    const simulatedData = useMemo(() => simulateKalmanFilter(processNoise, measurementNoise, 100), [processNoise, measurementNoise]);
+    const [simulatedData, setSimulatedData] = useState<any[]>([]);
+
+    useEffect(() => {
+        setSimulatedData(simulateKalmanFilter(processNoise, measurementNoise, 100));
+    }, [processNoise, measurementNoise]);
 
   return (
     <>

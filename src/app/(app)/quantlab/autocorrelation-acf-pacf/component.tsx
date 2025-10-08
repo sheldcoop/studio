@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -77,7 +77,11 @@ const ACFChart = ({ data, maxLag }: { data: number[], maxLag: number }) => {
 // --- Main Page Component ---
 export default function ACF_PACF_Page() {
     const [phi, setPhi] = useState(0.8);
-    const timeSeriesData = useMemo(() => generateARProcess(phi, 200), [phi]);
+    const [timeSeriesData, setTimeSeriesData] = useState<number[]>([]);
+
+    useEffect(() => {
+        setTimeSeriesData(generateARProcess(phi, 200));
+    }, [phi]);
 
   return (
     <>
