@@ -7,11 +7,11 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 // This is a public configuration and is safe to be exposed on the client side.
 const firebaseConfig = {
   apiKey: "API_KEY",
-  authDomain: "PROJECT_ID.firebaseapp.com",
-  projectId: "PROJECT_ID",
-  storageBucket: "PROJECT_ID.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  authDomain: "quantprep-backend.firebaseapp.com",
+  projectId: "quantprep-backend",
+  storageBucket: "quantprep-backend.appspot.com",
+  messagingSenderId: "740391494917",
+  appId: "1:740391494917:web:0d357038f729227f717709"
 };
 
 
