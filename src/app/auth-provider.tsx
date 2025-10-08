@@ -1,7 +1,7 @@
 
 'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode, useCallback } from 'react';
 import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
@@ -13,6 +13,7 @@ import {
   signOut,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  updateProfile,
   type ConfirmationResult,
   type AuthError,
   type User,
@@ -22,14 +23,6 @@ import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
 
 const googleProvider = new GoogleAuthProvider();
-
-// Extend window interface for reCAPTCHA verifier
-declare global {
-    interface Window {
-        recaptchaVerifier?: RecaptchaVerifier;
-    }
-}
-
 
 export const getFriendlyErrorMessage = (error: AuthError): string => {
     switch (error.code) {
@@ -52,6 +45,7 @@ export const getFriendlyErrorMessage = (error: AuthError): string => {
         case 'auth/invalid-phone-number':
             return 'The phone number is not valid.';
         case 'auth/captcha-check-failed':
+        case 'auth/invalid-app-credential':
             return 'The reCAPTCHA verification failed. Please try again.';
         default:
             console.error("Authentication Error:", error);
@@ -81,11 +75,12 @@ const actionCodeSettings = {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  handleAuthAction: (action: 'signUp' | 'signIn', email: string, password?: string) => Promise<{ success: boolean; message: string; }>;
+  handleAuthAction: (action: 'signUp' | 'signIn', email: string, password?: string, displayName?: string) => Promise<{ success: boolean; message: string; }>;
   handlePasswordReset: (email: string) => Promise<{ success: boolean; message: string; }>;
   handleGoogleSignIn: () => Promise<{ success: boolean; message: string; }>;
   handleSendSignInLink: (email: string) => Promise<{ success: boolean; message: string; }>;
-  handlePhoneSignIn: (phoneNumber: string, appVerifierContainerId: string) => Promise<{ success: boolean; message: string; confirmationResult?: ConfirmationResult }>;
+  setupRecaptcha: (containerId: string) => RecaptchaVerifier;
+  handlePhoneSignIn: (phoneNumber: string, appVerifier: RecaptchaVerifier) => Promise<{ success: boolean; message: string; confirmationResult?: ConfirmationResult }>;
   handleVerifyPhoneCode: (confirmationResult: ConfirmationResult, code: string) => Promise<{ success: boolean; message: string; }>;
   handleLogout: () => Promise<void>;
 }
@@ -121,12 +116,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [auth, router]);
   
 
-  const handleAuthAction = async (action: 'signUp' | 'signIn', email: string, password = ''): Promise<{ success: boolean; message: string; }> => {
+  const handleAuthAction = async (action: 'signUp' | 'signIn', email: string, password = '', displayName?: string): Promise<{ success: boolean; message: string; }> => {
     if (!auth) return { success: false, message: 'Authentication service not available.'};
     try {
       let userCredential;
       if (action === 'signUp') {
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        if (displayName && userCredential.user) {
+          await updateProfile(userCredential.user, { displayName });
+        }
       } else { // signIn
         userCredential = await signInWithEmailAndPassword(auth, email, password);
       }
@@ -177,24 +175,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const handlePhoneSignIn = async (phoneNumber: string, appVerifierContainerId: string): Promise<{ success: boolean; message: string; confirmationResult?: ConfirmationResult }> => {
+  const setupRecaptcha = useCallback((containerId: string): RecaptchaVerifier => {
+      if (!auth) throw new Error("Firebase auth not initialized");
+      const recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+        size: 'invisible'
+      });
+      return recaptchaVerifier;
+  }, [auth]);
+
+
+  const handlePhoneSignIn = async (phoneNumber: string, appVerifier: RecaptchaVerifier): Promise<{ success: boolean; message: string; confirmationResult?: ConfirmationResult }> => {
     if (!auth) return { success: false, message: 'Authentication service not available.' };
     try {
-      // Ensure reCAPTCHA is only created once
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, appVerifierContainerId, {
-          'size': 'invisible',
-          'callback': () => {
-            // reCAPTCHA solved, allow signInWithPhoneNumber.
-          },
-        });
-      }
-      
-      const appVerifier = window.recaptchaVerifier;
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       return { success: true, message: 'SMS sent!', confirmationResult };
     } catch (error) {
-      // Errors could be related to invalid phone number, reCAPTCHA failure, etc.
       return { success: false, message: getFriendlyErrorMessage(error as AuthError) };
     }
   };
@@ -212,19 +207,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     if (!auth) return;
     await signOut(auth);
-    // Reset reCAPTCHA verifier on logout if it exists
-    if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-    }
     router.push('/login');
   };
 
 
   return (
-    <AuthContext.Provider value={{ user, loading, handleAuthAction, handlePasswordReset, handleGoogleSignIn, handleSendSignInLink, handlePhoneSignIn, handleVerifyPhoneCode, handleLogout }}>
+    <AuthContext.Provider value={{ user, loading, handleAuthAction, handlePasswordReset, handleGoogleSignIn, handleSendSignInLink, setupRecaptcha, handlePhoneSignIn, handleVerifyPhoneCode, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );
 }
-
-    

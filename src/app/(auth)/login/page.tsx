@@ -18,19 +18,23 @@ import { Logo } from '@/components/app/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, CheckCircle, ArrowLeft, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
-import { type ConfirmationResult } from 'firebase/auth';
+import { type ConfirmationResult, type RecaptchaVerifier } from 'firebase/auth';
+import PhoneInput from 'react-phone-number-input';
 
-type AuthMode = 'signIn' | 'resetPassword' | 'magicLink' | 'phoneAuth' | 'phoneVerify';
+type AuthMode = 'signIn' | 'signUp' | 'resetPassword' | 'magicLink' | 'phoneAuth' | 'phoneVerify';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>('signIn');
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [recaptchaVerifier, setRecaptchaVerifier] = useState<RecaptchaVerifier | null>(null);
+
 
   const { 
     handleAuthAction, 
@@ -39,14 +43,28 @@ export default function LoginPage() {
     handleSendSignInLink,
     handlePhoneSignIn,
     handleVerifyPhoneCode,
+    setupRecaptcha,
   } = useAuth();
+
+  // Set up reCAPTCHA when the phone auth component mounts
+  useEffect(() => {
+    if (authMode === 'phoneAuth' && !recaptchaVerifier) {
+      const verifier = setupRecaptcha('recaptcha-container');
+      setRecaptchaVerifier(verifier);
+      verifier.render();
+    }
+  }, [authMode, setupRecaptcha, recaptchaVerifier]);
   
   const performAuthAction = async (action: 'signUp' | 'signIn') => {
     setError(null);
     setInfoMessage(null);
-    const result = await handleAuthAction(action, email, password);
+    const result = await handleAuthAction(action, email, password, action === 'signUp' ? displayName : undefined);
     if(result.success) {
       setInfoMessage(action === 'signUp' ? 'Account created successfully! Welcome!' : 'Login successful!');
+      if(action === 'signUp') {
+        // Switch to sign in mode after successful sign up
+        setAuthMode('signIn');
+      }
     } else {
       setError(result.message);
     }
@@ -77,7 +95,11 @@ export default function LoginPage() {
   const performPhoneSignIn = async () => {
     setError(null);
     setInfoMessage(null);
-    const result = await handlePhoneSignIn(phoneNumber, 'recaptcha-container');
+    if (!recaptchaVerifier) {
+        setError('reCAPTCHA not initialized. Please refresh.');
+        return;
+    }
+    const result = await handlePhoneSignIn(phoneNumber, recaptchaVerifier);
     if (result.success && result.confirmationResult) {
       setConfirmationResult(result.confirmationResult);
       setAuthMode('phoneVerify');
@@ -135,10 +157,15 @@ export default function LoginPage() {
             <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" type="tel" placeholder="+1 555-555-5555" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                  <PhoneInput
+                    id="phone"
+                    placeholder="Enter phone number"
+                    value={phoneNumber}
+                    onChange={(value) => setPhoneNumber(value || '')}
+                    className="input"
+                  />
                 </div>
-                {/* This container is REQUIRED for the reCAPTCHA widget */}
-                <div id="recaptcha-container"></div>
+                <div id="recaptcha-container" className="flex justify-center"></div>
             </CardContent>
             <CardFooter className="flex-col gap-4">
                 <Button id="sign-in-button" className="w-full" onClick={performPhoneSignIn}>Send SMS Code</Button>
@@ -224,15 +251,50 @@ export default function LoginPage() {
             </CardFooter>
           </>
         );
+
+      case 'signUp':
+        return (
+          <>
+            <CardHeader className="text-center">
+              <CardTitle className="font-headline">Create an Account</CardTitle>
+              <CardDescription>
+                Enter your details below to get started.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="displayName">Display Name</Label>
+                <Input id="displayName" type="text" placeholder="Jane Doe" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              </div>
+            </CardContent>
+            <CardFooter className="flex-col gap-4">
+              <Button className="w-full" onClick={() => performAuthAction('signUp')}>
+                Create Account
+              </Button>
+              <Button variant="link" className="text-sm" onClick={() => changeMode('signIn')}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Sign In
+              </Button>
+            </CardFooter>
+          </>
+        );
       
       case 'signIn':
       default:
         return (
             <>
                 <CardHeader className="text-center">
-                    <CardTitle className="font-headline">Welcome to QuantPrep</CardTitle>
+                    <CardTitle className="font-headline">Welcome Back</CardTitle>
                     <CardDescription>
-                        Sign in or create an account to continue
+                        Sign in to continue your journey.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -253,12 +315,15 @@ export default function LoginPage() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex-col gap-4">
-                    <div className="flex w-full gap-2">
-                        <Button variant="secondary" className="w-full" onClick={() => performAuthAction('signIn')}>
+                    <div className="flex w-full">
+                        <Button className="w-full" onClick={() => performAuthAction('signIn')}>
                         Sign In
                         </Button>
-                        <Button className="w-full" onClick={() => performAuthAction('signUp')}>
-                        Sign Up
+                    </div>
+                    <div className="text-center text-sm">
+                        No account?{' '}
+                        <Button variant="link" className="p-0 h-auto" onClick={() => changeMode('signUp')}>
+                            Sign up now
                         </Button>
                     </div>
                      <div className="relative w-full">
@@ -289,7 +354,9 @@ export default function LoginPage() {
   return (
     <div className="w-full max-w-md">
        <div className="mb-6 flex justify-center">
-        <Logo />
+        <Link href="/" aria-label="Back to homepage">
+          <Logo />
+        </Link>
       </div>
       <Card>
         {error && (
@@ -308,11 +375,13 @@ export default function LoginPage() {
           )}
         {renderContent()}
       </Card>
-      <Button variant="link" className="mt-4 text-muted-foreground" asChild>
-        <Link href="/">Back to homepage</Link>
-      </Button>
+      {authMode === 'signIn' && (
+        <div className="mt-4 text-center">
+          <Button variant="link" className="text-muted-foreground" asChild>
+            <Link href="/">Back to homepage</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
-
-    

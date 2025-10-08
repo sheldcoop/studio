@@ -1,4 +1,5 @@
 
+
 // src/app/layout.tsx
 
 import type { Metadata } from 'next';
@@ -7,6 +8,7 @@ import { cn } from '@/lib/utils';
 import './globals.css';
 import '../styles/codeblock.css';
 import 'katex/dist/katex.min.css';
+import 'react-phone-number-input/style.css'
 import { OrientationBanner } from '@/components/app/orientation-banner';
 import { Providers } from '@/components/app/providers';
 import { Header } from '@/components/app/header';
