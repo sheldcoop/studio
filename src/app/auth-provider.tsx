@@ -6,6 +6,7 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendSignInLinkToEmail,
   GoogleAuthProvider,
   signInWithPopup,
   sendEmailVerification,
@@ -55,6 +56,11 @@ const writeUserToFirestore = async (firestore: any, user: User) => {
     await setDoc(userRef, userData, { merge: true });
 };
 
+const actionCodeSettings = {
+  url: `${typeof window !== 'undefined' ? window.location.origin : ''}/actions`,
+  handleCodeInApp: true,
+};
+
 
 interface AuthContextType {
   user: User | null;
@@ -62,6 +68,7 @@ interface AuthContextType {
   handleAuthAction: (action: 'signUp' | 'signIn', email: string, password?: string) => Promise<{ success: boolean; message: string; }>;
   handlePasswordReset: (email: string) => Promise<{ success: boolean; message: string; }>;
   handleGoogleSignIn: () => Promise<{ success: boolean; message: string; }>;
+  handleSendSignInLink: (email: string) => Promise<{ success: boolean; message: string; }>;
   handleLogout: () => Promise<void>;
 }
 
@@ -103,16 +110,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
         await writeUserToFirestore(firestore, userCredential.user);
-        return { success: true, message: 'Sign-up successful! Welcome.' };
+        await signOut(auth);
+        return { success: true, message: 'Sign-up successful! Please check your email to verify your account before logging in.' };
       } else { // signIn
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         if (!userCredential.user.emailVerified) {
-          // Optional: Remind user to verify their email, but still allow login.
-          console.log("User email not verified.");
+          await signOut(auth);
+          return { success: false, message: 'Your email is not verified. Please check your inbox or request a new verification link.' };
         }
         await writeUserToFirestore(firestore, userCredential.user);
         return { success: true, message: 'Login successful!' };
       }
+    } catch (err) {
+      return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
+    }
+  };
+
+  const handleSendSignInLink = async (email: string): Promise<{ success: boolean; message: string; }> => {
+    if (!auth) return { success: false, message: 'Authentication service not available.'};
+    if (!email) {
+      return { success: false, message: 'Please enter your email address.'};
+    }
+    try {
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      window.localStorage.setItem('emailForSignIn', email);
+      return { success: true, message: 'A sign-in link has been sent to your email. Please check your inbox.' };
     } catch (err) {
       return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
     }
@@ -150,7 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ user, loading, handleAuthAction, handlePasswordReset, handleGoogleSignIn, handleLogout }}>
+    <AuthContext.Provider value={{ user, loading, handleAuthAction, handlePasswordReset, handleGoogleSignIn, handleSendSignInLink, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );

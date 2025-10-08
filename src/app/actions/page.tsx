@@ -3,7 +3,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { applyActionCode, verifyPasswordResetCode } from 'firebase/auth';
+import { applyActionCode, verifyPasswordResetCode, isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { useFirebaseAuth } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -24,6 +24,8 @@ function ActionHandler() {
     }
     const mode = searchParams.get('mode');
     const oobCode = searchParams.get('oobCode');
+    const continueUrl = searchParams.get('continueUrl');
+    const lang = searchParams.get('lang') || 'en';
 
     if (!mode || !oobCode) {
       setIsProcessing(false);
@@ -35,20 +37,35 @@ function ActionHandler() {
       try {
         switch (mode) {
           case 'resetPassword':
-            // First, verify the code is valid. This prevents users from even seeing the
-            // reset page if they have a bad link.
             await verifyPasswordResetCode(auth, oobCode);
-            // If verification is successful, THEN we redirect to the page where they can enter a new password.
-            // We forward the code so the next page can use it to complete the reset.
             router.push(`/reset-password?oobCode=${oobCode}`);
             break;
 
           case 'verifyEmail':
-            // The link is for email verification. Handle it here directly.
             await applyActionCode(auth, oobCode);
             setIsProcessing(false);
             setMessage({ type: 'success', text: 'Your email has been verified! You will be redirected to the login page shortly.' });
             setTimeout(() => router.push('/login'), 4000);
+            break;
+            
+          case 'signIn':
+            if (isSignInWithEmailLink(auth, window.location.href)) {
+              let email = window.localStorage.getItem('emailForSignIn');
+              if (!email) {
+                email = window.prompt('Please provide your email for confirmation');
+              }
+              if (email) {
+                const result = await signInWithEmailLink(auth, email, window.location.href);
+                window.localStorage.removeItem('emailForSignIn');
+                setIsProcessing(false);
+                setMessage({ type: 'success', text: 'Sign-in successful! Redirecting...' });
+                // The onAuthStateChanged listener in AuthProvider will handle the redirect.
+              } else {
+                 throw new Error("Email not provided for sign-in link.");
+              }
+            } else {
+                throw new Error("Invalid sign-in link.");
+            }
             break;
 
           default:
