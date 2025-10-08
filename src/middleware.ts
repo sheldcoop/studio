@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
+import { cookies } from 'next/headers'; // 1. Import cookies
 import { sessionOptions, type SessionData } from '@/lib/session';
 
 const protectedRoutes = ['/', '/paths', '/quantlab', '/interview-prep', '/community'];
 const publicRoutes = ['/login', '/signup', '/reset-password', '/auth/verify-email'];
 
 export async function middleware(req: NextRequest) {
-  const session = await getIronSession<SessionData>(req.cookies, sessionOptions);
+  // 2. Use the cookies() function instead of req.cookies
+  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
   const path = req.nextUrl.pathname;
 
   // Check for expired session
@@ -15,9 +17,10 @@ export async function middleware(req: NextRequest) {
     const MAX_SESSION_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
     if (sessionAge > MAX_SESSION_AGE) {
       session.destroy();
-      const response = NextResponse.redirect(new URL('/login', req.url));
-      response.cookies.delete(sessionOptions.cookieName);
-      return response;
+      // Note: You don't need to manually delete the cookie here.
+      // iron-session's session.destroy() will handle setting the
+      // correct Set-Cookie header to expire it.
+      return NextResponse.redirect(new URL('/login', req.url));
     }
   }
 
