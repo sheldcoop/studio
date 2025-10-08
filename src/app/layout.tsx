@@ -1,11 +1,9 @@
-
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import './globals.css';
 import { ThemeProvider } from '@/components/app/theme-provider';
-import { AuthProvider } from '@/app/auth-provider';
 import { OrientationBanner } from '@/components/app/orientation-banner';
 
 const fontBody = Inter({
@@ -18,10 +16,8 @@ const fontHeadline = Space_Grotesk({
   variable: '--font-headline',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003'),
   title: {
     template: '%s | QuantPrep',
     default: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
@@ -30,26 +26,48 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+  openGraph: {
+    title: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
+    description: 'The ultimate platform for mastering quantitative finance, from theory to application.',
+    url: '/',
+    siteName: 'QuantPrep',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'QuantPrep Open Graph Image',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
+    description: 'The ultimate platform for mastering quantitative finance, from theory to application.',
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+  other: {
+    'organization-schema': JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'QuantPrep',
+      url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003',
+      logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003'}/logo.png`,
+      sameAs: [
+        'https://twitter.com/QuantPrep',
+        'https://www.linkedin.com/company/quantprep'
+      ]
+    }),
+  }
 };
 
-const organizationSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'QuantPrep',
-  url: siteUrl,
-  logo: new URL('/logo.png', siteUrl).toString(),
-};
 
 export default function RootLayout({
   children,
@@ -58,12 +76,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-         <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-        />
-      </head>
+      <head/>
       <body 
         className={cn(
           'font-body antialiased',
@@ -77,10 +90,8 @@ export default function RootLayout({
           themes={['light', 'dark', 'slate', 'nocturne', 'quant']}
           disableTransitionOnChange
         >
-          <AuthProvider>
             {children}
             <OrientationBanner />
-          </AuthProvider>
           <Toaster />
         </ThemeProvider>
       </body>

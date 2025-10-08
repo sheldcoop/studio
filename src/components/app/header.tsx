@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -8,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import { Logo } from './logo';
 import { MainNav } from './main-nav';
-import { UserNav } from './user-nav';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './theme-toggle';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
@@ -64,7 +62,9 @@ export function Header() {
            </div>
           <nav className="flex items-center gap-2">
             <ThemeToggle />
-            <UserNav />
+            <Button asChild>
+              <Link href="#">Login</Link>
+            </Button>
           </nav>
         </div>
       </div>

@@ -1,4 +1,4 @@
-# QuantPrep - A Next.js Learning Platform
+che# QuantPrep - A Next.js Learning Platform
 
 QuantPrep is an AI-powered learning platform designed to help quantitative finance aspirants master core concepts, from statistical analysis to algorithmic trading.
 
