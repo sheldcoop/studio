@@ -1,55 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 import { sessionOptions, type SessionData } from '@/lib/session';
+import { cookies } from 'next/headers';
 
 const protectedRoutes = ['/', '/paths', '/quantlab', '/interview-prep', '/community'];
-const publicRoutes = ['/login', '/signup'];
+const publicRoutes = ['/login', '/signup', '/reset-password'];
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  const session = await getIronSession<SessionData>(req.cookies, sessionOptions);
-  
+  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
   const path = req.nextUrl.pathname;
 
-  // Check if session is older than 7 days
+  // Check if session has expired
   if (session.isLoggedIn && session.createdAt) {
     const sessionAge = Date.now() - session.createdAt;
     const MAX_SESSION_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
     
     if (sessionAge > MAX_SESSION_AGE) {
-      // Session expired, destroy it
       session.destroy();
-      return NextResponse.redirect(new URL('/login', req.nextUrl));
+      const response = NextResponse.redirect(new URL('/login', req.nextUrl));
+      // Manually clear the cookie as session.destroy() might not be enough on redirect
+      response.cookies.delete(sessionOptions.cookieName);
+      return response;
     }
   }
-  
+
   const isPublicRoute = publicRoutes.some(p => path.startsWith(p));
-
-  // If the user is on a public route (e.g., /login)
-  if (isPublicRoute) {
-    // And they are logged in, redirect them away from the login page to the dashboard.
-    if (session.isLoggedIn) {
-      return NextResponse.redirect(new URL('/', req.nextUrl));
-    }
-    // Otherwise, let them stay on the public route.
-    return res;
-  }
-
-  // The root path '/' is a special case that needs to be handled exactly.
   const isProtectedRoute = path === '/' || protectedRoutes.some(p => p !== '/' && path.startsWith(p));
-  
-  // If the user is on a protected route
-  if (isProtectedRoute) {
-    // And they are not logged in, redirect them to the login page.
-    if (!session.isLoggedIn) {
-      return NextResponse.redirect(new URL('/login', req.nextUrl));
-    }
+
+  // If user is logged in and tries to access a public-only route (like login), redirect to dashboard
+  if (session.isLoggedIn && isPublicRoute) {
+    return NextResponse.redirect(new URL('/', req.nextUrl));
   }
 
-  return res;
+  // If user is not logged in and tries to access a protected route, redirect to login
+  if (!session.isLoggedIn && isProtectedRoute) {
+    return NextResponse.redirect(new URL('/login', req.nextUrl));
+  }
+
+  return NextResponse.next();
 }
 
 // Routes Middleware should not run on
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$|favicon.ico).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$|favicon.ico|auth/verify-email).*)'],
 };

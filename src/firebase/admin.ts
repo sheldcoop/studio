@@ -1,4 +1,3 @@
-
 import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
 import { getAuth, Auth } from 'firebase-admin/auth';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
@@ -7,22 +6,20 @@ import { getFirestore, Firestore } from 'firebase-admin/firestore';
 // This is the server-side Firebase Admin SDK.
 
 let adminApp: App;
-let adminAuth: Auth;
-let adminFirestore: Firestore;
 
-if (getApps().length === 0) {
-    adminApp = initializeApp({
-        credential: cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: (process.env.FIREBASE_PRIVATE_KEY as string).replace(/\\n/g, '\n'),
-        }),
-    });
+if (getApps().some(app => app.name === 'admin')) {
+  adminApp = getApps().find(app => app.name === 'admin')!;
 } else {
-    adminApp = getApps()[0];
+  adminApp = initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+    }),
+  }, 'admin');
 }
 
-adminAuth = getAuth(adminApp);
-adminFirestore = getFirestore(adminApp);
+const adminAuth: Auth = getAuth(adminApp);
+const adminDb: Firestore = getFirestore(adminApp);
 
-export { adminApp, adminAuth, adminFirestore };
+export { adminApp, adminAuth, adminDb };

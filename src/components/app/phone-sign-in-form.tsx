@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Loader2, Phone } from 'lucide-react';
 import { useAuth } from '@/app/auth-provider';
 import PhoneInput from 'react-phone-number-input';
-import { useAuth as useFirebaseAuth } from '@/firebase';
+import { useFirebaseAuth } from '@/firebase';
 
 declare global {
   interface Window {
@@ -32,8 +32,6 @@ export function PhoneSignInForm() {
     if (!auth || typeof window === 'undefined') return;
 
     if (!window.recaptchaVerifier) {
-      // The 'recaptcha-container' must be visible.
-      // We position it off-screen but visible.
       const recaptchaContainer = document.getElementById('recaptcha-container');
       if (recaptchaContainer) {
          window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainer, {
