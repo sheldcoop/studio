@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -29,18 +28,16 @@ export function PhoneSignInForm() {
   const auth = useFirebaseAuth();
   
   useEffect(() => {
-    if (!auth || typeof window === 'undefined') return;
+    if (!auth || typeof window === 'undefined' || window.recaptchaVerifier) return;
 
-    if (!window.recaptchaVerifier) {
-      const recaptchaContainer = document.getElementById('recaptcha-container');
-      if (recaptchaContainer) {
-         window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainer, {
-          'size': 'invisible',
-          'callback': () => {
-            // reCAPTCHA solved
-          }
-        });
-      }
+    const recaptchaContainer = document.getElementById('recaptcha-container');
+    if (recaptchaContainer) {
+       window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainer, {
+        'size': 'invisible',
+        'callback': () => {
+          // reCAPTCHA solved
+        }
+      });
     }
   }, [auth]);
 

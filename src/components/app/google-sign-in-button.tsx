@@ -1,41 +1,34 @@
 'use client';
 
 import { useState } from 'react';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { initializeApp, getApps } from 'firebase/app';
-import { firebaseConfig } from '@/firebase/config';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/app/auth-provider';
-
-// Initialize Firebase
-if (!getApps().length) {
-  initializeApp(firebaseConfig);
-}
+import { useFirebaseAuth } from '@/firebase';
 
 export function GoogleSignInButton() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
   const { refreshUser } = useAuth();
+  const auth = useFirebaseAuth();
 
   const handleGoogleSignIn = async () => {
+    if (!auth) {
+      setError('Authentication service is not available.');
+      return;
+    }
     setLoading(true);
     setError('');
 
     try {
-      const auth = getAuth();
       const provider = new GoogleAuthProvider();
-      
-      // Sign in with popup
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      
-      // Get ID token
       const idToken = await user.getIdToken();
 
-      // Send to our API to create session
       const response = await fetch('/api/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

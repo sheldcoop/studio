@@ -8,6 +8,7 @@ export interface SessionData {
   photoURL?: string | null;
   isLoggedIn: boolean;
   createdAt?: number;
+  csrfToken?: string;
 }
 
 export const sessionOptions: SessionOptions = {
@@ -21,7 +22,7 @@ export const sessionOptions: SessionOptions = {
   },
 };
 
-export async function getSession() {
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+export function getSession() {
+  const session = getIronSession<SessionData>(cookies(), sessionOptions);
   return session;
 }
