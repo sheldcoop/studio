@@ -18,11 +18,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { firestore } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 export function NewPostDialog() {
   const { user } = useAuth();
+  const firestore = useFirestore();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [topic, setTopic] = useState('');
@@ -30,6 +31,14 @@ export function NewPostDialog() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreatePost = async () => {
+    if (!firestore) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Database service not available.',
+        });
+        return;
+    }
     if (!user) {
       toast({
         variant: 'destructive',

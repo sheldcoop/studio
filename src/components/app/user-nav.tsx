@@ -2,10 +2,9 @@
 'use client';
 
 import {
-  getAuth,
   signOut,
 } from 'firebase/auth';
-import { app } from '@/firebase';
+import { useFirebaseAuth } from '@/firebase';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -22,14 +21,16 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useAuth } from '@/app/auth-provider';
 import Link from 'next/link';
 
-const auth = getAuth(app);
 
 export function UserNav() {
   const { user } = useAuth();
+  const auth = useFirebaseAuth();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar');
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (auth) {
+        await signOut(auth);
+    }
   };
 
   if (!user) {

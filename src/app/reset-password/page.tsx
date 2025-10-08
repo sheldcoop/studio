@@ -3,8 +3,8 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { getAuth, verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
+import { useFirebaseAuth } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,11 +19,10 @@ import { Logo } from '@/components/app/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 
-const auth = getAuth(app);
-
 function ResetPasswordComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const auth = useFirebaseAuth();
   const [oobCode, setOobCode] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,6 +32,8 @@ function ResetPasswordComponent() {
   const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
+    if (!auth) return;
+
     const code = searchParams.get('oobCode');
     if (!code) {
       setError('Invalid password reset link. Please try again from the login page.');
@@ -52,10 +53,11 @@ function ResetPasswordComponent() {
         setError('This password reset link is invalid or has expired. Please request a new one.');
         setIsLoading(false);
       });
-  }, [searchParams]);
+  }, [searchParams, auth]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!auth) return;
     setError(null);
     setSuccessMessage(null);
 

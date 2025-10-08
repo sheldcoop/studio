@@ -11,14 +11,17 @@ import {
   type DocumentData,
   type FirestoreError,
 } from 'firebase/firestore';
-import { firestore } from '@/firebase';
+import { useFirestore } from '@/firebase';
 
 export function useCollection<T>(collectionName: string) {
+  const firestore = useFirestore();
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
+    if (!firestore) return;
+
     const collectionRef: Query<DocumentData> = query(
       collection(firestore, collectionName),
       orderBy('createdAt', 'desc')
@@ -41,7 +44,7 @@ export function useCollection<T>(collectionName: string) {
     );
 
     return () => unsubscribe();
-  }, [collectionName]);
+  }, [collectionName, firestore]);
 
   return { data, loading, error };
 }

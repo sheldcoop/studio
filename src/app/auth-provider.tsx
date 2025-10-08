@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
@@ -13,7 +14,7 @@ import {
   type AuthError,
   type User,
 } from 'firebase/auth';
-import { auth } from '@/firebase'; // Corrected import
+import { useFirebaseAuth } from '@/firebase'; // Corrected import
 import { useRouter } from 'next/navigation';
 
 const googleProvider = new GoogleAuthProvider();
@@ -63,20 +64,23 @@ export const useAuth = () => {
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const auth = useFirebaseAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
+    if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [auth]);
   
   const handleSuccessfulLogin = (loggedInUser: User) => {
+    if (!auth) return;
     if (loggedInUser.emailVerified) {
       router.push('/');
     } else {
@@ -87,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const handleAuthAction = async (action: 'signUp' | 'signIn', email: string, password = ''): Promise<{ success: boolean; message: string; }> => {
+    if (!auth) return { success: false, message: 'Authentication service not available.'};
     try {
       if (action === 'signUp') {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -107,8 +112,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const handlePasswordReset = async (email: string): Promise<{ success: boolean; message: string; }> => {
-     if (!email) {
-        return { success: false, message: 'Please enter your email address to reset your password.'};
+    if (!auth) return { success: false, message: 'Authentication service not available.'};
+    if (!email) {
+      return { success: false, message: 'Please enter your email address to reset your password.'};
     }
     try {
         await sendPasswordResetEmail(auth, email);
@@ -119,6 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const handleGoogleSignIn = async (): Promise<{ success: boolean; message: string; }> => {
+    if (!auth) return { success: false, message: 'Authentication service not available.'};
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
       handleSuccessfulLogin(userCredential.user);
@@ -132,6 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const handleLogout = async () => {
+    if (!auth) return;
     await signOut(auth);
   };
 

@@ -3,21 +3,25 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { getAuth, applyActionCode, verifyPasswordResetCode } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { applyActionCode, verifyPasswordResetCode } from 'firebase/auth';
+import { useFirebaseAuth } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
-const auth = getAuth(app);
-
 function ActionHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const auth = useFirebaseAuth();
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
+    if (!auth) {
+        // Auth service is not available yet.
+        // The provider will re-render this component when it is.
+        return;
+    }
     const mode = searchParams.get('mode');
     const oobCode = searchParams.get('oobCode');
 
@@ -60,7 +64,7 @@ function ActionHandler() {
     
     handleAction();
 
-  }, [searchParams, router]);
+  }, [searchParams, router, auth]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
