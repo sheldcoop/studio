@@ -5,6 +5,6 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex-1 p-4 md:p-8">{children}</div>
+    <div className="container flex-1 py-4 md:py-8">{children}</div>
   );
 }
