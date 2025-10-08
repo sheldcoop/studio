@@ -32,8 +32,8 @@ interface DynamicAnimationProps {
 
 export function DynamicAnimation({ animationId, isHovered }: DynamicAnimationProps) {
   const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
+    triggerOnce: true, // Only trigger this once
+    threshold: 0.1, // Trigger when 10% of the component is visible
   });
 
   const AnimationComponent = animationMap[animationId];
