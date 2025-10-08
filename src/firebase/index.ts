@@ -5,7 +5,6 @@ import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { firebaseConfig } from './config';
-import { fetch } from 'undici';
 
 let app: FirebaseApp;
 let auth: Auth;
@@ -13,8 +12,7 @@ let firestore: Firestore;
 
 function initializeFirebase() {
   if (!getApps().length) {
-    // Provide a robust fetch implementation for this environment
-    app = initializeApp(firebaseConfig, { fetchImpl: fetch });
+    app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     firestore = getFirestore(app);
   } else {

@@ -14,8 +14,9 @@ import {
   type AuthError,
   type User,
 } from 'firebase/auth';
-import { useFirebaseAuth } from '@/firebase'; // Corrected import
+import { useFirebaseAuth, useFirestore } from '@/firebase'; // Corrected import
 import { useRouter } from 'next/navigation';
+import { doc, setDoc } from 'firebase/firestore';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -26,7 +27,7 @@ export const getFriendlyErrorMessage = (error: AuthError): string => {
         case 'auth/user-not-found':
         case 'auth/wrong-password':
         case 'auth/invalid-credential':
-            return 'Invalid credentials. Please check your email and password.';
+            return 'Invalid credentials. Please check your email and password, or verify your email if you just signed up.';
         case 'auth/email-already-in-use':
             return 'An account with this email address already exists.';
         case 'auth/weak-password':
@@ -42,11 +43,22 @@ export const getFriendlyErrorMessage = (error: AuthError): string => {
     }
 }
 
+const writeUserToFirestore = async (firestore: any, user: User) => {
+    if (!firestore) return;
+    const userRef = doc(firestore, "users", user.uid);
+    const userData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+    };
+    await setDoc(userRef, userData, { merge: true });
+};
+
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  handleSuccessfulLogin: (user: User) => void;
   handleAuthAction: (action: 'signUp' | 'signIn', email: string, password?: string) => Promise<{ success: boolean; message: string; }>;
   handlePasswordReset: (email: string) => Promise<{ success: boolean; message: string; }>;
   handleGoogleSignIn: () => Promise<{ success: boolean; message: string; }>;
@@ -65,6 +77,7 @@ export const useAuth = () => {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useFirebaseAuth();
+  const firestore = useFirestore();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -74,21 +87,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+       if (user) {
+         router.push('/');
+      }
     });
 
     return () => unsubscribe();
-  }, [auth]);
+  }, [auth, router]);
   
-  const handleSuccessfulLogin = (loggedInUser: User) => {
-    if (!auth) return;
-    if (loggedInUser.emailVerified) {
-      router.push('/');
-    } else {
-      sendEmailVerification(loggedInUser); // Resend verification email
-      signOut(auth); // Sign out the non-verified user
-      throw new Error("Please verify your email address before logging in. We've sent you another verification link.");
-    }
-  }
 
   const handleAuthAction = async (action: 'signUp' | 'signIn', email: string, password = ''): Promise<{ success: boolean; message: string; }> => {
     if (!auth) return { success: false, message: 'Authentication service not available.'};
@@ -96,17 +102,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (action === 'signUp') {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
-        await signOut(auth); // Sign out user immediately after registration
+        await writeUserToFirestore(firestore, userCredential.user);
+        await signOut(auth); // Sign out the user immediately after sign-up
         return { success: true, message: 'Your account has been created. Please check your email to verify your account before logging in.' };
-      } else {
+      } else { // signIn
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        handleSuccessfulLogin(userCredential.user);
+        if (!userCredential.user.emailVerified) {
+          await signOut(auth); // Sign out if email is not verified
+          await sendEmailVerification(userCredential.user); // Re-send verification email
+          return { success: false, message: "Please verify your email before logging in. We've sent another verification link to be sure."};
+        }
+        await writeUserToFirestore(firestore, userCredential.user);
         return { success: true, message: 'Login successful!' };
       }
     } catch (err) {
-        if (err instanceof Error && err.message.startsWith("Please verify your email")) {
-            return { success: false, message: err.message };
-        }
       return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
     }
   };
@@ -128,12 +137,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!auth) return { success: false, message: 'Authentication service not available.'};
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
-      handleSuccessfulLogin(userCredential.user);
+      await writeUserToFirestore(firestore, userCredential.user);
       return { success: true, message: 'Login successful!' };
     } catch (err) {
-      if (err instanceof Error && err.message.startsWith("Please verify your email")) {
-          return { success: false, message: err.message };
-      }
       return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
     }
   }
@@ -141,11 +147,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleLogout = async () => {
     if (!auth) return;
     await signOut(auth);
+    router.push('/login');
   };
 
 
   return (
-    <AuthContext.Provider value={{ user, loading, handleSuccessfulLogin, handleAuthAction, handlePasswordReset, handleGoogleSignIn, handleLogout }}>
+    <AuthContext.Provider value={{ user, loading, handleAuthAction, handlePasswordReset, handleGoogleSignIn, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );
