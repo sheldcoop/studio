@@ -5,7 +5,7 @@ import {
   getAuth,
   signOut,
 } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { app } from '@/firebase';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
