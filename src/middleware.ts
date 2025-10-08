@@ -10,17 +10,29 @@ export async function middleware(req: NextRequest) {
   const session = await getIronSession<SessionData>(req.cookies, sessionOptions);
   
   const path = req.nextUrl.pathname;
-  let isProtectedRoute = protectedRoutes.some(p => path.startsWith(p)) && path !== '/';
-  if (path === '/') isProtectedRoute = true;
   
   const isPublicRoute = publicRoutes.some(p => path.startsWith(p));
 
-  if (isProtectedRoute && !session.isLoggedIn) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl));
+  // The root path '/' is a special case. It's protected but also the default landing.
+  // The logic needs to handle it carefully. All other protected routes will start with the prefix.
+  const isProtectedRoute = protectedRoutes.some(p => path.startsWith(p));
+  
+  // If the user is on a public route (e.g., /login)
+  if (isPublicRoute) {
+    // And they are logged in, redirect them away from the login page to the dashboard.
+    if (session.isLoggedIn) {
+      return NextResponse.redirect(new URL('/', req.nextUrl));
+    }
+    // Otherwise, let them stay on the public route.
+    return res;
   }
 
-  if (isPublicRoute && session.isLoggedIn && !req.nextUrl.pathname.startsWith('/')) {
-    return NextResponse.redirect(new URL('/', req.nextUrl));
+  // If the user is on a protected route
+  if (isProtectedRoute) {
+    // And they are not logged in, redirect them to the login page.
+    if (!session.isLoggedIn) {
+      return NextResponse.redirect(new URL('/login', req.nextUrl));
+    }
   }
 
   return res;
