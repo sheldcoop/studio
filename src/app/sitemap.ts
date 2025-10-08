@@ -1,9 +1,8 @@
-
 import { MetadataRoute } from 'next';
 import { allTopics } from '@/lib/curriculum';
 import { learningPaths } from '@/lib/learning-paths';
 
-const URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantfinancelab.com';
+const URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
@@ -11,14 +10,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${URL}/paths`, lastModified: new Date() },
     { url: `${URL}/interview-prep`, lastModified: new Date() },
     { url: `${URL}/community`, lastModified: new Date() },
-    { url: `${URL}/stat-toolkit`, lastModified: new Date() },
+    { url: `${URL}/quantlab`, lastModified: new Date() },
     { url: `${URL}/topics`, lastModified: new Date() },
-    { url: `${URL}/probability`, lastModified: new Date() },
   ];
 
   // Create routes for the learning path pages
   const pathRoutes = learningPaths.map((path) => ({
-    url: `${URL}/paths/${path.id}`,
+    url: `${URL}${path.href}`,
     lastModified: new Date(),
   }));
 

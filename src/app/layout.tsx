@@ -17,7 +17,7 @@ const fontHeadline = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002'),
   title: {
     template: '%s | QuantPrep',
     default: 'QuantPrep | AI-Powered Learning for Quantitative Finance',
@@ -58,8 +58,8 @@ export const metadata: Metadata = {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'QuantPrep',
-      url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003',
-      logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9003'}/logo.png`,
+      url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002',
+      logo: new URL('/logo.png', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002').toString(),
       sameAs: [
         'https://twitter.com/QuantPrep',
         'https://www.linkedin.com/company/quantprep'
