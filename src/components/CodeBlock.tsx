@@ -24,6 +24,7 @@ export default function CodeBlock({
   defaultCollapsed = false
 }: CodeBlockProps) {
   const codeRef = useRef<HTMLElement>(null);
+  const preRef = useRef<HTMLPreElement>(null);
   const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
@@ -35,13 +36,19 @@ export default function CodeBlock({
 
   // Highlight code when component mounts or code changes
   useEffect(() => {
-    if (isMounted && codeRef.current) {
+    if (isMounted && codeRef.current && preRef.current) {
       Prism.highlightElement(codeRef.current);
+      // PrismJS adds a tabindex="0" to the <pre> tag, which causes a hydration mismatch.
+      // We remove it immediately after highlighting to solve the warning.
+      if (preRef.current.hasAttribute('tabindex')) {
+        preRef.current.removeAttribute('tabindex');
+      }
     }
-  }, [code, isCollapsed, isMounted]); // Re-highlight when expanding or mounting
+  }, [code, isCollapsed, isMounted, theme]); // Re-run on theme change to re-apply Prism styles if needed
 
   // Load theme-specific CSS
   useEffect(() => {
+    if (!isMounted) return;
     const existingLinks = document.querySelectorAll('link[data-prism-theme]');
     existingLinks.forEach(link => link.remove());
 
@@ -54,7 +61,7 @@ export default function CodeBlock({
     return () => {
       link.remove();
     };
-  }, [theme]);
+  }, [theme, isMounted]);
 
   // Copy to clipboard function
   const handleCopy = async () => {
@@ -122,7 +129,7 @@ export default function CodeBlock({
       
       {!isCollapsed && (
         <div className="code-content">
-          <pre className={`language-${language}`}>
+          <pre ref={preRef} className={`language-${language}`}>
             <code ref={codeRef} className={`language-${language}`}>
               {isMounted && processedCode.map((line, idx) => (
                 <div
