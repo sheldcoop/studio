@@ -12,11 +12,27 @@ export type CommunityPost = {
 
 export const communityPosts: CommunityPost[] = [
     {
-        id: '999',
-        topic: 'This is a test post from the old, static file.',
-        author: 'The Developer',
-        replies: 0,
-        views: 0,
-        lastPost: { author: 'The Developer', time: 'Just now' },
+        id: '1',
+        topic: 'How to prepare for a quant interview?',
+        author: 'QuantAspirant',
+        replies: 12,
+        views: 1520,
+        lastPost: { author: 'SeniorQuant', time: '2h ago' },
+    },
+    {
+        id: '2',
+        topic: 'Best resources for learning Stochastic Calculus?',
+        author: 'CalculusConqueror',
+        replies: 8,
+        views: 980,
+        lastPost: { author: 'MathWhiz', time: '5h ago' },
+    },
+    {
+        id: '3',
+        topic: 'Discussion: Is the market truly efficient?',
+        author: 'MarketPhilosopher',
+        replies: 25,
+        views: 2300,
+        lastPost: { author: 'EconMajor', time: '1d ago' },
     },
 ];

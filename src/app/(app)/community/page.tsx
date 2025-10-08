@@ -1,16 +1,17 @@
 
+
 'use client';
 
 import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
-import { useCollection } from '@/firebase/firestore/use-collection';
 import { Eye, MessageSquare, Loader2, AlertTriangle, Database } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
-import { NewPostDialog } from '@/components/app/community/new-post-dialog';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { communityPosts as staticPosts } from '@/lib/community';
+import { Alert } from '@/components/ui/alert';
 
 // Note: Metadata is not used in client components, but we keep it for reference
 // export const metadata: Metadata = {
@@ -21,36 +22,24 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 type CommunityPost = {
   id: string;
   topic: string;
-  author: {
-    uid: string;
-    displayName: string;
-    photoURL?: string;
-  };
+  author: string;
   replies: number;
   views: number;
-  createdAt: {
-    seconds: number;
-    nanoseconds: number;
+  lastPost: {
+      author: string;
+      time: string;
   };
 };
 
-function formatTimeAgo(timestamp: { seconds: number; nanoseconds: number }) {
-  if (!timestamp) return 'Just now';
-  const postDate = new Date(timestamp.seconds * 1000);
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - postDate.getTime()) / 1000);
-  
-  if (seconds < 60) return `${seconds}s ago`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+function formatTimeAgo(time: string) {
+  // This is a simplified formatter. In a real app, you'd use a library like date-fns.
+  return time;
 }
 
 export default function CommunityPage() {
-  const { data: posts, loading, error } = useCollection<CommunityPost>('communityPosts');
+  const [posts] = useState<CommunityPost[]>(staticPosts);
+  const [loading] = useState(false);
+  const [error] = useState<string | null>(null);
   const [isRawDataOpen, setIsRawDataOpen] = useState(false);
 
   return (
@@ -59,8 +48,18 @@ export default function CommunityPage() {
         title="Community Forum"
         description="Connect with peers, ask questions, and grow together."
       >
-        <NewPostDialog />
+        <Button disabled>
+            <PlusCircle className="mr-2" />
+            Start a Discussion (Login Required)
+        </Button>
       </PageHeader>
+       <Alert className="mb-6">
+        <AlertTriangle className="h-4 w-4" />
+        <CardTitle>Authentication Disabled</CardTitle>
+        <CardDescription>
+          The community forum is currently using static placeholder data. User authentication and real-time database features have been temporarily removed.
+        </CardDescription>
+      </Alert>
       <Card>
         <CardHeader>
           <CardTitle className="font-headline">Latest Discussions</CardTitle>
@@ -81,7 +80,7 @@ export default function CommunityPage() {
                     Failed to load posts
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                    Could not connect to the database. Please check your connection or try again later.
+                    {error}
                 </p>
             </div>
           )}
@@ -95,21 +94,20 @@ export default function CommunityPage() {
                   >
                     <div className="flex items-center gap-4">
                       <Avatar>
-                        {post.author.photoURL && <img src={post.author.photoURL} alt={post.author.displayName} className="h-full w-full object-cover" />}
                         <AvatarFallback>
-                          {post.author.displayName?.charAt(0).toUpperCase() || 'A'}
+                          {post.author?.charAt(0).toUpperCase() || 'A'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <Link
-                          href={`/community/${post.id}`}
+                          href={`#`}
                           className="font-medium hover:underline"
                           rel="noopener noreferrer"
                         >
                           {post.topic}
                         </Link>
                         <p className="text-sm text-muted-foreground">
-                          by <span className="font-medium text-foreground/80">{post.author.displayName || 'Anonymous'}</span>
+                          by <span className="font-medium text-foreground/80">{post.author || 'Anonymous'}</span>
                         </p>
                       </div>
                     </div>
@@ -124,7 +122,7 @@ export default function CommunityPage() {
                       </div>
                       <div className="hidden text-right lg:block" style={{ width: '150px' }}>
                         <p className="text-sm font-medium text-foreground/80">
-                           {formatTimeAgo(post.createdAt)}
+                           {formatTimeAgo(post.lastPost.time)}
                         </p>
                       </div>
                     </div>
@@ -149,15 +147,15 @@ export default function CommunityPage() {
         <CollapsibleTrigger asChild>
             <Button variant="outline" size="sm">
                 <Database className="h-4 w-4 mr-2"/>
-                View Raw Database Content
+                View Raw Data
             </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>
              <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Live Firestore Data</CardTitle>
+                    <CardTitle>Static Data</CardTitle>
                     <CardDescription>
-                        This is the raw JSON data for the `communityPosts` collection, fetched in real-time.
+                        This is the static placeholder data for the community posts.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

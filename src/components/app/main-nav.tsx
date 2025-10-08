@@ -28,7 +28,7 @@ const links = [
     label: 'Interview Prep',
     icon: 'BrainCircuit',
   },
-  {
+   {
     href: '/blog',
     label: 'Blog',
     icon: 'Newspaper',
@@ -37,11 +37,6 @@ const links = [
     href: '/community',
     label: 'Community',
     icon: 'Users',
-  },
-  {
-    href: '/topics',
-    label: 'All Topics',
-    icon: 'BookCopy',
   },
 ];
 
