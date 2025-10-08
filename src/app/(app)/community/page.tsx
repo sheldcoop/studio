@@ -1,14 +1,16 @@
 
 'use client';
 
-import type { Metadata } from 'next';
+import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { Eye, MessageSquare, Loader2, AlertTriangle } from 'lucide-react';
+import { Eye, MessageSquare, Loader2, AlertTriangle, Database } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { NewPostDialog } from '@/components/app/community/new-post-dialog';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 // Note: Metadata is not used in client components, but we keep it for reference
 // export const metadata: Metadata = {
@@ -49,6 +51,7 @@ function formatTimeAgo(timestamp: { seconds: number; nanoseconds: number }) {
 
 export default function CommunityPage() {
   const { data: posts, loading, error } = useCollection<CommunityPost>('communityPosts');
+  const [isRawDataOpen, setIsRawDataOpen] = useState(false);
 
   return (
     <>
@@ -141,6 +144,30 @@ export default function CommunityPage() {
           )}
         </CardContent>
       </Card>
+      
+      <Collapsible open={isRawDataOpen} onOpenChange={setIsRawDataOpen} className="mt-6">
+        <CollapsibleTrigger asChild>
+            <Button variant="outline" size="sm">
+                <Database className="h-4 w-4 mr-2"/>
+                View Raw Database Content
+            </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+             <Card className="mt-4">
+                <CardHeader>
+                    <CardTitle>Live Firestore Data</CardTitle>
+                    <CardDescription>
+                        This is the raw JSON data for the `communityPosts` collection, fetched in real-time.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <pre className="mt-2 h-[400px] w-full overflow-auto rounded-md bg-muted p-4 text-xs">
+                        {JSON.stringify(posts, null, 2)}
+                    </pre>
+                </CardContent>
+            </Card>
+        </CollapsibleContent>
+      </Collapsible>
     </>
   );
 }
