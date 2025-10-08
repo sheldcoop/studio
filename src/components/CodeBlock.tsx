@@ -2,7 +2,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTheme } from 'next-themes';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-python';
 
@@ -25,7 +24,6 @@ export default function CodeBlock({
 }: CodeBlockProps) {
   const codeRef = useRef<HTMLElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
-  const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const [isMounted, setIsMounted] = useState(false);
@@ -38,30 +36,13 @@ export default function CodeBlock({
   useEffect(() => {
     if (isMounted && codeRef.current && preRef.current) {
       Prism.highlightElement(codeRef.current);
-      // PrismJS adds a tabindex="0" to the <pre> tag, which causes a hydration mismatch.
-      // We remove it immediately after highlighting to solve the warning.
+      // PrismJS adds a tabindex="0" to the <pre> tag, which can cause hydration warnings.
+      // We remove it immediately after highlighting.
       if (preRef.current.hasAttribute('tabindex')) {
         preRef.current.removeAttribute('tabindex');
       }
     }
-  }, [code, isCollapsed, isMounted, theme]); // Re-run on theme change to re-apply Prism styles if needed
-
-  // Load theme-specific CSS
-  useEffect(() => {
-    if (!isMounted) return;
-    const existingLinks = document.querySelectorAll('link[data-prism-theme]');
-    existingLinks.forEach(link => link.remove());
-
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `/prism-themes/prism-${theme || 'light'}.css`;
-    link.setAttribute('data-prism-theme', 'true');
-    document.head.appendChild(link);
-
-    return () => {
-      link.remove();
-    };
-  }, [theme, isMounted]);
+  }, [code, isCollapsed, isMounted]);
 
   // Copy to clipboard function
   const handleCopy = async () => {
