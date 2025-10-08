@@ -8,6 +8,8 @@ import '../styles/codeblock.css';
 import 'katex/dist/katex.min.css';
 import { OrientationBanner } from '@/components/app/orientation-banner';
 import { Providers } from '@/components/app/providers';
+import { Header } from '@/components/app/header';
+import { Footer } from '@/components/app/footer';
 
 const fontBody = Inter({ subsets: ['latin'], variable: '--font-body' });
 const fontHeadline = Space_Grotesk({ subsets: ['latin'], variable: '--font-headline' });
@@ -91,7 +93,11 @@ export default function RootLayout({
       </head>
       <body className={cn('font-body antialiased', fontBody.variable, fontHeadline.variable)}>
         <Providers>
-          {children}
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
           <OrientationBanner />
         </Providers>
       </body>
