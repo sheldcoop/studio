@@ -72,6 +72,8 @@
   padding: 0 !important;
   background: transparent !important;
   border: none !important;
+  white-space: pre-wrap; /* Allow wrapping */
+  word-break: break-all;   /* Break long words/lines */
 }
 
 .code-block-wrapper code {
@@ -101,7 +103,8 @@
 .line-content {
   flex: 1;
   padding-right: 1.5rem;
-  white-space: pre;
+  white-space: pre-wrap; /* This is the fix */
+  word-wrap: break-word; /* Ensure long lines wrap */
 }
 
 /* Highlighted lines */
