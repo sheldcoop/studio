@@ -48,13 +48,17 @@ export const getFriendlyErrorMessage = (error: AuthError): string => {
         case 'auth/invalid-app-credential':
             return 'The reCAPTCHA verification failed. Please try again.';
         default:
-            console.error("Authentication Error:", error);
-            return 'An unexpected authentication error occurred. Please try again later.';
+            console.error("[Auth Provider] Unhandled Error:", error);
+            return `An unexpected error occurred: ${error.code}`;
     }
 }
 
 const writeUserToFirestore = async (firestore: any, user: User) => {
-    if (!firestore) return;
+    if (!firestore) {
+        console.log("[Auth Provider] Firestore not available, skipping user write.");
+        return;
+    };
+    console.log("[Auth Provider] Attempting to write user to Firestore for UID:", user.uid);
     const userRef = doc(firestore, "users", user.uid);
     const userData = {
         uid: user.uid,
@@ -64,6 +68,7 @@ const writeUserToFirestore = async (firestore: any, user: User) => {
         phoneNumber: user.phoneNumber,
     };
     await setDoc(userRef, userData, { merge: true });
+    console.log("[Auth Provider] Successfully wrote user data to Firestore.");
 };
 
 const actionCodeSettings = {
@@ -79,7 +84,7 @@ interface AuthContextType {
   handlePasswordReset: (email: string) => Promise<{ success: boolean; message: string; }>;
   handleGoogleSignIn: () => Promise<{ success: boolean; message: string; }>;
   handleSendSignInLink: (email: string) => Promise<{ success: boolean; message: string; }>;
-  setupRecaptcha: (containerId: string) => RecaptchaVerifier;
+  setupRecaptcha: ((containerId: string) => RecaptchaVerifier) | null;
   handlePhoneSignIn: (phoneNumber: string, appVerifier: RecaptchaVerifier) => Promise<{ success: boolean; message: string; confirmationResult?: ConfirmationResult }>;
   handleVerifyPhoneCode: (confirmationResult: ConfirmationResult, code: string) => Promise<{ success: boolean; message: string; }>;
   handleLogout: () => Promise<void>;
@@ -103,8 +108,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!auth) return;
+    if (!auth) {
+        console.log("[Auth Provider] Auth service not yet available.");
+        return;
+    }
+    console.log("[Auth Provider] Subscribing to onAuthStateChanged.");
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("[Auth Provider] onAuthStateChanged fired. User:", user ? user.uid : 'null');
       setUser(user);
       setLoading(false);
        if (user) {
@@ -112,27 +122,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+        console.log("[Auth Provider] Unsubscribing from onAuthStateChanged.");
+        unsubscribe();
+    }
   }, [auth, router]);
   
 
   const handleAuthAction = async (action: 'signUp' | 'signIn', email: string, password = '', displayName?: string): Promise<{ success: boolean; message: string; }> => {
-    if (!auth) return { success: false, message: 'Authentication service not available.'};
+    console.log('[Auth Provider] handleAuthAction called with action:', action);
+    console.log('[Auth Provider] Email:', email);
+    if (!auth) {
+      console.error('[Auth Provider] Auth service not available.');
+      return { success: false, message: 'Authentication service not available.' };
+    }
+     console.log('[Auth Provider] Auth object available:', !!auth);
+     console.log('[Auth Provider] Firestore object available:', !!firestore);
+
     try {
       let userCredential;
       if (action === 'signUp') {
+        console.log('[Auth Provider] Attempting to create user...');
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('[Auth Provider] User created. UID:', userCredential.user.uid);
         if (displayName && userCredential.user) {
+          console.log('[Auth Provider] Updating profile with displayName:', displayName);
           await updateProfile(userCredential.user, { displayName });
         }
       } else { // signIn
+        console.log('[Auth Provider] Attempting to sign in user...');
         userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log('[Auth Provider] Sign-in successful. UID:', userCredential.user.uid);
       }
       
       await writeUserToFirestore(firestore, userCredential.user);
       return { success: true, message: 'Login successful!' };
       
     } catch (err) {
+      console.error("[Auth Provider] Auth action failed:", err);
       return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
     }
   };
@@ -175,8 +202,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const setupRecaptcha = useCallback((containerId: string): RecaptchaVerifier => {
-      if (!auth) throw new Error("Firebase auth not initialized");
+  const setupRecaptcha = useCallback((containerId: string): RecaptchaVerifier | null => {
+      if (!auth) {
+        console.error("[Auth Provider] setupRecaptcha failed: Firebase auth not initialized");
+        return null;
+      }
+      console.log("[Auth Provider] Setting up reCAPTCHA on container:", containerId);
+      // Ensure the container is empty before creating a new verifier
+      const container = document.getElementById(containerId);
+      if (container) {
+          container.innerHTML = '';
+      }
       const recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
         size: 'invisible'
       });

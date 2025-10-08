@@ -48,7 +48,7 @@ export default function LoginPage() {
 
   // Set up reCAPTCHA when the phone auth component mounts
   useEffect(() => {
-    if (authMode === 'phoneAuth' && !recaptchaVerifier) {
+    if (authMode === 'phoneAuth' && !recaptchaVerifier && setupRecaptcha) {
       const verifier = setupRecaptcha('recaptcha-container');
       setRecaptchaVerifier(verifier);
       verifier.render();
@@ -306,9 +306,9 @@ export default function LoginPage() {
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="password">Password</Label>
-                                <Button variant="link" className="h-auto p-0 text-xs" onClick={() => changeMode('resetPassword')}>
+                                {/* <Button variant="link" className="h-auto p-0 text-xs" onClick={() => changeMode('resetPassword')}>
                                     Forgot Password?
-                                </Button>
+                                </Button> */}
                             </div>
                             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         </div>
@@ -320,7 +320,7 @@ export default function LoginPage() {
                         Sign In
                         </Button>
                     </div>
-                    <div className="text-center text-sm">
+                    {/* <div className="text-center text-sm">
                         No account?{' '}
                         <Button variant="link" className="p-0 h-auto" onClick={() => changeMode('signUp')}>
                             Sign up now
@@ -344,7 +344,7 @@ export default function LoginPage() {
                     </div>
                     <Button variant="outline" className="w-full" onClick={() => changeMode('phoneAuth')}>
                         <Phone className="mr-2 h-4 w-4" /> Continue with Phone
-                    </Button>
+                    </Button> */}
                 </CardFooter>
             </>
         );
