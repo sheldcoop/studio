@@ -143,7 +143,14 @@ export function PhoneSignInForm() {
             Back
           </Button>
           <Button type="submit" className="flex-1" disabled={loading}>
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Verify Code'}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Verifying...
+              </>
+            ) : (
+              'Verify Code'
+            )}
           </Button>
         </div>
       </form>
@@ -164,7 +171,17 @@ export function PhoneSignInForm() {
       </div>
       {error && <p className="text-sm text-center text-destructive">{error}</p>}
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <><Phone className="mr-2 h-4 w-4" /> Send Code</>}
+        {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Sending code...
+            </>
+          ) : (
+            <>
+              <Phone className="mr-2 h-4 w-4" />
+              Send verification code
+            </>
+          )}
       </Button>
     </form>
   );

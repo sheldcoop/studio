@@ -7,11 +7,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { idToken, phoneNumber } = body;
 
-    if (!idToken || !phoneNumber) {
-      return NextResponse.json(
-        { error: 'ID token and phone number are required' },
-        { status: 400 }
-      );
+    if (!idToken) {
+      return NextResponse.json({ error: 'ID token is required' }, { status: 400 });
     }
 
     // Verify the ID token

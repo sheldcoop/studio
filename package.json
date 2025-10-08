@@ -39,6 +39,7 @@
     "firebase": "10.14.1",
     "firebase-admin": "^12.1.1",
     "iron-session": "^8.0.1",
+    "lru-cache": "^10.4.0",
     "lucide-react": "^0.544.0",
     "next": "14.2.33",
     "next-themes": "^0.3.0",
@@ -55,7 +56,8 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "0.165.0",
-    "undici": "^7.16.0"
+    "undici": "^7.16.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.1.0",
@@ -64,6 +66,7 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/chart.js": "^2.9.41",
     "@types/jest": "^29.5.12",
+    "@types/lru-cache": "^7.14.4",
     "@types/node": "^20.14.8",
     "@types/p5": "^1.7.6",
     "@types/prismjs": "^1.26.4",
