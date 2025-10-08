@@ -4,7 +4,7 @@
 import dynamic from 'next/dynamic';
 import { useInView } from 'react-intersection-observer';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ComponentType } from 'react';
+import { ComponentType, useEffect, useState } from 'react';
 
 type AnimationProps = {
   isHovered: boolean;
@@ -32,15 +32,21 @@ interface DynamicAnimationProps {
 
 export function DynamicAnimation({ animationId, isHovered }: DynamicAnimationProps) {
   const { ref, inView } = useInView({
-    triggerOnce: true, // Only trigger this once
-    threshold: 0.1, // Trigger when 10% of the component is visible
+    triggerOnce: true,
+    threshold: 0.1,
   });
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const AnimationComponent = animationMap[animationId];
 
   return (
     <div ref={ref} className="h-full w-full">
-      {inView ? (
+      {inView && isMounted ? (
         AnimationComponent ? (
           <AnimationComponent isHovered={isHovered} />
         ) : (
