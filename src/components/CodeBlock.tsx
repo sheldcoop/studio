@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -26,13 +27,18 @@ export default function CodeBlock({
   const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Highlight code when component mounts or code changes
   useEffect(() => {
-    if (codeRef.current) {
+    if (isMounted && codeRef.current) {
       Prism.highlightElement(codeRef.current);
     }
-  }, [code, isCollapsed]); // Re-highlight when expanding
+  }, [code, isCollapsed, isMounted]); // Re-highlight when expanding or mounting
 
   // Load theme-specific CSS
   useEffect(() => {
@@ -118,7 +124,7 @@ export default function CodeBlock({
         <div className="code-content">
           <pre className={`language-${language}`}>
             <code ref={codeRef} className={`language-${language}`}>
-              {processedCode.map((line, idx) => (
+              {isMounted && processedCode.map((line, idx) => (
                 <div
                   key={idx}
                   className={`code-line ${line.isHighlighted ? 'highlighted-line' : ''}`}
