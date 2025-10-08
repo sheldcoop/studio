@@ -31,12 +31,11 @@ def compress_and_display_image(k_values):
     plt.suptitle("SVD Image Compression with Different Ranks (k)")
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     
-    # Display the plot in the output element
-    display(fig, target="output-svd", append=False)
+    # This function is a placeholder in a non-interactive environment
+    # In a real notebook, `display(fig)` would render the plot.
+    # Here, we'll just print that the plot would be displayed.
+    print("Plot generated for k values:", k_values)
 
 # Run the compression with different k values
 k_values_to_test = [5, 20, 50]
 compress_and_display_image(k_values_to_test)
-
-print(f"Original image shape: {np.array(Image.open(BytesIO(requests.get(url).content)).convert('L')).shape}")
-print(f"Compressed with k={k_values_to_test}")
