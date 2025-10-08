@@ -9,7 +9,6 @@ import {
   sendSignInLinkToEmail,
   GoogleAuthProvider,
   signInWithPopup,
-  sendEmailVerification,
   sendPasswordResetEmail,
   signOut,
   type AuthError,
@@ -106,21 +105,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleAuthAction = async (action: 'signUp' | 'signIn', email: string, password = ''): Promise<{ success: boolean; message: string; }> => {
     if (!auth) return { success: false, message: 'Authentication service not available.'};
     try {
+      let userCredential;
       if (action === 'signUp') {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(userCredential.user);
-        await writeUserToFirestore(firestore, userCredential.user);
-        await signOut(auth);
-        return { success: true, message: 'Sign-up successful! Please check your email to verify your account before logging in.' };
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
       } else { // signIn
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        if (!userCredential.user.emailVerified) {
-          await signOut(auth);
-          return { success: false, message: 'Your email is not verified. Please check your inbox or request a new verification link.' };
-        }
-        await writeUserToFirestore(firestore, userCredential.user);
-        return { success: true, message: 'Login successful!' };
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
       }
+      
+      await writeUserToFirestore(firestore, userCredential.user);
+      return { success: true, message: 'Login successful!' };
+      
     } catch (err) {
       return { success: false, message: getFriendlyErrorMessage(err as AuthError) };
     }

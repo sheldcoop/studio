@@ -35,6 +35,7 @@ export default function LoginPage() {
     const result = await handleAuthAction(action, email, password);
     if(result.success) {
       // In a real app, successful login would redirect via the AuthProvider's onAuthStateChanged
+      setInfoMessage(action === 'signUp' ? 'Account created successfully! Logging you in...' : 'Login successful!');
     } else {
       setError(result.message);
     }
