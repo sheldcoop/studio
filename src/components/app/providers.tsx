@@ -4,6 +4,7 @@
 import { ThemeProvider } from '@/components/app/theme-provider';
 import { AuthProvider } from '@/app/auth-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { FirebaseProvider } from '@/firebase';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -13,9 +14,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       themes={['light', 'dark', 'slate', 'nocturne', 'quant']}
       disableTransitionOnChange
     >
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+        <AuthProvider>
+            {children}
+        </AuthProvider>
       <Toaster />
     </ThemeProvider>
   );

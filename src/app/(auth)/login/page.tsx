@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -195,7 +196,7 @@ export default function LoginPage() {
             </TabsContent>
         </Tabs>
       </Card>
-      <div id="recaptcha-container" className="mt-4"></div>
+      <div id="recaptcha-container" className="fixed bottom-0 right-0"></div>
     </div>
   );
 }

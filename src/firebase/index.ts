@@ -1,28 +1,29 @@
-import { getApps, initializeApp, cert, getApp, type App } from 'firebase-admin/app';
-import { getAuth, type Auth } from 'firebase-admin/auth';
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 
-// IMPORTANT: Do not use this in client-side code.
-// This is the server-side Firebase Admin SDK.
+'use client';
 
-let adminApp: App;
-let adminAuth: Auth;
-let adminFirestore: Firestore;
+import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore, type Firestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { firebaseConfig } from './config';
 
-function initializeFirebaseAdmin() {
-  if (!getApps().length) {
-    const serviceAccount = JSON.parse(
-      process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
-    );
-    adminApp = initializeApp({
-      credential: cert(serviceAccount),
-    });
-  } else {
-    adminApp = getApp();
+import { useCollection } from './firestore/use-collection';
+
+// Hooks
+export { useCollection };
+export * from './provider';
+
+
+let firebaseApp: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
+
+function initializeFirebase() {
+  if (getApps().length === 0) {
+    firebaseApp = initializeApp(firebaseConfig);
+    auth = getAuth(firebaseApp);
+    firestore = getFirestore(firebaseApp);
   }
-  adminAuth = getAuth(adminApp);
-  adminFirestore = getFirestore(adminApp);
-  return { adminApp, adminAuth, adminFirestore };
+  return { firebaseApp, auth, firestore };
 }
 
-export { initializeFirebaseAdmin };
+export { initializeFirebase };

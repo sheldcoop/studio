@@ -1,24 +1,20 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
-import { initializeApp, getApps } from 'firebase/app';
-import { firebaseConfig } from '@/firebase/config';
+import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Phone } from 'lucide-react';
 import { useAuth } from '@/app/auth-provider';
 import PhoneInput from 'react-phone-number-input';
+import { useAuth as useFirebaseAuth } from '@/firebase';
 
 declare global {
   interface Window {
     recaptchaVerifier?: RecaptchaVerifier;
   }
-}
-
-if (!getApps().length) {
-  initializeApp(firebaseConfig);
 }
 
 export function PhoneSignInForm() {
@@ -30,26 +26,38 @@ export function PhoneSignInForm() {
   const [step, setStep] = useState<'phone' | 'code'>('phone');
   const router = useRouter();
   const { refreshUser } = useAuth();
+  const auth = useFirebaseAuth();
   
   useEffect(() => {
-    const auth = getAuth();
-    if (typeof window !== 'undefined' && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': () => {
-          // reCAPTCHA solved
-        }
-      });
+    if (!auth || typeof window === 'undefined') return;
+
+    if (!window.recaptchaVerifier) {
+      // The 'recaptcha-container' must be visible.
+      // We position it off-screen but visible.
+      const recaptchaContainer = document.getElementById('recaptcha-container');
+      if (recaptchaContainer) {
+         window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainer, {
+          'size': 'invisible',
+          'callback': () => {
+            // reCAPTCHA solved
+          }
+        });
+      }
     }
-  }, []);
+  }, [auth]);
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    
+    if (!auth) {
+        setError("Authentication service is not available.");
+        setLoading(false);
+        return;
+    }
 
     try {
-      const auth = getAuth();
       const appVerifier = window.recaptchaVerifier!;
       const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(result);
@@ -61,7 +69,7 @@ export function PhoneSignInForm() {
       } else if (error.code === 'auth/too-many-requests') {
         setError('Too many requests. Please try again later.');
       } else {
-        setError('Failed to send verification code');
+        setError('Failed to send verification code. Please ensure reCAPTCHA is working.');
       }
     } finally {
       setLoading(false);
@@ -76,6 +84,7 @@ export function PhoneSignInForm() {
     try {
       if (!confirmationResult) {
         setError('No confirmation result found');
+        setLoading(false);
         return;
       }
 
@@ -126,6 +135,7 @@ export function PhoneSignInForm() {
             required
             disabled={loading}
             maxLength={6}
+            className="text-center tracking-widest text-lg"
           />
         </div>
         {error && <p className="text-sm text-center text-destructive">{error}</p>}
@@ -167,10 +177,12 @@ export function PhoneSignInForm() {
             international
             countryCallingCodeEditable={false}
             defaultCountry="US"
+            disabled={loading}
+            className="phone-input-custom"
         />
       </div>
       {error && <p className="text-sm text-center text-destructive">{error}</p>}
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button type="submit" className="w-full" disabled={loading || !phoneNumber}>
         {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
