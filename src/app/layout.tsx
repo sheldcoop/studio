@@ -96,7 +96,7 @@ export default function RootLayout({
         <Providers>
             <div className="flex min-h-screen flex-col">
               <Header />
-              <main className="flex flex-1 flex-col">{children}</main>
+              <main className="container flex-1 py-4 md:py-8">{children}</main>
               <Footer />
             </div>
             <OrientationBanner />
