@@ -22,19 +22,27 @@ const generateARProcess = (phi: number, n: number) => {
 };
 
 const calculateACF = (series: number[], maxLag: number) => {
-  const n = series.length;
-  const mean = series.reduce((a, b) => a + b) / n;
-  const variance = series.reduce((acc, val) => acc + (val - mean) ** 2, 0);
-  
-  const acf = [];
-  for (let lag = 0; lag <= maxLag; lag++) {
-    let covariance = 0;
-    for (let i = lag; i < n; i++) {
-      covariance += (series[i] - mean) * (series[i - lag] - mean);
+    if (series.length === 0) {
+        return [];
     }
-    acf.push({ lag, value: covariance / variance });
-  }
-  return acf;
+    const n = series.length;
+    const mean = series.reduce((a, b) => a + b, 0) / n;
+    const variance = series.reduce((acc, val) => acc + (val - mean) ** 2, 0);
+
+    if (variance === 0) {
+        // Handle case of zero variance to avoid division by zero
+        return Array(maxLag + 1).fill(0).map((_, i) => ({ lag: i, value: 1 }));
+    }
+
+    const acf = [];
+    for (let lag = 0; lag <= maxLag; lag++) {
+        let covariance = 0;
+        for (let i = lag; i < n; i++) {
+            covariance += (series[i] - mean) * (series[i - lag] - mean);
+        }
+        acf.push({ lag, value: covariance / variance });
+    }
+    return acf;
 };
 
 // --- Chart Components ---
