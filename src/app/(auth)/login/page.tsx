@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -34,16 +33,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/app/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, CheckCircle, ArrowLeft } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 const getFriendlyErrorMessage = (error: AuthError): string => {
-    // Log the full error to the console for detailed debugging
     console.error('Authentication Error:', error);
-
     switch (error.code) {
         case 'auth/invalid-email':
             return 'Please enter a valid email address.';
@@ -56,25 +53,23 @@ const getFriendlyErrorMessage = (error: AuthError): string => {
         case 'auth/weak-password':
             return 'The password must be at least 6 characters long.';
         case 'auth/popup-closed-by-user':
-            return 'The sign-in popup was closed before completion. Please try again.';
+            return 'The sign-in popup was closed. Please try again.';
         case 'auth/captcha-check-failed':
             return 'The reCAPTCHA verification failed. Please try again.';
         case 'auth/invalid-phone-number':
-            return 'Please enter a valid phone number in the format +[Country Code][Number].';
+            return 'Please enter a valid phone number, including the country code (e.g., +1).';
         case 'auth/missing-phone-number':
             return 'Please enter a phone number.';
         case 'auth/quota-exceeded':
-            return 'You have exceeded the SMS quota. Please try again later.';
+            return 'SMS quota exceeded. Please try again later or use another method.';
         case 'auth/code-expired':
             return 'The verification code has expired. Please request a new one.';
         case 'auth/invalid-verification-code':
-            return 'Invalid verification code. Please try again.';
+            return 'Invalid verification code. Please check the code and try again.';
         default:
-            // For any other error, display a more specific message if available
-            return `An unexpected error occurred. Code: ${error.code}. Please check the console for more details.`;
+            return `An unexpected error occurred (Code: ${error.code}). Please try again.`;
     }
 }
-
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -87,10 +82,10 @@ export default function LoginPage() {
   
   const [view, setView] = useState('main'); // 'main', 'reset', 'phone', 'phoneCode'
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // General purpose loading state
   
   const router = useRouter();
 
-  // Effect to handle magic link sign-in
   useEffect(() => {
     if (isSignInWithEmailLink(auth, window.location.href)) {
       let emailFromStore = window.localStorage.getItem('emailForSignIn');
@@ -108,26 +103,26 @@ export default function LoginPage() {
     }
   }, []);
 
-  // Effect to set up reCAPTCHA
   useEffect(() => {
-    if(view === 'phone') {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+    // Ensure the container exists and is visible before initializing.
+    const recaptchaContainer = document.getElementById('recaptcha-container');
+    if (view === 'phone' && recaptchaContainer && !window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainer, {
             'size': 'invisible',
-            'callback': (response: any) => {
-              // reCAPTCHA solved, allow signInWithPhoneNumber.
-            }
+            'callback': (response: any) => { /* reCAPTCHA solved */ }
         });
+    } else if (view !== 'phone' && window.recaptchaVerifier) {
+        // Cleanup if view changes
+        window.recaptchaVerifier.clear();
     }
   }, [view]);
 
 
   const handleSuccessfulLogin = (user: User) => {
-    // For email/password, check for email verification.
-    // For other methods like Google, Phone, or Magic Link, we can assume verification.
     if (user.providerData.some(p => p.providerId === 'password') && !user.emailVerified) {
-      setError("Please verify your email address before logging in. We've sent you another verification link.");
-      sendEmailVerification(user); // Resend verification email
-      signOut(auth); // Sign out the non-verified user
+      setError("Please verify your email address. Another verification link has been sent.");
+      sendEmailVerification(user);
+      signOut(auth);
     } else {
       router.push('/');
     }
@@ -136,18 +131,21 @@ export default function LoginPage() {
   const handleAuthAction = async (action: 'signUp' | 'signIn') => {
     setError(null);
     setInfoMessage(null);
+    setIsSubmitting(true);
     try {
       if (action === 'signUp') {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
         await signOut(auth);
-        setInfoMessage('Your account has been created. Please check your email to verify your account before logging in.');
+        setInfoMessage('Account created. Please check your email to verify your account.');
       } else {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         handleSuccessfulLogin(userCredential.user);
       }
     } catch (err) {
       setError(getFriendlyErrorMessage(err as AuthError));
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -158,22 +156,28 @@ export default function LoginPage() {
         setError('Please enter your email address to reset your password.');
         return;
     }
+    setIsSubmitting(true);
     try {
         await sendPasswordResetEmail(auth, email);
         setInfoMessage('A password reset link has been sent to your email address.');
     } catch (err) {
         setError(getFriendlyErrorMessage(err as AuthError));
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
     setError(null);
     setInfoMessage(null);
+    setIsSubmitting(true);
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
       handleSuccessfulLogin(userCredential.user);
     } catch (err) {
       setError(getFriendlyErrorMessage(err as AuthError));
+    } finally {
+        setIsSubmitting(false);
     }
   }
 
@@ -184,6 +188,7 @@ export default function LoginPage() {
         setError('Please enter your phone number.');
         return;
     }
+    setIsSubmitting(true);
     try {
         const verifier = window.recaptchaVerifier;
         const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
@@ -192,6 +197,8 @@ export default function LoginPage() {
         setView('phoneCode');
     } catch (err) {
         setError(getFriendlyErrorMessage(err as AuthError));
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -199,18 +206,21 @@ export default function LoginPage() {
     setError(null);
     setInfoMessage(null);
     if (!verificationCode) {
-        setError('Please enter the verification code.');
+        setError('Please enter the 6-digit verification code.');
         return;
     }
     if (!confirmationResult) {
-        setError('Something went wrong. Please try sending the code again.');
+        setError('An unexpected error occurred. Please try sending the code again.');
         return;
     }
+    setIsSubmitting(true);
     try {
         const userCredential = await confirmationResult.confirm(verificationCode);
         handleSuccessfulLogin(userCredential.user);
     } catch (err) {
         setError(getFriendlyErrorMessage(err as AuthError));
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -231,7 +241,9 @@ export default function LoginPage() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex-col gap-4">
-                    <Button className="w-full" onClick={handlePasswordReset}>Send Reset Link</Button>
+                    <Button className="w-full" onClick={handlePasswordReset} disabled={isSubmitting}>
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Send Reset Link
+                    </Button>
                     <Button variant="link" className="text-sm" onClick={() => { setView('main'); setError(null); setInfoMessage(null); }}>
                         <ArrowLeft className="mr-2" /> Back to Login
                     </Button>
@@ -249,10 +261,13 @@ export default function LoginPage() {
                     <div className="space-y-2">
                         <Label htmlFor="phone">Phone Number</Label>
                         <Input id="phone" type="tel" placeholder="+1 123 456 7890" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                        <p className="text-xs text-muted-foreground px-1 pt-1">Security notice: For your protection, do not use a public or shared phone number. SMS-based verification may not be fully secure.</p>
                     </div>
                 </CardContent>
                 <CardFooter className="flex-col gap-4">
-                    <Button id="sign-in-button" className="w-full" onClick={handlePhoneSignIn}>Send Verification Code</Button>
+                    <Button id="sign-in-button" className="w-full" onClick={handlePhoneSignIn} disabled={isSubmitting}>
+                         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Send Verification Code
+                    </Button>
                     <Button variant="link" className="text-sm" onClick={() => { setView('main'); setError(null); setInfoMessage(null); }}>
                         <ArrowLeft className="mr-2" /> Back to Login
                     </Button>
@@ -264,16 +279,18 @@ export default function LoginPage() {
                 <>
                     <CardHeader className="text-center">
                         <CardTitle className="font-headline">Enter Verification Code</CardTitle>
-                        <CardDescription>We've sent a code to {phoneNumber}.</CardDescription>
+                        <CardDescription>We've sent a 6-digit code to {phoneNumber}.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
                             <Label htmlFor="code">Verification Code</Label>
-                            <Input id="code" type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
+                            <Input id="code" type="text" maxLength={6} placeholder="_ _ _ _ _ _" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
                         </div>
                     </CardContent>
                     <CardFooter className="flex-col gap-4">
-                        <Button className="w-full" onClick={handleVerifyCode}>Confirm & Sign In</Button>
+                        <Button className="w-full" onClick={handleVerifyCode} disabled={isSubmitting}>
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Confirm & Sign In
+                        </Button>
                         <Button variant="link" className="text-sm" onClick={() => { setView('phone'); setError(null); setInfoMessage(null); }}>
                             <ArrowLeft className="mr-2" /> Back
                         </Button>
@@ -305,18 +322,22 @@ export default function LoginPage() {
                 </CardContent>
                 <CardFooter className="flex-col gap-4">
                     <div className="flex w-full gap-2">
-                        <Button variant="secondary" className="w-full" onClick={() => handleAuthAction('signIn')}>Sign In</Button>
-                        <Button className="w-full" onClick={() => handleAuthAction('signUp')}>Sign Up</Button>
+                        <Button variant="secondary" className="w-full" onClick={() => handleAuthAction('signIn')} disabled={isSubmitting}>
+                           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Sign In
+                        </Button>
+                        <Button className="w-full" onClick={() => handleAuthAction('signUp')} disabled={isSubmitting}>
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Sign Up
+                        </Button>
                     </div>
                     <div className="relative w-full">
                         <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
                         <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or continue with</span></div>
                     </div>
-                    <Button asChild variant="outline" className="w-full">
+                    <Button asChild variant="outline" className="w-full" disabled={isSubmitting}>
                       <Link href="/magic-link">Sign in with Magic Link</Link>
                     </Button>
-                    <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>Continue with Google</Button>
-                    <Button variant="outline" className="w-full" onClick={() => setView('phone')}>Sign in with Phone</Button>
+                    <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isSubmitting}>Continue with Google</Button>
+                    <Button variant="outline" className="w-full" onClick={() => setView('phone')} disabled={isSubmitting}>Sign in with Phone</Button>
                 </CardFooter>
             </>
         )
@@ -345,7 +366,7 @@ export default function LoginPage() {
           )}
         {renderContent()}
       </Card>
-      <div id="recaptcha-container"></div>
+      <div id="recaptcha-container" className="my-4"></div>
       <Button variant="link" className="mt-4 text-muted-foreground" asChild>
         <Link href="/">Back to homepage</Link>
       </Button>
