@@ -16,26 +16,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/app/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, CheckCircle, ArrowLeft } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const auth = getAuth(app);
 
 const getFriendlyErrorMessage = (error: AuthError): string => {
-    // Log the full error to the console for detailed debugging
     console.error('Authentication Error:', error);
-
     switch (error.code) {
         case 'auth/invalid-email':
             return 'Please enter a valid email address.';
         default:
-             // For any other error, display a more specific message if available
-            return `An unexpected error occurred. Code: ${error.code}. Please check the console for more details.`;
+            return `An unexpected error occurred. Code: ${error.code}. Please try again.`;
     }
 }
 
+// CORRECTED: The URL now correctly points to the /actions page handler.
 const actionCodeSettings = {
-  url: typeof window !== 'undefined' ? `${window.location.origin}/login` : 'http://localhost:9002/login',
+  url: typeof window !== 'undefined' ? `${window.location.origin}/actions` : 'http://localhost:9002/actions',
   handleCodeInApp: true,
 };
 
@@ -44,6 +42,7 @@ export default function MagicLinkPage() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMagicLinkSent, setIsMagicLinkSent] = useState(false);
 
   const handleMagicLinkSignIn = async () => {
@@ -53,6 +52,7 @@ export default function MagicLinkPage() {
         setError('Please enter your email address to receive a magic link.');
         return;
     }
+    setIsSubmitting(true);
     try {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         window.localStorage.setItem('emailForSignIn', email);
@@ -60,6 +60,8 @@ export default function MagicLinkPage() {
         setIsMagicLinkSent(true);
     } catch (err) {
         setError(getFriendlyErrorMessage(err as AuthError));
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -106,7 +108,10 @@ export default function MagicLinkPage() {
                 </div>
             </CardContent>
             <CardFooter className="flex-col gap-4">
-                <Button className="w-full" onClick={handleMagicLinkSignIn}>Send Magic Link</Button>
+                <Button className="w-full" onClick={handleMagicLinkSignIn} disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
+                    Send Magic Link
+                </Button>
                 <Button variant="link" className="text-sm" asChild>
                     <Link href="/login">
                         <ArrowLeft className="mr-2" />

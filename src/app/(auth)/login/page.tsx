@@ -86,10 +86,12 @@ export default function LoginPage() {
   
   const router = useRouter();
 
+  // Effect to handle magic link sign-in on component mount
   useEffect(() => {
     if (isSignInWithEmailLink(auth, window.location.href)) {
       let emailFromStore = window.localStorage.getItem('emailForSignIn');
       if (!emailFromStore) {
+        // This can happen if the user opens the link on a different browser
         emailFromStore = window.prompt('Please provide your email for confirmation');
       }
       if(emailFromStore){
@@ -103,29 +105,29 @@ export default function LoginPage() {
     }
   }, []);
 
+  // Effect to manage the reCAPTCHA verifier widget
   useEffect(() => {
-    // Ensure the container exists and is visible before initializing.
     const recaptchaContainer = document.getElementById('recaptcha-container');
     if (view === 'phone' && recaptchaContainer && !window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainer, {
-            'size': 'invisible',
-            'callback': (response: any) => { /* reCAPTCHA solved */ }
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'normal',
+            'callback': () => {
+                setInfoMessage("reCAPTCHA solved!");
+            }
         });
+        window.recaptchaVerifier.render();
     } else if (view !== 'phone' && window.recaptchaVerifier) {
-        // Cleanup if view changes
         window.recaptchaVerifier.clear();
+        const recaptchaContainer = document.getElementById('recaptcha-container');
+        if (recaptchaContainer) {
+            recaptchaContainer.innerHTML = '';
+        }
     }
   }, [view]);
 
 
   const handleSuccessfulLogin = (user: User) => {
-    if (user.providerData.some(p => p.providerId === 'password') && !user.emailVerified) {
-      setError("Please verify your email address. Another verification link has been sent.");
-      sendEmailVerification(user);
-      signOut(auth);
-    } else {
-      router.push('/');
-    }
+    router.push('/');
   }
 
   const handleAuthAction = async (action: 'signUp' | 'signIn') => {
@@ -135,9 +137,7 @@ export default function LoginPage() {
     try {
       if (action === 'signUp') {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(userCredential.user);
-        await signOut(auth);
-        setInfoMessage('Account created. Please check your email to verify your account.');
+        handleSuccessfulLogin(userCredential.user);
       } else {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         handleSuccessfulLogin(userCredential.user);
@@ -263,6 +263,7 @@ export default function LoginPage() {
                         <Input id="phone" type="tel" placeholder="+1 123 456 7890" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
                         <p className="text-xs text-muted-foreground px-1 pt-1">Security notice: For your protection, do not use a public or shared phone number. SMS-based verification may not be fully secure.</p>
                     </div>
+                    <div id="recaptcha-container" className="my-4 flex justify-center"></div>
                 </CardContent>
                 <CardFooter className="flex-col gap-4">
                     <Button id="sign-in-button" className="w-full" onClick={handlePhoneSignIn} disabled={isSubmitting}>
@@ -366,7 +367,6 @@ export default function LoginPage() {
           )}
         {renderContent()}
       </Card>
-      <div id="recaptcha-container" className="my-4"></div>
       <Button variant="link" className="mt-4 text-muted-foreground" asChild>
         <Link href="/">Back to homepage</Link>
       </Button>
@@ -376,6 +376,6 @@ export default function LoginPage() {
 
 declare global {
     interface Window { 
-        recaptchaVerifier: any;
+        recaptchaVerifier: RecaptchaVerifier;
     }
 }
