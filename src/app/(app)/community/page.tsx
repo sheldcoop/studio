@@ -3,7 +3,7 @@
 
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/app/page-header';
-import { useCollection } from '@/firebase/firestore/use-collection';
+// import { useCollection } from '@/firebase/firestore/use-collection';
 import { Eye, MessageSquare, Loader2, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -48,7 +48,7 @@ function formatTimeAgo(timestamp: { seconds: number; nanoseconds: number }) {
 }
 
 export default function CommunityPage() {
-  const { data: posts, loading, error } = useCollection<CommunityPost>('communityPosts');
+  // const { data: posts, loading, error } = useCollection<CommunityPost>('communityPosts');
 
   return (
     <>
@@ -66,79 +66,11 @@ export default function CommunityPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading && (
-            <div className="flex h-60 items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          )}
-          {error && (
-            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-destructive p-12 text-center h-60">
-                <AlertTriangle className="h-12 w-12 text-destructive" />
-                <p className="mt-4 font-semibold text-destructive">
-                    Failed to load posts
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                    Could not connect to the database. Please check your connection or try again later.
+            <div className="flex h-60 flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 text-center">
+                <p className="font-semibold">
+                    This page has been temporarily disconnected from the database for a build test.
                 </p>
             </div>
-          )}
-          {!loading && !error && (
-            <ul className="space-y-4">
-              {posts && posts.length > 0 ? (
-                posts.map((post) => (
-                  <li
-                    key={post.id}
-                    className="flex flex-col gap-2 rounded-lg border p-4 transition-colors hover:bg-secondary/50 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div className="flex items-center gap-4">
-                      <Avatar>
-                        {post.author.photoURL && <img src={post.author.photoURL} alt={post.author.displayName} className="h-full w-full object-cover" />}
-                        <AvatarFallback>
-                          {post.author.displayName?.charAt(0).toUpperCase() || 'A'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <Link
-                          href={`/community/${post.id}`}
-                          className="font-medium hover:underline"
-                          rel="noopener noreferrer"
-                        >
-                          {post.topic}
-                        </Link>
-                        <p className="text-sm text-muted-foreground">
-                          by <span className="font-medium text-foreground/80">{post.author.displayName || 'Anonymous'}</span>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-end gap-6 border-t pt-2 sm:border-t-0 sm:pt-0">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MessageSquare className="h-4 w-4" />
-                        <span className="text-sm font-medium">{post.replies || 0}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Eye className="h-4 w-4" />
-                        <span className="text-sm font-medium">{post.views || 0}</span>
-                      </div>
-                      <div className="hidden text-right lg:block" style={{ width: '150px' }}>
-                        <p className="text-sm font-medium text-foreground/80">
-                           {formatTimeAgo(post.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <div className="flex h-60 flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 text-center">
-                    <p className="font-semibold">
-                        No discussions yet!
-                    </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        Be the first to start a conversation.
-                    </p>
-                </div>
-              )}
-            </ul>
-          )}
         </CardContent>
       </Card>
     </>
