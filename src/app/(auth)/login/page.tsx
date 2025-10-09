@@ -41,6 +41,9 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 const getFriendlyErrorMessage = (error: AuthError): string => {
+    // Log the full error to the console for detailed debugging
+    console.error('Authentication Error:', error);
+
     switch (error.code) {
         case 'auth/invalid-email':
             return 'Please enter a valid email address.';
@@ -67,8 +70,8 @@ const getFriendlyErrorMessage = (error: AuthError): string => {
         case 'auth/invalid-verification-code':
             return 'Invalid verification code. Please try again.';
         default:
-            console.error('Authentication Error:', error);
-            return 'An unexpected authentication error occurred. Please try again later.';
+            // For any other error, display a more specific message if available
+            return `An unexpected error occurred. Code: ${error.code}. Please check the console for more details.`;
     }
 }
 

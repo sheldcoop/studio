@@ -22,11 +22,15 @@ import Link from 'next/link';
 const auth = getAuth(app);
 
 const getFriendlyErrorMessage = (error: AuthError): string => {
+    // Log the full error to the console for detailed debugging
+    console.error('Authentication Error:', error);
+
     switch (error.code) {
         case 'auth/invalid-email':
             return 'Please enter a valid email address.';
         default:
-            return 'An unexpected authentication error occurred. Please try again later.';
+             // For any other error, display a more specific message if available
+            return `An unexpected error occurred. Code: ${error.code}. Please check the console for more details.`;
     }
 }
 
