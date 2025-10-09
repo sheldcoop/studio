@@ -1,4 +1,15 @@
 {
+  "projects": {
+    "default": "studio-9175235396-fa433"
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
   "apphosting": {
     "backendId": "quantprep-backend",
     "rootDir": "/",
