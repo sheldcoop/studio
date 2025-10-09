@@ -39,6 +39,12 @@ const nextConfig = {
   // This configuration is for the Next.js App Router, which is the default in Next.js 13.4+
   // All pages and layouts should be inside the `src/app` directory.
   // Note: There is no `appDir` boolean to set here anymore. If an `app` directory exists, it is used.
+  devIndicators: {
+    allowedDevOrigins: [
+      'http://*.cloudworkstations.dev:*',
+      'https://*.cloudworkstations.dev:*',
+    ]
+  },
 };
 
 export default nextConfig;
