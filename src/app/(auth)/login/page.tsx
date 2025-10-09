@@ -10,7 +10,6 @@ import {
   signInWithPopup,
   sendEmailVerification,
   sendPasswordResetEmail,
-  sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
   signOut,
@@ -73,11 +72,6 @@ const getFriendlyErrorMessage = (error: AuthError): string => {
     }
 }
 
-const actionCodeSettings = {
-  url: typeof window !== 'undefined' ? `${window.location.origin}/login` : 'http://localhost:9002/login',
-  handleCodeInApp: true,
-};
-
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -88,7 +82,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   
-  const [view, setView] = useState('main'); // 'main', 'reset', 'magicSent', 'phone', 'phoneCode'
+  const [view, setView] = useState('main'); // 'main', 'reset', 'phone', 'phoneCode'
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   
   const router = useRouter();
@@ -180,23 +174,6 @@ export default function LoginPage() {
     }
   }
 
-  const handleMagicLinkSignIn = async () => {
-    setError(null);
-    setInfoMessage(null);
-    if (!email) {
-        setError('Please enter your email address to receive a magic link.');
-        return;
-    }
-    try {
-        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-        window.localStorage.setItem('emailForSignIn', email);
-        setInfoMessage(`A magic link has been sent to ${email}. Please check your inbox.`);
-        setView('magicSent');
-    } catch (err) {
-        setError(getFriendlyErrorMessage(err as AuthError));
-    }
-  };
-
   const handlePhoneSignIn = async () => {
     setError(null);
     setInfoMessage(null);
@@ -252,20 +229,6 @@ export default function LoginPage() {
                 </CardContent>
                 <CardFooter className="flex-col gap-4">
                     <Button className="w-full" onClick={handlePasswordReset}>Send Reset Link</Button>
-                    <Button variant="link" className="text-sm" onClick={() => { setView('main'); setError(null); setInfoMessage(null); }}>
-                        <ArrowLeft className="mr-2" /> Back to Login
-                    </Button>
-                </CardFooter>
-            </>
-        )
-      case 'magicSent':
-        return (
-            <>
-                <CardHeader className="text-center">
-                    <CardTitle className="font-headline">Check Your Inbox</CardTitle>
-                    <CardDescription>We've sent a magic link to your email. Click the link to sign in.</CardDescription>
-                </CardHeader>
-                <CardFooter className="flex-col gap-4">
                     <Button variant="link" className="text-sm" onClick={() => { setView('main'); setError(null); setInfoMessage(null); }}>
                         <ArrowLeft className="mr-2" /> Back to Login
                     </Button>
@@ -346,7 +309,9 @@ export default function LoginPage() {
                         <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
                         <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or continue with</span></div>
                     </div>
-                    <Button variant="outline" className="w-full" onClick={handleMagicLinkSignIn}>Sign in with Magic Link</Button>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/magic-link">Sign in with Magic Link</Link>
+                    </Button>
                     <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>Continue with Google</Button>
                     <Button variant="outline" className="w-full" onClick={() => setView('phone')}>Sign in with Phone</Button>
                 </CardFooter>
