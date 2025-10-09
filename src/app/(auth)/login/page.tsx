@@ -14,6 +14,9 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink,
   signOut,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  type ConfirmationResult, 
   type AuthError,
   type User,
 } from 'firebase/auth';
@@ -52,13 +55,26 @@ const getFriendlyErrorMessage = (error: AuthError): string => {
             return 'The password must be at least 6 characters long.';
         case 'auth/popup-closed-by-user':
             return 'The sign-in popup was closed before completion. Please try again.';
+        case 'auth/captcha-check-failed':
+            return 'The reCAPTCHA verification failed. Please try again.';
+        case 'auth/invalid-phone-number':
+            return 'Please enter a valid phone number in the format +[Country Code][Number].';
+        case 'auth/missing-phone-number':
+            return 'Please enter a phone number.';
+        case 'auth/quota-exceeded':
+            return 'You have exceeded the SMS quota. Please try again later.';
+        case 'auth/code-expired':
+            return 'The verification code has expired. Please request a new one.';
+        case 'auth/invalid-verification-code':
+            return 'Invalid verification code. Please try again.';
         default:
+            console.error('Authentication Error:', error);
             return 'An unexpected authentication error occurred. Please try again later.';
     }
 }
 
 const actionCodeSettings = {
-  url: 'http://localhost:9002/login',
+  url: typeof window !== 'undefined' ? `${window.location.origin}/login` : 'http://localhost:9002/login',
   handleCodeInApp: true,
 };
 
@@ -66,41 +82,57 @@ const actionCodeSettings = {
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [isResetMode, setIsResetMode] = useState(false);
-  const [isMagicLinkSent, setIsMagicLinkSent] = useState(false);
+  
+  const [view, setView] = useState('main'); // 'main', 'reset', 'magicSent', 'phone', 'phoneCode'
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  
   const router = useRouter();
 
+  // Effect to handle magic link sign-in
   useEffect(() => {
-    // Confirm the link is a sign-in with email link.
     if (isSignInWithEmailLink(auth, window.location.href)) {
-      let email = window.localStorage.getItem('emailForSignIn');
-      if (!email) {
-        // User opened the link on a different device. To prevent session fixation
-        // attacks, ask the user to provide the associated email again.
-        email = window.prompt('Please provide your email for confirmation');
+      let emailFromStore = window.localStorage.getItem('emailForSignIn');
+      if (!emailFromStore) {
+        emailFromStore = window.prompt('Please provide your email for confirmation');
       }
-      // The client SDK will parse the code from the link for you.
-      signInWithEmailLink(auth, email as string, window.location.href)
-        .then((result) => {
-          // Clear email from storage.
-          window.localStorage.removeItem('emailForSignIn');
-          handleSuccessfulLogin(result.user);
-        })
-        .catch((err) => {
-            setError(getFriendlyErrorMessage(err as AuthError));
+      if(emailFromStore){
+        signInWithEmailLink(auth, emailFromStore, window.location.href)
+            .then((result) => {
+                window.localStorage.removeItem('emailForSignIn');
+                handleSuccessfulLogin(result.user);
+            })
+            .catch((err) => setError(getFriendlyErrorMessage(err as AuthError)));
+      }
+    }
+  }, []);
+
+  // Effect to set up reCAPTCHA
+  useEffect(() => {
+    if(view === 'phone') {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response: any) => {
+              // reCAPTCHA solved, allow signInWithPhoneNumber.
+            }
         });
     }
-  }, [])
+  }, [view]);
+
 
   const handleSuccessfulLogin = (user: User) => {
-    if (user.emailVerified) {
-      router.push('/');
-    } else {
+    // For email/password, check for email verification.
+    // For other methods like Google, Phone, or Magic Link, we can assume verification.
+    if (user.providerData.some(p => p.providerId === 'password') && !user.emailVerified) {
       setError("Please verify your email address before logging in. We've sent you another verification link.");
       sendEmailVerification(user); // Resend verification email
       signOut(auth); // Sign out the non-verified user
+    } else {
+      router.push('/');
     }
   }
 
@@ -111,7 +143,7 @@ export default function LoginPage() {
       if (action === 'signUp') {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
-        await signOut(auth); // Sign out user immediately after registration
+        await signOut(auth);
         setInfoMessage('Your account has been created. Please check your email to verify your account before logging in.');
       } else {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -132,7 +164,6 @@ export default function LoginPage() {
     try {
         await sendPasswordResetEmail(auth, email);
         setInfoMessage('A password reset link has been sent to your email address.');
-        // Don't switch back immediately, let the user see the success message
     } catch (err) {
         setError(getFriendlyErrorMessage(err as AuthError));
     }
@@ -158,12 +189,46 @@ export default function LoginPage() {
     }
     try {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-        // The link was successfully sent. Inform the user.
-        // Save the email locally so you don't need to ask the user for it again
-        // if they open the link on the same device.
         window.localStorage.setItem('emailForSignIn', email);
         setInfoMessage(`A magic link has been sent to ${email}. Please check your inbox.`);
-        setIsMagicLinkSent(true);
+        setView('magicSent');
+    } catch (err) {
+        setError(getFriendlyErrorMessage(err as AuthError));
+    }
+  };
+
+  const handlePhoneSignIn = async () => {
+    setError(null);
+    setInfoMessage(null);
+    if (!phoneNumber) {
+        setError('Please enter your phone number.');
+        return;
+    }
+    try {
+        const verifier = window.recaptchaVerifier;
+        const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+        setConfirmationResult(result);
+        setInfoMessage('A verification code has been sent to your phone.');
+        setView('phoneCode');
+    } catch (err) {
+        setError(getFriendlyErrorMessage(err as AuthError));
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    setError(null);
+    setInfoMessage(null);
+    if (!verificationCode) {
+        setError('Please enter the verification code.');
+        return;
+    }
+    if (!confirmationResult) {
+        setError('Something went wrong. Please try sending the code again.');
+        return;
+    }
+    try {
+        const userCredential = await confirmationResult.confirm(verificationCode);
+        handleSuccessfulLogin(userCredential.user);
     } catch (err) {
         setError(getFriendlyErrorMessage(err as AuthError));
     }
@@ -171,126 +236,123 @@ export default function LoginPage() {
 
 
   const renderContent = () => {
-    if (isMagicLinkSent) {
+    switch (view) {
+      case 'reset':
         return (
-          <>
-              <CardHeader className="text-center">
-                <CardTitle className="font-headline">Check Your Inbox</CardTitle>
-                <CardDescription>
-                  We've sent a magic link to your email address. Click the link to sign in.
-                </CardDescription>
-              </CardHeader>
-              <CardFooter className="flex-col gap-4">
-                  <Button variant="link" className="text-sm" onClick={() => { setIsMagicLinkSent(false); setError(null); setInfoMessage(null); }}>
-                      <ArrowLeft className="mr-2" />
-                      Back to Login
-                  </Button>
-              </CardFooter>
-          </>
-        )
-    }
-
-    if (isResetMode) {
-      return (
-        <>
-            <CardHeader className="text-center">
-              <CardTitle className="font-headline">Reset Your Password</CardTitle>
-              <CardDescription>
-                Enter your email to receive a reset link.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-            </CardContent>
-            <CardFooter className="flex-col gap-4">
-                <Button className="w-full" onClick={handlePasswordReset}>Send Reset Link</Button>
-                <Button variant="link" className="text-sm" onClick={() => { setIsResetMode(false); setError(null); setInfoMessage(null); }}>
-                    <ArrowLeft className="mr-2" />
-                    Back to Login
-                </Button>
-            </CardFooter>
-        </>
-      )
-    }
-
-    return (
-        <>
-            <CardHeader className="text-center">
-                <CardTitle className="font-headline">Welcome to QuantPrep</CardTitle>
-                <CardDescription>
-                    Sign in or create an account to continue
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
+            <>
+                <CardHeader className="text-center">
+                <CardTitle className="font-headline">Reset Your Password</CardTitle>
+                <CardDescription>Enter your email to receive a reset link.</CardDescription>
+                </CardHeader>
+                <CardContent>
                     <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                    <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
+                </CardContent>
+                <CardFooter className="flex-col gap-4">
+                    <Button className="w-full" onClick={handlePasswordReset}>Send Reset Link</Button>
+                    <Button variant="link" className="text-sm" onClick={() => { setView('main'); setError(null); setInfoMessage(null); }}>
+                        <ArrowLeft className="mr-2" /> Back to Login
+                    </Button>
+                </CardFooter>
+            </>
+        )
+      case 'magicSent':
+        return (
+            <>
+                <CardHeader className="text-center">
+                    <CardTitle className="font-headline">Check Your Inbox</CardTitle>
+                    <CardDescription>We've sent a magic link to your email. Click the link to sign in.</CardDescription>
+                </CardHeader>
+                <CardFooter className="flex-col gap-4">
+                    <Button variant="link" className="text-sm" onClick={() => { setView('main'); setError(null); setInfoMessage(null); }}>
+                        <ArrowLeft className="mr-2" /> Back to Login
+                    </Button>
+                </CardFooter>
+            </>
+        )
+       case 'phone':
+        return (
+            <>
+                <CardHeader className="text-center">
+                    <CardTitle className="font-headline">Sign In With Phone</CardTitle>
+                    <CardDescription>Enter your phone number to receive a verification code.</CardDescription>
+                </CardHeader>
+                <CardContent>
                     <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="password">Password</Label>
-                            <Button variant="link" className="h-auto p-0 text-xs" onClick={() => setIsResetMode(true)}>
-                                Forgot Password?
-                            </Button>
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input id="phone" type="tel" placeholder="+1 123 456 7890" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                    </div>
+                </CardContent>
+                <CardFooter className="flex-col gap-4">
+                    <Button id="sign-in-button" className="w-full" onClick={handlePhoneSignIn}>Send Verification Code</Button>
+                    <Button variant="link" className="text-sm" onClick={() => { setView('main'); setError(null); setInfoMessage(null); }}>
+                        <ArrowLeft className="mr-2" /> Back to Login
+                    </Button>
+                </CardFooter>
+            </>
+        )
+        case 'phoneCode':
+            return (
+                <>
+                    <CardHeader className="text-center">
+                        <CardTitle className="font-headline">Enter Verification Code</CardTitle>
+                        <CardDescription>We've sent a code to {phoneNumber}.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-2">
+                            <Label htmlFor="code">Verification Code</Label>
+                            <Input id="code" type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
                         </div>
-                    <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    </CardContent>
+                    <CardFooter className="flex-col gap-4">
+                        <Button className="w-full" onClick={handleVerifyCode}>Confirm & Sign In</Button>
+                        <Button variant="link" className="text-sm" onClick={() => { setView('phone'); setError(null); setInfoMessage(null); }}>
+                            <ArrowLeft className="mr-2" /> Back
+                        </Button>
+                    </CardFooter>
+                </>
+            )
+      case 'main':
+      default:
+        return (
+            <>
+                <CardHeader className="text-center">
+                    <CardTitle className="font-headline">Welcome to QuantPrep</CardTitle>
+                    <CardDescription>Sign in or create an account to continue</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="password">Password</Label>
+                                <Button variant="link" className="h-auto p-0 text-xs" onClick={() => setView('reset')}>Forgot Password?</Button>
+                            </div>
+                        <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        </div>
                     </div>
-                </div>
-            </CardContent>
-            <CardFooter className="flex-col gap-4">
-                <div className="flex w-full gap-2">
-                    <Button
-                    variant="secondary"
-                    className="w-full"
-                    onClick={() => handleAuthAction('signIn')}
-                    >
-                    Sign In
-                    </Button>
-                    <Button
-                    className="w-full"
-                    onClick={() => handleAuthAction('signUp')}
-                    >
-                    Sign Up
-                    </Button>
-                </div>
-                 <Button variant="outline" className="w-full" onClick={handleMagicLinkSignIn}>
-                    Sign in with Magic Link
-                </Button>
-                <div className="relative w-full">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
+                </CardContent>
+                <CardFooter className="flex-col gap-4">
+                    <div className="flex w-full gap-2">
+                        <Button variant="secondary" className="w-full" onClick={() => handleAuthAction('signIn')}>Sign In</Button>
+                        <Button className="w-full" onClick={() => handleAuthAction('signUp')}>Sign Up</Button>
                     </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    <div className="relative w-full">
+                        <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                        <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or continue with</span></div>
                     </div>
-                </div>
-                <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
-                    Continue with Google
-                </Button>
-            </CardFooter>
-        </>
-    )
+                    <Button variant="outline" className="w-full" onClick={handleMagicLinkSignIn}>Sign in with Magic Link</Button>
+                    <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>Continue with Google</Button>
+                    <Button variant="outline" className="w-full" onClick={() => setView('phone')}>Sign in with Phone</Button>
+                </CardFooter>
+            </>
+        )
+    }
   }
 
   return (
@@ -315,9 +377,16 @@ export default function LoginPage() {
           )}
         {renderContent()}
       </Card>
+      <div id="recaptcha-container"></div>
       <Button variant="link" className="mt-4 text-muted-foreground" asChild>
         <Link href="/">Back to homepage</Link>
       </Button>
     </div>
   );
+}
+
+declare global {
+    interface Window { 
+        recaptchaVerifier: any;
+    }
 }
