@@ -1,39 +1,41 @@
 # Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
 
+# Specifies the runtime settings for the backend.
 runConfig:
-  # Increase this value if you'd like to automatically spin up
-  # more instances in response to increased traffic.
-  maxInstances: 1
+  # The maximum number of container instances that can be running at the same time.
+  # This value can be between 1 and 10.
+  maxInstances: 10
+  # The minimum number of container instances that will be running at any given time.
+  # An instance is a dedicated execution environment for your web app.
+  # This value can be between 0 and 10.
+  minInstances: 1
+  # The amount of memory available to the backend.
+  # This value can be '256MiB', '512MiB', '1GiB', '2GiB', '4GiB', '8GiB', or '16GiB'.
+  memory: '1GiB'
+  # The number of CPUs used to run an instance.
+  # This value must be between 1 and 8.
+  cpu: 1
+  # The timeout for any given request.
+  # This value can be a string like '60s' or '5m'.
+  requestTimeout: 60s
+  # The concurrency of the backend.
+  # This value can be between 1 and 1000.
+  concurrency: 1000
 
-env:
-  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-    secret: NEXT_PUBLIC_FIREBASE_API_KEY
-    availability:
-      - BUILD
-      - RUN
-  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    secret: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    availability:
-      - BUILD
-      - RUN
-  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    availability:
-      - BUILD
-      - RUN
-  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    secret: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    availability:
-      - BUILD
-      - RUN
-  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    secret: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    availability:
-      - BUILD
-      - RUN
-  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    secret: NEXT_PUBLIC_FIREBASE_APP_ID
-    availability:
-      - BUILD
-      - RUN
+# Specifies the secrets that are required for the backend to run.
+requiredSecrets:
+  - secret: NEXT_PUBLIC_FIREBASE_API_KEY
+    # The resource ID of the secret in Secret Manager.
+    # This value can be found in the Secret Manager console.
+    resourceId: projects/9175235396/secrets/NEXT_PUBLIC_FIREBASE_API_KEY
+  - secret: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    resourceId: projects/9175235396/secrets/NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+  - secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    resourceId: projects/9175235396/secrets/NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  - secret: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    resourceId: projects/9175235396/secrets/NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+  - secret: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    resourceId: projects/9175235396/secrets/NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+  - secret: NEXT_PUBLIC_FIREBASE_APP_ID
+    resourceId: projects/9175235396/secrets/NEXT_PUBLIC_FIREBASE_APP_ID
