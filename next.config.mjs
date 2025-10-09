@@ -39,6 +39,13 @@ const nextConfig = {
   // This configuration is for the Next.js App Router, which is the default in Next.js 13.4+
   // All pages and layouts should be inside the `src/app` directory.
   // Note: There is no `appDir` boolean to set here anymore. If an `app` directory exists, it is used.
+
+  // Fix for cross-origin requests in Cloud Workstations
+  experimental: {
+    allowedDevOrigins: [
+      'https://6000-firebase-quantprep3-1759145568602.cluster-fnjdffmttjhy2qqdugh3yehhs2.cloudworkstations.dev'
+    ]
+  }
 };
 
 export default nextConfig;
