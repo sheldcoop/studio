@@ -1,77 +1,10 @@
-{
-  "name": "nextn",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --port 9003 --hostname 0.0.0.0",
-    "build": "next build",
-    "start": "next dev --port 9003 --hostname 0.0.0.0",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "test": "jest",
-    "analyze": "ANALYZE=true npm run build"
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    allowedDevOrigins: [
+      "https://6000-firebase-quantprep3-1759145568602.cluster-fnjdffmttjhy2qqdugh3yehhs2.cloudworkstations.dev",
+    ],
   },
-  "dependencies": {
-    "@radix-ui/react-accordion": "^1.2.0",
-    "@radix-ui/react-alert-dialog": "^1.1.1",
-    "@radix-ui/react-avatar": "^1.1.0",
-    "@radix-ui/react-checkbox": "^1.1.0",
-    "@radix-ui/react-dialog": "^1.1.1",
-    "@radix-ui/react-dropdown-menu": "^2.1.1",
-    "@radix-ui/react-label": "^2.1.0",
-    "@radix-ui/react-menubar": "^1.1.1",
-    "@radix-ui/react-popover": "^1.1.1",
-    "@radix-ui/react-progress": "^1.1.0",
-    "@radix-ui/react-radio-group": "^1.2.0",
-    "@radix-ui/react-scroll-area": "^1.1.0",
-    "@radix-ui/react-select": "^2.1.1",
-    "@radix-ui/react-separator": "^1.1.0",
-    "@radix-ui/react-slider": "^1.2.0",
-    "@radix-ui/react-slot": "^1.1.0",
-    "@radix-ui/react-switch": "^1.1.0",
-    "@radix-ui/react-tabs": "^1.1.0",
-    "@radix-ui/react-toast": "^1.2.1",
-    "@radix-ui/react-tooltip": "^1.1.2",
-    "autoprefixer": "^10.4.21",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.1",
-    "embla-carousel-react": "^8.1.5",
-    "firebase": "^12.3.0",
-    "lucide-react": "^0.545.0",
-    "next": "15.5.4",
-    "next-themes": "^0.4.6",
-    "p5": "^2.0.5",
-    "react": "19.2.0",
-    "react-day-picker": "9.11.1",
-    "react-dom": "19.2.0",
-    "react-hook-form": "^7.52.0",
-    "react-intersection-observer": "^9.10.3",
-    "react-katex": "^3.0.1",
-    "recharts": "^3.2.1",
-    "tailwind-merge": "^3.3.1",
-    "tailwindcss-animate": "^1.0.7",
-    "three": "0.180.0"
-  },
-  "devDependencies": {
-    "@testing-library/dom": "^10.1.0",
-    "@testing-library/jest-dom": "^6.4.6",
-    "@testing-library/react": "^16.0.0",
-    "@testing-library/user-event": "^14.5.2",
-    "@types/chart.js": "^2.9.41",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^24.7.0",
-    "@types/p5": "^1.7.6",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.1",
-    "@types/react-katex": "^3.0.4",
-    "@types/testing-library__dom": "^7.5.0",
-    "@types/three": "0.180.0",
-    "chart.js": "^4.4.3",
-    "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0",
-    "postcss": "^8.4.38",
-    "tailwindcss": "4.1.14",
-    "ts-jest": "^29.1.5",
-    "typescript": "^5.5.2"
-  }
-}
+};
+
+module.exports = nextConfig;
