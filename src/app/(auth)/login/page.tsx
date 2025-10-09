@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -10,6 +10,9 @@ import {
   signInWithPopup,
   sendEmailVerification,
   sendPasswordResetEmail,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
   signOut,
   type AuthError,
   type User,
@@ -54,6 +57,11 @@ const getFriendlyErrorMessage = (error: AuthError): string => {
     }
 }
 
+const actionCodeSettings = {
+  url: 'http://localhost:9002/login',
+  handleCodeInApp: true,
+};
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -61,7 +69,30 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [isResetMode, setIsResetMode] = useState(false);
+  const [isMagicLinkSent, setIsMagicLinkSent] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    // Confirm the link is a sign-in with email link.
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = window.localStorage.getItem('emailForSignIn');
+      if (!email) {
+        // User opened the link on a different device. To prevent session fixation
+        // attacks, ask the user to provide the associated email again.
+        email = window.prompt('Please provide your email for confirmation');
+      }
+      // The client SDK will parse the code from the link for you.
+      signInWithEmailLink(auth, email as string, window.location.href)
+        .then((result) => {
+          // Clear email from storage.
+          window.localStorage.removeItem('emailForSignIn');
+          handleSuccessfulLogin(result.user);
+        })
+        .catch((err) => {
+            setError(getFriendlyErrorMessage(err as AuthError));
+        });
+    }
+  }, [])
 
   const handleSuccessfulLogin = (user: User) => {
     if (user.emailVerified) {
@@ -118,7 +149,47 @@ export default function LoginPage() {
     }
   }
 
+  const handleMagicLinkSignIn = async () => {
+    setError(null);
+    setInfoMessage(null);
+    if (!email) {
+        setError('Please enter your email address to receive a magic link.');
+        return;
+    }
+    try {
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        // The link was successfully sent. Inform the user.
+        // Save the email locally so you don't need to ask the user for it again
+        // if they open the link on the same device.
+        window.localStorage.setItem('emailForSignIn', email);
+        setInfoMessage(`A magic link has been sent to ${email}. Please check your inbox.`);
+        setIsMagicLinkSent(true);
+    } catch (err) {
+        setError(getFriendlyErrorMessage(err as AuthError));
+    }
+  };
+
+
   const renderContent = () => {
+    if (isMagicLinkSent) {
+        return (
+          <>
+              <CardHeader className="text-center">
+                <CardTitle className="font-headline">Check Your Inbox</CardTitle>
+                <CardDescription>
+                  We've sent a magic link to your email address. Click the link to sign in.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter className="flex-col gap-4">
+                  <Button variant="link" className="text-sm" onClick={() => { setIsMagicLinkSent(false); setError(null); setInfoMessage(null); }}>
+                      <ArrowLeft className="mr-2" />
+                      Back to Login
+                  </Button>
+              </CardFooter>
+          </>
+        )
+    }
+
     if (isResetMode) {
       return (
         <>
@@ -203,6 +274,9 @@ export default function LoginPage() {
                     Sign Up
                     </Button>
                 </div>
+                 <Button variant="outline" className="w-full" onClick={handleMagicLinkSignIn}>
+                    Sign in with Magic Link
+                </Button>
                 <div className="relative w-full">
                     <div className="absolute inset-0 flex items-center">
                         <span className="w-full border-t" />
