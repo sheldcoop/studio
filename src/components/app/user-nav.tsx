@@ -35,7 +35,7 @@ export function UserNav() {
   if (!user) {
     return (
       <Button asChild>
-        <Link href="/login">Login</Link>
+        <Link href="/login">Hey</Link>
       </Button>
     );
   }
