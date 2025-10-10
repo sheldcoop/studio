@@ -18,7 +18,7 @@ export function AnimatedTagline() {
   const [charCount, setCharCount] = useState(0);
   const [phase, setPhase] = useState<AnimationPhase>('typing-second');
   
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (phase === 'finished') return;
