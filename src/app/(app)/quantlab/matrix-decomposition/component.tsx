@@ -25,7 +25,7 @@ export default function MatrixDecompositionComponent() {
         </p>
         <p>The primary benefits include:</p>
         <ul>
-          <li><strong>Simplifying computations:</strong> Solving a system of linear equations, <InlineMath math="Ax = b" />, can be computationally expensive for a large matrix <InlineMath math="A" />. If we can decompose <InlineMath math="A" /> into simpler matrices, say <InlineMath math="A = LU" />, the problem becomes two simpler ones: <InlineMath math="Ly = b" /> and <InlineMath math="Ux = y" />, which are much easier to solve.</li>
+          <li><strong>Simplifying computations:</strong> Solving a system of linear equations, <InlineMath math="A\vec{x} = \vec{b}" />, can be computationally expensive for a large matrix <InlineMath math="A" />. If we can decompose <InlineMath math="A" /> into simpler matrices, say <InlineMath math="A = LU" />, the problem becomes two simpler ones: <InlineMath math="L\vec{y} = \vec{b}" /> and <InlineMath math="U\vec{x} = \vec{y}" />, which are much easier to solve.</li>
           <li><strong>Revealing matrix properties:</strong> Decompositions like eigendecomposition can reveal important characteristics of a matrix, such as its <strong>eigenvalues and eigenvectors</strong>, which describe its geometric transformation properties.</li>
           <li><strong>Enabling powerful applications:</strong> Techniques like <strong>Principal Component Analysis (PCA)</strong> rely on matrix decomposition to reduce the dimensionality of data while retaining the most important information.</li>
         </ul>
@@ -42,7 +42,7 @@ export default function MatrixDecompositionComponent() {
           <li><strong>L (Lower Triangular Matrix):</strong> All entries above the main diagonal are zero.</li>
           <li><strong>U (Upper Triangular Matrix):</strong> All entries below the main diagonal are zero.</li>
         </ul>
-        <p><strong>When is it used?</strong> LU decomposition is primarily used for solving systems of linear equations efficiently. Once the LU factorization of <InlineMath math="A" /> is known, solving <InlineMath math="Ax = b" /> becomes a straightforward process of forward and backward substitution. It's also used to compute the determinant of a matrix, since <InlineMath math="\det(A) = \det(L) \times \det(U)" />, and the determinant of a triangular matrix is simply the product of its diagonal elements.</p>
+        <p><strong>When is it used?</strong> LU decomposition is primarily used for solving systems of linear equations efficiently. Once the LU factorization of <InlineMath math="A" /> is known, solving <InlineMath math="A\vec{x} = \vec{b}" /> becomes a straightforward process of forward and backward substitution. It's also used to compute the determinant of a matrix, since <InlineMath math="\det(A) = \det(L) \times \det(U)" />, and the determinant of a triangular matrix is simply the product of its diagonal elements.</p>
 
         <h4 className="font-headline text-xl font-bold">QR Decomposition</h4>
         <p>QR decomposition factors a matrix <InlineMath math="A" /> into the product of an <strong>orthogonal matrix</strong> (<InlineMath math="Q" />) and an <strong>upper triangular matrix</strong> (<InlineMath math="R" />).</p>
@@ -85,7 +85,7 @@ export default function MatrixDecompositionComponent() {
         <h3 className="font-headline text-2xl font-bold">Which Method Should I Use? 🤔</h3>
         <p>Choosing the right decomposition is crucial for efficiency and accuracy. Here’s a practical guide:</p>
         <ul>
-          <li><strong>For solving a square system of equations (<InlineMath math="Ax=b" />) quickly:</strong> Use <strong>LU Decomposition</strong>. It's the fastest and most direct method for this common task.</li>
+          <li><strong>For solving a square system of equations (<InlineMath math="A\vec{x}=\vec{b}" />) quickly:</strong> Use <strong>LU Decomposition</strong>. It's the fastest and most direct method for this common task.</li>
           <li><strong>If your matrix is symmetric and positive-definite (like a covariance matrix):</strong> Use <strong>Cholesky Decomposition</strong> (<InlineMath math="A=LL^T" />). It's about twice as fast as LU and more numerically stable for this special, but very common, case in finance.</li>
           <li><strong>For solving overdetermined systems (least squares) or when you need maximum numerical stability:</strong> Use <strong>QR Decomposition</strong>. The orthogonal nature of Q prevents errors from being amplified, making it a very robust choice.</li>
           <li><strong>For understanding the underlying structure of your data (PCA) or the dynamics of a square system:</strong> Use <strong>Eigendecomposition</strong>. It gives you the principal axes (eigenvectors) and their importance (eigenvalues).</li>
@@ -119,7 +119,7 @@ export default function MatrixDecompositionComponent() {
               <TableRow>
                 <TableCell><strong>LU</strong></TableCell>
                 <TableCell>Square matrices</TableCell>
-                <TableCell>Solving <InlineMath math="Ax=b" />, finding determinants</TableCell>
+                <TableCell>Solving <InlineMath math="A\vec{x}=\vec{b}" />, finding determinants</TableCell>
                 <TableCell>Very fast</TableCell>
                 <TableCell>Can be numerically unstable</TableCell>
               </TableRow>
