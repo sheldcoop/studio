@@ -35,15 +35,6 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
     createTopic({
-        id: 'matrix-transformations',
-        parent: 'la-module-1',
-        title: 'Matrix Transformations',
-        icon: 'Projector',
-        description: "Visualizing how matrices stretch, shear, and rotate space.",
-        category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
-    }),
-    createTopic({
         parent: 'la-module-1',
         title: 'Linear Independence',
         icon: 'Waypoints',
