@@ -47,6 +47,20 @@ export const linearAlgebraPart1: Topic[] = [
             { id: 'basis-and-dimension', title: 'Basis and Dimension' },
         ]
     }),
+    createTopic({
+        parent: 'la-module-1',
+        title: 'Change of Basis',
+        icon: 'Orbit',
+        description: "Translating vectors from one coordinate system to another.",
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+        subTopics: [
+            { id: 'cob-theory', title: 'Core Theory' },
+            { id: 'cob-application', title: 'Financial Application' },
+            { id: 'cob-interactive', title: 'Interactive Demo' },
+            { id: 'cob-problems', title: 'Practice Problems' },
+        ]
+    }),
 
     // --- Module 2 ---
      createTopic({
