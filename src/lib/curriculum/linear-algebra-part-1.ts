@@ -36,6 +36,20 @@ export const linearAlgebraPart1: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-1',
+        title: 'Matrix Transformations',
+        icon: 'Scaling',
+        description: 'Visualizing how matrices stretch, squash, and rotate space.',
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+        subTopics: [
+            { id: 'matrix-transformations-theory', title: 'Core Theory' },
+            { id: 'matrix-transformations-application', title: 'Financial Application' },
+            { id: 'matrix-transformations-interactive', title: 'Interactive Demo' },
+            { id: 'matrix-transformations-problems', title: 'Practice Problems' },
+        ]
+    }),
+    createTopic({
+        parent: 'la-module-1',
         title: 'Linear Independence',
         icon: 'Waypoints',
         description: "Crucial for diversification and factor models.",
@@ -45,20 +59,6 @@ export const linearAlgebraPart1: Topic[] = [
             { id: 'lin-indep-definition', title: 'Defining Linear Independence' },
             { id: 'spanning-sets', title: 'Spanning Sets' },
             { id: 'basis-and-dimension', title: 'Basis and Dimension' },
-        ]
-    }),
-    createTopic({
-        parent: 'la-module-1',
-        title: 'Change of Basis',
-        icon: 'Orbit',
-        description: "Translating vectors from one coordinate system to another.",
-        category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'cob-theory', title: 'Core Theory' },
-            { id: 'cob-application', title: 'Financial Application' },
-            { id: 'cob-interactive', title: 'Interactive Demo' },
-            { id: 'cob-problems', title: 'Practice Problems' },
         ]
     }),
 
