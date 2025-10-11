@@ -1,4 +1,5 @@
 
+
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/data';
@@ -51,6 +52,7 @@ import TTestPage from '@/app/(app)/quantlab/t-test/component';
 import WilcoxonSignedRankTestPage from '@/app/(app)/quantlab/wilcoxon-signed-rank-test/component';
 import ZTestPage from '@/app/(app)/quantlab/z-test/component';
 import IntroductionToHypothesisTestingPage from '@/app/(app)/quantlab/introduction-to-hypothesis-testing/component';
+import MatrixDecompositionPage from '@/app/(app)/quantlab/matrix-decomposition/component';
 
 
 type TopicPageProps = {
@@ -222,6 +224,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'wilcoxon-signed-rank-test': WilcoxonSignedRankTestPage,
   'z-test': ZTestPage,
   'introduction-to-hypothesis-testing': IntroductionToHypothesisTestingPage,
+  'matrix-decomposition': MatrixDecompositionPage,
 };
 
 
@@ -255,31 +258,4 @@ export default async function TopicPage({ params }: TopicPageProps) {
         )}
         {breadcrumbSchema && (
           <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: breadcrumbSchema }}
-          />
-        )}
-        <TopicComponent />
-      </>
-    );
-  }
-
-  // Otherwise, fall back to the generic TopicPageClient for structured content.
-  return (
-    <>
-      {articleSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: articleSchema }}
-        />
-      )}
-      {breadcrumbSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: breadcrumbSchema }}
-        />
-      )}
-      <TopicPageClient topicInfo={topicInfo} />
-    </>
-  );
-}
+            type.

@@ -36,33 +36,6 @@ export const linearAlgebraPart1: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-1',
-        title: 'Matrix Transformations',
-        icon: 'Scaling',
-        description: 'Visualizing how matrices stretch, squash, and rotate space.',
-        category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'matrix-transformations-theory', title: 'Core Theory' },
-            { id: 'matrix-transformations-application', title: 'Financial Application' },
-            { id: 'matrix-transformations-interactive', title: 'Interactive Demo' },
-            { id: 'matrix-transformations-problems', title: 'Practice Problems' },
-        ]
-    }),
-    createTopic({
-        parent: 'la-module-1',
-        title: 'Linear Independence',
-        icon: 'Waypoints',
-        description: "Crucial for diversification and factor models.",
-        category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'lin-indep-definition', title: 'Defining Linear Independence' },
-            { id: 'spanning-sets', title: 'Spanning Sets' },
-            { id: 'basis-and-dimension', title: 'Basis and Dimension' },
-        ]
-    }),
-    createTopic({
-        parent: 'la-module-1',
         id: 'change-of-basis',
         title: 'Change of Basis',
         icon: 'Orbit',
@@ -75,6 +48,16 @@ export const linearAlgebraPart1: Topic[] = [
             { id: 'change-of-basis-interactive', title: 'Interactive Demo' },
             { id: 'change-of-basis-problems', title: 'Practice Problems' },
         ]
+    }),
+    createTopic({
+        id: 'matrix-decomposition',
+        parent: 'la-module-1',
+        title: 'Matrix Decomposition',
+        description: "Unpacking the secret recipe of your data.",
+        icon: 'Grid',
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+        duration: 25,
     }),
 
     // --- Module 2 ---
