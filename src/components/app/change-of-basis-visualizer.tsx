@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -19,26 +20,6 @@ import { Skeleton } from '../ui/skeleton';
 
 // --- Helper Functions ---
 
-const calculateEigen = (a: number, b: number, c: number, d: number) => {
-    const trace = a + d;
-    const det = a * d - b * c;
-    const discriminant = trace * trace - 4 * det;
-    if (discriminant < 0) return null;
-
-    const lambda1 = (trace + Math.sqrt(discriminant)) / 2;
-    const lambda2 = (trace - Math.sqrt(discriminant)) / 2;
-
-    let v1 = (b !== 0) ? new THREE.Vector2(b, lambda1 - a) : new THREE.Vector2(lambda1 - d, c);
-    let v2 = (b !== 0) ? new THREE.Vector2(b, lambda2 - a) : new THREE.Vector2(lambda2 - d, c);
-
-    if (v1.lengthSq() === 0 || v2.lengthSq() === 0) return null;
-
-    return {
-        lambda1, v1: v1.normalize(),
-        lambda2, v2: v2.normalize(),
-    };
-};
-
 const getCustomCoords = (point: THREE.Vector2, basis1: THREE.Vector2, basis2: THREE.Vector2) => {
     const det = basis1.x * basis2.y - basis1.y * basis2.x;
     if (Math.abs(det) < 1e-4) return null;
@@ -59,6 +40,7 @@ const VectorDisplay = ({ label, coords, labelClassName }: { label: React.ReactNo
 const ChangeOfBasisVisualizer = () => {
     const canvasRef = useRef<HTMLDivElement>(null);
     const [isMounted, setIsMounted] = useState(false);
+    const [customCoords, setCustomCoords] = useState("(?, ?)");
 
     useEffect(() => {
         setIsMounted(true);
@@ -76,11 +58,46 @@ const ChangeOfBasisVisualizer = () => {
         
         const standardGrid = drawGrid(scene, { gridColor: 0x556581, size: 8 });
 
-        const b1Arrow = drawArrow(scene, { origin: new THREE.Vector3(), destination: new THREE.Vector3(1.5, 0.5, 0), color: 0xf87171, label: 'b₁' });
-        const b2Arrow = drawArrow(scene, { origin: new THREE.Vector3(), destination: new THREE.Vector3(-0.5, 1, 0), color: 0x60a5fa, label: 'b₂' });
+        const b1Vec = new THREE.Vector3(1.5, 0.5, 0);
+        const b2Vec = new THREE.Vector3(-0.5, 1, 0);
+        const pStandardVec = new THREE.Vector3(2, 1, 0);
+
+        const b1Arrow = drawArrow(scene, { origin: new THREE.Vector3(), destination: b1Vec, color: 0xf87171, label: 'b₁' });
+        const b2Arrow = drawArrow(scene, { origin: new THREE.Vector3(), destination: b2Vec, color: 0x60a5fa, label: 'b₂' });
         const iHat = drawArrow(scene, { origin: new THREE.Vector3(), destination: new THREE.Vector3(1, 0, 0), color: 0x9ca3af, label: 'î' });
         const jHat = drawArrow(scene, { origin: new THREE.Vector3(), destination: new THREE.Vector3(0, 1, 0), color: 0x9ca3af, label: 'ĵ' });
-        const v_standard = drawArrow(scene, { origin: new THREE.Vector3(), destination: new THREE.Vector3(2, 1, 0), color: 0xffd93d, label: 'v' });
+        const v_standard = drawArrow(scene, { origin: new THREE.Vector3(), destination: pStandardVec, color: 0xffd93d, label: 'v' });
+        
+        const updateCoordinates = () => {
+            const coords = getCustomCoords(new THREE.Vector2(pStandardVec.x, pStandardVec.y), new THREE.Vector2(b1Vec.x, b1Vec.y), new THREE.Vector2(b2Vec.x, b2Vec.y));
+            if (coords) {
+                setCustomCoords(`(${coords.x.toFixed(2)}, ${coords.y.toFixed(2)})`);
+            } else {
+                setCustomCoords('(Invalid Basis)');
+            }
+        };
+
+        const onDrag = (object: THREE.Object3D, position: THREE.Vector3) => {
+            let targetVec: THREE.Vector3;
+            if (object === b1Arrow) {
+                targetVec = b1Vec;
+            } else if (object === b2Arrow) {
+                targetVec = b2Vec;
+            } else {
+                return;
+            }
+
+            targetVec.set(position.x, position.y, 0);
+            (object.children[0] as THREE.ArrowHelper).setDirection(targetVec.clone().normalize());
+            (object.children[0] as THREE.ArrowHelper).setLength(targetVec.length(), 0.2, 0.1);
+            if (object.children[1]) { // Update label position
+                object.children[1].position.copy(targetVec).add(new THREE.Vector3(0, 0.2, 0));
+            }
+            updateCoordinates();
+        };
+
+        const cleanupDraggable = makeObjectsDraggable([b1Arrow, b2Arrow], camera, renderer.domElement, { onDrag });
+        updateCoordinates(); // Initial calculation
 
         const animate = () => {
             animationFrameId = requestAnimationFrame(animate);
@@ -93,18 +110,20 @@ const ChangeOfBasisVisualizer = () => {
                 const width = canvasRef.current.clientWidth;
                 const height = canvasRef.current.clientHeight;
                 const aspect = width / height;
-                camera.left = -8 * aspect;
-                camera.right = 8 * aspect;
+                camera.left = -8 * (width > height ? 1 : aspect);
+                camera.right = 8 * (width > height ? 1 : aspect);
+                camera.top = 8 * (width > height ? aspect : 1);
+                camera.bottom = -8 * (width > height ? aspect : 1);
                 camera.updateProjectionMatrix();
                 renderer.setSize(width, height);
             }
         };
-
         window.addEventListener('resize', handleResize);
         handleResize();
 
         return () => {
             window.removeEventListener('resize', handleResize);
+            cleanupDraggable();
             cancelAnimationFrame(animationFrameId);
             if (canvasRef.current) {
                 canvasRef.current.removeChild(renderer.domElement);
@@ -140,7 +159,7 @@ const ChangeOfBasisVisualizer = () => {
                                     />
                                     <VectorDisplay
                                         label={<>Your Basis (<span className="text-red-400 font-mono">b₁</span>, <span className="text-blue-400 font-mono">b₂</span>)</>}
-                                        coords={"(?, ?)"}
+                                        coords={customCoords}
                                         labelClassName="text-primary"
                                     />
                                 </div>
