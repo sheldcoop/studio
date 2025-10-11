@@ -52,7 +52,7 @@ import TTestPage from '@/app/(app)/quantlab/t-test/component';
 import WilcoxonSignedRankTestPage from '@/app/(app)/quantlab/wilcoxon-signed-rank-test/component';
 import ZTestPage from '@/app/(app)/quantlab/z-test/component';
 import IntroductionToHypothesisTestingPage from '@/app/(app)/quantlab/introduction-to-hypothesis-testing/component';
-import MatrixDecompositionPage from '@/app/(app)/quantlab/matrix-decomposition/component';
+import MatrixDecompositionPage from '@/app/(app)/linear-algebra-theory/matrix-decomposition';
 
 
 type TopicPageProps = {
@@ -258,4 +258,15 @@ export default async function TopicPage({ params }: TopicPageProps) {
         )}
         {breadcrumbSchema && (
           <script
-            type.
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: breadcrumbSchema }}
+          />
+        )}
+        <TopicComponent />
+      </>
+    );
+  }
+  
+  // Otherwise, fall back to the generic client page.
+  return <TopicPageClient topicInfo={topicInfo} />;
+}

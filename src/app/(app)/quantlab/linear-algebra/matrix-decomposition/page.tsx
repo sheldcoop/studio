@@ -1,4 +1,4 @@
-import MatrixDecompositionComponent from '@/app/(app)/linear-algebra-theory/matrix-decomposition';
+import MatrixDecompositionComponent from './component';
 import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/curriculum';
 import type { Metadata } from 'next';

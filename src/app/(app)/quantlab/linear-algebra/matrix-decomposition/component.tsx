@@ -16,7 +16,7 @@ export default function MatrixDecompositionComponent() {
 
       <div className="prose prose-slate dark:prose-invert max-w-none space-y-6 text-base text-foreground/90">
         <p>
-          <strong>Matrix decomposition</strong>, also known as matrix factorization, is the process of breaking down a matrix into a product of simpler matrices. It's a fundamental concept in linear algebra that simplifies complex matrix operations, making it easier to solve systems of linear equations, compute determinants, and analyze data. Think of it as finding the "factors" of a matrix, much like you find the factors of a number (e.g., $12 = 2 \times 2 \times 3$).
+          <strong>Matrix decomposition</strong>, also known as matrix factorization, is the process of breaking down a matrix into a product of simpler matrices. It's a fundamental concept in linear algebra that simplifies complex matrix operations, making it easier to solve systems of linear equations, compute determinants, and analyze data. Think of it as finding the "factors" of a matrix, much like you find the factors of a number (e.g., 12 = 2 x 2 x 3).
         </p>
 
         <h3 className="font-headline text-2xl font-bold">Why Decompose a Matrix?</h3>

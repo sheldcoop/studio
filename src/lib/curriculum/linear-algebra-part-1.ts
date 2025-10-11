@@ -35,8 +35,8 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'la-module-1',
         id: 'change-of-basis',
+        parent: 'la-module-1',
         title: 'Change of Basis',
         icon: 'Orbit',
         description: "Viewing vectors from a different perspective.",
