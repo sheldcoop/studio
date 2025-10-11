@@ -35,17 +35,13 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'matrix-transformations',
         parent: 'la-module-1',
         title: 'Matrix Transformations',
         icon: 'Projector',
         description: "Visualizing how matrices stretch, shear, and rotate space.",
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'matrix-transform-intro', title: 'Matrices as Functions' },
-            { id: 'matrix-transform-types', title: 'Types of Transformations' },
-            { id: 'matrix-transform-composition', title: 'Composition of Transformations' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
