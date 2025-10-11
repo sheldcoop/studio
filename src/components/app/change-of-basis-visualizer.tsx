@@ -44,7 +44,10 @@ const ChangeOfBasisVisualizer = () => {
 
     useEffect(() => {
         setIsMounted(true);
-        if (!canvasRef.current) return;
+    }, []);
+
+    useEffect(() => {
+        if (!isMounted || !canvasRef.current) return;
         
         let animationFrameId: number;
 
@@ -88,8 +91,9 @@ const ChangeOfBasisVisualizer = () => {
             }
 
             targetVec.set(position.x, position.y, 0);
-            (object.children[0] as THREE.ArrowHelper).setDirection(targetVec.clone().normalize());
-            (object.children[0] as THREE.ArrowHelper).setLength(targetVec.length(), 0.2, 0.1);
+            const arrowHelper = object.children[0] as THREE.ArrowHelper
+            arrowHelper.setDirection(targetVec.clone().normalize());
+            arrowHelper.setLength(targetVec.length(), 0.2, 0.1);
             if (object.children[1]) { // Update label position
                 object.children[1].position.copy(targetVec).add(new THREE.Vector3(0, 0.2, 0));
             }
@@ -125,12 +129,12 @@ const ChangeOfBasisVisualizer = () => {
             window.removeEventListener('resize', handleResize);
             cleanupDraggable();
             cancelAnimationFrame(animationFrameId);
-            if (canvasRef.current) {
+            if (canvasRef.current && renderer.domElement.parentElement === canvasRef.current) {
                 canvasRef.current.removeChild(renderer.domElement);
             }
-            // Dispose Three.js objects
+            // TODO: Dispose Three.js objects to prevent memory leaks
         };
-    }, []);
+    }, [isMounted]);
 
     return (
         <div className="space-y-8">
