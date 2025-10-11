@@ -61,6 +61,21 @@ export const linearAlgebraPart1: Topic[] = [
             { id: 'basis-and-dimension', title: 'Basis and Dimension' },
         ]
     }),
+    createTopic({
+        parent: 'la-module-1',
+        id: 'change-of-basis',
+        title: 'Change of Basis',
+        icon: 'Orbit',
+        description: "Viewing vectors from a different perspective.",
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+        subTopics: [
+            { id: 'change-of-basis-theory', title: 'Core Theory' },
+            { id: 'change-of-basis-application', title: 'Financial Application' },
+            { id: 'change-of-basis-interactive', title: 'Interactive Demo' },
+            { id: 'change-of-basis-problems', title: 'Practice Problems' },
+        ]
+    }),
 
     // --- Module 2 ---
      createTopic({
@@ -101,21 +116,6 @@ export const linearAlgebraPart1: Topic[] = [
             { id: 'null-space', title: 'Null Space (Kernel)' },
             { id: 'row-space', title: 'Row Space' },
             { id: 'fundamental-theorem', title: 'The Fundamental Theorem' },
-        ]
-    }),
-    createTopic({
-        parent: 'la-module-2',
-        id: 'change-of-basis',
-        title: 'Change of Basis',
-        icon: 'Orbit',
-        description: "Viewing vectors from a different perspective.",
-        category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'change-of-basis-theory', title: 'Core Theory' },
-            { id: 'change-of-basis-application', title: 'Financial Application' },
-            { id: 'change-of-basis-interactive', title: 'Interactive Demo' },
-            { id: 'change-of-basis-problems', title: 'Practice Problems' },
         ]
     }),
 ];
