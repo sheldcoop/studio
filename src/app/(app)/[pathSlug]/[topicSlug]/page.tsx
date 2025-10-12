@@ -16,30 +16,26 @@ type TopicPageProps = {
 };
 
 export async function generateStaticParams() {
-  // Generate params for all sub-topics that don't have a specific file yet.
-  // This is a simplified approach; a more robust solution would check for file existence.
+  // Generate params for all visitable topics that don't have a dedicated file.
+  // This ensures that Next.js knows about all possible dynamic topic pages at build time.
   return allTopics
-    .filter(topic => topic.category === 'sub-topic' && topic.parent)
+    .filter(topic => {
+      // A dynamic topic page is one that has a parent (part of a path) and a slug.
+      // We also filter out topics that might have a dedicated page file elsewhere.
+      return topic.parent && topic.id && topic.href.split('/').length > 2;
+    })
     .map(topic => {
-      // Find the parent path for the href
-      const parentPath = allTopics.find(p => p.id === topic.parent);
-      if (parentPath && parentPath.href) {
-        const pathSlug = parentPath.href.split('/').pop();
-        if (pathSlug) {
-             return {
-                pathSlug: pathSlug,
-                topicSlug: topic.id,
-            };
-        }
+      const parts = topic.href.split('/').filter(Boolean);
+      // Expected structure: /[pathSlug]/[topicSlug]
+      if (parts.length === 2) {
+        return {
+          pathSlug: parts[0],
+          topicSlug: parts[1],
+        };
       }
-      // Fallback for topics whose parent path cannot be determined
-      // This may or may not match a valid route, but it's better than nothing.
-      const pathSlug = topic.href.split('/')[1] || 'topics';
-      return {
-          pathSlug: pathSlug,
-          topicSlug: topic.id,
-      }
-    }).filter(p => p.pathSlug); // Ensure we don't have undefined pathSlugs
+      return null;
+    })
+    .filter(p => p !== null); // Remove any null entries
 }
 
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
