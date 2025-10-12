@@ -7,44 +7,47 @@ const URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantprep.firerun.app';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
-    { url: `${URL}/`, lastModified: new Date() },
-    { url: `${URL}/paths`, lastModified: new Date() },
-    { url: `${URL}/interview-prep`, lastModified: new Date() },
-    { url: `${URL}/community`, lastModified: new Date() },
-    { url: `${URL}/stat-toolkit`, lastModified: new Date() },
-    { url: `${URL}/topics`, lastModified: new Date() },
-    { url: `${URL}/probability`, lastModified: new Date() },
-  ];
-
-  // Create routes for the learning path pages
-  const pathRoutes = learningPaths.map((path) => ({
-    url: `${URL}/paths/${path.id}`,
+    '/',
+    '/paths',
+    '/quantlab',
+    '/interview-prep',
+    '/community',
+    '/topics',
+    '/login',
+    '/profile',
+  ].map((route) => ({
+    url: `${URL}${route}`,
     lastModified: new Date(),
   }));
 
-  // Create routes for individual topic pages, filtering out only non-visitable placeholder topics.
+  // Create routes for the top-level learning path pages
+  const pathRoutes = learningPaths.map((path) => ({
+    url: `${URL}${path.href}`,
+    lastModified: new Date(),
+  }));
+
+  // Create routes for all individual, visitable topic pages
   const topicRoutes = allTopics
     .filter(topic => {
-        // A topic is a real page if it's not just a parent category and has a real URL.
-        const isCategory = topic.category === 'parent';
-        const hasNoPage = topic.href === '#';
-        
-        return !isCategory && !hasNoPage;
+      // A topic is a real, visitable page if it's not just a parent category and doesn't have a '#' href.
+      const isParentCategory = topic.category === 'parent';
+      const isPlaceholderLink = topic.href === '#';
+      return !isParentCategory && !isPlaceholderLink;
     })
     .map((topic) => ({
       url: `${URL}${topic.href}`,
       lastModified: new Date(),
   }));
   
-  // Use a Set to automatically handle any duplicates
-  const allUrls = new Set([
-      ...staticRoutes.map(r => r.url), 
-      ...pathRoutes.map(r => r.url), 
-      ...topicRoutes.map(r => r.url)
-  ]);
+  // Combine all routes into a single array
+  const allRoutes = [
+      ...staticRoutes, 
+      ...pathRoutes, 
+      ...topicRoutes
+  ];
 
-  return Array.from(allUrls).map(url => ({
-      url,
-      lastModified: new Date(),
-  }));
+  // Use a Set to ensure all URLs are unique before returning the final array
+  const uniqueUrls = new Map(allRoutes.map(route => [route.url, route]));
+  
+  return Array.from(uniqueUrls.values());
 }
