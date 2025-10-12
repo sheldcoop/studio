@@ -19,7 +19,6 @@ export const statisticsLearningPathPart1: Topic[] = [
     
     // Lessons for Module 1
     createTopic({
-        id: 'stats-set-theory-sample-spaces-and-events',
         parent: 'stats-mod-1',
         title: 'Set Theory, Sample Spaces, and Events',
         description: 'Understanding the building blocks of probability.',
@@ -27,7 +26,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-axioms-of-probability-kolmogorov',
         parent: 'stats-mod-1',
         title: "Axioms of Probability (Kolmogorov)",
         description: 'The three fundamental rules that govern all of probability.',
@@ -35,7 +33,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-conditional-probability-and-independence',
         parent: 'stats-mod-1',
         title: 'Conditional Probability and Independence',
         description: 'How the occurrence of one event affects another.',
@@ -43,7 +40,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-law-of-total-probability-and-bayes-theorem',
         parent: 'stats-mod-1',
         title: "Law of Total Probability and Bayes' Theorem",
         description: 'Updating your beliefs in the face of new evidence.',
@@ -51,7 +47,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-pmf-and-cdf',
         parent: 'stats-mod-1',
         title: 'Probability Mass Functions (PMF) and Cumulative Distribution Functions (CDF)',
         description: 'Describing the probabilities of discrete outcomes.',
@@ -59,7 +54,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-ev-var-stddev',
         parent: 'stats-mod-1',
         title: 'Expected Value E[X], Variance Var[X], and Standard Deviation',
         description: 'Calculating the center and spread of a random variable.',
@@ -67,7 +61,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-common-discrete-distributions',
         parent: 'stats-mod-1',
         title: 'Common Discrete Distributions (Binomial, Poisson, Geometric)',
         description: 'Exploring key models for discrete random events.',
@@ -75,7 +68,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-mgfs-discrete',
         parent: 'stats-mod-1',
         title: 'Moment Generating Functions (MGFs) for Discrete R.V.s',
         description: 'A powerful tool for analyzing distributions.',
@@ -83,7 +75,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-pdf-and-cdf-continuous',
         parent: 'stats-mod-1',
         title: 'Probability Density Functions (PDF) and CDF',
         description: 'Describing the probabilities of continuous outcomes.',
@@ -91,7 +82,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-ev-var-integration',
         parent: 'stats-mod-1',
         title: 'Expected Value and Variance via Integration',
         description: 'Applying calculus to find the moments of continuous variables.',
@@ -99,7 +89,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-common-continuous-distributions',
         parent: 'stats-mod-1',
         title: 'Common Continuous Distributions (Uniform, Exponential, Gamma)',
         description: 'Exploring key models for continuous random events.',
@@ -107,7 +96,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-mgfs-continuous',
         parent: 'stats-mod-1',
         title: 'MGFs for Continuous R.V.s',
         description: 'Extending moment generating functions to continuous cases.',
@@ -115,7 +103,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-joint-pmfs-and-pdfs',
         parent: 'stats-mod-1',
         title: 'Joint PMFs and Joint PDFs',
         description: 'Modeling the behavior of multiple random variables at once.',
@@ -123,7 +110,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-marginal-and-conditional-distributions',
         parent: 'stats-mod-1',
         title: 'Marginal and Conditional Distributions',
         description: "Isolating one variable's behavior from a joint distribution.",
@@ -131,7 +117,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-covariance-and-correlation',
         parent: 'stats-mod-1',
         title: 'Covariance Cov(X, Y) and Correlation ρ',
         description: 'Measuring how two random variables move together.',
@@ -139,7 +124,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-independence-of-random-variables',
         parent: 'stats-mod-1',
         title: 'Independence of Random Variables',
         description: 'Defining when two variables have no influence on each other.',
@@ -149,7 +133,6 @@ export const statisticsLearningPathPart1: Topic[] = [
 
     // Lessons for Module 2
     createTopic({
-        id: 'stats-normal-distribution-properties',
         parent: 'stats-mod-2',
         title: 'Properties of the Normal Distribution and the Z-Score',
         description: 'Mastering the bell curve and standardization.',
@@ -157,7 +140,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-linear-combinations-of-normals',
         parent: 'stats-mod-2',
         title: 'Linear Combinations of Independent Normal Random Variables',
         description: 'Understanding how normal variables combine.',
@@ -165,7 +147,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-multivariate-normal-distribution',
         parent: 'stats-mod-2',
         title: 'Multivariate Normal Distribution',
         description: 'The cornerstone of modern portfolio theory.',
@@ -173,7 +154,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-multivariate-normal-marginals',
         parent: 'stats-mod-2',
         title: 'Marginal and Conditional Distributions of Multivariate Normal',
         description: 'Dissecting multi-asset models.',
@@ -181,7 +161,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-multivariate-normal-applications',
         parent: 'stats-mod-2',
         title: 'Applications in Portfolio Theory and Financial Modeling',
         description: 'Putting the multivariate normal to practical use.',
@@ -189,7 +168,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-t-distribution',
         parent: 'stats-mod-2',
         title: "The t-Distribution (Student's t)",
         description: 'The essential tool for inference with small samples.',
@@ -197,7 +175,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-chi-squared-distribution',
         parent: 'stats-mod-2',
         title: 'The χ² (Chi-Squared) Distribution',
         description: 'The basis for tests of variance and goodness-of-fit.',
@@ -205,7 +182,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-f-distribution',
         parent: 'stats-mod-2',
         title: 'The F-Distribution (Fisher–Snedecor)',
         description: 'The key to comparing variances between two groups (ANOVA).',
@@ -213,7 +189,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-wlln',
         parent: 'stats-mod-2',
         title: 'Convergence in Probability and the Weak Law of Large Numbers (WLLN)',
         description: 'Why casino averages are so stable.',
@@ -221,7 +196,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-clt',
         parent: 'stats-mod-2',
         title: 'Convergence in Distribution and the Central Limit Theorem (CLT)',
         description: 'Why the normal distribution is everywhere.',
@@ -229,7 +203,6 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
-        id: 'stats-slutsky-and-delta',
         parent: 'stats-mod-2',
         title: "Slutsky's Theorem and the Delta Method",
         description: 'Tools for approximating the distribution of functions of random variables.',

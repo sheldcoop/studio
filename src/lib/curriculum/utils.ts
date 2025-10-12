@@ -45,8 +45,10 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
 
     const slug = id || toSlug(title);
     
-    // The parent property should now be the top-level learning path slug.
-    const pathPrefix = parent;
+    // For lessons within a structured path, the parent will be the module ID (e.g., 'la-module-1').
+    // The top-level path is determined by the parent's parent, and so on.
+    // However, for QuantLab tools, the parent is just 'quantlab'.
+    const pathPrefix = parent === 'quantlab' ? 'quantlab' : rest.category === 'parent' ? slug : options.parent.startsWith('stats-mod') ? 'statistics-for-quantitative-finance' : options.parent.startsWith('la-mod') ? 'linear-algebra-for-quantitative-finance' : options.parent.startsWith('prob-quant-mod') ? 'probability-for-quants' : parent;
 
     const finalHref = explicitHref || `/${pathPrefix}/${slug}`;
 
