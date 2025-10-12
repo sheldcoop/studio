@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -31,9 +32,8 @@ const getFriendlyErrorMessage = (error: AuthError): string => {
     }
 }
 
-// CORRECTED: The URL now correctly points to the /actions page handler.
 const actionCodeSettings = {
-  url: typeof window !== 'undefined' ? `${window.location.origin}/actions` : 'http://localhost:9002/actions',
+  url: 'https://quantfinancelab.com/actions',
   handleCodeInApp: true,
 };
 
