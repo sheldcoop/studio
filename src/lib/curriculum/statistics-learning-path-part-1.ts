@@ -33,6 +33,7 @@ export const statisticsLearningPathPart1: Topic[] = [
         subTopics: [ { id: 'theory', title: 'Core Theory' }, { id: 'application', title: 'Financial Application' }, { id: 'interactive', title: 'Interactive Demo' }, { id: 'problems', title: 'Practice Problems' } ]
     }),
     createTopic({
+        id: 'stats-conditional-probability-and-independence',
         parent: 'stats-mod-1',
         title: 'Conditional Probability and Independence',
         description: 'How the occurrence of one event affects another.',
