@@ -27,7 +27,6 @@ interface CreateTopicOptions {
     content?: string;
     interactiveExamples?: Topic['interactiveExamples'];
     animation?: string;
-    pathPrefix?: string; // e.g., 'statistics' or 'probability'
     href?: string; // Allow explicitly setting the href
 }
 
@@ -40,20 +39,22 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
     const { 
         id, 
         title, 
-        pathPrefix,
+        parent, // Get parent to construct the path
         href: explicitHref, // Capture the explicit href
         ...rest 
     } = options;
 
     const slug = id || toSlug(title);
     
-    // Use the explicit href if provided, otherwise construct it
-    const href = explicitHref || (pathPrefix ? `/paths/${pathPrefix}/${slug}` : `/topics/${slug}`);
+    // Use the explicit href if provided, otherwise construct it based on the parent.
+    // If a topic has a parent, it belongs in that parent's path.
+    const href = explicitHref || (parent ? `/${parent}/${slug}` : `/topics/${slug}`);
 
     return {
         id: slug,
         title,
         href,
+        parent,
         ...rest,
     };
 };

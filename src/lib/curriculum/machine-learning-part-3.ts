@@ -2,16 +2,14 @@
 import { type Topic } from './types';
 import { createTopic } from './utils';
 
-const PATH_PREFIX = 'machine-learning-for-quantitative-finance';
-
 export const machineLearningPart3: Topic[] = [
   // --- Module 4: NLP for Alpha Generation ---
   createTopic({
     id: 'ml-financial-sentiment-analysis',
-    parent: 'ml-module-4',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Financial Sentiment Analysis (News, Earnings Reports, Tweets)',
     duration: 35,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-financial-sentiment-analysis-news-earnings-reports-tweets-theory', title: 'Core Theory' },
         { id: 'ml-financial-sentiment-analysis-news-earnings-reports-tweets-application', title: 'Financial Application' },
@@ -21,10 +19,10 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-information-extraction',
-    parent: 'ml-module-4',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Information Extraction (NER, Topic Modeling)',
     duration: 30,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-information-extraction-ner-topic-modeling-theory', title: 'Core Theory' },
         { id: 'ml-information-extraction-ner-topic-modeling-application', title: 'Financial Application' },
@@ -34,10 +32,10 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-advanced-text-representation',
-    parent: 'ml-module-4',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Advanced Text Representation (Word2Vec, Transformers - BERT)',
     duration: 25,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-advanced-text-representation-word2vec-transformers-bert-theory', title: 'Core Theory' },
         { id: 'ml-advanced-text-representation-word2vec-transformers-bert-application', title: 'Financial Application' },
@@ -47,10 +45,10 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-integrating-nlp-signals',
-    parent: 'ml-module-4',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Integrating NLP Signals into Trading Models',
     duration: 25,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-integrating-nlp-signals-into-trading-models-theory', title: 'Core Theory' },
         { id: 'ml-integrating-nlp-signals-into-trading-models-application', title: 'Financial Application' },
@@ -62,10 +60,10 @@ export const machineLearningPart3: Topic[] = [
   // --- Module 5: Advanced Topics & Modern Frontiers ---
   createTopic({
     id: 'ml-reinforcement-learning-for-trading',
-    parent: 'ml-module-5',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Reinforcement Learning for Optimal Trading',
     duration: 40,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-reinforcement-learning-for-optimal-trading-theory', title: 'Core Theory' },
         { id: 'ml-reinforcement-learning-for-optimal-trading-application', title: 'Financial Application' },
@@ -75,10 +73,10 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-portfolio-optimization',
-    parent: 'ml-module-5',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Portfolio Optimization with ML (Covariance Estimation)',
     duration: 35,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-portfolio-optimization-with-ml-covariance-estimation-theory', title: 'Core Theory' },
         { id: 'ml-portfolio-optimization-with-ml-covariance-estimation-application', title: 'Financial Application' },
@@ -88,10 +86,10 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-alternative-data',
-    parent: 'ml-module-5',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Leveraging Alternative Data (Satellite Imagery, Web Data)',
     duration: 35,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-leveraging-alternative-data-satellite-imagery-web-data-theory', title: 'Core Theory' },
         { id: 'ml-leveraging-alternative-data-satellite-imagery-web-data-application', title: 'Financial Application' },
@@ -101,10 +99,10 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-ai-ethics-and-regulation',
-    parent: 'ml-module-5',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'AI Ethics & Regulation in Finance',
     duration: 30,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-ai-ethics-regulation-in-finance-theory', title: 'Core Theory' },
         { id: 'ml-ai-ethics-regulation-in-finance-application', title: 'Financial Application' },

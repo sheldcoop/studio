@@ -2,17 +2,15 @@
 import { type Topic } from './types';
 import { createTopic } from './utils';
 
-const PATH_PREFIX = 'linear-algebra-for-quantitative-finance';
-
 export const linearAlgebraPart1: Topic[] = [
     // --- Module 1 ---
     createTopic({
-        parent: 'la-module-1',
+        parent: 'linear-algebra-for-quantitative-finance',
+        id: 'la-m1-vectors-spaces',
         title: 'Vectors & Vector Spaces',
         icon: 'Waypoints',
         description: "Representing asset returns or portfolio weights.",
         category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
         subTopics: [
             { id: 'vector-basics', title: 'Vector Basics' },
             { id: 'vector-operations', title: 'Vector Operations' },
@@ -21,12 +19,12 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'la-module-1',
+        parent: 'linear-algebra-for-quantitative-finance',
+        id: 'la-m1-matrix-ops',
         title: 'Matrix Operations',
         icon: 'Waypoints',
         description: "Aggregating data across assets and time.",
         category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
         subTopics: [
             { id: 'matrix-add-subtract', title: 'Matrix Addition & Subtraction' },
             { id: 'scalar-multiplication', title: 'Scalar Multiplication' },
@@ -35,12 +33,12 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'la-module-1',
+        parent: 'linear-algebra-for-quantitative-finance',
+        id: 'la-m1-lin-indep',
         title: 'Linear Independence',
         icon: 'Waypoints',
         description: "Crucial for diversification and factor models.",
         category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
         subTopics: [
             { id: 'lin-indep-definition', title: 'Defining Linear Independence' },
             { id: 'spanning-sets', title: 'Spanning Sets' },
@@ -50,12 +48,12 @@ export const linearAlgebraPart1: Topic[] = [
 
     // --- Module 2 ---
      createTopic({
-        parent: 'la-module-2',
+        parent: 'linear-algebra-for-quantitative-finance',
+        id: 'la-m2-sle',
         title: 'Systems of Linear Equations',
         icon: 'Waypoints',
         description: "The mathematical basis for linear regression.",
         category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
         subTopics: [
             { id: 'sle-matrix-form', title: 'Representing Systems in Matrix Form' },
             { id: 'gaussian-elimination', title: 'Gaussian Elimination' },
@@ -63,12 +61,12 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'la-module-2',
+        parent: 'linear-algebra-for-quantitative-finance',
+        id: 'la-m2-ortho-proj',
         title: 'Orthogonality & Projections',
         icon: 'Waypoints',
         description: "The core of Ordinary Least Squares (OLS) regression.",
         category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
         subTopics: [
             { id: 'dot-product', title: 'The Dot Product & Orthogonality' },
             { id: 'orthogonal-projections', title: 'Orthogonal Projections' },
@@ -76,12 +74,12 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'la-module-2',
+        parent: 'linear-algebra-for-quantitative-finance',
+        id: 'la-m2-four-subspaces',
         title: 'The Four Fundamental Subspaces',
         icon: 'Waypoints',
         description: "Understand the complete picture of a matrix.",
         category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
         subTopics: [
             { id: 'column-space', title: 'Column Space (Image)' },
             { id: 'null-space', title: 'Null Space (Kernel)' },

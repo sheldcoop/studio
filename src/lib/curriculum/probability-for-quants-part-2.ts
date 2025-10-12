@@ -6,13 +6,12 @@ export const probabilityForQuantsPart2: Topic[] = [
     // --- Module 3: Multivariate Probability & Core Theorems ---
     createTopic({
         id: 'prob-joint-marginal-conditional-distributions',
-        parent: 'prob-quant-mod-3',
+        parent: 'probability-for-quants',
         title: 'Joint, Marginal & Conditional Distributions',
         icon: 'Users',
         description: "Modeling the behavior of multiple random variables at once.",
         category: 'sub-topic',
         duration: 30,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'multi-joint-pdf', title: 'Joint Probability Distributions' },
             { id: 'multi-marginal', title: 'Marginal Distributions' },
@@ -20,10 +19,10 @@ export const probabilityForQuantsPart2: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'prob-quant-mod-3',
+        parent: 'probability-for-quants',
         id: 'covariance-and-correlation',
+        href: '/quantlab/pearson-correlation',
         title: 'Covariance & Correlation',
-        href: '/paths/statistics-for-quantitative-finance/pearson-correlation',
         icon: 'TrendingUp',
         description: "Measuring how two random variables move together.",
         category: 'sub-topic',
@@ -35,10 +34,9 @@ export const probabilityForQuantsPart2: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'prob-quant-mod-3',
+        parent: 'probability-for-quants',
         id: 'law-of-large-numbers-deep-dive',
         title: 'The Law of Large Numbers (LLN)',
-        href: '/paths/probability-for-quants/law-of-large-numbers-deep-dive',
         icon: 'Scale',
         description: "Why casino averages are so stable.",
         category: 'sub-topic',
@@ -50,10 +48,10 @@ export const probabilityForQuantsPart2: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'prob-quant-mod-3',
+        parent: 'probability-for-quants',
         id: 'central-limit-theorem-deep-dive',
+        href: '/quantlab/central-limit-theorem',
         title: 'The Central Limit Theorem (CLT)',
-        href: '/paths/statistics-for-quantitative-finance/central-limit-theorem',
         icon: 'Bell',
         description: "Why the normal distribution is everywhere.",
         category: 'sub-topic',
@@ -68,13 +66,12 @@ export const probabilityForQuantsPart2: Topic[] = [
     // --- Module 4: Intermediate Topics & Generating Functions ---
     createTopic({
         id: 'prob-transformations-of-random-variables',
-        parent: 'prob-quant-mod-4',
+        parent: 'probability-for-quants',
         title: 'Transformations of Random Variables',
         icon: 'Replace',
         description: "Finding the distribution of a function of a random variable.",
         category: 'sub-topic',
         duration: 30,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'trans-one-var', title: 'Functions of One Variable' },
             { id: 'trans-two-vars', title: 'Functions of Two Variables' },
@@ -82,13 +79,12 @@ export const probabilityForQuantsPart2: Topic[] = [
     }),
     createTopic({
         id: 'prob-moment-generating-functions',
-        parent: 'prob-quant-mod-4',
+        parent: 'probability-for-quants',
         title: 'Moment Generating Functions (MGFs)',
         icon: 'Sun',
         description: "A powerful tool for analyzing distributions.",
         category: 'sub-topic',
         duration: 30,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'mgf-definition', title: 'Definition and Properties' },
             { id: 'mgf-moments', title: 'Generating Moments' },
@@ -97,13 +93,12 @@ export const probabilityForQuantsPart2: Topic[] = [
     }),
     createTopic({
         id: 'prob-introduction-to-information-theory',
-        parent: 'prob-quant-mod-4',
+        parent: 'probability-for-quants',
         title: 'Introduction to Information Theory',
         icon: 'Binary',
         description: "Quantifying information with Entropy and KL Divergence.",
         category: 'sub-topic',
         duration: 30,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'info-entropy', title: 'Entropy' },
             { id: 'info-kl-divergence', title: 'KL Divergence' },

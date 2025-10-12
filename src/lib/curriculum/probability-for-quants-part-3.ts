@@ -6,13 +6,12 @@ export const probabilityForQuantsPart3: Topic[] = [
     // --- Module 5: Stochastic Processes ---
     createTopic({
         id: 'prob-introduction-to-stochastic-processes-stationarity',
-        parent: 'prob-quant-mod-5',
+        parent: 'probability-for-quants',
         title: 'Introduction to Stochastic Processes & Stationarity',
         icon: 'Clock',
         description: "Understanding random phenomena that evolve over time.",
         category: 'sub-topic',
         duration: 20,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'stochastic-def', title: 'Defining a Stochastic Process' },
             { id: 'stochastic-stationarity', title: 'Stationarity' },
@@ -20,13 +19,12 @@ export const probabilityForQuantsPart3: Topic[] = [
     }),
     createTopic({
         id: 'prob-discrete-time-markov-chains',
-        parent: 'prob-quant-mod-5',
+        parent: 'probability-for-quants',
         title: 'Discrete-Time Markov Chains',
         icon: 'Footprints',
         description: "Modeling memoryless state transitions.",
         category: 'sub-topic',
         duration: 40,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'markov-property', title: 'The Markov Property' },
             { id: 'markov-transition-matrix', title: 'Transition Matrices' },
@@ -34,10 +32,10 @@ export const probabilityForQuantsPart3: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'prob-quant-mod-5',
+        parent: 'probability-for-quants',
         id: 'poisson-process-deep-dive',
+        href: '/quantlab/poisson-distribution-interactive-guide',
         title: 'The Poisson Process',
-        href: '/paths/probability-toolkit/poisson-distribution',
         icon: 'Zap',
         description: "Modeling the timing of random events.",
         category: 'sub-topic',
@@ -49,13 +47,12 @@ export const probabilityForQuantsPart3: Topic[] = [
     }),
     createTopic({
         id: 'prob-random-walks-brownian-motion',
-        parent: 'prob-quant-mod-5',
+        parent: 'probability-for-quants',
         title: 'Random Walks & Brownian Motion',
         icon: 'TrendingDown',
         description: "The mathematical foundation of stock price movements.",
         category: 'sub-topic',
         duration: 30,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'brownian-random-walk', title: 'From Random Walks to Brownian Motion' },
             { id: 'brownian-properties', title: 'Properties of Brownian Motion' },
@@ -65,13 +62,12 @@ export const probabilityForQuantsPart3: Topic[] = [
     // --- Module 6: Advanced & Measure-Theoretic Probability ---
     createTopic({
         id: 'prob-sigma-algebras-probability-measures',
-        parent: 'prob-quant-mod-6',
+        parent: 'probability-for-quants',
         title: 'Sigma-Algebras & Probability Measures',
         icon: 'Ruler',
         description: "The rigorous foundation of modern probability.",
         category: 'sub-topic',
         duration: 35,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'sigma-algebra-def', title: 'Sigma-Algebras' },
             { id: 'prob-measure-def', title: 'Probability Measures' },
@@ -79,13 +75,12 @@ export const probabilityForQuantsPart3: Topic[] = [
     }),
     createTopic({
         id: 'prob-the-lebesgue-integral-rigorous-expectation',
-        parent: 'prob-quant-mod-6',
+        parent: 'probability-for-quants',
         title: 'The Lebesgue Integral & Rigorous Expectation',
         icon: 'PenTool',
         description: "A more powerful theory of integration.",
         category: 'sub-topic',
         duration: 35,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'lebesgue-intro', title: 'Motivation for Lebesgue' },
             { id: 'lebesgue-expectation', title: 'Expectation via Lebesgue' },
@@ -93,23 +88,22 @@ export const probabilityForQuantsPart3: Topic[] = [
     }),
     createTopic({
         id: 'prob-martingales',
-        parent: 'prob-quant-mod-6',
+        parent: 'probability-for-quants',
         title: 'Martingales',
         icon: 'Scale',
         description: "The formal model of a fair game.",
         category: 'sub-topic',
         duration: 40,
-        pathPrefix: 'probability-for-quants',
         subTopics: [
             { id: 'martingale-def', title: 'Definition of a Martingale' },
             { id: 'martingale-stopping-times', title: 'Optional Stopping Theorem' },
         ]
     }),
     createTopic({
-        parent: 'prob-quant-mod-6',
+        parent: 'probability-for-quants',
         id: 'stochastic-calculus-itos-lemma-deep-dive',
+        href: '/quantlab/stochastic-calculus-itos-lemma-interactive-guide',
         title: "Introduction to Itô Calculus",
-        href: '/paths/statistics-for-quantitative-finance/stochastic-calculus-itos-lemma',
         icon: 'AreaChart',
         description: "The calculus of random walks, essential for derivatives pricing.",
         category: 'sub-topic',

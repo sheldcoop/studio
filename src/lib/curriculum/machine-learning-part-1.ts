@@ -2,16 +2,14 @@
 import { type Topic } from './types';
 import { createTopic } from './utils';
 
-const PATH_PREFIX = 'machine-learning-for-quantitative-finance';
-
 export const machineLearningPart1: Topic[] = [
   // --- Module 0: The Absolute Basics of Machine Learning ---
   createTopic({
     id: 'ml-language-of-ml',
-    parent: 'ml-module-0',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'The Language of ML: Data, Features & Labels',
     duration: 20,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
       { id: 'ml-the-language-of-ml-data-features-labels-theory', title: 'Core Theory' },
       { id: 'ml-the-language-of-ml-data-features-labels-application', title: 'Financial Application' },
@@ -21,10 +19,10 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-three-flavors-of-learning',
-    parent: 'ml-module-0',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'The Three Flavors of Learning (Supervised, Unsupervised, Reinforcement)',
     duration: 25,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
       { id: 'ml-the-three-flavors-of-learning-supervised-unsupervised-reinforcement-theory', title: 'Core Theory' },
       { id: 'ml-the-three-flavors-of-learning-supervised-unsupervised-reinforcement-application', title: 'Financial Application' },
@@ -34,10 +32,10 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-your-first-models',
-    parent: 'ml-module-0',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Your First Models: An Intuitive Look (KNN & Simple Linear Regression)',
     duration: 30,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
       { id: 'ml-your-first-models-an-intuitive-look-knn-simple-linear-regression-theory', title: 'Core Theory' },
       { id: 'ml-your-first-models-an-intuitive-look-knn-simple-linear-regression-application', title: 'Financial Application' },
@@ -47,10 +45,10 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-how-to-split-your-data',
-    parent: 'ml-module-0',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'The Golden Rule: How to Split Your Data (Train, Validate, Test)',
     duration: 25,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
       { id: 'ml-the-golden-rule-how-to-split-your-data-train-validate-test-theory', title: 'Core Theory' },
       { id: 'ml-the-golden-rule-how-to-split-your-data-train-validate-test-application', title: 'Financial Application' },
@@ -60,10 +58,10 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-how-do-we-score-a-model',
-    parent: 'ml-module-0',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'How Do We Score a Model? (Accuracy, Confusion Matrix, MSE)',
     duration: 20,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
       { id: 'ml-how-do-we-score-a-model-accuracy-confusion-matrix-mse-theory', title: 'Core Theory' },
       { id: 'ml-how-do-we-score-a-model-accuracy-confusion-matrix-mse-application', title: 'Financial Application' },
@@ -77,17 +75,17 @@ export const machineLearningPart1: Topic[] = [
     icon: 'Brain',
     description: "Sharpen your calculation speed and accuracy for interviews.",
     category: 'sub-topic',
-    parent: 'ml-module-0', 
+    parent: 'machine-learning-for-quantitative-finance', 
     href: '/topics/mental-math'
   },
 
   // --- Module 1: Foundations of ML in Finance ---
   createTopic({
     id: 'ml-financial-ml-landscape',
-    parent: 'ml-module-1',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'The Financial ML Landscape (Alpha, Risk, Execution)',
     duration: 20,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-the-financial-ml-landscape-alpha-risk-execution-theory', title: 'Core Theory' },
         { id: 'ml-the-financial-ml-landscape-alpha-risk-execution-application', title: 'Financial Application' },
@@ -97,10 +95,10 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-feature-engineering',
-    parent: 'ml-module-1',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Feature Engineering for Financial Data (Price, Volume, Order Books)',
     duration: 35,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-feature-engineering-for-financial-data-price-volume-order-books-theory', title: 'Core Theory' },
         { id: 'ml-feature-engineering-for-financial-data-price-volume-order-books-application', title: 'Financial Application' },
@@ -110,10 +108,10 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-core-predictive-models',
-    parent: 'ml-module-1',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Core Predictive Models (Trees, Boosting, Regularization)',
     duration: 30,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-core-predictive-models-trees-boosting-regularization-theory', title: 'Core Theory' },
         { id: 'ml-core-predictive-models-trees-boosting-regularization-application', title: 'Financial Application' },
@@ -123,10 +121,10 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-backtesting-and-validation',
-    parent: 'ml-module-1',
+    parent: 'machine-learning-for-quantitative-finance',
     title: 'Backtesting & Model Validation (Walk-Forward, Sharpe Ratio)',
     duration: 25,
-    category: 'sub-topic', pathPrefix: PATH_PREFIX, description: '', status: 'not-started',
+    category: 'sub-topic', description: '', status: 'not-started',
     subTopics: [
         { id: 'ml-backtesting-model-validation-walk-forward-sharpe-ratio-theory', title: 'Core Theory' },
         { id: 'ml-backtesting-model-validation-walk-forward-sharpe-ratio-application', title: 'Financial Application' },
