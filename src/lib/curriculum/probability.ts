@@ -15,6 +15,7 @@ export const probabilityTopics: Topic[] = [
   createTopic({
     parent: 'prob-dist-discrete',
     href: '/quantlab/bernoulli-distribution',
+    id: 'bernoulli-distribution',
     title: 'Bernoulli Distribution',
     icon: 'ToggleRight',
     description: 'Modeling a single trial with two outcomes.',
@@ -23,6 +24,7 @@ export const probabilityTopics: Topic[] = [
   createTopic({
     parent: 'prob-dist-discrete',
     href: '/quantlab/binomial-distribution',
+    id: 'binomial-distribution',
     title: 'Binomial Distribution',
     icon: 'BarChartBig',
     description: 'Modeling a series of success/fail trials.',
@@ -31,6 +33,7 @@ export const probabilityTopics: Topic[] = [
   createTopic({
     parent: 'prob-dist-discrete',
     href: '/quantlab/poisson-distribution',
+    id: 'poisson-distribution',
     title: 'Poisson Distribution',
     icon: 'Clock4',
     description: 'Modeling the frequency of rare events.',
@@ -39,6 +42,7 @@ export const probabilityTopics: Topic[] = [
   createTopic({
     parent: 'prob-dist-discrete',
     href: '/quantlab/geometric-distribution',
+    id: 'geometric-distribution',
     title: 'Geometric Distribution',
     icon: 'Repeat1',
     description: 'Modeling trials until the first success.',
@@ -47,6 +51,7 @@ export const probabilityTopics: Topic[] = [
   createTopic({
     parent: 'prob-dist-discrete',
     href: '/quantlab/hypergeometric-distribution',
+    id: 'hypergeometric-distribution',
     title: 'Hypergeometric Distribution',
     icon: 'Ungroup',
     description: 'Modeling sampling without replacement.',
@@ -55,6 +60,7 @@ export const probabilityTopics: Topic[] = [
   createTopic({
     parent: 'prob-dist-discrete',
     href: '/quantlab/negative-binomial-distribution',
+    id: 'negative-binomial-distribution',
     title: 'Negative Binomial Distribution',
     icon: 'Repeat',
     description: 'Modeling trials until a set number of successes.',
@@ -63,6 +69,7 @@ export const probabilityTopics: Topic[] = [
   createTopic({
     parent: 'prob-dist-discrete',
     href: '/quantlab/discrete-uniform-distribution',
+    id: 'discrete-uniform-distribution',
     title: 'Discrete Uniform Distribution',
     icon: 'Dice3',
     description: 'Modeling where all outcomes are equally likely.',
@@ -71,6 +78,7 @@ export const probabilityTopics: Topic[] = [
   createTopic({
     parent: 'prob-dist-discrete',
     href: '/quantlab/multinomial-distribution',
+    id: 'multinomial-distribution',
     title: 'Multinomial Distribution',
     icon: 'Boxes',
     description: 'Generalizing the Binomial for multiple outcomes.',
