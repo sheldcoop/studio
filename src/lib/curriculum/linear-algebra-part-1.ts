@@ -11,10 +11,10 @@ export const linearAlgebraPart1: Topic[] = [
         description: "Representing asset returns or portfolio weights.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'vector-basics', title: 'Vector Basics' },
-            { id: 'vector-operations', title: 'Vector Operations' },
-            { id: 'linear-combinations', title: 'Linear Combinations & Span' },
-            { id: 'vector-spaces', title: 'Defining a Vector Space' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
     createTopic({
@@ -24,10 +24,10 @@ export const linearAlgebraPart1: Topic[] = [
         description: "Aggregating data across assets and time.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'matrix-add-subtract', title: 'Matrix Addition & Subtraction' },
-            { id: 'scalar-multiplication', title: 'Scalar Multiplication' },
-            { id: 'matrix-multiplication', title: 'Matrix Multiplication' },
-            { id: 'matrix-transpose', title: 'The Matrix Transpose' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
     createTopic({
@@ -37,9 +37,10 @@ export const linearAlgebraPart1: Topic[] = [
         description: "Crucial for diversification and factor models.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'lin-indep-definition', title: 'Defining Linear Independence' },
-            { id: 'spanning-sets', title: 'Spanning Sets' },
-            { id: 'basis-and-dimension', title: 'Basis and Dimension' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
 
@@ -51,9 +52,10 @@ export const linearAlgebraPart1: Topic[] = [
         description: "The mathematical basis for linear regression.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'sle-matrix-form', title: 'Representing Systems in Matrix Form' },
-            { id: 'gaussian-elimination', title: 'Gaussian Elimination' },
-            { id: 'solving-systems', title: 'Solving Systems of Equations' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
      createTopic({
@@ -63,9 +65,10 @@ export const linearAlgebraPart1: Topic[] = [
         description: "The core of Ordinary Least Squares (OLS) regression.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'dot-product', title: 'The Dot Product & Orthogonality' },
-            { id: 'orthogonal-projections', title: 'Orthogonal Projections' },
-            { id: 'gram-schmidt', title: 'The Gram-Schmidt Process' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
      createTopic({
@@ -75,10 +78,10 @@ export const linearAlgebraPart1: Topic[] = [
         description: "Understand the complete picture of a matrix.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'column-space', title: 'Column Space (Image)' },
-            { id: 'null-space', title: 'Null Space (Kernel)' },
-            { id: 'row-space', title: 'Row Space' },
-            { id: 'fundamental-theorem', title: 'The Fundamental Theorem' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
 ];

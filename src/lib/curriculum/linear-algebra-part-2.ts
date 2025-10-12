@@ -11,10 +11,10 @@ export const linearAlgebraPart2: Topic[] = [
         description: "Find the 'axes of greatest variance' in your data.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'eigen-definition', title: 'Geometric & Algebraic Definition' },
-            { id: 'characteristic-equation', title: 'The Characteristic Equation' },
-            { id: 'finding-eigenvalues', title: 'Finding Eigenvalues' },
-            { id: 'finding-eigenvectors', title: 'Finding Eigenvectors' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
      createTopic({
@@ -24,9 +24,10 @@ export const linearAlgebraPart2: Topic[] = [
         description: "Simplify complex systems for long-term modeling.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'diagonalization-theorem', title: 'The Diagonalization Theorem' },
-            { id: 'process-of-diagonalization', title: 'Process of Diagonalization' },
-            { id: 'matrix-powers', title: 'Powers of a Matrix' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
      createTopic({
@@ -36,9 +37,10 @@ export const linearAlgebraPart2: Topic[] = [
         description: "The master decomposition for any matrix.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'svd-intro', title: 'Introduction to SVD' },
-            { id: 'svd-calculation', title: 'Calculating SVD' },
-            { id: 'svd-applications', title: 'Applications of SVD' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
 
@@ -50,9 +52,10 @@ export const linearAlgebraPart2: Topic[] = [
         description: "The cornerstone of portfolio theory.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'cov-matrix-def', title: 'Defining Covariance Matrices' },
-            { id: 'corr-matrix-def', title: 'Defining Correlation Matrices' },
-            { id: 'portfolio-variance', title: 'Calculating Portfolio Variance' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
      createTopic({
@@ -62,8 +65,10 @@ export const linearAlgebraPart2: Topic[] = [
         description: "The mathematical property that makes portfolio optimization possible.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'pdm-definition', title: 'Defining Positive Definite' },
-            { id: 'pdm-properties', title: 'Properties and Importance' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
      createTopic({
@@ -73,9 +78,10 @@ export const linearAlgebraPart2: Topic[] = [
         description: "The key to generating correlated random asset paths for Monte Carlo simulations.",
         category: 'sub-topic',
         subTopics: [
-            { id: 'cholesky-intro', title: 'Introduction to Cholesky' },
-            { id: 'cholesky-calculation', title: 'Calculating the Decomposition' },
-            { id: 'cholesky-monte-carlo', title: 'Application in Monte Carlo' },
+            { id: 'theory', title: 'Core Theory' },
+            { id: 'application', title: 'Financial Application' },
+            { id: 'interactive', title: 'Interactive Demo' },
+            { id: 'problems', title: 'Practice Problems' },
         ]
     }),
 ];
