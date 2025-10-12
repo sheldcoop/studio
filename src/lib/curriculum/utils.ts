@@ -6,6 +6,7 @@ const toSlug = (title: string): string => {
   return title
     .toLowerCase()
     .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/&/g, 'and') // Replace & with 'and'
     .replace(/[^\w\-]+/g, '') // Remove all non-word chars
     .replace(/\-\-+/g, '-') // Replace multiple - with single -
     .replace(/^-+/, '') // Trim - from start of text
@@ -44,22 +45,8 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
 
     const slug = id || toSlug(title);
     
-    // Determine the base path for the URL.
-    // This logic needs to be simple and not rely on circular lookups.
-    // We will base it on a convention for top-level learning paths.
-    let pathPrefix = parent;
-    if (parent.startsWith('la-module')) {
-      pathPrefix = 'linear-algebra-for-quantitative-finance';
-    } else if (parent.startsWith('stats-mod')) {
-      pathPrefix = 'statistics-for-quantitative-finance';
-    } else if (parent.startsWith('prob-quant-mod')) {
-        pathPrefix = 'probability-for-quants';
-    } else if (parent.startsWith('ml-module')) {
-        pathPrefix = 'machine-learning-for-quantitative-finance';
-    } else if (parent === 'quantlab') {
-        pathPrefix = 'quantlab'
-    }
-
+    // The parent property should now be the top-level learning path slug.
+    const pathPrefix = parent;
 
     const finalHref = explicitHref || `/${pathPrefix}/${slug}`;
 

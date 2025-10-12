@@ -8,4 +8,7 @@ export const probabilityAdvancedTopics: Topic[] = [
     ...probabilityForQuantsPart1,
     ...probabilityForQuantsPart2,
     ...probabilityForQuantsPart3,
-];
+].map(topic => ({
+    ...topic,
+    href: `/probability-for-quants/${topic.id}`,
+}));
