@@ -20,7 +20,7 @@ export const probabilityForQuantsPart2: Topic[] = [
     }),
     createTopic({
         parent: 'probability-for-quants',
-        id: 'pearson-correlation',
+        id: 'covariance-and-correlation',
         href: '/quantlab/pearson-correlation',
         title: 'Covariance & Correlation',
         icon: 'TrendingUp',
