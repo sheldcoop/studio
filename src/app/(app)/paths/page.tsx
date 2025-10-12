@@ -28,7 +28,7 @@ export default function PathsPage() {
         {learningPaths.filter(p => p.id !== 'quantlab').map((path) => (
            <Link
             key={path.id}
-            href={`/paths/${path.id}`}
+            href={`/${path.id}`}
             className="group rounded-lg ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <Card className="flex h-full transform-gpu flex-col transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
