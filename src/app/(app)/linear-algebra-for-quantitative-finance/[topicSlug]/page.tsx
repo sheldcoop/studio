@@ -33,7 +33,7 @@ type TopicPageProps = {
 // This function tells Next.js which pages to build at build time
 export async function generateStaticParams() {
   const linearAlgebraTopics = allTopics.filter(
-    (topic) => topic.pathPrefix === 'linear-algebra-for-quantitative-finance'
+    (topic) => topic.href.startsWith('/linear-algebra-for-quantitative-finance/')
   );
   return linearAlgebraTopics.map((topic) => ({
     topicSlug: topic.id,
