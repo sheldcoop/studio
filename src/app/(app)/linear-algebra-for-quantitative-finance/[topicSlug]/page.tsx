@@ -14,31 +14,17 @@ type TopicPageProps = {
 export async function generateStaticParams() {
   return allTopics
     .filter(topic => {
-        // This logic finds the ultimate ancestor of a topic to match it to the path.
-        // It's complex because topics can be nested.
-        let current = topic;
-        while (current.parent) {
-            const parentTopic = allTopics.find(t => t.id === current.parent);
-            if (!parentTopic) break;
-            
-            if (parentTopic.id === PATH_ID) {
-                return true;
-            }
-            // Check if the parent is a module of the main path
-            const parentIsModuleOfPath = allTopics.some(t => t.id === PATH_ID && t.subTopics?.some(st => st.id === parentTopic.id));
-             if (parentIsModuleOfPath) {
-                return true;
-            }
-            
-            // A more direct check for modules of the path
-             const directParentModule = allTopics.find(m => m.id === current.parent && m.parent === PATH_ID);
-            if(directParentModule) {
-                return true;
-            }
-
-            current = parentTopic;
+      // Find the ultimate parent path for each topic
+      let current = topic;
+      while (current.parent) {
+        const parentTopic = allTopics.find(t => t.id === current.parent);
+        if (!parentTopic) break;
+        if (parentTopic.id === PATH_ID) {
+          return true;
         }
-        return false;
+        current = parentTopic;
+      }
+      return topic.parent === PATH_ID || current.id === PATH_ID;
     })
     .map(topic => ({
       topicSlug: topic.id,

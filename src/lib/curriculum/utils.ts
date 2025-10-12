@@ -1,7 +1,5 @@
 
 import { type Topic, type SubTopic } from './types';
-import { learningPaths } from '@/lib/learning-paths';
-import { allTopics } from '@/lib/curriculum';
 
 // Slug generation utility
 const toSlug = (title: string): string => {
@@ -33,7 +31,7 @@ interface CreateTopicOptions {
 
 /**
  * Creates a standardized topic object with a correctly generated href.
- * The URL is constructed based on the top-level learning path.
+ * The URL is constructed based on its parent's path.
  */
 export const createTopic = (options: CreateTopicOptions): Topic => {
     const { 
@@ -46,12 +44,23 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
 
     const slug = id || toSlug(title);
     
-    // Find the ultimate parent path for this topic
-    // This is a simplified lookup assuming modules have parents like 'la-module-1'
-    // and those modules are defined in the learning-paths file.
-    const parentPath = learningPaths.find(p => p.modules.some(m => m.id === parent));
-    const pathPrefix = parentPath ? parentPath.id : parent;
-    
+    // Determine the base path for the URL.
+    // This logic needs to be simple and not rely on circular lookups.
+    // We will base it on a convention for top-level learning paths.
+    let pathPrefix = parent;
+    if (parent.startsWith('la-module')) {
+      pathPrefix = 'linear-algebra-for-quantitative-finance';
+    } else if (parent.startsWith('stats-mod')) {
+      pathPrefix = 'statistics-for-quantitative-finance';
+    } else if (parent.startsWith('prob-quant-mod')) {
+        pathPrefix = 'probability-for-quants';
+    } else if (parent.startsWith('ml-module')) {
+        pathPrefix = 'machine-learning-for-quantitative-finance';
+    } else if (parent === 'quantlab') {
+        pathPrefix = 'quantlab'
+    }
+
+
     const finalHref = explicitHref || `/${pathPrefix}/${slug}`;
 
     return {
