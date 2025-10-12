@@ -6,7 +6,6 @@ export const linearAlgebraPart2: Topic[] = [
     // --- Module 3 ---
      createTopic({
         parent: 'la-module-3',
-        id: 'la-m3-eigen',
         title: 'Eigenvalues & Eigenvectors',
         icon: 'Waypoints',
         description: "Find the 'axes of greatest variance' in your data.",
@@ -20,7 +19,6 @@ export const linearAlgebraPart2: Topic[] = [
     }),
      createTopic({
         parent: 'la-module-3',
-        id: 'la-m3-diagonalization',
         title: 'Diagonalization',
         icon: 'Waypoints',
         description: "Simplify complex systems for long-term modeling.",
@@ -33,7 +31,6 @@ export const linearAlgebraPart2: Topic[] = [
     }),
      createTopic({
         parent: 'la-module-3',
-        id: 'la-m3-svd',
         title: 'Singular Value Decomposition (SVD)',
         icon: 'Waypoints',
         description: "The master decomposition for any matrix.",
@@ -48,7 +45,6 @@ export const linearAlgebraPart2: Topic[] = [
     // --- Module 4 ---
      createTopic({
         parent: 'la-module-4',
-        id: 'la-m4-cov-corr',
         title: 'Covariance & Correlation Matrices',
         icon: 'Waypoints',
         description: "The cornerstone of portfolio theory.",
@@ -61,7 +57,6 @@ export const linearAlgebraPart2: Topic[] = [
     }),
      createTopic({
         parent: 'la-module-4',
-        id: 'la-m4-pdm',
         title: 'Positive Definite Matrices',
         icon: 'Waypoints',
         description: "The mathematical property that makes portfolio optimization possible.",
@@ -73,7 +68,6 @@ export const linearAlgebraPart2: Topic[] = [
     }),
      createTopic({
         parent: 'la-module-4',
-        id: 'la-m4-cholesky',
         title: 'Cholesky Decomposition',
         icon: 'Waypoints',
         description: "The key to generating correlated random asset paths for Monte Carlo simulations.",

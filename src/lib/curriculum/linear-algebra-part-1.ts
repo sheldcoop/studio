@@ -6,7 +6,6 @@ export const linearAlgebraPart1: Topic[] = [
     // --- Module 1 ---
     createTopic({
         parent: 'la-module-1',
-        id: 'la-m1-vectors-spaces',
         title: 'Vectors & Vector Spaces',
         icon: 'Waypoints',
         description: "Representing asset returns or portfolio weights.",
@@ -20,7 +19,6 @@ export const linearAlgebraPart1: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-1',
-        id: 'la-m1-matrix-ops',
         title: 'Matrix Operations',
         icon: 'Waypoints',
         description: "Aggregating data across assets and time.",
@@ -34,7 +32,6 @@ export const linearAlgebraPart1: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-1',
-        id: 'la-m1-lin-indep',
         title: 'Linear Independence',
         icon: 'Waypoints',
         description: "Crucial for diversification and factor models.",
@@ -49,7 +46,6 @@ export const linearAlgebraPart1: Topic[] = [
     // --- Module 2 ---
      createTopic({
         parent: 'la-module-2',
-        id: 'la-m2-sle',
         title: 'Systems of Linear Equations',
         icon: 'Waypoints',
         description: "The mathematical basis for linear regression.",
@@ -62,7 +58,6 @@ export const linearAlgebraPart1: Topic[] = [
     }),
      createTopic({
         parent: 'la-module-2',
-        id: 'la-m2-ortho-proj',
         title: 'Orthogonality & Projections',
         icon: 'Waypoints',
         description: "The core of Ordinary Least Squares (OLS) regression.",
@@ -75,7 +70,6 @@ export const linearAlgebraPart1: Topic[] = [
     }),
      createTopic({
         parent: 'la-module-2',
-        id: 'la-m2-four-subspaces',
         title: 'The Four Fundamental Subspaces',
         icon: 'Waypoints',
         description: "Understand the complete picture of a matrix.",
