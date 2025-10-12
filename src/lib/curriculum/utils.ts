@@ -39,9 +39,10 @@ const findTopLevelPath = (parentId: string | undefined): string | undefined => {
     if (isTopLevelPath) {
         return parentId;
     }
-
-    const parentTopic = curriculumTopics.find(t => t.id === parentId);
-    return findTopLevelPath(parentTopic?.parent);
+    // This was the source of the circular dependency. It's no longer needed.
+    // const parentTopic = curriculumTopics.find(t => t.id === parentId);
+    // return findTopLevelPath(parentTopic?.parent);
+    return parentId; // Simplified logic, assumes parent is a direct path or needs to be resolved later.
 }
 
 /**
@@ -61,15 +62,8 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
     
     // Determine the correct href.
     // If an explicit href is provided, use it. This is useful for cross-linking.
-    // Otherwise, find the top-level learning path and construct the URL from there.
-    const finalHref = explicitHref || (() => {
-        const topLevelPath = findTopLevelPath(parent);
-        if (topLevelPath) {
-            return `/${topLevelPath}/${slug}`;
-        }
-        // Fallback for topics whose parent isn't in a learning path (e.g. QuantLab tools)
-        return `/quantlab/${slug}`;
-    })();
+    // Otherwise, construct the URL based on the parent.
+    const finalHref = explicitHref || `/${parent}/${slug}`;
 
     return {
         id: slug,

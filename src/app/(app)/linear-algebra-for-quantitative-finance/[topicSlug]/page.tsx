@@ -15,19 +15,30 @@ export async function generateStaticParams() {
   return allTopics
     .filter(topic => {
         // This logic finds the ultimate ancestor of a topic to match it to the path.
+        // It's complex because topics can be nested.
         let current = topic;
-        let topLevelParent = current.parent;
-        while(current.parent) {
+        while (current.parent) {
             const parentTopic = allTopics.find(t => t.id === current.parent);
-            // Stop when we find a parent that is a main learning path or has no further parent
-            if (parentTopic && parentTopic.parent && parentTopic.category !== 'main') {
-                current = parentTopic;
-            } else {
-                topLevelParent = current.parent;
-                break;
+            if (!parentTopic) break;
+            
+            if (parentTopic.id === PATH_ID) {
+                return true;
             }
+            // Check if the parent is a module of the main path
+            const parentIsModuleOfPath = allTopics.some(t => t.id === PATH_ID && t.subTopics?.some(st => st.id === parentTopic.id));
+             if (parentIsModuleOfPath) {
+                return true;
+            }
+            
+            // A more direct check for modules of the path
+             const directParentModule = allTopics.find(m => m.id === current.parent && m.parent === PATH_ID);
+            if(directParentModule) {
+                return true;
+            }
+
+            current = parentTopic;
         }
-        return topLevelParent === PATH_ID;
+        return false;
     })
     .map(topic => ({
       topicSlug: topic.id,
