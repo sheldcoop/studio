@@ -5,7 +5,7 @@ import { createTopic } from './utils';
 export const nonParametricTests: Topic[] = [
     createTopic({
         id: 'chi-squared-test',
-        parent: 'quantlab',
+        parent: 'stats-advanced-tools',
         title: 'Chi-Squared Test',
         icon: 'FunctionSquare',
         description:
@@ -14,7 +14,7 @@ export const nonParametricTests: Topic[] = [
     }),
     createTopic({
         id: 'mann-whitney-u-test',
-        parent: 'quantlab',
+        parent: 'stats-advanced-tools',
         title: 'Mann-Whitney U Test',
         icon: 'FunctionSquare',
         description:
@@ -23,7 +23,7 @@ export const nonParametricTests: Topic[] = [
     }),
     createTopic({
         id: 'kruskal-wallis-test',
-        parent: 'quantlab',
+        parent: 'stats-advanced-tools',
         title: 'Kruskal-Wallis Test',
         icon: 'FunctionSquare',
         description: 'Alternative to ANOVA for comparing three or more groups.',
@@ -31,7 +31,7 @@ export const nonParametricTests: Topic[] = [
     }),
     createTopic({
         id: 'wilcoxon-signed-rank-test',
-        parent: 'quantlab',
+        parent: 'stats-advanced-tools',
         title: 'Wilcoxon Signed-Rank Test',
         icon: 'FunctionSquare',
         description:
@@ -40,7 +40,7 @@ export const nonParametricTests: Topic[] = [
     }),
     createTopic({
         id: 'spearmans-rank-correlation',
-        parent: 'quantlab',
+        parent: 'stats-advanced-tools',
         title: "Spearman's Rank Correlation",
         icon: 'FunctionSquare',
         description:
@@ -49,7 +49,7 @@ export const nonParametricTests: Topic[] = [
     }),
     createTopic({
         id: 'friedman-test',
-        parent: 'quantlab',
+        parent: 'stats-advanced-tools',
         title: 'Friedman Test',
         icon: 'FunctionSquare',
         description:
@@ -58,7 +58,7 @@ export const nonParametricTests: Topic[] = [
     }),
     createTopic({
         id: 'kolmogorov-smirnov-k-s-test',
-        parent: 'quantlab',
+        parent: 'stats-advanced-tools',
         title: 'Kolmogorov-Smirnov (K-S) Test',
         icon: 'FunctionSquare',
         description: 'Tests if a sample is drawn from a specific distribution.',

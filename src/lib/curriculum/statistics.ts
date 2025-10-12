@@ -11,7 +11,7 @@ export const statisticsTopics: Topic[] = [
   createTopic({
     id: 'hypothesis-testing-guide',
     href: '/quantlab/hypothesis-testing-guide',
-    parent: 'quantlab',
+    parent: 'stats-advanced-tools',
     title: 'Hypothesis Testing Guide',
     icon: 'Beaker',
     description: "A comprehensive guide to choosing the right statistical test.",
@@ -20,7 +20,7 @@ export const statisticsTopics: Topic[] = [
   // This is the introductory article that explains hypothesis testing.
   createTopic({
     id: 'introduction-to-hypothesis-testing',
-    parent: 'quantlab',
+    parent: 'prob-core-tools',
     title: 'An Introduction to Hypothesis Testing',
     description: 'A practical guide to deciding if your results are a real breakthrough or just random noise.',
     category: 'sub-topic',

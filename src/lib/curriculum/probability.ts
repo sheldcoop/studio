@@ -4,15 +4,16 @@ import { createTopic } from './utils';
 
 export const probabilityTopics: Topic[] = [
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-core-tools',
     href: '/quantlab/bayes-theorem',
+    id: 'bayes-theorem',
     title: "Bayes' Theorem",
     icon: 'BrainCircuit',
     description: 'A framework for updating beliefs with new evidence.',
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-discrete',
     href: '/quantlab/bernoulli-distribution',
     title: 'Bernoulli Distribution',
     icon: 'ToggleRight',
@@ -20,7 +21,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-discrete',
     href: '/quantlab/binomial-distribution',
     title: 'Binomial Distribution',
     icon: 'BarChartBig',
@@ -28,7 +29,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-discrete',
     href: '/quantlab/poisson-distribution',
     title: 'Poisson Distribution',
     icon: 'Clock4',
@@ -36,7 +37,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-discrete',
     href: '/quantlab/geometric-distribution',
     title: 'Geometric Distribution',
     icon: 'Repeat1',
@@ -44,7 +45,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-discrete',
     href: '/quantlab/hypergeometric-distribution',
     title: 'Hypergeometric Distribution',
     icon: 'Ungroup',
@@ -52,7 +53,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-discrete',
     href: '/quantlab/negative-binomial-distribution',
     title: 'Negative Binomial Distribution',
     icon: 'Repeat',
@@ -60,7 +61,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-discrete',
     href: '/quantlab/discrete-uniform-distribution',
     title: 'Discrete Uniform Distribution',
     icon: 'Dice3',
@@ -68,7 +69,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-discrete',
     href: '/quantlab/multinomial-distribution',
     title: 'Multinomial Distribution',
     icon: 'Boxes',
@@ -76,7 +77,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/gamma-distribution',
     title: 'Gamma Distribution',
     icon: 'Waves',
@@ -84,7 +85,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/beta-distribution',
     title: 'Beta Distribution',
     icon: 'Activity',
@@ -92,7 +93,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/exponential-distribution',
     title: 'Exponential Distribution',
     icon: 'Timer',
@@ -100,7 +101,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/cauchy-distribution',
     title: 'Cauchy Distribution',
     icon: 'Mountain',
@@ -108,7 +109,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/laplace-distribution',
     title: 'Laplace Distribution',
     icon: 'Gem',
@@ -116,7 +117,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/f-distribution',
     title: 'F-Distribution',
     icon: 'Ratio',
@@ -124,7 +125,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/students-t-distribution',
     title: "Student's t-Distribution",
     icon: 'Users',
@@ -132,7 +133,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/weibull-distribution',
     title: 'Weibull Distribution',
     icon: 'Wind',
@@ -140,7 +141,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/logistic-distribution',
     title: 'Logistic Distribution',
     icon: 'TrendingUp',
@@ -148,7 +149,7 @@ export const probabilityTopics: Topic[] = [
     category: 'probability',
   }),
   createTopic({
-    parent: 'quantlab',
+    parent: 'prob-dist-continuous',
     href: '/quantlab/chi-squared-distribution',
     title: 'Chi-Squared (χ²) Distribution',
     icon: 'Sigma',

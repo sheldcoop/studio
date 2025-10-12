@@ -5,7 +5,7 @@ import { createTopic } from './utils';
 export const parametricTests: Topic[] = [
   createTopic({
     id: 't-test',
-    parent: 'quantlab',
+    parent: 'stats-advanced-tools',
     title: 'T-Test',
     icon: 'FunctionSquare',
     description: 'Compares the means of two groups, assuming normal distribution.',
@@ -13,7 +13,7 @@ export const parametricTests: Topic[] = [
   }),
   createTopic({
     id: 'z-test',
-    parent: 'quantlab',
+    parent: 'stats-advanced-tools',
     title: 'Z-Test',
     icon: 'FunctionSquare',
     description:
@@ -22,7 +22,7 @@ export const parametricTests: Topic[] = [
   }),
   createTopic({
     id: 'anova',
-    parent: 'quantlab',
+    parent: 'stats-advanced-tools',
     title: 'ANOVA',
     icon: 'FunctionSquare',
     description: 'Compares the averages of three or more groups.',
@@ -30,7 +30,7 @@ export const parametricTests: Topic[] = [
   }),
   createTopic({
     id: 'f-test',
-    parent: 'quantlab',
+    parent: 'stats-advanced-tools',
     title: 'F-Test',
     icon: 'FunctionSquare',
     description: 'Compares the variances (spread) of two or more groups.',
@@ -38,7 +38,7 @@ export const parametricTests: Topic[] = [
   }),
   createTopic({
     id: 'pearson-correlation',
-    parent: 'quantlab',
+    parent: 'stats-advanced-tools',
     title: 'Pearson Correlation',
     icon: 'FunctionSquare',
     description:
