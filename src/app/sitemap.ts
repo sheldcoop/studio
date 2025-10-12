@@ -3,22 +3,22 @@ import { MetadataRoute } from 'next';
 import { allTopics } from '@/lib/curriculum';
 import { learningPaths } from '@/lib/learning-paths';
 
-const URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantprep.firerun.app';
-
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
-    { url: `${URL}/`, lastModified: new Date() },
-    { url: `${URL}/paths`, lastModified: new Date() },
-    { url: `${URL}/interview-prep`, lastModified: new Date() },
-    { url: `${URL}/community`, lastModified: new Date() },
-    { url: `${URL}/stat-toolkit`, lastModified: new Date() },
-    { url: `${URL}/topics`, lastModified: new Date() },
-    { url: `${URL}/probability`, lastModified: new Date() },
+    { url: `/`, lastModified: new Date() },
+    { url: `/paths`, lastModified: new Date() },
+    { url: `/interview-prep`, lastModified: new Date() },
+    { url: `/community`, lastModified: new Date() },
+    { url: `/quantlab`, lastModified: new Date() },
+    { url: `/topics`, lastModified: new Date() },
+    { url: `/login`, lastModified: new Date() },
+    { url: `/profile`, lastModified: new Date() },
+    { url: `/settings`, lastModified: new Date() },
   ];
 
   // Create routes for the learning path pages
   const pathRoutes = learningPaths.map((path) => ({
-    url: `${URL}/paths/${path.id}`,
+    url: path.href,
     lastModified: new Date(),
   }));
 
@@ -32,19 +32,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
         return !isCategory && !hasNoPage;
     })
     .map((topic) => ({
-      url: `${URL}${topic.href}`,
+      url: topic.href,
       lastModified: new Date(),
   }));
   
-  // Use a Set to automatically handle any duplicates
-  const allUrls = new Set([
-      ...staticRoutes.map(r => r.url), 
-      ...pathRoutes.map(r => r.url), 
-      ...topicRoutes.map(r => r.url)
-  ]);
+  // Combine all routes and ensure uniqueness
+  const allRoutes = [
+    ...staticRoutes,
+    ...pathRoutes,
+    ...topicRoutes,
+  ];
 
-  return Array.from(allUrls).map(url => ({
-      url,
-      lastModified: new Date(),
-  }));
+  // Use a Set to automatically handle any duplicates based on the URL
+  const uniqueUrls = new Map(allRoutes.map(route => [route.url, route]));
+
+  return Array.from(uniqueUrls.values());
 }
