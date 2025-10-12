@@ -13,16 +13,32 @@ type TopicPageProps = {
 // This function tells Next.js which slugs to pre-render at build time.
 export async function generateStaticParams() {
   return allTopics
-    .filter(topic => topic.parent === PATH_ID)
+    .filter(topic => {
+        // This logic finds the ultimate ancestor of a topic to match it to the path.
+        let current = topic;
+        let topLevelParent = current.parent;
+        while(current.parent) {
+            const parentTopic = allTopics.find(t => t.id === current.parent);
+            // Stop when we find a parent that is a main learning path or has no further parent
+            if (parentTopic && parentTopic.parent && parentTopic.category !== 'main') {
+                current = parentTopic;
+            } else {
+                topLevelParent = current.parent;
+                break;
+            }
+        }
+        return topLevelParent === PATH_ID;
+    })
     .map(topic => ({
       topicSlug: topic.id,
     }));
 }
 
+
 // This function generates metadata for the page based on the slug.
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
   const { topicSlug } = await params;
-  const topicInfo = allTopics.find((t) => t.id === topicSlug && t.parent === PATH_ID);
+  const topicInfo = allTopics.find((t) => t.id === topicSlug);
   
   if (!topicInfo) {
     return { title: 'Topic Not Found' };
@@ -37,7 +53,7 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 // This is the main server component for the page.
 export default async function TopicPage({ params }: TopicPageProps) {
   const { topicSlug } = await params;
-  const topicInfo = allTopics.find((t) => t.id === topicSlug && t.parent === PATH_ID);
+  const topicInfo = allTopics.find((t) => t.id === topicSlug);
   
   if (!topicInfo) {
     notFound();
