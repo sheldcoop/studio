@@ -46,7 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ...topicRoutes
   ];
 
-  // Use a Set to ensure all URLs are unique before returning the final array
+  // Use a Map to ensure all URLs are unique before returning the final array
   const uniqueUrls = new Map(allRoutes.map(route => [route.url, route]));
   
   return Array.from(uniqueUrls.values());
