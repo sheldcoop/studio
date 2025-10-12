@@ -12,22 +12,10 @@ type TopicPageProps = {
 
 // This function tells Next.js which slugs to pre-render at build time.
 export async function generateStaticParams() {
+  // Correctly filter for all topics that are part of the machine learning path
+  // by checking if their parent ID starts with 'ml-module-'.
   return allTopics
-    .filter(topic => {
-      // Find the ultimate parent path for each topic
-      let current = topic;
-      let topLevelParent = current.parent;
-      while (current.parent) {
-        const parentTopic = allTopics.find(t => t.id === current.parent);
-        if (parentTopic && parentTopic.parent && parentTopic.parent !== 'machine-learning-for-quantitative-finance') {
-          current = parentTopic;
-        } else {
-          topLevelParent = current.parent;
-          break;
-        }
-      }
-      return topLevelParent === PATH_ID;
-    })
+    .filter(topic => topic.parent?.startsWith('ml-module-'))
     .map(topic => ({
       topicSlug: topic.id,
     }));
