@@ -8,7 +8,7 @@ const URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantprep.firerun.app';
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
     '/',
-    '/paths',
+    '/learning-paths',
     '/quantlab',
     '/interview-prep',
     '/community',

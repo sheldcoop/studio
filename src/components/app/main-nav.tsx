@@ -14,7 +14,7 @@ const links = [
     icon: 'LayoutDashboard',
   },
   {
-    href: '/paths',
+    href: '/learning-paths',
     label: 'Learning Paths',
     icon: 'BookOpenCheck',
   },
