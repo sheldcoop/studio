@@ -6,7 +6,7 @@ export const machineLearningPart3: Topic[] = [
   // --- Module 4: NLP for Alpha Generation ---
   createTopic({
     id: 'ml-financial-sentiment-analysis',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-4',
     title: 'Financial Sentiment Analysis (News, Earnings Reports, Tweets)',
     duration: 35,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -19,7 +19,7 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-information-extraction',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-4',
     title: 'Information Extraction (NER, Topic Modeling)',
     duration: 30,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -32,7 +32,7 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-advanced-text-representation',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-4',
     title: 'Advanced Text Representation (Word2Vec, Transformers - BERT)',
     duration: 25,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -45,7 +45,7 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-integrating-nlp-signals',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-4',
     title: 'Integrating NLP Signals into Trading Models',
     duration: 25,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -60,7 +60,7 @@ export const machineLearningPart3: Topic[] = [
   // --- Module 5: Advanced Topics & Modern Frontiers ---
   createTopic({
     id: 'ml-reinforcement-learning-for-trading',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-5',
     title: 'Reinforcement Learning for Optimal Trading',
     duration: 40,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -73,7 +73,7 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-portfolio-optimization',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-5',
     title: 'Portfolio Optimization with ML (Covariance Estimation)',
     duration: 35,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -86,7 +86,7 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-alternative-data',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-5',
     title: 'Leveraging Alternative Data (Satellite Imagery, Web Data)',
     duration: 35,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -99,7 +99,7 @@ export const machineLearningPart3: Topic[] = [
   }),
   createTopic({
     id: 'ml-ai-ethics-and-regulation',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-5',
     title: 'AI Ethics & Regulation in Finance',
     duration: 30,
     category: 'sub-topic', description: '', status: 'not-started',

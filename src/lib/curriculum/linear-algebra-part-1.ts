@@ -5,7 +5,7 @@ import { createTopic } from './utils';
 export const linearAlgebraPart1: Topic[] = [
     // --- Module 1 ---
     createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-1',
         id: 'la-m1-vectors-spaces',
         title: 'Vectors & Vector Spaces',
         icon: 'Waypoints',
@@ -19,7 +19,7 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-1',
         id: 'la-m1-matrix-ops',
         title: 'Matrix Operations',
         icon: 'Waypoints',
@@ -33,7 +33,7 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-1',
         id: 'la-m1-lin-indep',
         title: 'Linear Independence',
         icon: 'Waypoints',
@@ -48,7 +48,7 @@ export const linearAlgebraPart1: Topic[] = [
 
     // --- Module 2 ---
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-2',
         id: 'la-m2-sle',
         title: 'Systems of Linear Equations',
         icon: 'Waypoints',
@@ -61,7 +61,7 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-2',
         id: 'la-m2-ortho-proj',
         title: 'Orthogonality & Projections',
         icon: 'Waypoints',
@@ -74,7 +74,7 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-2',
         id: 'la-m2-four-subspaces',
         title: 'The Four Fundamental Subspaces',
         icon: 'Waypoints',

@@ -5,7 +5,7 @@ import { createTopic } from './utils';
 export const linearAlgebraPart2: Topic[] = [
     // --- Module 3 ---
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-3',
         id: 'la-m3-eigen',
         title: 'Eigenvalues & Eigenvectors',
         icon: 'Waypoints',
@@ -19,7 +19,7 @@ export const linearAlgebraPart2: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-3',
         id: 'la-m3-diagonalization',
         title: 'Diagonalization',
         icon: 'Waypoints',
@@ -32,7 +32,7 @@ export const linearAlgebraPart2: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-3',
         id: 'la-m3-svd',
         title: 'Singular Value Decomposition (SVD)',
         icon: 'Waypoints',
@@ -47,7 +47,7 @@ export const linearAlgebraPart2: Topic[] = [
 
     // --- Module 4 ---
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-4',
         id: 'la-m4-cov-corr',
         title: 'Covariance & Correlation Matrices',
         icon: 'Waypoints',
@@ -60,7 +60,7 @@ export const linearAlgebraPart2: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-4',
         id: 'la-m4-pdm',
         title: 'Positive Definite Matrices',
         icon: 'Waypoints',
@@ -72,7 +72,7 @@ export const linearAlgebraPart2: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'linear-algebra-for-quantitative-finance',
+        parent: 'la-module-4',
         id: 'la-m4-cholesky',
         title: 'Cholesky Decomposition',
         icon: 'Waypoints',

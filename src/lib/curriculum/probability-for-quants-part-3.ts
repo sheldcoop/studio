@@ -6,7 +6,7 @@ export const probabilityForQuantsPart3: Topic[] = [
     // --- Module 5: Stochastic Processes ---
     createTopic({
         id: 'prob-introduction-to-stochastic-processes-stationarity',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-5',
         title: 'Introduction to Stochastic Processes & Stationarity',
         icon: 'Clock',
         description: "Understanding random phenomena that evolve over time.",
@@ -19,7 +19,7 @@ export const probabilityForQuantsPart3: Topic[] = [
     }),
     createTopic({
         id: 'prob-discrete-time-markov-chains',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-5',
         title: 'Discrete-Time Markov Chains',
         icon: 'Footprints',
         description: "Modeling memoryless state transitions.",
@@ -32,9 +32,9 @@ export const probabilityForQuantsPart3: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-5',
         id: 'poisson-process-deep-dive',
-        href: '/quantlab/poisson-distribution-interactive-guide',
+        href: '/quantlab/poisson-distribution',
         title: 'The Poisson Process',
         icon: 'Zap',
         description: "Modeling the timing of random events.",
@@ -47,7 +47,7 @@ export const probabilityForQuantsPart3: Topic[] = [
     }),
     createTopic({
         id: 'prob-random-walks-brownian-motion',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-5',
         title: 'Random Walks & Brownian Motion',
         icon: 'TrendingDown',
         description: "The mathematical foundation of stock price movements.",
@@ -62,7 +62,7 @@ export const probabilityForQuantsPart3: Topic[] = [
     // --- Module 6: Advanced & Measure-Theoretic Probability ---
     createTopic({
         id: 'prob-sigma-algebras-probability-measures',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-6',
         title: 'Sigma-Algebras & Probability Measures',
         icon: 'Ruler',
         description: "The rigorous foundation of modern probability.",
@@ -75,7 +75,7 @@ export const probabilityForQuantsPart3: Topic[] = [
     }),
     createTopic({
         id: 'prob-the-lebesgue-integral-rigorous-expectation',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-6',
         title: 'The Lebesgue Integral & Rigorous Expectation',
         icon: 'PenTool',
         description: "A more powerful theory of integration.",
@@ -88,7 +88,7 @@ export const probabilityForQuantsPart3: Topic[] = [
     }),
     createTopic({
         id: 'prob-martingales',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-6',
         title: 'Martingales',
         icon: 'Scale',
         description: "The formal model of a fair game.",
@@ -100,9 +100,9 @@ export const probabilityForQuantsPart3: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-6',
         id: 'stochastic-calculus-itos-lemma-deep-dive',
-        href: '/quantlab/stochastic-calculus-itos-lemma-interactive-guide',
+        href: '/quantlab/stochastic-calculus-itos-lemma',
         title: "Introduction to Itô Calculus",
         icon: 'AreaChart',
         description: "The calculus of random walks, essential for derivatives pricing.",

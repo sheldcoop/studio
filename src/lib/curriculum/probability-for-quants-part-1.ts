@@ -6,7 +6,7 @@ export const probabilityForQuantsPart1: Topic[] = [
     // --- Module 1: Foundations of Probability ---
     createTopic({
         id: 'prob-the-basics-sample-spaces-events',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-1',
         title: 'The Basics: Sample Spaces & Events',
         icon: 'Dice3',
         description: "Understanding the building blocks of probability.",
@@ -20,7 +20,7 @@ export const probabilityForQuantsPart1: Topic[] = [
     }),
     createTopic({
         id: 'prob-combinatorics-the-art-of-counting',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-1',
         title: 'Combinatorics: The Art of Counting',
         icon: 'Calculator',
         description: "Techniques for counting outcomes and possibilities.",
@@ -34,7 +34,7 @@ export const probabilityForQuantsPart1: Topic[] = [
     }),
     createTopic({
         id: 'prob-conditional-probability-independence',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-1',
         title: 'Conditional Probability & Independence',
         icon: 'GitBranch',
         description: "How the occurrence of one event affects another.",
@@ -47,9 +47,9 @@ export const probabilityForQuantsPart1: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-1',
         id: 'bayes-theorem-deep-dive',
-        href: '/quantlab/bayes-theorem-interactive-guide',
+        href: '/quantlab/bayes-theorem',
         title: "Bayes' Theorem",
         icon: 'BrainCircuit',
         description: "Updating beliefs in the face of new evidence.",
@@ -65,7 +65,7 @@ export const probabilityForQuantsPart1: Topic[] = [
     // --- Module 2: Random Variables & Distributions ---
     createTopic({
         id: 'prob-random-variables-discrete-continuous',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-2',
         title: 'Random Variables (Discrete & Continuous)',
         icon: 'BarChart3',
         description: "Mapping outcomes of a random process to numbers.",
@@ -79,7 +79,7 @@ export const probabilityForQuantsPart1: Topic[] = [
     }),
     createTopic({
         id: 'prob-expectation-variance-moments',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-2',
         title: 'Expectation, Variance & Moments',
         icon: 'Target',
         description: "Calculating the center, spread, and shape of a distribution.",
@@ -93,7 +93,7 @@ export const probabilityForQuantsPart1: Topic[] = [
     }),
     createTopic({
         id: 'prob-common-discrete-distributions',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-2',
         title: 'Common Discrete Distributions',
         icon: 'Component',
         description: "Exploring Bernoulli, Binomial, and Poisson distributions.",
@@ -107,7 +107,7 @@ export const probabilityForQuantsPart1: Topic[] = [
     }),
     createTopic({
         id: 'prob-common-continuous-distributions',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-2',
         title: 'Common Continuous Distributions',
         icon: 'AreaChart',
         description: "Exploring Uniform, Normal, and Exponential distributions.",

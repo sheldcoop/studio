@@ -6,7 +6,7 @@ export const machineLearningPart1: Topic[] = [
   // --- Module 0: The Absolute Basics of Machine Learning ---
   createTopic({
     id: 'ml-language-of-ml',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-0',
     title: 'The Language of ML: Data, Features & Labels',
     duration: 20,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -19,7 +19,7 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-three-flavors-of-learning',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-0',
     title: 'The Three Flavors of Learning (Supervised, Unsupervised, Reinforcement)',
     duration: 25,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -32,7 +32,7 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-your-first-models',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-0',
     title: 'Your First Models: An Intuitive Look (KNN & Simple Linear Regression)',
     duration: 30,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -45,7 +45,7 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-how-to-split-your-data',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-0',
     title: 'The Golden Rule: How to Split Your Data (Train, Validate, Test)',
     duration: 25,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -58,7 +58,7 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-how-do-we-score-a-model',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-0',
     title: 'How Do We Score a Model? (Accuracy, Confusion Matrix, MSE)',
     duration: 20,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -75,14 +75,14 @@ export const machineLearningPart1: Topic[] = [
     icon: 'Brain',
     description: "Sharpen your calculation speed and accuracy for interviews.",
     category: 'sub-topic',
-    parent: 'machine-learning-for-quantitative-finance', 
+    parent: 'ml-module-0', 
     href: '/topics/mental-math'
   },
 
   // --- Module 1: Foundations of ML in Finance ---
   createTopic({
     id: 'ml-financial-ml-landscape',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-1',
     title: 'The Financial ML Landscape (Alpha, Risk, Execution)',
     duration: 20,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -95,7 +95,7 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-feature-engineering',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-1',
     title: 'Feature Engineering for Financial Data (Price, Volume, Order Books)',
     duration: 35,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -108,7 +108,7 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-core-predictive-models',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-1',
     title: 'Core Predictive Models (Trees, Boosting, Regularization)',
     duration: 30,
     category: 'sub-topic', description: '', status: 'not-started',
@@ -121,7 +121,7 @@ export const machineLearningPart1: Topic[] = [
   }),
   createTopic({
     id: 'ml-backtesting-and-validation',
-    parent: 'machine-learning-for-quantitative-finance',
+    parent: 'ml-module-1',
     title: 'Backtesting & Model Validation (Walk-Forward, Sharpe Ratio)',
     duration: 25,
     category: 'sub-topic', description: '', status: 'not-started',

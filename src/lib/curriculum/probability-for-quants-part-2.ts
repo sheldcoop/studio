@@ -6,7 +6,7 @@ export const probabilityForQuantsPart2: Topic[] = [
     // --- Module 3: Multivariate Probability & Core Theorems ---
     createTopic({
         id: 'prob-joint-marginal-conditional-distributions',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-3',
         title: 'Joint, Marginal & Conditional Distributions',
         icon: 'Users',
         description: "Modeling the behavior of multiple random variables at once.",
@@ -19,7 +19,7 @@ export const probabilityForQuantsPart2: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-3',
         id: 'covariance-and-correlation',
         href: '/quantlab/pearson-correlation',
         title: 'Covariance & Correlation',
@@ -34,7 +34,7 @@ export const probabilityForQuantsPart2: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-3',
         id: 'law-of-large-numbers-deep-dive',
         title: 'The Law of Large Numbers (LLN)',
         icon: 'Scale',
@@ -48,7 +48,7 @@ export const probabilityForQuantsPart2: Topic[] = [
         ]
     }),
     createTopic({
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-3',
         id: 'central-limit-theorem-deep-dive',
         href: '/quantlab/central-limit-theorem',
         title: 'The Central Limit Theorem (CLT)',
@@ -66,7 +66,7 @@ export const probabilityForQuantsPart2: Topic[] = [
     // --- Module 4: Intermediate Topics & Generating Functions ---
     createTopic({
         id: 'prob-transformations-of-random-variables',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-4',
         title: 'Transformations of Random Variables',
         icon: 'Replace',
         description: "Finding the distribution of a function of a random variable.",
@@ -79,7 +79,7 @@ export const probabilityForQuantsPart2: Topic[] = [
     }),
     createTopic({
         id: 'prob-moment-generating-functions',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-4',
         title: 'Moment Generating Functions (MGFs)',
         icon: 'Sun',
         description: "A powerful tool for analyzing distributions.",
@@ -93,7 +93,7 @@ export const probabilityForQuantsPart2: Topic[] = [
     }),
     createTopic({
         id: 'prob-introduction-to-information-theory',
-        parent: 'probability-for-quants',
+        parent: 'prob-quant-mod-4',
         title: 'Introduction to Information Theory',
         icon: 'Binary',
         description: "Quantifying information with Entropy and KL Divergence.",
