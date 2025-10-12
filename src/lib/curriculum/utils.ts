@@ -1,6 +1,7 @@
 
 import { type Topic, type SubTopic } from './types';
-import { learningPaths, allTopics as curriculumTopics } from '@/lib/learning-paths';
+import { learningPaths } from '@/lib/learning-paths';
+import { allTopics as curriculumTopics } from '@/lib/curriculum';
 
 // Slug generation utility
 const toSlug = (title: string): string => {
