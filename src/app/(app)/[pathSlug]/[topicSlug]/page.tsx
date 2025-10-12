@@ -34,8 +34,9 @@ export async function generateStaticParams() {
       }
       // Fallback for topics whose parent path cannot be determined
       // This may or may not match a valid route, but it's better than nothing.
+      const pathSlug = topic.href.split('/')[1] || 'topics';
       return {
-          pathSlug: topic.pathPrefix || 'topics',
+          pathSlug: pathSlug,
           topicSlug: topic.id,
       }
     }).filter(p => p.pathSlug); // Ensure we don't have undefined pathSlugs

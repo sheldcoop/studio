@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -28,7 +29,7 @@ const weibullPdf = (x: number, k: number, lambda: number): number => {
 
 // --- Chart Component ---
 const WeibullDistributionChart = ({ shape, scale }: { shape: number; scale: number }) => {
-  const { chartData, mean, variance } = useMemo(() => {
+  const chartData = useMemo(() => {
     const data = [];
     const points = 200;
     // A reasonable upper bound for the chart x-axis
@@ -43,13 +44,13 @@ const WeibullDistributionChart = ({ shape, scale }: { shape: number; scale: numb
         data.push({ value: x, density });
     }
 
-    return { chartData: data };
+    return data;
   }, [shape, scale]);
 
   return (
     <div>
       <ChartContainer config={{}} className="h-[300px] w-full">
-        <AreaChart data={chartData.chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="value" type="number" domain={[0, 'dataMax']} tickFormatter={(val) => val.toFixed(1)} name="Value (x)" />
           <YAxis name="Density" domain={[0, 'dataMax']} />
