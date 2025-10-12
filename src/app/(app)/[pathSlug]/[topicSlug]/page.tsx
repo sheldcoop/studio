@@ -1,4 +1,5 @@
 
+
 import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/data';
 import { PageHeader } from '@/components/app/page-header';
@@ -17,25 +18,25 @@ type TopicPageProps = {
 
 export async function generateStaticParams() {
   // Generate params for all visitable topics that don't have a dedicated file.
-  // This ensures that Next.js knows about all possible dynamic topic pages at build time.
+  // This is now safer because this page only handles `/paths/...` routes.
   return allTopics
     .filter(topic => {
-      // A dynamic topic page is one that has a parent (part of a path) and a slug.
-      // We also filter out topics that might have a dedicated page file elsewhere.
-      return topic.parent && topic.id && topic.href.split('/').length > 2;
+      // We only want to generate params for topics that are designed to use this dynamic template.
+      // The `createTopic` utility now adds `/paths/` to the href for these.
+      return topic.href.startsWith('/paths/');
     })
     .map(topic => {
       const parts = topic.href.split('/').filter(Boolean);
-      // Expected structure: /[pathSlug]/[topicSlug]
-      if (parts.length === 2) {
+      // Expected structure: /paths/[pathSlug]/[topicSlug]
+      if (parts.length === 3 && parts[0] === 'paths') {
         return {
-          pathSlug: parts[0],
-          topicSlug: parts[1],
+          pathSlug: parts[1],
+          topicSlug: parts[2],
         };
       }
       return null;
     })
-    .filter(p => p !== null); // Remove any null entries
+    .filter(p => p !== null);
 }
 
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {

@@ -27,7 +27,7 @@ interface CreateTopicOptions {
     content?: string;
     interactiveExamples?: Topic['interactiveExamples'];
     animation?: string;
-    pathPrefix?: string; // e.g., 'statistics' or 'probability'
+    pathPrefix?: string; // e.g., 'statistics-for-quantitative-finance' or 'quantlab'
     href?: string; // Allow explicitly setting the href
 }
 
@@ -47,8 +47,10 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
 
     const slug = id || toSlug(title);
     
-    // Use the explicit href if provided, otherwise construct it
-    const href = explicitHref || (pathPrefix ? `/${pathPrefix}/${slug}` : `/topics/${slug}`);
+    // Use the explicit href if provided. Otherwise, construct it.
+    // If a pathPrefix is provided, assume it's for a dynamic content page
+    // and prepend `/paths/` to avoid routing conflicts.
+    const href = explicitHref || (pathPrefix ? `/paths/${pathPrefix}/${slug}` : `/topics/${slug}`);
 
     return {
         id: slug,
