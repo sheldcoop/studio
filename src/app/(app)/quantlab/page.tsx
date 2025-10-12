@@ -96,7 +96,7 @@ export default function QuantLabPage() {
           filteredModules.map(module => (
             <div key={module.id}>
               <h2 className="font-headline text-2xl font-bold mb-6 border-b pb-2">{module.title}</h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {module.lessons.map(lesson => (
                   <TopicCard key={lesson.id} topic={lesson} />
                 ))}
