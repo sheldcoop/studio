@@ -1,4 +1,5 @@
 
+
 import { type Topic } from './types';
 import { createTopic } from './utils';
 
@@ -64,6 +65,7 @@ export const linearAlgebraPart1: Topic[] = [
 
     // --- Module 2 ---
      createTopic({
+        id: 'systems-of-linear-equations',
         parent: 'la-module-2',
         title: 'Systems of Linear Equations',
         icon: 'Waypoints',
@@ -92,6 +94,7 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
      createTopic({
+        id: 'orthogonality-projections',
         parent: 'la-module-2',
         title: 'Orthogonality & Projections',
         icon: 'Waypoints',

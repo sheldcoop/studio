@@ -48,7 +48,7 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
     const slug = id || toSlug(title);
     
     // Use the explicit href if provided, otherwise construct it
-    const href = explicitHref || (pathPrefix ? `/paths/${pathPrefix}/${slug}` : `/topics/${slug}`);
+    const href = explicitHref || (pathPrefix ? `/${pathPrefix}/${slug}` : `/topics/${slug}`);
 
     return {
         id: slug,
