@@ -28,7 +28,7 @@ const weibullPdf = (x: number, k: number, lambda: number): number => {
 
 // --- Chart Component ---
 const WeibullDistributionChart = ({ shape, scale }: { shape: number; scale: number }) => {
-  const chartData = useMemo(() => {
+  const { chartData, mean, variance } = useMemo(() => {
     const data = [];
     const points = 200;
     // A reasonable upper bound for the chart x-axis

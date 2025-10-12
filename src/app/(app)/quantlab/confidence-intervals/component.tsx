@@ -143,7 +143,7 @@ export default function ConfidenceIntervalsComponent() {
               It&apos;s often impossible to survey an entire population (like every stock in the market). Instead, we take a smaller sample (like the S&P 500) and calculate its mean (average) return.
             </p>
             <p>
-              A confidence interval uses this sample mean to construct a range of values and says, &quot;We are X% confident that the true average of the entire population falls within this range.&quot; It&apos;s a way of putting boundaries on uncertainty.
+              A confidence interval uses this sample mean to construct a range of values and says, &quot;We are X% confident that the true average of the entire population falls within this range.&quot; It's a way of putting boundaries on uncertainty.
             </p>
             <Alert>
               <AlertTriangle className="h-4 w-4" />

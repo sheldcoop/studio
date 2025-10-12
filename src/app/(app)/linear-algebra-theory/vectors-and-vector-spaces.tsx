@@ -296,7 +296,7 @@ export default function VectorsAndVectorSpacesComponent() {
         <ul className="list-disc pl-6">
             <li><strong>Vectors</strong> are arrows with magnitude and direction.</li>
             <li><strong>Operations</strong> let us add and scale vectors.</li>
-            <li><strong>Span</strong> is the set of everything we can build with our vectors.</li>
+            <li><strong>Span</strong> is the set of all reachable points.</li>
             <li><strong>Vector Spaces</strong> (and <strong>Subspaces</strong>) are the self-contained "playgrounds" where these rules apply, like lines and planes through the origin.</li>
         </ul>
       </ModuleCard>

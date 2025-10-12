@@ -5,8 +5,8 @@ export const taglines = [
   ['From Insight to ', 'Model'],
   ['From Model to ', 'Signal'],
   ['From Signal to ', 'Trade'],
-  ['From Trade to ', 'Alpha'],
   ['From Alpha to ', 'Mastery'],
+  ['From Alpha to ', 'Quant'],
 ];
 
 export const quantJourney = mainTopics;
