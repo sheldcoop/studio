@@ -1,7 +1,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { allTopics, getPathById } from '@/lib/data';
+import { allTopics } from '@/lib/data';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 
 const PATH_ID = 'linear-algebra-for-quantitative-finance';
