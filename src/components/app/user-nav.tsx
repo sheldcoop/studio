@@ -18,15 +18,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { useAuth } from '@/app/auth-provider';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 const auth = getAuth(app);
 
 export function UserNav() {
   const { user } = useAuth();
-  const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar');
+  const [userAvatar, setUserAvatar] = useState<ImagePlaceholder | undefined>();
+
+  useEffect(() => {
+    async function loadAvatar() {
+        const images = await PlaceHolderImages;
+        const avatar = images.find((img) => img.id === 'user-avatar');
+        setUserAvatar(avatar);
+    }
+    loadAvatar();
+  }, []);
+
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -35,7 +46,7 @@ export function UserNav() {
   if (!user) {
     return (
       <Button asChild>
-        <Link href="/login">Hey</Link>
+        <Link href="/login">Login</Link>
       </Button>
     );
   }
@@ -55,8 +66,6 @@ export function UserNav() {
                 <AvatarImage
                   src={userAvatar.imageUrl}
                   alt="User Avatar"
-                  width={40}
-                  height={40}
                   data-ai-hint={userAvatar.imageHint}
                 />
               )

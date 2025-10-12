@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,14 +9,25 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2, LogOut, Pencil, KeyRound, Trash2, ArrowLeft } from 'lucide-react';
-import placeholderImages from '@/lib/placeholder-images.json';
+import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { toast } from '@/hooks/use-toast';
 const auth = getAuth(app);
 
 export default function ProfileClient() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userAvatar, setUserAvatar] = useState<ImagePlaceholder | undefined>();
   const router = useRouter();
+  
+  useEffect(() => {
+    async function loadAvatar() {
+        const images = await PlaceHolderImages;
+        const avatar = images.find((img) => img.id === 'user-avatar');
+        setUserAvatar(avatar);
+    }
+    loadAvatar();
+  }, []);
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -67,8 +79,6 @@ export default function ProfileClient() {
       }
     }
   };
-
-  const userAvatar = placeholderImages.placeholderImages.find((img: { id: string }) => img.id === 'user-avatar');
 
   if (isLoading || !user) {
     return (
