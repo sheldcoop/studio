@@ -47,6 +47,7 @@ export const probabilityForQuantsPart1: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'bayes-theorem-lesson',
         parent: 'prob-quant-mod-1',
         href: '/quantlab/bayes-theorem',
         title: "Bayes' Theorem",
