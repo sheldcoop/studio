@@ -48,9 +48,20 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
     const slug = id || toSlug(title);
     
     // Use the explicit href if provided. Otherwise, construct it.
-    // If a pathPrefix is provided, assume it's for a dynamic content page
-    // and prepend `/paths/` to avoid routing conflicts.
-    const href = explicitHref || (pathPrefix ? `/paths/${pathPrefix}/${slug}` : `/topics/${slug}`);
+    // If a pathPrefix is provided, use it to construct a specific path.
+    // QuantLab topics get a direct /quantlab/[slug] path.
+    // Other content pages get a /topics/[pathPrefix]/[slug] path.
+    let href = explicitHref;
+    if (!href && pathPrefix) {
+        if (pathPrefix === 'quantlab') {
+            href = `/quantlab/${slug}`;
+        } else {
+            href = `/topics/${pathPrefix}/${slug}`;
+        }
+    } else if (!href) {
+        href = `/topics/${slug}`;
+    }
+
 
     return {
         id: slug,
