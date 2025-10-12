@@ -55,6 +55,7 @@ import IntroductionToHypothesisTestingPage from '@/app/(app)/quantlab/introducti
 import MatrixDecompositionPage from '@/app/(app)/linear-algebra-theory/matrix-decomposition';
 import FourFundamentalSubspacesPage from '@/app/(app)/linear-algebra-theory/four-fundamental-subspaces';
 import VectorsAndVectorSpacesPage from '@/app/(app)/linear-algebra-theory/vectors-and-vector-spaces';
+import ChangeOfBasisPage from '@/app/(app)/linear-algebra-theory/change-of-basis';
 
 
 type TopicPageProps = {
@@ -229,6 +230,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'matrix-decomposition': MatrixDecompositionPage,
   'the-four-fundamental-subspaces': FourFundamentalSubspacesPage,
   'vectors-vector-spaces': VectorsAndVectorSpacesPage,
+  'change-of-basis': ChangeOfBasisPage,
 };
 
 
