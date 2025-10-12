@@ -54,6 +54,8 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
         pathPrefix = 'probability-for-quants';
     } else if (parent.startsWith('ml-module')) {
         pathPrefix = 'machine-learning-for-quantitative-finance';
+    } else if (['prob-core-tools', 'prob-dist-discrete', 'prob-dist-continuous', 'stats-advanced-tools'].includes(parent)) {
+        pathPrefix = 'quantlab';
     }
 
 
@@ -67,4 +69,5 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
         ...rest,
     };
 };
+
 
