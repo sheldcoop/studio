@@ -119,7 +119,7 @@ export default function ConditionalProbabilityPage() {
                     
                     <Lesson id="prob-multiplication-rule" title="The Multiplication Rule">
                          <Card>
-                            <CardHeader><CardTitle className="flex items-center gap-2"><BookOpen className="text-primary"/> Theory</CardTitle></Header>
+                            <CardHeader><CardTitle className="flex items-center gap-2"><BookOpen className="text-primary"/> Theory</CardTitle></CardHeader>
                             <CardContent className="prose prose-slate dark:prose-invert max-w-none text-base text-foreground/90 space-y-4">
                                 <p>The Multiplication Rule is a direct rearrangement of the conditional probability formula. It's used to find the probability of the intersection of two events.</p>
                                 <p>The general form is:</p>
@@ -130,7 +130,7 @@ export default function ConditionalProbabilityPage() {
                             </CardContent>
                         </Card>
                          <Card>
-                            <CardHeader><CardTitle className="flex items-center gap-2"><BrainCircuit className="text-primary"/> Practice Problems</CardTitle></Header>
+                            <CardHeader><CardTitle className="flex items-center gap-2"><BrainCircuit className="text-primary"/> Practice Problems</CardTitle></CardHeader>
                             <CardContent className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
                                 <p className="text-sm text-muted-foreground">Practice problems coming soon.</p>
                             </CardContent>
