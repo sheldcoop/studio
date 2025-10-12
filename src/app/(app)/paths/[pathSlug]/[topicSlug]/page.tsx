@@ -56,6 +56,7 @@ import MatrixDecompositionPage from '@/app/(app)/linear-algebra-theory/matrix-de
 import FourFundamentalSubspacesPage from '@/app/(app)/linear-algebra-theory/four-fundamental-subspaces';
 import VectorsAndVectorSpacesPage from '@/app/(app)/linear-algebra-theory/vectors-and-vector-spaces';
 import ChangeOfBasisPage from '@/app/(app)/linear-algebra-theory/change-of-basis';
+import MatrixOperationsPage from '@/app/(app)/linear-algebra-theory/matrix-operations';
 
 
 type TopicPageProps = {
@@ -231,6 +232,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'the-four-fundamental-subspaces': FourFundamentalSubspacesPage,
   'vectors-vector-spaces': VectorsAndVectorSpacesPage,
   'change-of-basis': ChangeOfBasisPage,
+  'matrix-operations': MatrixOperationsPage,
 };
 
 

@@ -7,6 +7,7 @@ const PATH_PREFIX = 'linear-algebra-for-quantitative-finance';
 export const linearAlgebraPart1: Topic[] = [
     // --- Module 1 ---
     createTopic({
+        id: 'vectors-vector-spaces',
         parent: 'la-module-1',
         title: 'Vectors & Vector Spaces',
         icon: 'Waypoints',
@@ -21,9 +22,10 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
     createTopic({
+        id: 'matrix-operations',
         parent: 'la-module-1',
         title: 'Matrix Operations',
-        icon: 'Waypoints',
+        icon: 'Table',
         description: "Aggregating data across assets and time.",
         category: 'sub-topic',
         pathPrefix: PATH_PREFIX,
@@ -75,19 +77,7 @@ export const linearAlgebraPart1: Topic[] = [
         ]
     }),
      createTopic({
-        parent: 'la-module-2',
-        title: 'Orthogonality & Projections',
-        icon: 'Waypoints',
-        description: "The core of Ordinary Least Squares (OLS) regression.",
-        category: 'sub-topic',
-        pathPrefix: PATH_PREFIX,
-        subTopics: [
-            { id: 'dot-product', title: 'The Dot Product & Orthogonality' },
-            { id: 'orthogonal-projections', title: 'Orthogonal Projections' },
-            { id: 'gram-schmidt', title: 'The Gram-Schmidt Process' },
-        ]
-    }),
-     createTopic({
+        id: 'the-four-fundamental-subspaces',
         parent: 'la-module-2',
         title: 'The Four Fundamental Subspaces',
         icon: 'Waypoints',
@@ -99,6 +89,19 @@ export const linearAlgebraPart1: Topic[] = [
             { id: 'null-space', title: 'Null Space (Kernel)' },
             { id: 'row-space', title: 'Row Space' },
             { id: 'fundamental-theorem', title: 'The Fundamental Theorem' },
+        ]
+    }),
+     createTopic({
+        parent: 'la-module-2',
+        title: 'Orthogonality & Projections',
+        icon: 'Waypoints',
+        description: "The core of Ordinary Least Squares (OLS) regression.",
+        category: 'sub-topic',
+        pathPrefix: PATH_PREFIX,
+        subTopics: [
+            { id: 'dot-product', title: 'The Dot Product & Orthogonality' },
+            { id: 'orthogonal-projections', title: 'Orthogonal Projections' },
+            { id: 'gram-schmidt', title: 'The Gram-Schmidt Process' },
         ]
     }),
 ];
