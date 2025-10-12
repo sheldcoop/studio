@@ -48,17 +48,17 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
     const slug = id || toSlug(title);
     
     // Use the explicit href if provided. Otherwise, construct it.
-    // If a pathPrefix is provided, use it to construct a specific path.
-    // QuantLab topics get a direct /quantlab/[slug] path.
-    // Other content pages get a /topics/[pathPrefix]/[slug] path.
     let href = explicitHref;
     if (!href && pathPrefix) {
         if (pathPrefix === 'quantlab') {
+            // QuantLab tools get a direct /quantlab/[slug] path.
             href = `/quantlab/${slug}`;
         } else {
-            href = `/topics/${pathPrefix}/${slug}`;
+            // All other learning path content pages get /[pathPrefix]/[slug]
+            href = `/${pathPrefix}/${slug}`;
         }
     } else if (!href) {
+        // Fallback for topics without a pathPrefix
         href = `/topics/${slug}`;
     }
 
