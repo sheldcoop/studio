@@ -46,7 +46,7 @@ export const createTopic = (options: CreateTopicOptions): Topic => {
 
     const slug = id || toSlug(title);
     
-    // If a topic has a parent, it belongs in that parent's path.
+    // If an explicit href is provided, use it. Otherwise, construct it from parent and slug.
     const href = explicitHref || `/${parent}/${slug}`;
 
     return {
