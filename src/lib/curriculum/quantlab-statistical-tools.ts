@@ -15,7 +15,7 @@ export const quantlabStatisticalTools: Topic[] = [
   }),
   // Tier 1 Lessons
   createTopic({
-    id: 'descriptive-statistics-explorer-interactive-guide',
+    id: 'descriptive-statistics-explorer',
     title: 'Descriptive Statistics Explorer',
     icon: 'BarChartHorizontal',
     description: 'Interactive guide to mean, median, skewness, and kurtosis.',
@@ -24,7 +24,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'central-limit-theorem-interactive-guide',
+    id: 'central-limit-theorem',
     title: 'The Central Limit Theorem (CLT)',
     icon: 'Bell',
     description: 'Discover how order emerges from chaos.',
@@ -33,7 +33,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'confidence-intervals-interactive-guide',
+    id: 'confidence-intervals',
     title: 'Confidence Intervals',
     icon: 'Target',
     description: 'Understanding the range where a true value likely lies.',
@@ -42,7 +42,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'z-table-interactive-guide',
+    id: 'z-table',
     title: 'Z-Table Calculator',
     icon: 'Table',
     description: 'Calculate probabilities from Z-scores and vice-versa.',
@@ -51,7 +51,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'normal-distribution-interactive-guide',
+    id: 'normal-distribution',
     title: 'The Normal Distribution',
     icon: 'Bell',
     description: 'The ubiquitous "bell curve."',
@@ -62,7 +62,7 @@ export const quantlabStatisticalTools: Topic[] = [
 
   // Tier 3 Lessons
   createTopic({
-    id: 'monte-carlo-simulation-interactive-guide',
+    id: 'monte-carlo-simulation',
     title: 'Monte Carlo Simulation',
     icon: 'Dice',
     description: 'Using random simulation to solve complex problems.',
@@ -71,7 +71,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'time-series-decomposition-interactive-guide',
+    id: 'time-series-decomposition',
     title: 'Time Series Decomposition',
     icon: 'Layers',
     description: 'Breaking down a time series into its core components.',
@@ -80,7 +80,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'autocorrelation-acf-pacf-interactive-guide',
+    id: 'autocorrelation-acf-pacf',
     title: 'Autocorrelation (ACF & PACF)',
     icon: 'Signal',
     description: 'Measuring how a time series correlates with its past values.',
@@ -89,8 +89,8 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'volatility-garch-interactive-guide',
-    title: 'Volatility & Standard Deviation (GARCH)',
+    id: 'volatility-garch',
+    title: 'Volatility & GARCH Models',
     icon: 'Flame',
     description: 'Modeling the changing volatility of financial returns.',
     category: 'sub-topic',
@@ -98,7 +98,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'efficient-frontier-sharpe-ratio-interactive-guide',
+    id: 'efficient-frontier-sharpe-ratio',
     title: 'Efficient Frontier & Sharpe Ratio',
     icon: 'Target',
     description: 'Finding the optimal portfolio for a given level of risk.',
@@ -107,7 +107,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'kalman-filters-interactive-guide',
+    id: 'kalman-filters',
     title: 'Kalman Filters',
     icon: 'Filter',
     description: 'Dynamically estimating the state of a system from noisy data.',
@@ -116,7 +116,7 @@ export const quantlabStatisticalTools: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'stochastic-calculus-itos-lemma-interactive-guide',
+    id: 'stochastic-calculus-itos-lemma',
     title: "Stochastic Calculus & Ito's Lemma",
     icon: 'Calculator',
     description: 'The calculus of random walks, essential for derivatives pricing.',

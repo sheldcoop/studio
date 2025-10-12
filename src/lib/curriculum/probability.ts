@@ -4,7 +4,7 @@ import { createTopic } from './utils';
 
 export const probabilityTopics: Topic[] = [
   createTopic({
-    id: 'bayes-theorem-interactive-guide',
+    id: 'bayes-theorem',
     title: "Bayes' Theorem",
     icon: 'BrainCircuit',
     description: 'A framework for updating beliefs with new evidence.',
@@ -13,7 +13,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'bernoulli-distribution-interactive-guide',
+    id: 'bernoulli-distribution',
     title: 'Bernoulli Distribution',
     icon: 'ToggleRight',
     description: 'Modeling a single trial with two outcomes.',
@@ -22,7 +22,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'binomial-distribution-interactive-guide',
+    id: 'binomial-distribution',
     title: 'Binomial Distribution',
     icon: 'BarChartBig',
     description: 'Modeling a series of success/fail trials.',
@@ -31,7 +31,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'poisson-distribution-interactive-guide',
+    id: 'poisson-distribution',
     title: 'Poisson Distribution',
     icon: 'Clock4',
     description: 'Modeling the frequency of rare events.',
@@ -40,7 +40,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'geometric-distribution-interactive-guide',
+    id: 'geometric-distribution',
     title: 'Geometric Distribution',
     icon: 'Repeat1',
     description: 'Modeling trials until the first success.',
@@ -49,7 +49,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'hypergeometric-distribution-interactive-guide',
+    id: 'hypergeometric-distribution',
     title: 'Hypergeometric Distribution',
     icon: 'Ungroup',
     description: 'Modeling sampling without replacement.',
@@ -58,7 +58,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'negative-binomial-distribution-interactive-guide',
+    id: 'negative-binomial-distribution',
     title: 'Negative Binomial Distribution',
     icon: 'Repeat',
     description: 'Modeling trials until a set number of successes.',
@@ -67,7 +67,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'discrete-uniform-distribution-interactive-guide',
+    id: 'discrete-uniform-distribution',
     title: 'Discrete Uniform Distribution',
     icon: 'Dice3',
     description: 'Modeling where all outcomes are equally likely.',
@@ -76,7 +76,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'multinomial-distribution-interactive-guide',
+    id: 'multinomial-distribution',
     title: 'Multinomial Distribution',
     icon: 'Boxes',
     description: 'Generalizing the Binomial for multiple outcomes.',
@@ -85,7 +85,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'gamma-distribution-interactive-guide',
+    id: 'gamma-distribution',
     title: 'Gamma Distribution',
     icon: 'Waves',
     description: 'Modeling waiting times and skewed data.',
@@ -94,7 +94,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'beta-distribution-interactive-guide',
+    id: 'beta-distribution',
     title: 'Beta Distribution',
     icon: 'Activity',
     description: 'Modeling probabilities, percentages, and proportions.',
@@ -103,7 +103,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'exponential-distribution-interactive-guide',
+    id: 'exponential-distribution',
     title: 'Exponential Distribution',
     icon: 'Timer',
     description: 'Modeling the time between events in a Poisson process.',
@@ -112,7 +112,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'cauchy-distribution-interactive-guide',
+    id: 'cauchy-distribution',
     title: 'Cauchy Distribution',
     icon: 'Mountain',
     description: "Modeling extreme events and 'fat-tailed' phenomena.",
@@ -121,7 +121,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'laplace-distribution-interactive-guide',
+    id: 'laplace-distribution',
     title: 'Laplace Distribution',
     icon: 'Gem',
     description: "Modeling with a sharp peak and 'fat tails'.",
@@ -130,7 +130,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'f-distribution-interactive-guide',
+    id: 'f-distribution',
     title: 'F-Distribution',
     icon: 'Ratio',
     description: 'Comparing variances between two or more samples.',
@@ -139,7 +139,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'students-t-distribution-interactive-guide',
+    id: 'students-t-distribution',
     title: "Student's t-Distribution",
     icon: 'Users',
     description: 'The backbone of hypothesis testing with small sample sizes.',
@@ -148,7 +148,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'weibull-distribution-interactive-guide',
+    id: 'weibull-distribution',
     title: 'Weibull Distribution',
     icon: 'Wind',
     description: 'Modeling time-to-failure and event durations.',
@@ -157,7 +157,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'logistic-distribution-interactive-guide',
+    id: 'logistic-distribution',
     title: 'Logistic Distribution',
     icon: 'TrendingUp',
     description: 'A key distribution in machine learning and growth modeling.',
@@ -166,7 +166,7 @@ export const probabilityTopics: Topic[] = [
     pathPrefix: 'quantlab',
   }),
   createTopic({
-    id: 'chi-squared-distribution-interactive-guide',
+    id: 'chi-squared-distribution',
     title: 'Chi-Squared (χ²) Distribution',
     icon: 'Sigma',
     description: 'The distribution of the sum of squared standard normal deviates.',
