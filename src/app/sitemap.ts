@@ -29,10 +29,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Create routes for all individual, visitable topic pages
   const topicRoutes = allTopics
     .filter(topic => {
-      // A topic is a real, visitable page if it's not just a parent category and doesn't have a '#' href.
-      const isParentCategory = topic.category === 'parent';
-      const isPlaceholderLink = topic.href === '#';
-      return !isParentCategory && !isPlaceholderLink;
+      // A topic is a real, visitable page if it doesn't have a '#' href.
+      return topic.href && topic.href !== '#';
     })
     .map((topic) => ({
       url: `${URL}${topic.href}`,
