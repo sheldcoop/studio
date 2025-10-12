@@ -57,6 +57,7 @@ import FourFundamentalSubspacesPage from '@/app/(app)/linear-algebra-theory/four
 import VectorsAndVectorSpacesPage from '@/app/(app)/linear-algebra-theory/vectors-and-vector-spaces';
 import ChangeOfBasisPage from '@/app/(app)/linear-algebra-theory/change-of-basis';
 import MatrixOperationsPage from '@/app/(app)/linear-algebra-theory/matrix-operations';
+import SystemsOfLinearEquationsPage from '@/app/(app)/linear-algebra-theory/systems-of-linear-equations';
 
 
 type TopicPageProps = {
@@ -233,6 +234,7 @@ const topicComponentMap: { [key: string]: React.ComponentType } = {
   'vectors-vector-spaces': VectorsAndVectorSpacesPage,
   'change-of-basis': ChangeOfBasisPage,
   'matrix-operations': MatrixOperationsPage,
+  'systems-of-linear-equations': SystemsOfLinearEquationsPage,
 };
 
 
