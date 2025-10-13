@@ -94,10 +94,10 @@ export default function EigenApplicationsPage() {
         </CardHeader>
         <CardContent>
           <ul className="list-decimal pl-5 space-y-2">
-            <li>Dynamic systems `x_{k+1} = Ax_k` can be understood by analyzing the matrix `A`.</li>
-            <li>Diagonalization (`A^k = PD^kP^{-1}`) is key to computing long-term states.</li>
+            <li>Dynamic systems <InlineMath math="x_{k+1} = Ax_k" /> can be understood by analyzing the matrix `A`.</li>
+            <li>Diagonalization (<InlineMath math="A^k = PD^kP^{-1}" />) is key to computing long-term states.</li>
             <li>Markov Chains model probabilistic state changes.</li>
-            <li>The **steady state** of a Markov chain is the eigenvector for the eigenvalue `λ = 1`.</li>
+            <li>The <strong>steady state</strong> of a Markov chain is the eigenvector for the eigenvalue <InlineMath math="\lambda = 1" />.</li>
             <li>Other eigenvalues with magnitude less than 1 determine the rate of convergence to the steady state.</li>
           </ul>
         </CardContent>
