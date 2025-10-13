@@ -109,6 +109,46 @@ export default function SpecialMatricesPage() {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">6. Orthogonal Matrices (<InlineMath math="Q" />) - "The Rigid Motion Operator"</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p>An <strong>Orthogonal Matrix</strong> is a square matrix that represents a <strong>rigid motion</strong>: a transformation that can rotate or reflect space, but <strong>cannot stretch, shrink, or shear it</strong>.</p>
+            <p>If you take a shape and transform it with an orthogonal matrix, the result will have the same size and the same internal angles. Lengths and distances are preserved.</p>
+            <h4 className="font-semibold">Structure:</h4>
+            <p>The defining feature of an orthogonal matrix, denoted <InlineMath math="Q" />, is that its <strong>columns form an orthonormal basis</strong>. This means:</p>
+            <ol className="list-decimal pl-5 space-y-1 text-sm">
+                <li>Every column vector has a length (L2 norm) of <strong>1</strong>.</li>
+                <li>Every column vector is <strong>orthogonal</strong> (perpendicular) to every other column vector.</li>
+            </ol>
+            <p>Here is a classic 2x2 rotation matrix (for a 30° rotation), which is an orthogonal matrix:</p>
+            <BlockMath math="Q_{rot} = \begin{bmatrix} \cos(30^\circ) & -\sin(30^\circ) \\ \sin(30^\circ) & \cos(30^\circ) \end{bmatrix} = \begin{bmatrix} 0.866 & -0.500 \\ 0.500 & 0.866 \end{bmatrix}" />
+            <h4 className="font-semibold">Behavior as a Transformation:</h4>
+            <p><InlineMath math="Q" /> performs a pure rotation, a reflection, or a combination of the two. It moves objects around without distorting them. This is an incredibly important property for algorithms where you need to change your coordinate system without accidentally changing your data's intrinsic structure.</p>
+            <h4 className="font-semibold">The Superpower:</h4>
+            <p>The inverse of an orthogonal matrix is simply its transpose.</p>
+            <div className="rounded-lg border bg-muted/50 p-4 text-center">
+              <BlockMath math="Q^{-1} = Q^T" />
+            </div>
+            <p>This is a phenomenal result. The difficult operation of inversion is replaced by the trivial operation of transposing. This is why many advanced numerical algorithms (like QR Decomposition and SVD) are designed to work with orthogonal matrices whenever possible.</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader><CardTitle>The Complete Cast Summary</CardTitle></CardHeader>
+            <CardContent>
+                 <ul className="list-disc pl-6 space-y-2">
+                    <li><strong>Identity <InlineMath math="I" />:</strong> The "number 1." The do-nothing transformation.</li>
+                    <li><strong>Inverse <InlineMath math="A^{-1}" />:</strong> The "undo button." Reverses the transformation of <InlineMath math="A" />.</li>
+                    <li><strong>Diagonal <InlineMath math="D" />:</strong> The "simple scaler." Scales along the axes.</li>
+                    <li><strong>Symmetric <InlineMath math="A" /> (<InlineMath math="A = A^T" />):</strong> The "quant's favorite." Represents pure stretching.</li>
+                    <li><strong>Triangular <InlineMath math="U, L" />:</strong> The "computational workhorse." For efficient equation solving.</li>
+                    <li><strong>Orthogonal <InlineMath math="Q" /> (<InlineMath math="Q^{-1} = Q^T" />):</strong> The "rigid motion operator." Rotates/reflects without distortion.</li>
+                </ul>
+            </CardContent>
+        </Card>
+
         <p className="text-center text-muted-foreground">
           <strong>Up Next:</strong> We've met the players and learned the rules. Now we'll combine everything to explore the fundamental structures of vector spaces: <strong>Linear Combinations, Span, Linear Independence, and Basis</strong>.
         </p>
