@@ -128,7 +128,7 @@ export default function SVDPage() {
       </Card>
       
       <p className="text-center text-muted-foreground">
-        **Up Next:** We will put this ultimate tool to work by exploring its application in **Principal Component Analysis (PCA)**.
+        <strong>Up Next:</strong> We will put this ultimate tool to work by exploring its application in <strong>Principal Component Analysis (PCA)</strong>.
       </p>
     </div>
   );

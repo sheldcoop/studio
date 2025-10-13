@@ -38,7 +38,7 @@ export default function GramSchmidtPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Working with an orthonormal basis is a dream. Projections become trivial, and matrices whose columns are orthonormal (our **Orthogonal Matrices, `Q`**) are numerically perfect, with a condition number of 1.</p>
+          <p>Working with an orthonormal basis is a dream. Projections become trivial, and matrices whose columns are orthonormal (our <strong>Orthogonal Matrices, `Q`</strong>) are numerically perfect, with a condition number of 1.</p>
         </CardContent>
       </Card>
       
@@ -64,7 +64,7 @@ export default function GramSchmidtPage() {
           </div>
           <div className="border-t pt-4">
             <h4 className="font-semibold text-lg">Step 3: The Third Vector and Beyond...</h4>
-            <p className="text-muted-foreground">The pattern continues. To find <InlineMath math="u_3" />, take <InlineMath math="v_3" /> and subtract its projections onto *all* previously found orthonormal vectors (<InlineMath math="q_1" /> and <InlineMath math="q_2" />).</p>
+            <p className="text-muted-foreground">The pattern continues. To find <InlineMath math="u_3" />, take <InlineMath math="v_3" /> and subtract its projections onto <strong>all</strong> previously found orthonormal vectors (<InlineMath math="q_1" /> and <InlineMath math="q_2" />).</p>
             <BlockMath math="u_3 = v_3 - (q_1^T v_3) q_1 - (q_2^T v_3) q_2" />
             <p className="mt-2 text-muted-foreground">Then normalize.</p>
           </div>
@@ -99,7 +99,7 @@ export default function GramSchmidtPage() {
       </Card>
       
       <p className="text-center text-muted-foreground">
-        **Up Next:** We will assemble these new orthonormal vectors into a matrix `Q` to form the QR Decomposition.
+        <strong>Up Next:</strong> We will assemble these new orthonormal vectors into a matrix `Q` to form the QR Decomposition.
       </p>
     </div>
   );

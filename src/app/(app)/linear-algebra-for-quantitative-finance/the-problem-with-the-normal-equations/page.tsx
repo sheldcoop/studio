@@ -52,7 +52,7 @@ export default function ProblemWithNormalEquationsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                <BlockMath math="\text{condition\\_number}(A^TA) = (\text{condition\\_number}(A))^2" />
+                <BlockMath math="\text{condition\_number}(A^TA) = (\text{condition\_number}(A))^2" />
             </div>
             <p>The process of forming <InlineMath math="A^TA" /> <strong>squares the condition number</strong>. Why is this so dangerous?</p>
             <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -78,13 +78,13 @@ export default function ProblemWithNormalEquationsPage() {
                 The Normal Equations are a perfect theoretical tool for understanding the geometry of least squares. However, for serious numerical work, directly computing <InlineMath math="A^TA" /> is often avoided.
             </p>
             <p>
-                We need a more sophisticated algorithm that can solve the least squares problem **without ever explicitly forming the `AᵀA` matrix**. This need for a stable, high-precision method is the entire motivation for our next topics: the **Gram-Schmidt process** and the beautiful **QR Decomposition**.
+                We need a more sophisticated algorithm that can solve the least squares problem <strong>without ever explicitly forming the `AᵀA` matrix</strong>. This need for a stable, high-precision method is the entire motivation for our next topics: the <strong>Gram-Schmidt process</strong> and the beautiful <strong>QR Decomposition</strong>.
             </p>
         </CardContent>
       </Card>
 
       <p className="text-center text-muted-foreground">
-        **Up Next:** We will learn a constructive algorithm, the **Gram-Schmidt Process**, which is a method for taking any set of basis vectors and turning them into a &quot;nice&quot; orthonormal basis.
+        <strong>Up Next:</strong> We will learn a constructive algorithm, the <strong>Gram-Schmidt Process</strong>, which is a method for taking any set of basis vectors and turning them into a &quot;nice&quot; orthonormal basis.
       </p>
     </div>
   );

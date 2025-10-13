@@ -75,7 +75,7 @@ export default function EigenApplicationsPage() {
         <CardHeader>
           <CardTitle className="font-headline">The Big Question: What Happens in the Long Run?</CardTitle>
           <CardDescription>
-            The **steady state** of this system is the eigenvector corresponding to the eigenvalue <InlineMath math="\lambda = 1" />.
+            The <strong>steady state</strong> of this system is the eigenvector corresponding to the eigenvalue <InlineMath math="\lambda = 1" />.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -104,7 +104,7 @@ export default function EigenApplicationsPage() {
       </Card>
 
       <p className="text-center text-muted-foreground">
-        **Up Next:** We will explore the special case of **Symmetric Matrices** and the **Spectral Theorem**.
+        <strong>Up Next:</strong> We will explore the special case of <strong>Symmetric Matrices</strong> and the <strong>Spectral Theorem</strong>.
       </p>
     </div>
   );

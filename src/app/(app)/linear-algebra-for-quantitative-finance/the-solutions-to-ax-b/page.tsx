@@ -23,7 +23,7 @@ export default function SolutionsToAxBPage() {
           Today, we step into the real world.
         </p>
         <p>
-          The true genius of Gaussian Elimination is not just that it finds answers, but that it is a powerful <strong>diagnostic tool</strong>. It tells us the *nature* of our system. It reveals whether our problem has that one perfect answer, or if it's a problem with no answer at all, or a problem with an entire family of answers.
+          The true genius of Gaussian Elimination is not just that it finds answers, but that it is a powerful <strong>diagnostic tool</strong>. It tells us the <strong>nature</strong> of our system. It reveals whether our problem has that one perfect answer, or if it's a problem with no answer at all, or a problem with an entire family of answers.
         </p>
         <p>There are only three possibilities for any system <InlineMath math="Ax=b" />. Let’s become detectives and learn to identify the clues for each one.</p>
       </article>
@@ -36,7 +36,7 @@ export default function SolutionsToAxBPage() {
             <p>The entire story is told by the <strong>pivots</strong>—the first non-zero entry in each row after you've reached row echelon form. Everything hinges on two questions:</p>
             <ol className="list-decimal pl-6 mt-4 space-y-2">
                 <li>Do we encounter a mathematical <strong>contradiction</strong> during elimination?</li>
-                <li>After elimination, does every variable's column have a **pivot**, or are some "free"?</li>
+                <li>After elimination, does every variable's column have a <strong>pivot</strong>, or are some "free"?</li>
             </ol>
         </CardContent>
       </Card>
@@ -80,10 +80,10 @@ export default function SolutionsToAxBPage() {
                <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>The Diagnostic Rule: A Contradiction</AlertTitle>
                 <AlertDescription>
-                    The last row translates to <InlineMath math="0x + 0y + 0z = -1" />, or <InlineMath math="0 = -1" />. This is a mathematical impossibility. If you find a row of `[0 0 ... | non-zero]`, the system has **NO SOLUTION**.
+                    The last row translates to <InlineMath math="0x + 0y + 0z = -1" />, or <InlineMath math="0 = -1" />. This is a mathematical impossibility. If you find a row of `[0 0 ... | non-zero]`, the system has <strong>NO SOLUTION</strong>.
                 </AlertDescription>
            </Alert>
-           <p className="text-sm"><strong className="text-primary">Geometric Meaning:</strong> The three planes defined by the equations never meet at a single point. In the column picture, the target vector <InlineMath math="b" /> is **not in the span** of the columns of `A`.</p>
+           <p className="text-sm"><strong className="text-primary">Geometric Meaning:</strong> The three planes defined by the equations never meet at a single point. In the column picture, the target vector <InlineMath math="b" /> is <strong>not in the span</strong> of the columns of `A`.</p>
         </CardContent>
       </Card>
 
@@ -103,13 +103,13 @@ export default function SolutionsToAxBPage() {
             <h4 className="font-semibold">Final Echelon Form (after elimination):</h4>
             <BlockMath math="\left[\begin{array}{ccc|c} \mathbf{1} & -2 & 1 & 4 \\ 0 & \mathbf{1} & 1 & -1 \\ 0 & 0 & 0 & 0 \end{array}\right]" />
           </div>
-          <p>The last row, `0=0`, is true but useless. It tells us one equation was redundant. Now we identify our pivots (in bold). The column for `z` does not have a pivot. This makes `z` a **free variable**.</p>
+          <p>The last row, `0=0`, is true but useless. It tells us one equation was redundant. Now we identify our pivots (in bold). The column for `z` does not have a pivot. This makes `z` a <strong>free variable</strong>.</p>
           
            <Alert variant="default" className="border-sky-500/50">
                <Diamond className="h-4 w-4 text-sky-400" />
                 <AlertTitle>The Diagnostic Rule: Free Variables</AlertTitle>
                 <AlertDescription>
-                   If there are no contradictions and at least one column has no pivot, the variable for that column is "free". You can choose its value, leading to **INFINITELY MANY SOLUTIONS**.
+                   If there are no contradictions and at least one column has no pivot, the variable for that column is "free". You can choose its value, leading to <strong>INFINITELY MANY SOLUTIONS</strong>.
                 </AlertDescription>
            </Alert>
             <div>
@@ -124,7 +124,7 @@ export default function SolutionsToAxBPage() {
               <h4 className="font-semibold">The General Solution is a Line:</h4>
               <BlockMath math="\begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} 2 - 3t \\ -1 - t \\ t \end{bmatrix}" />
             </div>
-            <p className="text-sm"><strong className="text-primary">Geometric Meaning:</strong> The three planes intersect along a single line. In the column picture, the columns of `A` are **linearly dependent**, and there are infinite ways to combine them to create `b`.</p>
+            <p className="text-sm"><strong className="text-primary">Geometric Meaning:</strong> The three planes intersect along a single line. In the column picture, the columns of `A` are <strong>linearly dependent</strong>, and there are infinite ways to combine them to create `b`.</p>
         </CardContent>
       </Card>
       
@@ -144,15 +144,15 @@ export default function SolutionsToAxBPage() {
                <Star className="h-4 w-4 text-green-400" />
                 <AlertTitle>The Diagnostic Rule: Full Pivots</AlertTitle>
                 <AlertDescription>
-                   If there are no contradictions and **every variable's column has a pivot**, the system has a **UNIQUE SOLUTION**. There are no free variables, so there is no freedom.
+                   If there are no contradictions and <strong>every variable's column has a pivot</strong>, the system has a <strong>UNIQUE SOLUTION</strong>. There are no free variables, so there is no freedom.
                 </AlertDescription>
            </Alert>
-            <p className="text-sm"><strong className="text-primary">Geometric Meaning:</strong> The planes intersect at a single point. In the column picture, the columns of `A` are **linearly independent** and `b` is in their span.</p>
+            <p className="text-sm"><strong className="text-primary">Geometric Meaning:</strong> The planes intersect at a single point. In the column picture, the columns of `A` are <strong>linearly independent</strong> and `b` is in their span.</p>
         </CardContent>
       </Card>
       
       <p className="text-center text-muted-foreground">
-        **Up Next:** We will see how this *process* of elimination can be captured and stored in matrices themselves, leading to the elegant and computationally vital **LU Decomposition**.
+        <strong>Up Next:</strong> We will see how this <strong>process</strong> of elimination can be captured and stored in matrices themselves, leading to the elegant and computationally vital <strong>LU Decomposition</strong>.
       </p>
 
     </div>
