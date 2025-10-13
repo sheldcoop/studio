@@ -94,7 +94,7 @@ export default function SVDPage() {
                         <li>Construct the `n x n` symmetric matrix `AᵀA`.</li>
                         <li>Find its eigenvalues (`λᵢ`) and orthonormal eigenvectors.</li>
                         <li>The eigenvectors are the columns of `V`.</li>
-                        <li>The singular values `σᵢ` are the square roots of the eigenvalues (`σᵢ = √λᵢ`).</li>
+                        <li>The singular values `σᵢ` are the square roots of the eigenvalues (`σᵢ = \sqrt{\lambdaᵢ}`).</li>
                     </ul>
                 </li>
                 <li>
@@ -118,7 +118,7 @@ export default function SVDPage() {
             <li><strong>The Components:</strong>
                 <ul className="list-disc pl-6 mt-2">
                     <li>`V`: Orthonormal basis for the input space (eigenvectors of `AᵀA`).</li>
-                    <li>`Σ`: Diagonal matrix of singular values `σᵢ = √λᵢ`.</li>
+                    <li>`Σ`: Diagonal matrix of singular values `σᵢ = \sqrt{\lambdaᵢ}`.</li>
                     <li>`U`: Orthonormal basis for the output space.</li>
                 </ul>
             </li>
