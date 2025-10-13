@@ -184,8 +184,9 @@ export const linearAlgebraPart2: Topic[] = [
         category: 'sub-topic',
         duration: 20,
     }),
-    createTopic({
+     createTopic({
         parent: 'la-module-7',
+        id: 'arbitrage-and-the-fundamental-theorem-of-asset-pricing',
         title: 'Arbitrage & The Fundamental Theorem of Asset Pricing',
         icon: 'Waypoints',
         description: 'The role of linear algebra in proving no-arbitrage conditions.',
@@ -203,6 +204,7 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-7',
+        id: 'fixed-income-bond-mathematics',
         title: 'Fixed Income (Bond) Mathematics',
         icon: 'Waypoints',
         description: 'Duration and convexity as linear algebraic concepts.',
