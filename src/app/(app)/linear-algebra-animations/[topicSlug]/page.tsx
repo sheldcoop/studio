@@ -5,8 +5,6 @@ import { allTopics } from '@/lib/data';
 import { TopicPageClient } from '@/components/app/topic-page-client';
 import VisualizingDeterminantPage from '@/app/(app)/linear-algebra-animations/visualizing-determinant/page';
 
-const PATH_ID = 'linear-algebra-animations';
-
 const componentMap: { [key: string]: React.ComponentType } = {
   'visualizing-determinant': VisualizingDeterminantPage,
 };
@@ -19,7 +17,8 @@ type TopicPageProps = {
 // This function tells Next.js which slugs to pre-render at build time.
 export async function generateStaticParams() {
   return allTopics
-    .filter(topic => topic.parent === 'la-anim-module-1')
+    .filter(topic => topic.parent === 'la-anim-module-1' || topic.parent === 'la-module-3') // Include our new topic
+    .filter(topic => topic.id === 'visualizing-determinant') // Only generate for this specific page for now
     .map(topic => ({
       topicSlug: topic.id,
     }));

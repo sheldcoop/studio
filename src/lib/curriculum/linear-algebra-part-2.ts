@@ -6,9 +6,11 @@ export const linearAlgebraPart2: Topic[] = [
     // --- Module 3: Determinants ---
     createTopic({
         parent: 'la-module-3',
-        title: 'The Geometric Meaning of the Determinant',
-        icon: 'Waypoints',
-        description: "The determinant as the scaling factor of area/volume.",
+        id: 'visualizing-determinant',
+        href: '/linear-algebra-animations/visualizing-determinant',
+        title: 'Visualizing the Determinant',
+        icon: 'BoxSelect',
+        description: 'An interactive visualization of how a matrix transforms space and how the determinant measures this change.',
         category: 'sub-topic',
         duration: 20,
     }),
