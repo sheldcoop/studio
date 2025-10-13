@@ -16,7 +16,9 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {},
+  experimental: {
+    instrumentationHook: false,
+  },
 };
 
 export default nextConfig;
