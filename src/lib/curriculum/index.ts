@@ -6,6 +6,7 @@ import { statisticsTopics } from './statistics';
 import { probabilityTopics } from './probability';
 import { probabilityAdvancedTopics } from './probability-advanced';
 import { machineLearningTopics } from './machine-learning';
+import { linearAlgebraAnimationTopics } from './linear-algebra-animations';
 
 export const allTopics: Topic[] = [
     ...mainTopics,
@@ -14,6 +15,7 @@ export const allTopics: Topic[] = [
     ...probabilityTopics,
     ...probabilityAdvancedTopics,
     ...machineLearningTopics,
+    ...linearAlgebraAnimationTopics,
 ];
 
 // --- Build-time Uniqueness Check ---
