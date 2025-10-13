@@ -186,11 +186,11 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-7',
-        title: 'Risk Management & Factor Models',
+        title: 'Arbitrage & The Fundamental Theorem of Asset Pricing',
         icon: 'Waypoints',
-        description: 'Decomposing portfolio risk into systematic and idiosyncratic components.',
+        description: 'The role of linear algebra in proving no-arbitrage conditions.',
         category: 'sub-topic',
-        duration: 20,
+        duration: 15,
     }),
     createTopic({
         parent: 'la-module-7',
@@ -200,14 +200,6 @@ export const linearAlgebraPart2: Topic[] = [
         description: 'Modeling dynamic systems like credit ratings with transition matrices.',
         category: 'sub-topic',
         duration: 25,
-    }),
-    createTopic({
-        parent: 'la-module-7',
-        title: 'Arbitrage & The Fundamental Theorem of Asset Pricing',
-        icon: 'Waypoints',
-        description: 'The role of linear algebra in proving no-arbitrage conditions.',
-        category: 'sub-topic',
-        duration: 15,
     }),
     createTopic({
         parent: 'la-module-7',
