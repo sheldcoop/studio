@@ -1,6 +1,9 @@
 
 import { PageHeader } from '@/components/app/page-header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
+
 
 export default function TwoViewsOfAVectorPage() {
   return (
@@ -41,9 +44,9 @@ export default function TwoViewsOfAVectorPage() {
             <CardContent className="space-y-4">
                  <p>To a data scientist or a programmer, a vector isn't an arrow; it's an <strong>ordered list of numbers</strong>. That's it. Seriously.</p>
                  <ul className="list-disc pl-6 font-mono">
-                    <li>[3, 2] is a 2-dimensional vector.</li>
-                    <li>[1800, 3, 25] is a 3-dimensional vector.</li>
-                    <li>[45.7, '10.5M', 31.2, 0.8] is a 4-dimensional vector.</li>
+                    <li><InlineMath math="[3, 2]" /> is a 2-dimensional vector.</li>
+                    <li><InlineMath math="[1800, 3, 25]" /> is a 3-dimensional vector.</li>
+                    <li><InlineMath math="[45.7, \text{'10.5M'}, 31.2, 0.8]" /> is a 4-dimensional vector.</li>
                  </ul>
                  <p>This view is how we represent data in a computer. Every row in your spreadsheet is a vector.</p>
                  <div className="overflow-x-auto">
@@ -62,7 +65,7 @@ export default function TwoViewsOfAVectorPage() {
                         </tbody>
                     </table>
                  </div>
-                 <p>This house is a vector:	<strong>[450000, 2100, 4, 15]</strong></p>
+                 <p>This house is a vector: <InlineMath math="[450000, 2100, 4, 15]" /></p>
             </CardContent>
         </Card>
         
@@ -72,7 +75,7 @@ export default function TwoViewsOfAVectorPage() {
             </CardHeader>
             <CardContent className="space-y-4">
                 <p>The entire foundation of applied linear algebra rests on one, beautiful idea: these two views are just different languages for the same concept.</p>
-                <p>We can translate from the "list of numbers" to the "arrow" by creating a coordinate system. To represent the vector [3, 2], we simply:</p>
+                <p>We can translate from the "list of numbers" to the "arrow" by creating a coordinate system. To represent the vector <InlineMath math="[3, 2]" />, we simply:</p>
                 <ol className="list-decimal pl-6">
                     <li>Start at the center (the origin).</li>
                     <li>Move 3 units along the x-axis.</li>
@@ -121,3 +124,5 @@ export default function TwoViewsOfAVectorPage() {
     </div>
   );
 }
+
+    
