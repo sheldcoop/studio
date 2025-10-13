@@ -124,5 +124,3 @@ export default function TwoViewsOfAVectorPage() {
     </div>
   );
 }
-
-    
