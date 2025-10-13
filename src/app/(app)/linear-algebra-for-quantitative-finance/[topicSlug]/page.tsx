@@ -7,7 +7,7 @@ import { TopicPageClient } from '@/components/app/topic-page-client';
 const PATH_ID = 'linear-algebra-for-quantitative-finance';
 
 // Define slugs that have dedicated pages and should be excluded from this generic route.
-const EXCLUDED_SLUGS = new Set(['the-two-views-of-a-vector', 'vector-operations', 'the-dot-product-norms-and-angles', 'orthogonality', 'the-two-views-of-a-matrix', 'matrix-operations', 'matrix-multiplication', 'special-matrices', 'linear-combinations-and-span', 'linear-independence', 'basis-and-dimension', 'vector-spaces-and-subspaces', 'framing-the-problem-ax-b', 'gaussian-elimination', 'the-solutions-to-ax-b', 'reduced-row-echelon-form', 'lu-decomposition', 'column-space-and-rank', 'the-null-space', 'row-space-and-left-null-space', 'the-fundamental-theorem-of-linear-algebra']);
+const EXCLUDED_SLUGS = new Set(['the-two-views-of-a-vector', 'vector-operations', 'the-dot-product-norms-and-angles', 'orthogonality', 'the-two-views-of-a-matrix', 'matrix-operations', 'matrix-multiplication', 'special-matrices', 'linear-combinations-and-span', 'linear-independence', 'basis-and-dimension', 'vector-spaces-and-subspaces', 'framing-the-problem-ax-b', 'gaussian-elimination', 'the-solutions-to-ax-b', 'reduced-row-echelon-form', 'lu-decomposition', 'column-space-and-rank', 'the-null-space', 'row-space-and-left-null-space', 'the-fundamental-theorem-of-linear-algebra', 'the-geometric-meaning-of-the-determinant']);
 
 type TopicPageProps = {
   params: Promise<{ topicSlug: string }>;
