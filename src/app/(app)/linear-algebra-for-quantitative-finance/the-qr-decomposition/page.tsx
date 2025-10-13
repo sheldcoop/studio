@@ -35,7 +35,7 @@ export default function QRDecompositionPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <ul className="list-disc pl-5 space-y-2">
-                <li><strong>`Q` (The Orthonormal Basis):</strong> This is an Orthogonal Matrix. Its columns `\{q₁, q₂\}` are the "perfect" orthonormal basis for the Column Space of `A`. We find `Q` using the Gram-Schmidt process.</li>
+                <li><strong>`Q` (The Orthonormal Basis):</strong> This is an Orthogonal Matrix. Its columns are <InlineMath>{'\\{q_1, q_2\\}'}</InlineMath>  the "perfect" orthonormal basis for the Column Space of `A`. We find `Q` using the Gram-Schmidt process.</li>
                 <li><strong>`R` (The Recipe Matrix):</strong> This is an Upper Triangular Matrix. It is the "recipe" that tells us how to construct the original columns of `A` as linear combinations of the new `q` vectors.</li>
             </ul>
         </CardContent>
