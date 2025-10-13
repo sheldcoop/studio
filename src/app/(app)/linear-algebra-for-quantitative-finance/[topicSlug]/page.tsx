@@ -22,17 +22,8 @@ export async function generateStaticParams() {
         return false;
       }
       
-      // Find the ultimate parent path for each topic
-      let current = topic;
-      while (current.parent) {
-        const parentTopic = allTopics.find(t => t.id === current.parent);
-        if (!parentTopic) break;
-        if (parentTopic.id === PATH_ID) {
-          return true;
-        }
-        current = parentTopic;
-      }
-      return topic.parent === PATH_ID || current.id === PATH_ID;
+      // Only include topics that are direct children of the linear algebra modules.
+      return topic.parent?.startsWith('la-module-');
     })
     .map(topic => ({
       topicSlug: topic.id,
