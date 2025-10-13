@@ -108,6 +108,7 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-5',
+        id: 'the-stable-solution-the-gram-schmidt-process',
         title: 'The Stable Solution: The Gram-Schmidt Process',
         icon: 'Waypoints',
         description: 'An algorithm for creating a "nice" orthonormal basis from any starting basis.',
