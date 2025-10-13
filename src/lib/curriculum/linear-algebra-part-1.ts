@@ -12,12 +12,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 15,
         status: 'completed',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -27,12 +21,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 20,
         status: 'in-progress',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -42,12 +30,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 25,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -57,12 +39,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 20,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -72,12 +48,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 15,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -87,12 +57,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 20,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -102,12 +66,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 25,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -117,12 +75,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 20,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -132,12 +84,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 20,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -147,12 +93,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 20,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -162,12 +102,6 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 25,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
     createTopic({
         parent: 'la-module-1',
@@ -177,52 +111,63 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 25,
         status: 'not-started',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
 
     // --- Module 2 ---
      createTopic({
         parent: 'la-module-2',
-        title: 'Systems of Linear Equations',
+        title: 'Framing the Problem: Ax=b',
         icon: 'Waypoints',
-        description: "The mathematical basis for linear regression.",
+        description: "Understanding Ax=b from the row picture (intersection of planes) and the column picture (linear combination of columns).",
         category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
      createTopic({
         parent: 'la-module-2',
-        title: 'Orthogonality & Projections',
+        title: 'Gaussian Elimination',
         icon: 'Waypoints',
-        description: "The core of Ordinary Least Squares (OLS) regression.",
+        description: "The core algorithm for solving linear systems. Row operations, row echelon form (REF), and reduced row echelon form (RREF).",
         category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
     }),
      createTopic({
         parent: 'la-module-2',
-        title: 'The Four Fundamental Subspaces',
+        title: 'The Solutions to Ax=b',
         icon: 'Waypoints',
-        description: "Understand the complete picture of a matrix.",
+        description: "Identifying if a system has a unique solution, no solution, or infinitely many solutions from its RREF.",
         category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
+    }),
+     createTopic({
+        parent: 'la-module-2',
+        title: 'LU Decomposition',
+        icon: 'Waypoints',
+        description: "The 'matrix version' of Gaussian Elimination. Solving Ax=b becomes a fast, two-step process of forward and back substitution.",
+        category: 'sub-topic',
+    }),
+     createTopic({
+        parent: 'la-module-2',
+        title: 'Column Space & Rank',
+        icon: 'Waypoints',
+        description: 'The space of all possible outputs of A. The concept of rank as the "true dimension" of the output space.',
+        category: 'sub-topic',
+    }),
+     createTopic({
+        parent: 'la-module-2',
+        title: 'The Null Space',
+        icon: 'Waypoints',
+        description: 'The space of all inputs that map to the zero vector. Its connection to multicollinearity in data.',
+        category: 'sub-topic',
+    }),
+     createTopic({
+        parent: 'la-module-2',
+        title: 'Row Space & Left Null Space',
+        icon: 'Waypoints',
+        description: 'Completing the picture of the four fundamental subspaces.',
+        category: 'sub-topic',
+    }),
+     createTopic({
+        parent: 'la-module-2',
+        title: 'The Fundamental Theorem of Linear Algebra',
+        icon: 'Waypoints',
+        description: "How the four subspaces relate to each other and partition the input and output spaces.",
+        category: 'sub-topic',
     }),
 ];
