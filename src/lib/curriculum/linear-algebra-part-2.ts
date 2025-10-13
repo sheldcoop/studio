@@ -21,7 +21,7 @@ export const linearAlgebraPart2: Topic[] = [
         duration: 30,
     }),
 
-    // --- Module 4: Eigenvalues & Decompositions ---
+    // --- Module 4: Eigenvalues & Eigendecompositions ---
      createTopic({
         parent: 'la-module-4',
         title: 'Eigenvalues & Eigenvectors',
@@ -71,54 +71,59 @@ export const linearAlgebraPart2: Topic[] = [
         duration: 25,
     }),
 
-
-    // --- Module 5: Orthogonality & Projections ---
+    // --- Module 5: Least Squares & QR Decomposition ---
     createTopic({
         parent: 'la-module-5',
-        title: 'The Inexact Problem (Ax=b)',
+        title: 'The Inexact Problem: Ax=b has no solution',
         icon: 'Waypoints',
-        description: 'What to do when Ax=b has no solution.',
+        description: 'Introducing the goal of minimizing the error ||Ax - b||.',
         category: 'sub-topic',
         duration: 15,
     }),
     createTopic({
         parent: 'la-module-5',
-        title: 'Projections onto Subspaces',
+        title: 'The Geometry of "Best Fit": Projections',
         icon: 'Waypoints',
-        description: 'The geometric solution: find the closest point in the column space.',
-        category: 'sub-topic',
-        duration: 30,
-    }),
-
-    // --- Module 6: Least Squares & The QR Decomposition ---
-    createTopic({
-        parent: 'la-module-6',
-        title: 'The Normal Equations (AᵀAx̂ = Aᵀb)',
-        icon: 'Waypoints',
-        description: 'The algebraic solution to the least squares problem and its link to linear regression.',
+        description: 'Finding the closest point in a subspace (the Column Space) to an external vector.',
         category: 'sub-topic',
         duration: 30,
     }),
     createTopic({
-        parent: 'la-module-6',
-        title: 'The Problem with Normal Equations',
+        parent: 'la-module-5',
+        title: 'The Algebraic Solution: The Normal Equations',
         icon: 'Waypoints',
-        description: 'AᵀA can be ill-conditioned and numerically unstable.',
+        description: 'Deriving AᵀAx̂ = Aᵀb from the projection geometry. This is the engine of Linear Regression.',
+        category: 'sub-topic',
+        duration: 30,
+    }),
+    createTopic({
+        parent: 'la-module-5',
+        title: 'The Problem with the Normal Equations',
+        icon: 'Waypoints',
+        description: 'Understanding why AᵀA can be ill-conditioned and lead to numerical errors.',
         category: 'sub-topic',
         duration: 15,
     }),
     createTopic({
-        parent: 'la-module-6',
-        title: 'Gram-Schmidt & QR Decomposition',
+        parent: 'la-module-5',
+        title: 'The Stable Solution: The Gram-Schmidt Process',
         icon: 'Waypoints',
-        description: 'A numerically superior method (A=QR) for solving least squares problems by creating an orthonormal basis.',
+        description: 'An algorithm for creating a "nice" orthonormal basis from any starting basis.',
+        category: 'sub-topic',
+        duration: 35,
+    }),
+     createTopic({
+        parent: 'la-module-5',
+        title: 'The QR Decomposition',
+        icon: 'Waypoints',
+        description: 'Using Gram-Schmidt to factor A=QR. Show how this makes solving the least squares problem trivial (Rx̂ = Qᵀb) and numerically robust.',
         category: 'sub-topic',
         duration: 35,
     }),
     
-    // --- Module 7: The Singular Value Decomposition (SVD) ---
+    // --- Module 6: The Grand Finale - SVD ---
     createTopic({
-        parent: 'la-module-7',
+        parent: 'la-module-6',
         title: 'The Singular Value Decomposition (SVD)',
         icon: 'Waypoints',
         description: 'The ultimate decomposition (A = UΣVᵀ) that works for any matrix and finds orthonormal bases for all four fundamental subspaces simultaneously.',
@@ -126,7 +131,7 @@ export const linearAlgebraPart2: Topic[] = [
         duration: 40,
     }),
     createTopic({
-        parent: 'la-module-7',
+        parent: 'la-module-6',
         title: 'Principal Component Analysis (PCA)',
         icon: 'Waypoints',
         description: 'A direct, powerful application of SVD on the data matrix for dimensionality reduction.',
@@ -134,7 +139,7 @@ export const linearAlgebraPart2: Topic[] = [
         duration: 30,
     }),
     createTopic({
-        parent: 'la-module-7',
+        parent: 'la-module-6',
         title: 'Advanced SVD Applications',
         icon: 'Waypoints',
         description: 'Low-rank approximation for noise reduction, and the core ideas behind recommendation systems.',
@@ -142,33 +147,33 @@ export const linearAlgebraPart2: Topic[] = [
         duration: 25,
     }),
 
-    // --- Module 8: Applications in Finance ---
+    // --- Module 7: Applications in Finance ---
     createTopic({
-        parent: 'la-module-8',
-        title: 'Portfolio Optimization',
+        parent: 'la-module-7',
+        title: 'Portfolio Optimization & The Efficient Frontier',
         icon: 'Waypoints',
         description: 'Using linear algebra to construct optimal portfolios.',
         category: 'sub-topic',
         duration: 25,
     }),
     createTopic({
-        parent: 'la-module-8',
+        parent: 'la-module-7',
         title: 'The Capital Asset Pricing Model (CAPM)',
         icon: 'Waypoints',
         description: 'Understanding the relationship between risk and expected return.',
         category: 'sub-topic',
         duration: 20,
     }),
-    createTopic({
-        parent: 'la-module-8',
-        title: 'Fixed Income (Bond) Mathematics',
+     createTopic({
+        parent: 'la-module-7',
+        title: 'Risk Management & Factor Models',
         icon: 'Waypoints',
-        description: 'Duration and convexity as linear algebraic concepts.',
+        description: 'Decomposing portfolio risk into systematic and idiosyncratic components.',
         category: 'sub-topic',
         duration: 15,
     }),
     createTopic({
-        parent: 'la-module-8',
+        parent: 'la-module-7',
         title: 'Arbitrage & The Fundamental Theorem of Asset Pricing',
         icon: 'Waypoints',
         description: 'The role of linear algebra in proving no-arbitrage conditions.',
@@ -176,10 +181,10 @@ export const linearAlgebraPart2: Topic[] = [
         duration: 15,
     }),
     createTopic({
-        parent: 'la-module-8',
-        title: 'Risk Management & Factor Models',
+        parent: 'la-module-7',
+        title: 'Fixed Income (Bond) Mathematics',
         icon: 'Waypoints',
-        description: 'Decomposing portfolio risk into systematic and idiosyncratic components.',
+        description: 'Duration and convexity as linear algebraic concepts.',
         category: 'sub-topic',
         duration: 15,
     }),

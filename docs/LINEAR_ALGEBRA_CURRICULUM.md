@@ -31,7 +31,7 @@
 - **Lesson 1: The Geometric Meaning of the Determinant:** The determinant as the scaling factor of area/volume.
 - **Lesson 2: Calculation and Properties:** Cofactor expansion and the properties of determinants. A determinant of zero means the matrix squishes space into a lower dimension (i.e., it's not invertible).
 
-## Module 4: Eigenvalues, Eigenvectors, & Decompositions
+## Module 4: Eigenvalues, Eigenvectors, & Eigendecompositions
 
 - **Lesson 1: Eigenvalues & Eigenvectors:** Finding the 'special' vectors that are only scaled by a transformation, not rotated off their span (Ax = λx).
 - **Lesson 2: The Characteristic Equation:** The calculation behind eigenvalues: solving det(A - λI) = 0.
@@ -40,27 +40,25 @@
 - **Lesson 5: The Spectral Theorem:** For symmetric matrices (like covariance matrices), the eigendecomposition is especially beautiful and stable (A = QDQᵀ). This is the theoretical foundation of PCA.
 - **Lesson 6: The Cholesky Decomposition (LLᵀ):** A highly efficient specialization for symmetric, positive-definite matrices, often used in optimization and financial modeling.
 
-## Module 5: Orthogonality & Projections
+## Module 5: The Inexact Problem: Least Squares & QR Decomposition
 
-- **Lesson 1: The Inexact Problem (Ax=b):** What to do when Ax=b has no solution.
-- **Lesson 2: Projections onto Subspaces:** The geometric solution: find the closest point in the column space.
+- **Lesson 1: The Best Possible Solution:** What to do when `Ax=b` has no exact solution. Introducing the goal of minimizing the error `||Ax - b||`.
+- **Lesson 2: The Geometry of "Best Fit": Projections:** How to find the closest point in a subspace (the Column Space) to an external vector (`b`).
+- **Lesson 3: The Algebraic Solution: The Normal Equations:** Deriving `AᵀAx̂ = Aᵀb` from the projection geometry. This is the engine of **Linear Regression**.
+- **Lesson 4: The Problem with the Normal Equations:** Understanding why `AᵀA` can be ill-conditioned and lead to numerical errors.
+- **Lesson 5: The Stable Solution: The Gram-Schmidt Process:** An algorithm for creating a "nice" orthonormal basis from any starting basis.
+- **Lesson 6: The QR Decomposition:** Using Gram-Schmidt to factor `A=QR`. This makes solving the least squares problem trivial and numerically robust.
 
-## Module 6: Least Squares & The QR Decomposition
+## Module 6: The Grand Finale - SVD & Its Applications
 
-- **Lesson 1: The Normal Equations (AᵀAx̂ = Aᵀb):** The algebraic solution to the least squares problem and its link to linear regression.
-- **Lesson 2: The Problem with Normal Equations:** AᵀA can be ill-conditioned and numerically unstable.
-- **Lesson 3: Gram-Schmidt & QR Decomposition:** A numerically superior method (A=QR) for solving least squares problems by creating an orthonormal basis.
-
-## Module 7: The Grand Finale - SVD
-
-- **Lesson 1: The Singular Value Decomposition (SVD):** The ultimate decomposition (A = UΣVᵀ) that works for any matrix and finds orthonormal bases for all four fundamental subspaces simultaneously.
+- **Lesson 1: The Singular Value Decomposition (SVD):** The ultimate decomposition (`A = UΣVᵀ`) that works for any matrix and finds orthonormal bases for all four fundamental subspaces simultaneously.
 - **Lesson 2: Principal Component Analysis (PCA):** A direct, powerful application of SVD on the data matrix for dimensionality reduction.
 - **Lesson 3: Advanced SVD Applications:** Low-rank approximation for noise reduction, and the core ideas behind recommendation systems.
 
-## Module 8: Applications in Finance
+## Module 7: Applications in Finance
 
-- **Lesson 1: Portfolio Optimization:** Using linear algebra to construct optimal portfolios.
-- **Lesson 2: The Capital Asset Pricing Model (CAPM):** Understanding the relationship between risk and expected return.
-- **Lesson 3: Fixed Income (Bond) Mathematics:** Duration and convexity as linear algebraic concepts.
-- **Lesson 4: Arbitrage & The Fundamental Theorem of Asset Pricing:** The role of linear algebra in proving no-arbitrage conditions.
-- **Lesson 5: Risk Management & Factor Models:** Decomposing portfolio risk into systematic and idiosyncratic components.
+- **Lesson 1: Portfolio Optimization & The Efficient Frontier**
+- **Lesson 2: The Capital Asset Pricing Model (CAPM)**
+- **Lesson 3: Risk Management & Factor Models**
+- **Lesson 4: Arbitrage & The Fundamental Theorem of Asset Pricing**
+- **Lesson 5: Fixed Income (Bond) Mathematics**

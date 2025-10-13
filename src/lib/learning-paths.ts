@@ -68,11 +68,10 @@ const allPathModules: (Omit<Module, 'lessons'> & { parent: string })[] = [
   { id: 'la-module-1', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 1: Foundations of Vectors & Matrices', status: 'completed', duration: 250 },
   { id: 'la-module-2', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 2: Solving Linear Systems & The Four Subspaces', status: 'in-progress', duration: 115 },
   { id: 'la-module-3', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 3: Determinants', status: 'not-started', duration: 50 },
-  { id: 'la-module-4', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 4: Eigenvalues, Eigenvectors, & Decompositions', status: 'not-started', duration: 150 },
-  { id: 'la-module-5', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 5: Orthogonality & Projections', status: 'not-started', duration: 45 },
-  { id: 'la-module-6', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 6: Least Squares & The QR Decomposition', status: 'not-started', duration: 80 },
-  { id: 'la-module-7', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 7: The Grand Finale - SVD', status: 'not-started', duration: 95 },
-  { id: 'la-module-8', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 8: Applications in Finance', status: 'not-started', duration: 90 },
+  { id: 'la-module-4', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 4: Eigenvalues, Eigenvectors, & Eigendecompositions', status: 'not-started', duration: 150 },
+  { id: 'la-module-5', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 5: The Inexact Problem: Least Squares & QR Decomposition', status: 'not-started', duration: 125 },
+  { id: 'la-module-6', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 6: The Grand Finale - SVD & Its Applications', status: 'not-started', duration: 95 },
+  { id: 'la-module-7', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 7: Applications in Finance', status: 'not-started', duration: 90 },
 
   // Advanced Statistics
   { id: 'stats-mod-1', parent: 'statistics-for-quantitative-finance', title: 'Module 1: Foundations in Probability & Random Variables', status: 'in-progress', duration: 135 },
