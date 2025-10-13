@@ -14,6 +14,7 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-3',
+        id: 'calculation-and-properties-of-the-determinant',
         title: 'Calculation and Properties',
         icon: 'Waypoints',
         description: "Cofactor expansion and the properties of determinants. A determinant of zero means the matrix squishes space into a lower dimension (i.e., it's not invertible).",
