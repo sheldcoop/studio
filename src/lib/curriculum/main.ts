@@ -56,4 +56,13 @@ export const mainTopics: Topic[] = [
     category: 'main',
     animation: 'machine-learning',
   },
+  {
+    id: 'linear-algebra-animations',
+    title: 'Linear Algebra Animations',
+    description: 'Interactive WebGL visualizations of core linear algebra concepts.',
+    icon: 'Orbit',
+    href: '/linear-algebra-animations',
+    category: 'main',
+    animation: 'linear-algebra',
+  }
 ];
