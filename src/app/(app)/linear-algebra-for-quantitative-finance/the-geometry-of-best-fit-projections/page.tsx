@@ -33,7 +33,7 @@ export default function ProjectionsPage() {
           <p>Imagine a single vector `a` in space, which defines a line. Now, imagine another vector `b` that is not on this line. The closest point on the line to `b` is the **orthogonal projection of `b` onto `a`**, which we'll call `p`.</p>
           <p>The key feature is that the error vector, <InlineMath math="e = b - p" />, must be **orthogonal** to the vector `a` that defines the line. This means their dot product is zero:</p>
           <BlockMath math="a \cdot (b - p) = 0" />
-          <p>We also know `p` must be a scaled version of `a`, so `p = x̂a` for some scalar `x̂`. Substituting this in:</p>
+          <p>We also know `p` must be a scaled version of `a`, so `p = \hat{x}a` for some scalar `x̂`. Substituting this in:</p>
           <BlockMath math="a \cdot (b - \hat{x}a) = 0 \implies a \cdot b - \hat{x}(a \cdot a) = 0" />
           <p>Solving for our unknown scalar `x̂` gives:</p>
           <div className="rounded-lg border bg-muted/50 p-4 text-center">

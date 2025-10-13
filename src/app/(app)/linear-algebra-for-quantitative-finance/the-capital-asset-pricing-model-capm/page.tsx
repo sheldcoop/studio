@@ -49,8 +49,8 @@ export default function CAPMPage() {
         <CardContent>
           <ul className="list-disc pl-5 space-y-1">
             <li>`β = 1`: The stock moves in line with the market.</li>
-            <li>`β > 1`: The stock is more volatile than the market.</li>
-            <li>`β < 1`: The stock is less volatile than the market.</li>
+            <li>`β &gt 1`: The stock is more volatile than the market.</li>
+            <li>`β &lt 1`: The stock is less volatile than the market.</li>
           </ul>
         </CardContent>
       </Card>
