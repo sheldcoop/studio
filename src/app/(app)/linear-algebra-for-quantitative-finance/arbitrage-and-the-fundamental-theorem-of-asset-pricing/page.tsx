@@ -87,7 +87,7 @@ export default function ArbitragePage() {
         <CardContent className="space-y-4">
             <div>
                 <h4 className="font-semibold">The State Price Vector (`ψ`)</h4>
-                <p>The theorem introduces a crucial vector called the **State Price Vector (`ψ`)**. Each component `ψᵢ` is the "price today" of receiving one single dollar if and only if state `i` occurs tomorrow. For this to make economic sense, all state prices must be strictly positive (`ψ > 0`).</p>
+                <p>The theorem introduces a crucial vector called the **State Price Vector (`ψ`)**. Each component `ψᵢ` is the "price today" of receiving one single dollar if and only if state `i` occurs tomorrow. For this to make economic sense, all state prices must be strictly positive (`ψ &gt 0`).</p>
             </div>
             <div>
                 <h4 className="font-semibold">The Law of One Price</h4>

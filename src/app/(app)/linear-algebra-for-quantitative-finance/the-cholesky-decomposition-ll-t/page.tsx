@@ -20,7 +20,7 @@ export default function CholeskyDecompositionPage() {
           We've just seen the power of the Spectral Theorem for symmetric matrices. Now, we zoom in on an even more special (and highly useful) subset: **symmetric positive-definite** matrices.
         </p>
         <p>
-          A matrix `A` is positive-definite if `xᵀAx > 0` for all non-zero vectors `x`. Intuitively, this means the transformation `A` doesn't "flip" any vector and that all its eigenvalues are positive. Covariance and correlation matrices often have this property, making them prime candidates for this specialized decomposition.
+          A matrix `A` is positive-definite if `xᵀAx &gt 0` for all non-zero vectors `x`. Intuitively, this means the transformation `A` doesn't "flip" any vector and that all its eigenvalues are positive. Covariance and correlation matrices often have this property, making them prime candidates for this specialized decomposition.
         </p>
         <p>
           The Cholesky Decomposition is a way to factor such a matrix `A` into the product of a lower triangular matrix `L` and its transpose `Lᵀ`. It's like finding the "square root" of a matrix.

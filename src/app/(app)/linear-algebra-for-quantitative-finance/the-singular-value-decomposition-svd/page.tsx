@@ -40,9 +40,9 @@ export default function SVDPage() {
                 <BlockMath math="A = U\Sigma V^T" />
             </div>
              <ul className="list-disc pl-6 space-y-2 text-sm">
-                <li><strong>`V` (The Input Axes):</strong> An `n x n` **Orthogonal Matrix**. Its columns, <InlineMath math="\{v_1, v_2, ...\}" />, are the **right singular vectors**. They form a perfect orthonormal basis for the **input space**. The `Vᵀ` in the formula performs the initial rotation.</li>
-                <li><strong>`Σ` (The Scaling Factors):</strong> An `m x n` **rectangular diagonal matrix**. The values on its diagonal, <InlineMath math="\sigma_1 \ge \sigma_2 \ge ... \ge 0" />, are the **singular values**. This matrix does all the stretching and squashing.</li>
-                <li><strong>`U` (The Output Axes):** An `m x m` **Orthogonal Matrix**. Its columns, <InlineMath math="\{u_1, u_2, ...\}" />, are the **left singular vectors**. They form a perfect orthonormal basis for the **output space**. `U` performs the final rotation.</li>
+                <li><strong>`V` (The Input Axes):</strong> An `n x n` <strong>Orthogonal Matrix</strong>. Its columns, <InlineMath math="\{v_1, v_2, ...\}" />, are the <strong>right singular vectors</strong>. They form a perfect orthonormal basis for the <strong>input space</strong>. The `Vᵀ` in the formula performs the initial rotation.</li>
+                <li><strong>`Σ` (The Scaling Factors):</strong> An `m x n` <strong>rectangular diagonal matrix</strong>. The values on its diagonal, <InlineMath math="\sigma_1 \ge \sigma_2 \ge ... \ge 0" />, are the <strong>singular values</strong>. This matrix does all the stretching and squashing.</li>
+                <li><strong>`U` (The Output Axes):</strong> An `m x m` <strong>Orthogonal Matrix</strong>. Its columns, <InlineMath math="\{u_1, u_2, ...\}" />, are the <strong>left singular vectors</strong>. They form a perfect orthonormal basis for the <strong>output space</strong>. `U` performs the final rotation.</li>
             </ul>
              <p className="font-semibold text-primary mt-4">The SVD finds the perfect input basis (`V`) and the perfect output basis (`U`) that make the transformation `A` become a simple diagonal scaling matrix `Σ`.</p>
         </CardContent>
@@ -69,10 +69,10 @@ export default function SVDPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li><strong>Row Space `C(Aᵀ)`:** Basis is the first `r` columns of `V`, `{v₁, ..., vᵣ}`.</li>
-                <li>**Null Space `N(A)`:** Basis is the remaining `n-r` columns of `V`, `{vᵣ₊₁, ..., vₙ}`.</li>
-                <li>**Column Space `C(A)`:** Basis is the first `r` columns of `U`, `{u₁, ..., uᵣ}`.</li>
-                <li>**Left Null Space `N(Aᵀ)`:** Basis is the remaining `m-r` columns of `U`, `{uᵣ₊₁, ..., uₘ}`.</li>
+                <li><strong>Row Space `C(Aᵀ)`:</strong> Basis is the first `r` columns of `V`, <InlineMath math="\{v_1, ..., v_r\}" />.</li>
+                <li><strong>Null Space `N(A)`:</strong> Basis is the remaining `n-r` columns of `V`, <InlineMath math="\{v_{r+1}, ..., v_n\}" />.</li>
+                <li><strong>Column Space `C(A)`:</strong> Basis is the first `r` columns of `U`, <InlineMath math="\{u_1, ..., u_r\}" />.</li>
+                <li><strong>Left Null Space `N(Aᵀ)`:</strong> Basis is the remaining `m-r` columns of `U`, <InlineMath math="\{u_{r+1}, ..., u_m\}" />.</li>
             </ul>
              <div className="rounded-lg border bg-muted/50 p-4 text-center mt-4">
                 <p className="mb-2 text-sm text-muted-foreground">The core relationship:</p>
@@ -89,19 +89,19 @@ export default function SVDPage() {
            <p className="mb-4">We find `U`, `Σ`, and `V` from the eigendecomposition of the symmetric matrices `AᵀA` and `AAᵀ`.</p>
            <ol className="list-decimal pl-5 space-y-4 text-sm">
                 <li>
-                    <strong>Find `V` and `Σ` from `AᵀA`:**
+                    <strong>Find `V` and `Σ` from `AᵀA`:</strong>
                     <ul className="list-disc pl-5 mt-2 space-y-1">
                         <li>Construct the `n x n` symmetric matrix `AᵀA`.</li>
                         <li>Find its eigenvalues (`λᵢ`) and orthonormal eigenvectors.</li>
                         <li>The eigenvectors are the columns of `V`.</li>
-                        <li>The singular values `σᵢ` are the square roots of the eigenvalues (`σᵢ = \sqrt{\lambdaᵢ}`).</li>
+                        <li>The singular values `σᵢ` are the square roots of the eigenvalues (<InlineMath math="\sigma_i = \sqrt{\lambda_i}" />).</li>
                     </ul>
                 </li>
                 <li>
-                    <strong>Find `U`:**
+                    <strong>Find `U`:</strong>
                     <ul className="list-disc pl-5 mt-2 space-y-1">
                          <li>The eigenvectors of the `m x m` matrix `AAᵀ` are the columns of `U`.</li>
-                        <li>Alternatively, and more quickly, use the formula `uᵢ = (1/σᵢ) * A * vᵢ` for each `i`.</li>
+                        <li>Alternatively, and more quickly, use the formula <InlineMath math="u_i = (1/\sigma_i) A v_i" /> for each `i`.</li>
                     </ul>
                 </li>
            </ol>
@@ -114,15 +114,15 @@ export default function SVDPage() {
         <CardContent>
           <ol className="list-decimal pl-6 space-y-2">
             <li><strong>Universality:</strong> SVD works for <strong>any `m x n` matrix</strong>.</li>
-            <li><strong>The Geometry:</strong> Any transformation is a **Rotate (`Vᵀ`) -> Stretch (`Σ`) -> Rotate (`U`)**.</li>
+            <li><strong>The Geometry:</strong> Any transformation is a <strong>Rotate (`Vᵀ`) -&gt; Stretch (`Σ`) -&gt; Rotate (`U`)</strong>.</li>
             <li><strong>The Components:</strong>
                 <ul className="list-disc pl-6 mt-2">
                     <li>`V`: Orthonormal basis for the input space (eigenvectors of `AᵀA`).</li>
-                    <li>`Σ`: Diagonal matrix of singular values `σᵢ = \sqrt{\lambdaᵢ}`.</li>
+                    <li>`Σ`: Diagonal matrix of singular values <InlineMath math="\sigma_i = \sqrt{\lambda_i}" />.</li>
                     <li>`U`: Orthonormal basis for the output space.</li>
                 </ul>
             </li>
-            <li><strong>The Power:</strong> SVD provides a complete, orthonormal map of the **Four Fundamental Subspaces**.</li>
+            <li><strong>The Power:</strong> SVD provides a complete, orthonormal map of the <strong>Four Fundamental Subspaces</strong>.</li>
           </ol>
         </CardContent>
       </Card>
