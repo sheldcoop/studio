@@ -154,6 +154,15 @@ export const linearAlgebraPart2: Topic[] = [
     // --- Module 7: Applications in Finance ---
     createTopic({
         parent: 'la-module-7',
+        id: 'the-covariance-matrix-and-the-geometry-of-portfolio-risk',
+        title: 'The Covariance Matrix & Portfolio Risk',
+        icon: 'Waypoints',
+        description: 'Deriving portfolio variance from first principles using linear algebra.',
+        category: 'sub-topic',
+        duration: 30,
+    }),
+    createTopic({
+        parent: 'la-module-7',
         title: 'Portfolio Optimization & The Efficient Frontier',
         icon: 'Waypoints',
         description: 'Using linear algebra to construct optimal portfolios.',
