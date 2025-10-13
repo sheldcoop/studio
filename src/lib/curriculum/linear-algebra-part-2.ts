@@ -3,92 +3,71 @@ import { type Topic } from './types';
 import { createTopic } from './utils';
 
 export const linearAlgebraPart2: Topic[] = [
-    // --- Module 3 ---
-     createTopic({
+    // --- Module 3: Determinants ---
+    createTopic({
         parent: 'la-module-3',
-        title: 'Eigenvalues & Eigenvectors',
+        title: 'The Geometric Meaning of the Determinant',
         icon: 'Waypoints',
-        description: "Find the 'axes of greatest variance' in your data.",
+        description: "The determinant as the scaling factor of area/volume.",
         category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
+        duration: 20,
     }),
-     createTopic({
+    createTopic({
         parent: 'la-module-3',
-        title: 'Diagonalization',
+        title: 'Calculation and Properties',
         icon: 'Waypoints',
-        description: "Simplify complex systems for long-term modeling.",
+        description: "Cofactor expansion and the properties of determinants. A determinant of zero means the matrix squishes space into a lower dimension (i.e., it's not invertible).",
         category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
-    }),
-     createTopic({
-        parent: 'la-module-3',
-        title: 'Singular Value Decomposition (SVD)',
-        icon: 'Waypoints',
-        description: "The master decomposition for any matrix.",
-        category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
+        duration: 30,
     }),
 
-    // --- Module 4 ---
+    // --- Module 4: Eigenvalues & Decompositions ---
      createTopic({
         parent: 'la-module-4',
-        title: 'Covariance & Correlation Matrices',
+        title: 'Eigenvalues & Eigenvectors',
         icon: 'Waypoints',
-        description: "The cornerstone of portfolio theory.",
+        description: "Finding the 'special' vectors that are only scaled by a transformation, not rotated off their span (Ax = λx).",
         category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
+        duration: 30,
     }),
      createTopic({
         parent: 'la-module-4',
-        title: 'Positive Definite Matrices',
+        title: 'The Characteristic Equation',
         icon: 'Waypoints',
-        description: "The mathematical property that makes portfolio optimization possible.",
+        description: "The calculation behind eigenvalues: solving det(A - λI) = 0.",
         category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
+        duration: 25,
     }),
      createTopic({
         parent: 'la-module-4',
-        title: 'Cholesky Decomposition',
+        title: 'Diagonalization (PDP⁻¹)',
         icon: 'Waypoints',
-        description: "The key to generating correlated random asset paths for Monte Carlo simulations.",
+        description: "Decomposing a matrix into its core components: 'changing to the eigenbasis, scaling, and changing back.'",
         category: 'sub-topic',
-        subTopics: [
-            { id: 'theory', title: 'Core Theory' },
-            { id: 'application', title: 'Financial Application' },
-            { id: 'interactive', title: 'Interactive Demo' },
-            { id: 'problems', title: 'Practice Problems' },
-        ]
+        duration: 35,
     }),
+     createTopic({
+        parent: 'la-module-4',
+        title: 'The Spectral Theorem & SVD',
+        icon: 'Waypoints',
+        description: "For symmetric matrices (like covariance matrices), the eigendecomposition is especially beautiful and stable (A = QDQᵀ). This is the foundation of PCA.",
+        category: 'sub-topic',
+        duration: 35,
+    }),
+    createTopic({
+        parent: 'la-module-4',
+        title: 'Cholesky Decomposition (LLᵀ)',
+        icon: 'Waypoints',
+        description: "A highly efficient decomposition for symmetric, positive-definite matrices, used in optimization and financial modeling.",
+        category: 'sub-topic',
+        duration: 25,
+    }),
+
 
     // --- Module 5: Orthogonality & Projections ---
     createTopic({
         parent: 'la-module-5',
-        title: 'The Inexact Problem',
+        title: 'The Inexact Problem (Ax=b)',
         icon: 'Waypoints',
         description: 'What to do when Ax=b has no solution.',
         category: 'sub-topic',
@@ -102,37 +81,21 @@ export const linearAlgebraPart2: Topic[] = [
         category: 'sub-topic',
         duration: 30,
     }),
-    createTopic({
-        parent: 'la-module-5',
-        title: 'The Normal Equations',
-        icon: 'Waypoints',
-        description: 'The algebraic solution: deriving AᵀAx̂ = Aᵀb.',
-        category: 'sub-topic',
-        duration: 30,
-    }),
 
     // --- Module 6: Least Squares & The QR Decomposition ---
     createTopic({
         parent: 'la-module-6',
-        title: 'Linear Regression',
+        title: 'The Normal Equations (AᵀAx̂ = Aᵀb)',
         icon: 'Waypoints',
-        description: 'The quintessential application of least squares.',
-        category: 'sub-topic',
-        duration: 25,
-    }),
-    createTopic({
-        parent: 'la-module-6',
-        title: 'Gram-Schmidt Process',
-        icon: 'Waypoints',
-        description: 'Creating a stable, orthonormal basis (Q).',
+        description: 'The algebraic solution to the least squares problem and its link to linear regression.',
         category: 'sub-topic',
         duration: 30,
     }),
     createTopic({
         parent: 'la-module-6',
-        title: 'QR Decomposition',
+        title: 'Gram-Schmidt & QR Decomposition',
         icon: 'Waypoints',
-        description: 'A numerically superior method for solving least squares problems.',
+        description: 'A numerically superior method (A=QR) for solving least squares problems by creating an orthonormal basis.',
         category: 'sub-topic',
         duration: 35,
     }),

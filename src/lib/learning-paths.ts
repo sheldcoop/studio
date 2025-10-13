@@ -65,12 +65,14 @@ export const learningPaths: Omit<LearningPath, 'modules'>[] = [
 
 const allPathModules: (Omit<Module, 'lessons'> & { parent: string })[] = [
   // Linear Algebra
-  { id: 'la-module-1', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 1: Foundations of Vectors & Matrices', status: 'completed', duration: 180 },
-  { id: 'la-module-2', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 2: Solving Linear Systems', status: 'in-progress', duration: 135 },
-  { id: 'la-module-3', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 3: Eigenvalues & Eigenvectors', status: 'not-started', duration: 75 },
-  { id: 'la-module-4', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 4: Applications in Finance', status: 'not-started', duration: 90 },
-  { id: 'la-module-5', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 5: Orthogonality & Projections', status: 'not-started', duration: 75 },
-  { id: 'la-module-6', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 6: Least Squares & The QR Decomposition', status: 'not-started', duration: 90 },
+  { id: 'la-module-1', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 1: Foundations of Vectors & Matrices', status: 'completed', duration: 250 },
+  { id: 'la-module-2', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 2: Solving Linear Systems & The Four Subspaces', status: 'in-progress', duration: 115 },
+  { id: 'la-module-3', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 3: Determinants', status: 'not-started', duration: 50 },
+  { id: 'la-module-4', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 4: Eigenvalues, Eigenvectors, & Decompositions', status: 'not-started', duration: 150 },
+  { id: 'la-module-5', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 5: Orthogonality & Projections', status: 'not-started', duration: 45 },
+  { id: 'la-module-6', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 6: Least Squares & The QR Decomposition', status: 'not-started', duration: 65 },
+  { id: 'la-module-7', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 7: Applications in Finance', status: 'not-started', duration: 90 },
+
   // Advanced Statistics
   { id: 'stats-mod-1', parent: 'statistics-for-quantitative-finance', title: 'Module 1: Foundations in Probability & Random Variables', status: 'in-progress', duration: 135 },
   { id: 'stats-mod-2', parent: 'statistics-for-quantitative-finance', title: 'Module 2: Key Distributions & Asymptotic Theory', status: 'not-started', duration: 60 },
