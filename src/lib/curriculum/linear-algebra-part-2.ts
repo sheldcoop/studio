@@ -141,4 +141,46 @@ export const linearAlgebraPart2: Topic[] = [
         category: 'sub-topic',
         duration: 25,
     }),
+
+    // --- Module 8: Applications in Finance ---
+    createTopic({
+        parent: 'la-module-8',
+        title: 'Portfolio Optimization',
+        icon: 'Waypoints',
+        description: 'Using linear algebra to construct optimal portfolios.',
+        category: 'sub-topic',
+        duration: 25,
+    }),
+    createTopic({
+        parent: 'la-module-8',
+        title: 'The Capital Asset Pricing Model (CAPM)',
+        icon: 'Waypoints',
+        description: 'Understanding the relationship between risk and expected return.',
+        category: 'sub-topic',
+        duration: 20,
+    }),
+    createTopic({
+        parent: 'la-module-8',
+        title: 'Fixed Income (Bond) Mathematics',
+        icon: 'Waypoints',
+        description: 'Duration and convexity as linear algebraic concepts.',
+        category: 'sub-topic',
+        duration: 15,
+    }),
+    createTopic({
+        parent: 'la-module-8',
+        title: 'Arbitrage & The Fundamental Theorem of Asset Pricing',
+        icon: 'Waypoints',
+        description: 'The role of linear algebra in proving no-arbitrage conditions.',
+        category: 'sub-topic',
+        duration: 15,
+    }),
+    createTopic({
+        parent: 'la-module-8',
+        title: 'Risk Management & Factor Models',
+        icon: 'Waypoints',
+        description: 'Decomposing portfolio risk into systematic and idiosyncratic components.',
+        category: 'sub-topic',
+        duration: 15,
+    }),
 ];
