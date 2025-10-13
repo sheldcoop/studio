@@ -135,6 +135,7 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-6',
+        id: 'principal-component-analysis-pca',
         title: 'Principal Component Analysis (PCA)',
         icon: 'Waypoints',
         description: 'A direct, powerful application of SVD on the data matrix for dimensionality reduction.',
