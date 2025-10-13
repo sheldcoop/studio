@@ -61,13 +61,6 @@ export const learningPaths: Omit<LearningPath, 'modules'>[] = [
     description: 'Interactive tools for hands-on probability and statistics analysis.',
     href: '/quantlab',
   },
-  {
-    id: 'linear-algebra-animations',
-    title: 'Linear Algebra Animations',
-    icon: 'Orbit',
-    description: 'Interactive WebGL visualizations of core linear algebra concepts.',
-    href: '/linear-algebra-animations',
-  }
 ];
 
 const allPathModules: (Omit<Module, 'lessons'> & { parent: string })[] = [
@@ -80,9 +73,6 @@ const allPathModules: (Omit<Module, 'lessons'> & { parent: string })[] = [
   { id: 'la-module-6', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 6: The Grand Finale - SVD & Its Applications', status: 'not-started', duration: 95 },
   { id: 'la-module-7', parent: 'linear-algebra-for-quantitative-finance', title: 'Module 7: Applications in Finance', status: 'not-started', duration: 90 },
   
-  // Linear Algebra Animations
-  { id: 'la-anim-module-1', parent: 'linear-algebra-animations', title: 'Module 1: Core Concepts', status: 'in-progress', duration: 30 },
-
   // Advanced Statistics
   { id: 'stats-mod-1', parent: 'statistics-for-quantitative-finance', title: 'Module 1: Foundations in Probability & Random Variables', status: 'in-progress', duration: 135 },
   { id: 'stats-mod-2', parent: 'statistics-for-quantitative-finance', title: 'Module 2: Key Distributions & Asymptotic Theory', status: 'not-started', duration: 60 },
