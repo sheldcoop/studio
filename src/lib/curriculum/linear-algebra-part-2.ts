@@ -75,11 +75,12 @@ export const linearAlgebraPart2: Topic[] = [
     // --- Module 5: Least Squares & QR Decomposition ---
     createTopic({
         parent: 'la-module-5',
-        title: 'The Inexact Problem: Ax=b has no solution',
+        title: 'The Inexact Problem: Why Ax=b Often Has No Solution',
         icon: 'Waypoints',
         description: 'Introducing the goal of minimizing the error ||Ax - b||.',
         category: 'sub-topic',
         duration: 15,
+        id: 'the-inexact-problem-ax-b-has-no-solution',
     }),
     createTopic({
         parent: 'la-module-5',
@@ -190,3 +191,5 @@ export const linearAlgebraPart2: Topic[] = [
         duration: 15,
     }),
 ];
+
+    
