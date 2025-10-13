@@ -55,8 +55,8 @@ export default function DeterminantMeaningPage() {
           <p>The determinant is <InlineMath math="\det(B) = 1 \times 1 - 2 \times 3 = -5" />.</p>
           <p>In the original space, `j` is to the left of `i`. After transforming with `B`, the new `j` (`[2,1]`) is on the *right* of the new `i` (`[1,3]`). The space has been **flipped over**. A negative determinant means the orientation has reversed.</p>
            <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                <li><strong>`det(A) > 0`</strong>: Preserves orientation (no flipping).</li>
-                <li><strong>`det(A) < 0`</strong>: Reverses orientation (a flip occurred).</li>
+                <li><strong>`det(A) &gt 0`</strong>: Preserves orientation (no flipping).</li>
+                <li><strong>`det(A) &lt 0`</strong>: Reverses orientation (a flip occurred).</li>
                 <li>The **absolute value** `|det(A)|` is the area/volume scaling factor.</li>
             </ul>
         </CardContent>

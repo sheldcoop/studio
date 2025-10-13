@@ -122,7 +122,7 @@ export const linearAlgebraPart2: Topic[] = [
         parent: 'la-module-5',
         title: 'The QR Decomposition',
         icon: 'Waypoints',
-        description: 'Using Gram-Schmidt to factor A=QR. Show how this makes solving the least squares problem trivial (Rx̂ = Qᵀb) and numerically robust.',
+        description: 'Using Gram-Schmidt to factor A=QR. Show how this makes solving the least squares problem trivial (R = Qᵀb) and numerically robust.',
         category: 'sub-topic',
         duration: 35,
         id: 'the-qr-decomposition'
@@ -149,6 +149,7 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-6',
+        id: 'advanced-svd-applications',
         title: 'Advanced SVD Applications',
         icon: 'Waypoints',
         description: 'Low-rank approximation for noise reduction, and the core ideas behind recommendation systems.',
@@ -184,14 +185,14 @@ export const linearAlgebraPart2: Topic[] = [
         category: 'sub-topic',
         duration: 20,
     }),
-     createTopic({
+    createTopic({
         parent: 'la-module-7',
         id: 'arbitrage-and-the-fundamental-theorem-of-asset-pricing',
         title: 'Arbitrage & The Fundamental Theorem of Asset Pricing',
         icon: 'Waypoints',
-        description: 'The role of linear algebra in proving no-arbitrage conditions.',
+        description: 'Connecting "no free lunch" to the geometry of vector spaces.',
         category: 'sub-topic',
-        duration: 15,
+        duration: 25,
     }),
     createTopic({
         parent: 'la-module-7',
