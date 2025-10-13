@@ -31,7 +31,7 @@ export default function SVDPage() {
         <CardHeader>
           <CardTitle className="font-headline">The Central Idea: Every Matrix is a Rotation, a Stretch, and another Rotation</CardTitle>
           <CardDescription>
-            The SVD states that **any linear transformation** represented by *any* `m x n` matrix `A` can be broken down into three fundamental, simple actions: a rotation, a scaling, and another rotation.
+            The SVD states that <strong>any linear transformation</strong> represented by *any* `m x n` matrix `A` can be broken down into three fundamental, simple actions: a rotation, a scaling, and another rotation.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -39,9 +39,9 @@ export default function SVDPage() {
                 <BlockMath math="A = U\Sigma V^T" />
             </div>
              <ul className="list-disc pl-6 space-y-2 text-sm">
-                <li><strong>`V` (The Input Space Axes):</strong> An `n x n` **Orthogonal Matrix**. Its columns, `{v₁, ..., vₙ}`, form a perfect orthonormal basis for the **input space (ℝⁿ)**.</li>
+                <li><strong>`V` (The Input Space Axes):</strong> An `n x n` **Orthogonal Matrix**. Its columns, `{'{v₁, ..., vₙ}'}`, form a perfect orthonormal basis for the **input space (ℝⁿ)**.</li>
                 <li><strong>`Σ` (The Scaling Factors):</strong> An `m x n` **Diagonal Matrix**. The values on its diagonal, `σ₁ ≥ σ₂ ≥ ... ≥ 0`, are the **singular values**.</li>
-                <li><strong>`U` (The Output Space Axes):** An `m x m` **Orthogonal Matrix**. Its columns, `{u₁, ..., uₘ}`, form a perfect orthonormal basis for the **output space (ℝᵐ)**.</li>
+                <li><strong>`U` (The Output Space Axes):** An `m x m` **Orthogonal Matrix**. Its columns, `{'{u₁, ..., uₘ}'}`, form a perfect orthonormal basis for the **output space (ℝᵐ)**.</li>
             </ul>
         </CardContent>
       </Card>
@@ -67,10 +67,10 @@ export default function SVDPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li>**Row Space `C(Aᵀ)`:** Basis is the first `r` columns of `V`, `{v₁, ..., vᵣ}`.</li>
-                <li>**Null Space `N(A)`:** Basis is the remaining `n-r` columns of `V`, `{vᵣ₊₁, ..., vₙ}`.</li>
-                <li>**Column Space `C(A)`:** Basis is the first `r` columns of `U`, `{u₁, ..., uᵣ}`.</li>
-                <li>**Left Null Space `N(Aᵀ)`:** Basis is the remaining `m-r` columns of `U`, `{uᵣ₊₁, ..., uₘ}`.</li>
+                <li><strong>Row Space `C(Aᵀ)`:** Basis is the first `r` columns of `V`, `{'{v₁, ..., vᵣ}'}`.</li>
+                <li>**Null Space `N(A)`:** Basis is the remaining `n-r` columns of `V`, `{'{vᵣ₊₁, ..., vₙ}'}`.</li>
+                <li>**Column Space `C(A)`:** Basis is the first `r` columns of `U`, `{'{u₁, ..., uᵣ}'}`.</li>
+                <li>**Left Null Space `N(Aᵀ)`:** Basis is the remaining `m-r` columns of `U`, `{'{uᵣ₊₁, ..., uₘ}'}`.</li>
             </ul>
              <div className="rounded-lg border bg-muted/50 p-4 text-center mt-4">
                 <p className="mb-2 text-sm text-muted-foreground">The core relationship:</p>
