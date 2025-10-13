@@ -38,7 +38,7 @@ export default function BondMathPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <p>A standard bond is defined by its future <strong>cash flows</strong>. Let's consider a simple 3-year bond with a $1000 face value and a 5% annual coupon.</p>
-            <p>We can represent this as a <strong>Cash Flow Vector (`C`)**: `C = [50, 50, 1050]`</p>
+            <p>We can represent this as a <strong>Cash Flow Vector (`C`)</strong>: `C = [50, 50, 1050]`</p>
             <p>The price of this bond today is the **dot product** of the Cash Flow vector and a **Discount Factor Vector (`D`)** derived from the current yield `y`.</p>
             <BlockMath math="\text{Price} = C \cdot D = \sum_{t=1}^{n} \frac{C_t}{(1+y)^t}" />
             <p className="text-sm text-muted-foreground">This vector formulation is clean, powerful, and the foundation for everything that follows.</p>
@@ -48,12 +48,12 @@ export default function BondMathPage() {
       <Card>
         <CardHeader>
           <CardTitle className="font-headline">Part 2: Duration - The First Derivative (Linear Risk)</CardTitle>
-          <CardDescription>We want to find the **slope** of the price-yield curve. In calculus, the slope is the **first derivative**.</CardDescription>
+          <CardDescription>We want to find the <strong>slope</strong> of the price-yield curve. In calculus, the slope is the <strong>first derivative</strong>.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            <p>The percentage price change for a small change in yield (`Δy`) is given by **Modified Duration (`D_mod`)**:</p>
+            <p>The percentage price change for a small change in yield (<InlineMath math="\Delta y" />) is given by <strong>Modified Duration (<InlineMath math="D_{mod}" />)</strong>:</p>
             <BlockMath math="\% \Delta \text{Price} \approx -D_{mod} \cdot \Delta y" />
-            <p>Duration is the **first-order linear approximation** of a bond's risk. A bond with a Modified Duration of 7 years will lose approximately 7% of its value if interest rates rise by 1%.</p>
+            <p>Duration is the <strong>first-order linear approximation</strong> of a bond's risk. A bond with a Modified Duration of 7 years will lose approximately 7% of its value if interest rates rise by 1%.</p>
              <p className="text-sm"><strong>The Linear Algebra Connection:</strong> The formula for duration is derived by taking the derivative of our vector dot product formulation for price. It is the weighted-average time to maturity of a bond's cash flows.</p>
         </CardContent>
       </Card>
@@ -61,7 +61,7 @@ export default function BondMathPage() {
       <Card>
         <CardHeader>
           <CardTitle className="font-headline">Part 3: Convexity - The Second Derivative (Non-Linear Risk)</CardTitle>
-          <CardDescription>Our linear approximation using duration is good, but not perfect. The true price-yield relationship is a **curve**.</CardDescription>
+          <CardDescription>Our linear approximation using duration is good, but not perfect. The true price-yield relationship is a <strong>curve</strong>.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <p>Convexity captures this curvature. To get a more accurate approximation, we need the **second derivative** of the price function. This is a **Taylor expansion**.</p>
@@ -79,9 +79,9 @@ export default function BondMathPage() {
             <p>You must match the properties of your assets (the bond portfolio) to your liability. This creates a **system of linear equations**.</p>
             <p>Let's say you can buy Bond A and Bond B. You need to find the weights `w_A` and `w_B` to solve:</p>
             <ol className="list-decimal pl-5 space-y-2 text-sm">
-                <li>**Match Present Values:** `w_A + w_B = \text{PV(Liability)}`</li>
-                <li>**Match Durations:** `(w_A/W) \cdot D_A + (w_B/W) \cdot D_B = D_{Liab}`</li>
-                <li>**Match Convexities:** `(w_A/W) \cdot C_{vx,A} + (w_B/W) \cdot C_{vx,B} = C_{vx,Liab}`</li>
+                <li><strong>Match Present Values:</strong> <InlineMath math="w_A + w_B = \text{PV(Liability)}" /></li>
+                <li><strong>Match Durations:</strong> <InlineMath math="(w_A/W) \cdot D_A + (w_B/W) \cdot D_B = D_{Liab}" /></li>
+                <li><strong>Match Convexities:</strong> <InlineMath math="(w_A/W) \cdot C_{vx,A} + (w_B/W) \cdot C_{vx,B} = C_{vx,Liab}" /></li>
             </ol>
             <p>This is an `Ax=b` problem! In a real-world scenario with more bonds than constraints, you would use **least-squares approximation** to find the weights that get you as close as possible to a perfect match.</p>
         </CardContent>
@@ -90,4 +90,3 @@ export default function BondMathPage() {
     </div>
   );
 }
-
