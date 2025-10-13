@@ -3,7 +3,7 @@ import { type Topic } from './types';
 import { createTopic } from './utils';
 
 export const linearAlgebraPart1: Topic[] = [
-    // --- Module 1 ---
+    // --- Module 1: Foundations of Vectors & Matrices ---
     createTopic({
         parent: 'la-module-1',
         title: 'The Two Views of a Vector',
@@ -113,13 +113,14 @@ export const linearAlgebraPart1: Topic[] = [
         status: 'not-started',
     }),
 
-    // --- Module 2 ---
+    // --- Module 2: Solving Linear Systems ---
      createTopic({
         parent: 'la-module-2',
         title: 'Framing the Problem: Ax=b',
         icon: 'Waypoints',
         description: "Understanding Ax=b from the row picture (intersection of planes) and the column picture (linear combination of columns).",
         category: 'sub-topic',
+        duration: 20,
     }),
      createTopic({
         parent: 'la-module-2',
@@ -127,6 +128,7 @@ export const linearAlgebraPart1: Topic[] = [
         icon: 'Waypoints',
         description: "The core algorithm for solving linear systems. Row operations, row echelon form (REF), and reduced row echelon form (RREF).",
         category: 'sub-topic',
+        duration: 25,
     }),
      createTopic({
         parent: 'la-module-2',
@@ -134,6 +136,7 @@ export const linearAlgebraPart1: Topic[] = [
         icon: 'Waypoints',
         description: "Identifying if a system has a unique solution, no solution, or infinitely many solutions from its RREF.",
         category: 'sub-topic',
+        duration: 20,
     }),
      createTopic({
         parent: 'la-module-2',
@@ -141,13 +144,15 @@ export const linearAlgebraPart1: Topic[] = [
         icon: 'Waypoints',
         description: "The 'matrix version' of Gaussian Elimination. Solving Ax=b becomes a fast, two-step process of forward and back substitution.",
         category: 'sub-topic',
+        duration: 25,
     }),
      createTopic({
         parent: 'la-module-2',
-        title: 'Column Space & Rank',
+        title: 'Column Space &amp; Rank',
         icon: 'Waypoints',
         description: 'The space of all possible outputs of A. The concept of rank as the "true dimension" of the output space.',
         category: 'sub-topic',
+        duration: 15,
     }),
      createTopic({
         parent: 'la-module-2',
@@ -155,13 +160,15 @@ export const linearAlgebraPart1: Topic[] = [
         icon: 'Waypoints',
         description: 'The space of all inputs that map to the zero vector. Its connection to multicollinearity in data.',
         category: 'sub-topic',
+        duration: 15,
     }),
      createTopic({
         parent: 'la-module-2',
-        title: 'Row Space & Left Null Space',
+        title: 'Row Space &amp; Left Null Space',
         icon: 'Waypoints',
         description: 'Completing the picture of the four fundamental subspaces.',
         category: 'sub-topic',
+        duration: 15,
     }),
      createTopic({
         parent: 'la-module-2',
@@ -169,5 +176,6 @@ export const linearAlgebraPart1: Topic[] = [
         icon: 'Waypoints',
         description: "How the four subspaces relate to each other and partition the input and output spaces.",
         category: 'sub-topic',
+        duration: 20,
     }),
 ];
