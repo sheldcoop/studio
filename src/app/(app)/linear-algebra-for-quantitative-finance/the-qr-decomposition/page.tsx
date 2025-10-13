@@ -1,4 +1,6 @@
 
+'use client';
+
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { InlineMath, BlockMath } from 'react-katex';
