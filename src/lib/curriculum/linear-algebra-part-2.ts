@@ -128,7 +128,7 @@ export const linearAlgebraPart2: Topic[] = [
         id: 'the-qr-decomposition'
     }),
     
-    // --- Module 6: The Grand Finale - SVD ---
+    // --- Module 6: The Grand Finale - SVD & Its Applications ---
     createTopic({
         parent: 'la-module-6',
         id: 'the-singular-value-decomposition-svd',
@@ -186,20 +186,20 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-7',
+        title: 'Risk Management & Factor Models',
+        icon: 'Waypoints',
+        description: 'Decomposing portfolio risk into systematic and idiosyncratic components.',
+        category: 'sub-topic',
+        duration: 20,
+    }),
+    createTopic({
+        parent: 'la-module-7',
         id: 'markov-chains-for-state-transitions',
         title: 'Markov Chains for State Transitions',
         icon: 'Waypoints',
         description: 'Modeling dynamic systems like credit ratings with transition matrices.',
         category: 'sub-topic',
         duration: 25,
-    }),
-     createTopic({
-        parent: 'la-module-7',
-        title: 'Risk Management & Factor Models',
-        icon: 'Waypoints',
-        description: 'Decomposing portfolio risk into systematic and idiosyncratic components.',
-        category: 'sub-topic',
-        duration: 15,
     }),
     createTopic({
         parent: 'la-module-7',
