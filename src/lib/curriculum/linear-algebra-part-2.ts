@@ -184,6 +184,15 @@ export const linearAlgebraPart2: Topic[] = [
         category: 'sub-topic',
         duration: 20,
     }),
+    createTopic({
+        parent: 'la-module-7',
+        id: 'markov-chains-for-state-transitions',
+        title: 'Markov Chains for State Transitions',
+        icon: 'Waypoints',
+        description: 'Modeling dynamic systems like credit ratings with transition matrices.',
+        category: 'sub-topic',
+        duration: 25,
+    }),
      createTopic({
         parent: 'la-module-7',
         title: 'Risk Management & Factor Models',
