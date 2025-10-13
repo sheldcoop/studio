@@ -1,7 +1,6 @@
 
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import Image from 'next/image';
 
 export default function TwoViewsOfAVectorPage() {
   return (
@@ -80,9 +79,6 @@ export default function TwoViewsOfAVectorPage() {
                     <li>Move 2 units along the y-axis.</li>
                     <li>Draw an arrow from the origin to that point.</li>
                 </ol>
-                <div className="my-4 flex justify-center">
-                    <Image src="https://i.imgur.com/2U5Vq6e.png" alt="Vector [3, 2] on a 2D coordinate system" width={400} height={300} className="rounded-lg" />
-                </div>
                  <p className="font-semibold text-center">This act of visualizing a list of numbers as a single point (or arrow) in space is the most important skill you will learn.</p>
             </CardContent>
         </Card>
