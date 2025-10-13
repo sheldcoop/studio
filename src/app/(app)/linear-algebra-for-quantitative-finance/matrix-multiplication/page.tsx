@@ -1,0 +1,108 @@
+
+import { PageHeader } from '@/components/app/page-header';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { InlineMath, BlockMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
+
+export default function MatrixMultiplicationPage() {
+  return (
+    <div className="mx-auto max-w-5xl space-y-8">
+      <PageHeader
+        title="Matrix Multiplication"
+        description="The most important—and initially, the most confusing—of all matrix operations."
+        variant="aligned-left"
+      />
+
+      <article className="prose prose-invert max-w-none space-y-6">
+        <p>
+          If you've seen it before, you might remember a confusing rule about rows and columns, dot products, and a lot of finger-pointing. The "how" can seem strange and arbitrary.
+        </p>
+        <p>
+          The secret to understanding it is to ignore the "how" for a moment and focus on the <strong>"why."</strong> The "why" comes directly from our second view of matrices: <strong>a matrix is a transformation.</strong>
+        </p>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">The "Why": Composing Transformations</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p>What happens if you want to apply two transformations in a row? First, you rotate space 90 degrees counter-clockwise. Then, you shear space horizontally.</p>
+            <p>Let's call the rotation matrix <InlineMath math="Rot" /> and the shear matrix <InlineMath math="Shear" />. Applying <InlineMath math="Rot" /> to a vector <InlineMath math="v" /> gives you a new vector, let's call it <InlineMath math="v'" />. Then, applying <InlineMath math="Shear" /> to <InlineMath math="v'" /> gives you the final vector, <InlineMath math="v''" />.</p>
+            <BlockMath math="Shear \cdot (Rot \cdot v) = v''" />
+            <p>The central question of matrix multiplication is this: <strong>Is there a single, new matrix that represents this entire two-step process?</strong> Can we find a matrix <InlineMath math="M" /> that does the rotation *and then* the shear all in one go, such that <InlineMath math="M \cdot v = v''" />?</p>
+            <p>Yes. That new matrix <InlineMath math="M" /> is the <strong>product</strong> of <InlineMath math="Shear" /> and <InlineMath math="Rot" />.</p>
+            <BlockMath math="M = Shear \cdot Rot" />
+            <p className="font-semibold">Matrix multiplication is the composition of linear transformations. It's how we combine multiple transformations into a single, equivalent one.</p>
+             <div className="border-t pt-4 mt-4">
+                <h4 className="font-semibold text-destructive">Order Matters! <InlineMath math="AB \neq BA" /></h4>
+                <p className="text-sm mt-2">Thinking about transformations makes it immediately obvious why the order of matrix multiplication is critical. Rotating then shearing gives you one result. Shearing then rotating gives you a completely different result! This is why, in general, <InlineMath math="AB" /> is not the same as <InlineMath math="BA" />. Matrix multiplication is <strong>not commutative</strong>.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">The "How": The Row-Column Rule</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div>
+                    <h4 className="font-semibold">The Dimension Rule</h4>
+                    <p>To multiply two matrices <InlineMath math="A" /> and <InlineMath math="B" /> to get <InlineMath math="C = AB" />, the <strong>inner dimensions must match</strong>.</p>
+                    <p>If <InlineMath math="A" /> is <InlineMath math="m \times n" /> (m rows, n columns) and <InlineMath math="B" /> is <InlineMath math="n \times p" /> (n rows, p columns), then you can multiply them. The resulting matrix <InlineMath math="C" /> will have the outer dimensions: <InlineMath math="m \times p" />.</p>
+                    <p className="font-mono bg-muted p-2 rounded-md text-center"><InlineMath math="(m \times n) \cdot (n \times p) \rightarrow (m \times p)" /></p>
+                </div>
+                 <div>
+                    <h4 className="font-semibold">The Calculation Rule</h4>
+                    <p>The entry in the <InlineMath math="i" />-th row and <InlineMath math="j" />-th column of the product matrix <InlineMath math="C" /> is the <strong>dot product of the <InlineMath math="i" />-th row of <InlineMath math="A" /> and the <InlineMath math="j" />-th column of <InlineMath math="B" /></strong>.</p>
+                </div>
+                <div className="border p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2">Example:</h4>
+                    <div className="flex justify-center gap-8">
+                        <BlockMath math="A = \begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}" />
+                        <BlockMath math="B = \begin{bmatrix} 7 & 8 \\ 9 & 10 \\ 11 & 12 \end{bmatrix}" />
+                    </div>
+                    <p className="text-sm text-center text-muted-foreground mt-2"><InlineMath math="A" /> is <InlineMath math="2 \times 3" />, <InlineMath math="B" /> is <InlineMath math="3 \times 2" />. The result <InlineMath math="C" /> will be <InlineMath math="2 \times 2" />.</p>
+                    <div className="mt-4">
+                        <p><InlineMath math="C_{11}" /> (1st row, 1st col) = (Row 1 of A) · (Col 1 of B)</p>
+                        <p className="font-mono pl-4"><InlineMath math="[1, 2, 3] \cdot [7, 9, 11] = (1 \cdot 7) + (2 \cdot 9) + (3 \cdot 11) = 7 + 18 + 33 = 58" /></p>
+                    </div>
+                     <div className="mt-2">
+                        <p><InlineMath math="C_{12}" /> (1st row, 2nd col) = (Row 1 of A) · (Col 2 of B)</p>
+                        <p className="font-mono pl-4"><InlineMath math="[1, 2, 3] \cdot [8, 10, 12] = (1 \cdot 8) + (2 \cdot 10) + (3 \cdot 12) = 8 + 20 + 36 = 64" /></p>
+                    </div>
+                    <div className="mt-2">
+                        <p><InlineMath math="C_{21}" /> (2nd row, 1st col) = (Row 2 of A) · (Col 1 of B)</p>
+                        <p className="font-mono pl-4"><InlineMath math="[4, 5, 6] \cdot [7, 9, 11] = (4 \cdot 7) + (5 \cdot 9) + (6 \cdot 11) = 28 + 45 + 66 = 139" /></p>
+                    </div>
+                     <div className="mt-2">
+                        <p><InlineMath math="C_{22}" /> (2nd row, 2nd col) = (Row 2 of A) · (Col 2 of B)</p>
+                        <p className="font-mono pl-4"><InlineMath math="[4, 5, 6] \cdot [8, 10, 12] = (4 \cdot 8) + (5 \cdot 10) + (6 \cdot 12) = 32 + 50 + 72 = 154" /></p>
+                    </div>
+                    <div className="mt-4">
+                        <h4 className="font-semibold">Result:</h4>
+                        <BlockMath math="C = \begin{bmatrix} 58 & 64 \\ 139 & 154 \end{bmatrix}" />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader><CardTitle>Summary: The Most Important Operation</CardTitle></CardHeader>
+            <CardContent>
+                 <ul className="list-disc pl-6 space-y-2">
+                    <li><strong>The "Why":</strong> Matrix multiplication is the <strong>composition of transformations</strong>.</li>
+                    <li><strong>The "How":</strong> The entry in row <InlineMath math="i" />, column <InlineMath math="j" /> is the dot product of row <InlineMath math="i" /> of the first matrix and column <InlineMath math="j" /> of the second.</li>
+                    <li><strong>The Rule:</strong> The inner dimensions must match: <InlineMath math="(m \times n) \cdot (n \times p) \rightarrow (m \times p)" />.</li>
+                    <li><strong>The Warning:</strong> Order matters! In general, <InlineMath math="AB \neq BA" />.</li>
+                </ul>
+            </CardContent>
+        </Card>
+
+        <p className="text-center text-muted-foreground">
+          <strong>Up Next:</strong> Now that we know the rules, let's look at some special "character" matrices—matrices with unique properties that play important roles in the story, like the <strong>Identity matrix</strong> and the <strong>Inverse matrix</strong>.
+        </p>
+
+      </article>
+    </div>
+  );
+}
