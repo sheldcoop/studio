@@ -7,7 +7,7 @@ import { TopicPageClient } from '@/components/app/topic-page-client';
 const PATH_ID = 'linear-algebra-for-quantitative-finance';
 
 // Define slugs that have dedicated pages and should be excluded from this generic route.
-const EXCLUDED_SLUGS = new Set(['the-two-views-of-a-vector', 'vector-operations', 'the-dot-product-norms-and-angles']);
+const EXCLUDED_SLUGS = new Set(['the-two-views-of-a-vector', 'vector-operations', 'the-dot-product-norms-and-angles', 'orthogonality']);
 
 type TopicPageProps = {
   params: Promise<{ topicSlug: string }>;
