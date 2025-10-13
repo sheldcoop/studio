@@ -89,6 +89,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: 'Finding the closest point in a subspace (the Column Space) to an external vector.',
         category: 'sub-topic',
         duration: 30,
+        id: 'the-geometry-of-best-fit-projections'
     }),
     createTopic({
         parent: 'la-module-5',
@@ -97,6 +98,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: 'Deriving AᵀAx̂ = Aᵀb from the projection geometry. This is the engine of Linear Regression.',
         category: 'sub-topic',
         duration: 30,
+        id: 'the-algebraic-solution-the-normal-equations'
     }),
     createTopic({
         parent: 'la-module-5',
@@ -105,6 +107,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: 'Understanding why AᵀA can be ill-conditioned and lead to numerical errors.',
         category: 'sub-topic',
         duration: 15,
+        id: 'the-problem-with-the-normal-equations'
     }),
     createTopic({
         parent: 'la-module-5',
@@ -122,11 +125,13 @@ export const linearAlgebraPart2: Topic[] = [
         description: 'Using Gram-Schmidt to factor A=QR. Show how this makes solving the least squares problem trivial (Rx̂ = Qᵀb) and numerically robust.',
         category: 'sub-topic',
         duration: 35,
+        id: 'the-qr-decomposition'
     }),
     
     // --- Module 6: The Grand Finale - SVD ---
     createTopic({
         parent: 'la-module-6',
+        id: 'the-singular-value-decomposition-svd',
         title: 'The Singular Value Decomposition (SVD)',
         icon: 'Waypoints',
         description: 'The ultimate decomposition (A = UΣVᵀ) that works for any matrix and finds orthonormal bases for all four fundamental subspaces simultaneously.',
@@ -163,6 +168,7 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-7',
+        id: 'portfolio-optimization-and-the-efficient-frontier',
         title: 'Portfolio Optimization & The Efficient Frontier',
         icon: 'Waypoints',
         description: 'Using linear algebra to construct optimal portfolios.',
@@ -171,6 +177,7 @@ export const linearAlgebraPart2: Topic[] = [
     }),
     createTopic({
         parent: 'la-module-7',
+        id: 'the-capital-asset-pricing-model-capm',
         title: 'The Capital Asset Pricing Model (CAPM)',
         icon: 'Waypoints',
         description: 'Understanding the relationship between risk and expected return.',
