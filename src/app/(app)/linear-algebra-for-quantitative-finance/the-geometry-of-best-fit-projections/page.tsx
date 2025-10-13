@@ -1,4 +1,6 @@
 
+'use client';
+
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { InlineMath, BlockMath } from 'react-katex';
@@ -33,9 +35,9 @@ export default function ProjectionsPage() {
           <p>Imagine a single vector `a` in space, which defines a line. Now, imagine another vector `b` that is not on this line. The closest point on the line to `b` is the **orthogonal projection of `b` onto `a`**, which we'll call `p`.</p>
           <p>The key feature is that the error vector, <InlineMath math="e = b - p" />, must be **orthogonal** to the vector `a` that defines the line. This means their dot product is zero:</p>
           <BlockMath math="a \cdot (b - p) = 0" />
-          <p>We also know `p` must be a scaled version of `a`, so `p = \hat{x}a` for some scalar `x̂`. Substituting this in:</p>
+          <p>We also know `p` must be a scaled version of `a`, so <InlineMath math="p = \hat{x}a" /> for some scalar <InlineMath math="\hat{x}" />. Substituting this in:</p>
           <BlockMath math="a \cdot (b - \hat{x}a) = 0 \implies a \cdot b - \hat{x}(a \cdot a) = 0" />
-          <p>Solving for our unknown scalar `x̂` gives:</p>
+          <p>Solving for our unknown scalar <InlineMath math="\hat{x}" /> gives:</p>
           <div className="rounded-lg border bg-muted/50 p-4 text-center">
             <BlockMath math="\hat{x} = \frac{a \cdot b}{a \cdot a} = \frac{a^Tb}{a^Ta}" />
           </div>
@@ -54,7 +56,7 @@ export default function ProjectionsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p>Let the Column Space of `A` be spanned by linearly independent basis vectors `{a₁, a₂, ..., aₙ}`. The projection `p` is in this space, so it must be a linear combination of these basis vectors:</p>
+          <p>Let the Column Space of `A` be spanned by linearly independent basis vectors `{'a₁, a₂, ..., aₙ'}`. The projection `p` is in this space, so it must be a linear combination of these basis vectors:</p>
           <BlockMath math="p = \hat{x}_1 a_1 + \hat{x}_2 a_2 + \dots + \hat{x}_n a_n = A\hat{x}" />
           <p>Here, `x̂` is the vector of coefficients we need to find. The error `e = b - p` must be orthogonal to the *entire* subspace, meaning it's orthogonal to every basis vector `aᵢ`.</p>
           <BlockMath math="\begin{cases} a_1^T(b - A\hat{x}) = 0 \\ a_2^T(b - A\hat{x}) = 0 \\ \vdots \\ a_n^T(b - A\hat{x}) = 0 \end{cases}" />
