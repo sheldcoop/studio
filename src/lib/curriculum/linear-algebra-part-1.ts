@@ -12,6 +12,7 @@ export const linearAlgebraPart1: Topic[] = [
         category: 'sub-topic',
         duration: 15,
         status: 'completed',
+        content: '', // Content now lives in its own component
     }),
     createTopic({
         parent: 'la-module-1',

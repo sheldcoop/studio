@@ -6,6 +6,9 @@ import { TopicPageClient } from '@/components/app/topic-page-client';
 
 const PATH_ID = 'linear-algebra-for-quantitative-finance';
 
+// Define slugs that have dedicated pages and should be excluded from this generic route.
+const EXCLUDED_SLUGS = new Set(['the-two-views-of-a-vector']);
+
 type TopicPageProps = {
   params: Promise<{ topicSlug: string }>;
 };
@@ -14,6 +17,11 @@ type TopicPageProps = {
 export async function generateStaticParams() {
   return allTopics
     .filter(topic => {
+      // Exclude the slugs that have their own dedicated page files.
+      if (EXCLUDED_SLUGS.has(topic.id)) {
+        return false;
+      }
+      
       // Find the ultimate parent path for each topic
       let current = topic;
       while (current.parent) {
@@ -37,7 +45,7 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
   const { topicSlug } = await params;
   const topicInfo = allTopics.find((t) => t.id === topicSlug);
   
-  if (!topicInfo) {
+  if (!topicInfo || EXCLUDED_SLUGS.has(topicSlug)) {
     return { title: 'Topic Not Found' };
   }
 
@@ -50,6 +58,12 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 // This is the main server component for the page.
 export default async function TopicPage({ params }: TopicPageProps) {
   const { topicSlug } = await params;
+  
+  // If the slug is for a dedicated page, trigger a 404 to let Next.js find the dedicated page.
+  if (EXCLUDED_SLUGS.has(topicSlug)) {
+    notFound();
+  }
+
   const topicInfo = allTopics.find((t) => t.id === topicSlug);
   
   if (!topicInfo) {
