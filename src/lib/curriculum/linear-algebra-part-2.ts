@@ -192,5 +192,3 @@ export const linearAlgebraPart2: Topic[] = [
         duration: 15,
     }),
 ];
-
-    
