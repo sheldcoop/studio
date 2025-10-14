@@ -3,6 +3,10 @@ import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import { PageSection } from '@/components/app/page-section';
+import { FormulaBlock } from '@/components/app/formula-block';
+import { LessonSummaryCard } from '@/components/app/lesson-summary-card';
+import { NextUpNavigation } from '@/components/app/next-up-navigation';
 
 export default function SVDPage() {
   return (
@@ -28,90 +32,94 @@ export default function SVDPage() {
         </p>
       </article>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">The Big Idea: Any Transformation is a Rotation, a Stretch, and another Rotation</CardTitle>
-          <CardDescription>
-             The SVD states that <strong>any linear transformation</strong>, no matter how complex it looks, can be broken down into three fundamental actions: a rotation, a simple scaling, and a final rotation.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                <BlockMath math="A = U\Sigma V^T" />
-            </div>
-             <ul className="list-disc pl-6 space-y-2 text-sm">
-                <li><strong>`V` (The Input Axes):</strong> An `n x n` <strong>Orthogonal Matrix</strong>. Its columns, <InlineMath math="\{v_1, v_2, ...\}" />, are the <strong>right singular vectors</strong>. They form a perfect orthonormal basis for the <strong>input space</strong>. The `Vᵀ` in the formula performs the initial rotation.</li>
-                <li><strong>`Σ` (The Scaling Factors):</strong> An `m x n` <strong>rectangular diagonal matrix</strong>. The values on its diagonal, <InlineMath math="\sigma_1 \ge \sigma_2 \ge ... \ge 0" />, are the <strong>singular values</strong>. This matrix does all the stretching and squashing.</li>
-                <li><strong>`U` (The Output Axes):</strong> An `m x m` <strong>Orthogonal Matrix</strong>. Its columns, <InlineMath math="\{u_1, u_2, ...\}" />, are the <strong>left singular vectors</strong>. They form a perfect orthonormal basis for the <strong>output space</strong>. `U` performs the final rotation.</li>
-            </ul>
-             <p className="font-semibold text-primary mt-4">The SVD finds the perfect input basis (`V`) and the perfect output basis (`U`) that make the transformation `A` become a simple diagonal scaling matrix `Σ`.</p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">A Step-by-Step Geometric Journey</CardTitle>
-          <CardDescription>Visualizing what `y = Ax` means in the language of SVD: `y = UΣVᵀx`.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <PageSection title="The Big Idea: Any Transformation is a Rotation, a Stretch, and another Rotation">
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">The Decomposition: A = UΣVᵀ</CardTitle>
+                <CardDescription>
+                    The SVD states that <strong>any linear transformation</strong>, no matter how complex it looks, can be broken down into three fundamental actions: a rotation, a simple scaling, and a final rotation.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <FormulaBlock>
+                    <BlockMath math="A = U\Sigma V^T" />
+                </FormulaBlock>
+                <ul className="list-disc pl-6 space-y-2 text-sm">
+                    <li><strong>`V` (The Input Axes):</strong> An `n x n` <strong>Orthogonal Matrix</strong>. Its columns, <InlineMath math="\{v_1, v_2, ...\}" />, are the <strong>right singular vectors</strong>. They form a perfect orthonormal basis for the <strong>input space</strong>. The `Vᵀ` in the formula performs the initial rotation.</li>
+                    <li><strong>`Σ` (The Scaling Factors):</strong> An `m x n` <strong>rectangular diagonal matrix</strong>. The values on its diagonal, <InlineMath math="\sigma_1 \ge \sigma_2 \ge ... \ge 0" />, are the <strong>singular values</strong>. This matrix does all the stretching and squashing.</li>
+                    <li><strong>`U` (The Output Axes):</strong> An `m x m` <strong>Orthogonal Matrix</strong>. Its columns, <InlineMath math="\{u_1, u_2, ...\}" />, are the <strong>left singular vectors</strong>. They form a perfect orthonormal basis for the <strong>output space</strong>. `U` performs the final rotation.</li>
+                </ul>
+                <p className="font-semibold text-primary mt-4">The SVD finds the perfect input basis (`V`) and the perfect output basis (`U`) that make the transformation `A` become a simple diagonal scaling matrix `Σ`.</p>
+            </CardContent>
+        </Card>
+      </PageSection>
+
+      <PageSection title="A Step-by-Step Geometric Journey">
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Visualizing y = Ax as y = UΣVᵀx</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <ol className="list-decimal pl-5 space-y-4 text-sm">
+                    <li><strong>Rotate the Input (`Vᵀx`):</strong> `Vᵀ` rotates your input vector `x` to align it with the new, ideal input axes defined by the columns of `V`.</li>
+                    <li><strong>Scale the Components (`Σ(Vᵀx)`):</strong> `Σ` takes the rotated vector and simply stretches or squashes its components along the standard axes by the singular values `σᵢ`.</li>
+                    <li><strong>Rotate to the Output (`U(ΣVᵀx)`):</strong> `U` takes the scaled vector and performs a final rotation to its position in the output space, aligned with the ideal output axes `uᵢ`.</li>
+                </ol>
+            </CardContent>
+        </Card>
+      </PageSection>
+
+      <PageSection title="SVD and the Four Fundamental Subspaces">
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">The Ultimate Map of a Matrix</CardTitle>
+                <CardDescription>SVD provides orthonormal bases for all four fundamental subspaces simultaneously. For a matrix `A` of rank `r`:</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <ul className="list-disc pl-5 space-y-2 text-sm">
+                    <li><strong>Row Space `C(Aᵀ)`:</strong> Basis is the first `r` columns of `V`, <InlineMath math="\{v_1, ..., v_r\}" />.</li>
+                    <li><strong>Null Space `N(A)`:</strong> Basis is the remaining `n-r` columns of `V`, <InlineMath math="\{v_{r+1}, ..., v_n\}" />.</li>
+                    <li><strong>Column Space `C(A)`:</strong> Basis is the first `r` columns of `U`, <InlineMath math="\{u_1, ..., u_r\}" />.</li>
+                    <li><strong>Left Null Space `N(Aᵀ)`:</strong> Basis is the remaining `m-r` columns of `U`, <InlineMath math="\{u_{r+1}, ..., u_m\}" />.</li>
+                </ul>
+                <FormulaBlock>
+                    <p className="mb-2 text-sm text-muted-foreground">The core relationship:</p>
+                    <BlockMath math="A v_i = \sigma_i u_i \quad (\text{for } i=1, ..., r)" />
+                </FormulaBlock>
+            </CardContent>
+        </Card>
+      </PageSection>
+
+      <PageSection title="How Do We Calculate It?">
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">The Connection to Eigen-analysis</CardTitle>
+                <CardDescription>We find `U`, `Σ`, and `V` from the eigendecomposition of the symmetric matrices `AᵀA` and `AAᵀ`.</CardDescription>
+            </CardHeader>
+            <CardContent>
             <ol className="list-decimal pl-5 space-y-4 text-sm">
-                <li><strong>Rotate the Input (`Vᵀx`):</strong> `Vᵀ` rotates your input vector `x` to align it with the new, ideal input axes defined by the columns of `V`.</li>
-                <li><strong>Scale the Components (`Σ(Vᵀx)`):</strong> `Σ` takes the rotated vector and simply stretches or squashes its components along the standard axes by the singular values `σᵢ`.</li>
-                <li><strong>Rotate to the Output (`U(ΣVᵀx)`):</strong> `U` takes the scaled vector and performs a final rotation to its position in the output space, aligned with the ideal output axes `uᵢ`.</li>
+                    <li>
+                        <strong>Find `V` and `Σ` from `AᵀA`:</strong>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
+                            <li>Construct the `n x n` symmetric matrix `AᵀA`.</li>
+                            <li>Find its eigenvalues (`λᵢ`) and orthonormal eigenvectors.</li>
+                            <li>The eigenvectors are the columns of `V`.</li>
+                            <li>The singular values `σᵢ` are the square roots of the eigenvalues (<InlineMath math="\sigma_i = \sqrt{\lambda_i}" />).</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Find `U`:</strong>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
+                            <li>The eigenvectors of the `m x m` matrix `AAᵀ` are the columns of `U`.</li>
+                            <li>Alternatively, and more quickly, use the formula <InlineMath math="u_i = (1/\sigma_i) A v_i" /> for each `i`.</li>
+                        </ul>
+                    </li>
             </ol>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">SVD and the Four Fundamental Subspaces</CardTitle>
-          <CardDescription>SVD provides orthonormal bases for all four fundamental subspaces simultaneously. For a matrix `A` of rank `r`:</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li><strong>Row Space `C(Aᵀ)`:</strong> Basis is the first `r` columns of `V`, <InlineMath math="\{v_1, ..., v_r\}" />.</li>
-                <li><strong>Null Space `N(A)`:</strong> Basis is the remaining `n-r` columns of `V`, <InlineMath math="\{v_{r+1}, ..., v_n\}" />.</li>
-                <li><strong>Column Space `C(A)`:</strong> Basis is the first `r` columns of `U`, <InlineMath math="\{u_1, ..., u_r\}" />.</li>
-                <li><strong>Left Null Space `N(Aᵀ)`:</strong> Basis is the remaining `m-r` columns of `U`, <InlineMath math="\{u_{r+1}, ..., u_m\}" />.</li>
-            </ul>
-             <div className="rounded-lg border bg-muted/50 p-4 text-center mt-4">
-                <p className="mb-2 text-sm text-muted-foreground">The core relationship:</p>
-                <BlockMath math="A v_i = \sigma_i u_i \quad (\text{for } i=1, ..., r)" />
-            </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">How Do We Calculate It? (The Connection to Eigen-analysis)</CardTitle>
-        </CardHeader>
-        <CardContent>
-           <p className="mb-4">We find `U`, `Σ`, and `V` from the eigendecomposition of the symmetric matrices `AᵀA` and `AAᵀ`.</p>
-           <ol className="list-decimal pl-5 space-y-4 text-sm">
-                <li>
-                    <strong>Find `V` and `Σ` from `AᵀA`:</strong>
-                    <ul className="list-disc pl-5 mt-2 space-y-1">
-                        <li>Construct the `n x n` symmetric matrix `AᵀA`.</li>
-                        <li>Find its eigenvalues (`λᵢ`) and orthonormal eigenvectors.</li>
-                        <li>The eigenvectors are the columns of `V`.</li>
-                        <li>The singular values `σᵢ` are the square roots of the eigenvalues (<InlineMath math="\sigma_i = \sqrt{\lambda_i}" />).</li>
-                    </ul>
-                </li>
-                <li>
-                    <strong>Find `U`:</strong>
-                    <ul className="list-disc pl-5 mt-2 space-y-1">
-                         <li>The eigenvectors of the `m x m` matrix `AAᵀ` are the columns of `U`.</li>
-                        <li>Alternatively, and more quickly, use the formula <InlineMath math="u_i = (1/\sigma_i) A v_i" /> for each `i`.</li>
-                    </ul>
-                </li>
-           </ol>
-        </CardContent>
-      </Card>
-       <Card>
-        <CardHeader>
-          <CardTitle>Summary: The Ultimate Revelation</CardTitle>
-        </CardHeader>
-        <CardContent>
+            </CardContent>
+        </Card>
+      </PageSection>
+      
+       <LessonSummaryCard title="Summary: The Ultimate Revelation">
           <ol className="list-decimal pl-6 space-y-2">
             <li><strong>Universality:</strong> SVD works for <strong>any `m x n` matrix</strong>.</li>
             <li><strong>The Geometry:</strong> Any transformation is a <strong>Rotate (`Vᵀ`) -&gt; Stretch (`Σ`) -&gt; Rotate (`U`)</strong>.</li>
@@ -124,12 +132,11 @@ export default function SVDPage() {
             </li>
             <li><strong>The Power:</strong> SVD provides a complete, orthonormal map of the <strong>Four Fundamental Subspaces</strong>.</li>
           </ol>
-        </CardContent>
-      </Card>
+      </LessonSummaryCard>
       
-      <p className="text-center text-muted-foreground">
-        <strong>Up Next:</strong> We will put this ultimate tool to work by exploring its application in <strong>Principal Component Analysis (PCA)</strong>.
-      </p>
+      <NextUpNavigation href="/linear-algebra-for-quantitative-finance/principal-component-analysis-pca">
+        Principal Component Analysis (PCA)
+      </NextUpNavigation>
     </div>
   );
 }
