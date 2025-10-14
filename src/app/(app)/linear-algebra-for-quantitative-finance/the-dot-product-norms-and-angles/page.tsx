@@ -1,6 +1,5 @@
 
 import { PageHeader } from '@/components/app/page-header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { DefinitionCard } from '@/components/app/definition-card';
@@ -36,11 +35,11 @@ export default function DotProductPage() {
             <p>This is the <strong>L2 Norm</strong>. It's the standard, "as the crow flies" Euclidean distance.</p>
             <FormulaBlock>
                 <h4 className="font-semibold mb-2">The Formula: L2 Norm</h4>
-                <p className="text-sm text-muted-foreground mb-2">For a vector <InlineMath math="v = [v₁, v₂, ..., vₙ]" />, its L2 norm, written as <InlineMath math="\|v\|_2" />, is:</p>
+                <p className="text-sm text-muted-foreground mb-2">For a vector <InlineMath math="v = [v_1, v_2, ..., v_n]" />, its L2 norm, written as <InlineMath math="\|v\|_2" />, is:</p>
                 <BlockMath math="\|v\|_2 = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2}" />
             </FormulaBlock>
         </DefinitionCard>
-        <DefinitionCard title='The L1 Norm (The "Manhattan" Distance)'>
+        <DefinitionCard title="The L1 Norm (The 'Manhattan' Distance)">
             <p>What if you're not a crow? What if you're a taxi driver in Manhattan, forced to travel along a grid? The distance you'd travel for the vector <InlineMath math="[3, 4]" /> is simply <InlineMath math="3 + 4 = 7" />. This is the <strong>L1 Norm</strong>. You just sum the absolute values of the components.</p>
             <FormulaBlock>
                 <h4 className="font-semibold mb-2">The Formula: L1 Norm</h4>
@@ -55,7 +54,7 @@ export default function DotProductPage() {
           <p>The dot product of two vectors, <InlineMath math="v" /> and <InlineMath math="w" />, is found by multiplying their corresponding components and then summing the results. Let <InlineMath math="v = [2, 1]" /> and <InlineMath math="w = [1, 3]" />. The dot product, written <InlineMath math="v \cdot w" />, is:</p>
           <p className="font-mono bg-muted p-2 rounded-md"><InlineMath math="v \cdot w = (2 \times 1) + (1 \times 3) = 2 + 3 = 5" /></p>
         </DefinitionCard>
-        <DefinitionCard title='The Physicist\'s View (The "Projection" Intuition)'>
+        <DefinitionCard title="The Physicist's View (The 'Projection' Intuition)">
           <p>The dot product tells us about the <strong>agreement</strong> between two vectors. It answers the question: "How much is vector <InlineMath math="v" /> pointing in the same direction as vector <InlineMath math="w" />?"</p>
           <p>This relationship between the dot product and the angle between vectors is formalized by this crucial equation:</p>
           <FormulaBlock>
