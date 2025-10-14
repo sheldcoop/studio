@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { NextUpNavigation } from '@/components/app/next-up-navigation';
 
 export default function FundamentalTheoremPage() {
   return (
@@ -31,41 +32,25 @@ export default function FundamentalTheoremPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">Part 1: The Decomposition of Spaces</CardTitle>
+          <CardTitle className="font-headline">The Decomposition of Spaces & Dimensions</CardTitle>
           <CardDescription>
-            The theorem first tells us that the input space and the output space can each be split perfectly into two orthogonal subspaces.
+            The theorem tells us that the input and output spaces can each be split perfectly into two orthogonal subspaces.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            <div>
-                <h4 className="font-semibold">Inside the Input Space (ℝⁿ)</h4>
-                <p>Every vector in the input space can be uniquely described as the sum of a vector in the <strong>Row Space</strong> and a vector in the <strong>Null Space</strong>. These two subspaces are **orthogonal complements**.</p>
-                <BlockMath math="\mathbb{R}^n = C(A^T) \oplus N(A)" />
-            </div>
-             <div>
-                <h4 className="font-semibold">Inside the Output Space (ℝᵐ)</h4>
-                <p>Every vector in the output space can be uniquely described as the sum of a vector in the <strong>Column Space</strong> and a vector in the <strong>Left Null Space</strong>. These are also **orthogonal complements**.</p>
-                <BlockMath math="\mathbb{R}^m = C(A) \oplus N(A^T)" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 className="font-semibold">Input Space (ℝⁿ)</h4>
+                    <p>Split into the <strong>Row Space</strong> and the <strong>Null Space</strong>. They are orthogonal complements.</p>
+                    <p className="font-semibold mt-2">dim(Row Space) + dim(Null Space) = r + (n-r) = n</p>
+                </div>
+                <div>
+                    <h4 className="font-semibold">Output Space (ℝᵐ)</h4>
+                    <p>Split into the <strong>Column Space</strong> and the <strong>Left Null Space</strong>. They are orthogonal complements.</p>
+                    <p className="font-semibold mt-2">dim(Column Space) + dim(Left Null Space) = r + (m-r) = m</p>
+                </div>
             </div>
             <p className="font-semibold text-primary mt-4">This diagram is the most important picture in all of linear algebra. It shows that `A` acts as a perfect, one-to-one mapping from its `r`-dimensional Row Space to its `r`-dimensional Column Space. The entire `(n-r)`-dimensional Null Space is collapsed into nothing.</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Part 2: The Unification of Dimensions (Rank-Nullity Theorem)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <ul className="list-disc pl-6 space-y-2">
-                <li><InlineMath math="\text{dim(Row Space)} = r" /> (the number of pivots)</li>
-                <li><InlineMath math="\text{dim(Column Space)} = r" /> (the number of pivots)</li>
-                <li><InlineMath math="\text{dim(Null Space)} = n - r" /> (the number of free columns)</li>
-                <li><InlineMath math="\text{dim(Left Null Space)} = m - r" /></li>
-            </ul>
-             <h4 className="font-semibold mt-4">The two key relationships are:</h4>
-             <p>1. For the Input Space (ℝⁿ): <InlineMath math="\text{dim(Row Space)} + \text{dim(Null Space)} = r + (n-r) = n" /></p>
-             <p>2. For the Output Space (ℝᵐ): <InlineMath math="\text{dim(Column Space)} + \text{dim(Left Null Space)} = r + (m-r) = m" /></p>
-             <p>The **rank `r`** is the star of the show, linking all four subspaces together.</p>
         </CardContent>
       </Card>
       
@@ -112,10 +97,9 @@ export default function FundamentalTheoremPage() {
       </Card>
 
 
-      <p className="text-center text-muted-foreground">
-        <strong>Up Next in Module 3:</strong> We will move to the square world of **Determinants**, a magical number that reveals whether a matrix is invertible.
-      </p>
+      <NextUpNavigation href="/linear-algebra-for-quantitative-finance/the-geometric-meaning-of-the-determinant">
+        Determinants
+      </NextUpNavigation>
     </div>
   );
 }
-

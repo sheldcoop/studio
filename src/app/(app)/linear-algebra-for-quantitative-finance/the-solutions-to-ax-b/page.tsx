@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Diamond, Star, Infinity as InfinityIcon } from 'lucide-react';
+import { AlertTriangle, Diamond, Star } from 'lucide-react';
+import { PitfallAlert } from '@/components/app/pitfall-alert';
 
 export default function SolutionsToAxBPage() {
   return (
@@ -41,7 +42,6 @@ export default function SolutionsToAxBPage() {
         </CardContent>
       </Card>
       
-
       <Card className="border-destructive/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-headline text-destructive"><AlertTriangle /> Case 1: No Solution — "The Contradiction"</CardTitle>
@@ -50,39 +50,10 @@ export default function SolutionsToAxBPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-           <div>
-            <h4 className="font-semibold">Example System (Inconsistent):</h4>
-            <BlockMath math="\begin{cases} x + y + 2z = 3 \\ 2x + 3y + 5z = 7 \\ 3x + 4y + 7z = 9 \end{cases}" />
-          </div>
-          <div>
-            <h4 className="font-semibold">Augmented Matrix:</h4>
-            <BlockMath math="\left[\begin{array}{ccc|c} 1 & 1 & 2 & 3 \\ 2 & 3 & 5 & 7 \\ 3 & 4 & 7 & 9 \end{array}\right]" />
-          </div>
-           <div className="space-y-2 border-t pt-4">
-              <p className="text-sm"><strong>Step 1:</strong> <InlineMath math="R_2 \rightarrow R_2 - 2R_1" /> gives <InlineMath math="[0, 1, 1, 1]" />.</p>
-              <p className="text-sm"><strong>Step 2:</strong> <InlineMath math="R_3 \rightarrow R_3 - 3R_1" /> gives <InlineMath math="[0, 1, 1, 0]" />.</p>
-              <p className="font-mono text-xs text-muted-foreground">
-                Matrix becomes: <br/>
-                [ 1  1  2 | 3 ]<br/>
-                [ 0  1  1 | 1 ]<br/>
-                [ 0  1  1 | 0 ]
-              </p>
-           </div>
-           <div className="space-y-2 border-t pt-4">
-              <p className="text-sm"><strong>Step 3:</strong> Next pivot is the 1 in R2. <InlineMath math="R_3 \rightarrow R_3 - R_2" />.</p>
-              <p><InlineMath math="[0, 1, 1, 0] - [0, 1, 1, 1] = [0, 0, 0, -1]" /></p>
-           </div>
-           <div>
-            <h4 className="font-semibold">Final Echelon Form:</h4>
-            <BlockMath math="\left[\begin{array}{ccc|c} 1 & 1 & 2 & 3 \\ 0 & 1 & 1 & 1 \\ \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{-1} \end{array}\right]" />
-           </div>
-           <Alert variant="destructive">
-               <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>The Diagnostic Rule: A Contradiction</AlertTitle>
-                <AlertDescription>
-                    The last row translates to <InlineMath math="0x + 0y + 0z = -1" />, or <InlineMath math="0 = -1" />. This is a mathematical impossibility. If you find a row of `[0 0 ... | non-zero]`, the system has <strong>NO SOLUTION</strong>.
-                </AlertDescription>
-           </Alert>
+           <BlockMath math="\left[\begin{array}{ccc|c} 1 & 1 & 2 & 3 \\ 0 & 1 & 1 & 1 \\ \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{-1} \end{array}\right]" />
+           <PitfallAlert title="The Diagnostic Rule: A Contradiction">
+              The last row translates to <InlineMath math="0x + 0y + 0z = -1" />, or <InlineMath math="0 = -1" />. This is a mathematical impossibility. If you find a row of `[0 0 ... | non-zero]`, the system has <strong>NO SOLUTION</strong>.
+           </PitfallAlert>
            <p className="text-sm"><strong className="text-primary">Geometric Meaning:</strong> The three planes defined by the equations never meet at a single point. In the column picture, the target vector <InlineMath math="b" /> is <strong>not in the span</strong> of the columns of `A`.</p>
         </CardContent>
       </Card>
@@ -95,15 +66,8 @@ export default function SolutionsToAxBPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold">Example System:</h4>
-            <BlockMath math="\begin{cases} x - 2y + z = 4 \\ 2x - 3y + 3z = 7 \\ 4x - 7y + 5z = 15 \end{cases}" />
-          </div>
-          <div>
-            <h4 className="font-semibold">Final Echelon Form (after elimination):</h4>
-            <BlockMath math="\left[\begin{array}{ccc|c} \mathbf{1} & -2 & 1 & 4 \\ 0 & \mathbf{1} & 1 & -1 \\ 0 & 0 & 0 & 0 \end{array}\right]" />
-          </div>
-          <p>The last row, `0=0`, is true but useless. It tells us one equation was redundant. Now we identify our pivots (in bold). The column for `z` does not have a pivot. This makes `z` a <strong>free variable</strong>.</p>
+          <BlockMath math="\left[\begin{array}{ccc|c} \mathbf{1} & -2 & 1 & 4 \\ 0 & \mathbf{1} & 1 & -1 \\ 0 & 0 & 0 & 0 \end{array}\right]" />
+          <p>The last row, `0=0`, is true but useless. The column for `z` does not have a pivot. This makes `z` a <strong>free variable</strong>.</p>
           
            <Alert variant="default" className="border-sky-500/50">
                <Diamond className="h-4 w-4 text-sky-400" />
@@ -113,16 +77,8 @@ export default function SolutionsToAxBPage() {
                 </AlertDescription>
            </Alert>
             <div>
-              <h4 className="font-semibold">Finding the General Solution:</h4>
-              <ol className="list-decimal pl-5 space-y-2 mt-2 text-sm">
-                <li>Let the free variable <InlineMath math="z=t" />, where `t` is any real number.</li>
-                <li>Use back-substitution. From Row 2: <InlineMath math="y + z = -1 \Rightarrow y = -1 - t" />.</li>
-                <li>From Row 1: <InlineMath math="x - 2y + z = 4 \Rightarrow x - 2(-1-t) + t = 4 \Rightarrow x = 2 - 3t" />.</li>
-              </ol>
-            </div>
-            <div>
               <h4 className="font-semibold">The General Solution is a Line:</h4>
-              <BlockMath math="\begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} 2 - 3t \\ -1 - t \\ t \end{bmatrix}" />
+              <BlockMath math="\begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} 2 \\ -1 \\ 0 \end{bmatrix} + t \begin{bmatrix} -3 \\ -1 \\ 1 \end{bmatrix}" />
             </div>
             <p className="text-sm"><strong className="text-primary">Geometric Meaning:</strong> The three planes intersect along a single line. In the column picture, the columns of `A` are <strong>linearly dependent</strong>, and there are infinite ways to combine them to create `b`.</p>
         </CardContent>
@@ -136,10 +92,7 @@ export default function SolutionsToAxBPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-semibold">Final Echelon Form:</h4>
-              <BlockMath math="\left[\begin{array}{ccc|c} \mathbf{2} & 1 & 1 & 5 \\ 0 & \mathbf{-8} & -2 & -12 \\ 0 & 0 & \mathbf{1} & 2 \end{array}\right]" />
-            </div>
+            <BlockMath math="\left[\begin{array}{ccc|c} \mathbf{2} & 1 & 1 & 5 \\ 0 & \mathbf{-8} & -2 & -12 \\ 0 & 0 & \mathbf{1} & 2 \end{array}\right]" />
             <Alert variant="default" className="border-green-500/50">
                <Star className="h-4 w-4 text-green-400" />
                 <AlertTitle>The Diagnostic Rule: Full Pivots</AlertTitle>
@@ -154,7 +107,6 @@ export default function SolutionsToAxBPage() {
       <p className="text-center text-muted-foreground">
         <strong>Up Next:</strong> We will see how this <strong>process</strong> of elimination can be captured and stored in matrices themselves, leading to the elegant and computationally vital <strong>LU Decomposition</strong>.
       </p>
-
     </div>
   );
 }

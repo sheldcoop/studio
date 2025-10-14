@@ -6,7 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Lightbulb, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
+import { ExampleStep } from '@/components/app/example-step';
+import { NextUpNavigation } from '@/components/app/next-up-navigation';
 
 export default function RREFPage() {
   return (
@@ -53,41 +55,32 @@ export default function RREFPage() {
           <CardTitle>Example: The Full Journey</CardTitle>
           <CardDescription>Let's take our simple, unique-solution system from a previous lesson and take it all the way to RREF.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <h4 className="font-semibold">Starting Augmented Matrix:</h4>
-            <BlockMath math="\left[\begin{array}{ccc|c} 2 & 1 & 1 & 5 \\ 4 & -6 & 0 & -2 \\ -2 & 7 & 2 & 9 \end{array}\right]" />
-          </div>
-          <div className="border-t pt-4">
-            <h4 className="font-semibold">Step 1: Achieve Row Echelon Form (REF)</h4>
+        <CardContent className="space-y-8">
+          <ExampleStep stepNumber={1} title="Start and Achieve REF">
             <p className="text-sm text-muted-foreground mb-2">This is standard Gaussian Elimination, clearing entries below the pivots.</p>
-            <BlockMath math="\left[\begin{array}{ccc|c} 2 & 1 & 1 & 5 \\ 0 & -8 & -2 & -12 \\ 0 & 0 & 1 & 2 \end{array}\right]" />
-          </div>
-           <div className="border-t pt-4">
-            <h4 className="font-semibold">Step 2: Scale all pivots to 1</h4>
-             <p className="text-sm text-muted-foreground mb-2">We divide each row by its pivot value.</p>
-             <ul className="list-disc text-sm pl-5 space-y-1">
-                <li>R1 &rarr; R1 / 2</li>
-                <li>R2 &rarr; R2 / -8</li>
-                <li>R3 &rarr; R3 / 1 (no change)</li>
-             </ul>
+            <BlockMath math="\left[\begin{array}{ccc|c} 2 & 1 & 1 & 5 \\ 4 & -6 & 0 & -2 \\ -2 & 7 & 2 & 9 \end{array}\right] \xrightarrow{\text{Elim}} \left[\begin{array}{ccc|c} 2 & 1 & 1 & 5 \\ 0 & -8 & -2 & -12 \\ 0 & 0 & 1 & 2 \end{array}\right]" />
+          </ExampleStep>
+          
+           <ExampleStep stepNumber={2} title="Scale All Pivots to 1">
+             <p className="text-sm text-muted-foreground mb-2">We divide each row by its pivot value (2, -8, and 1).</p>
             <BlockMath math="\left[\begin{array}{ccc|c} 1 & 0.5 & 0.5 & 2.5 \\ 0 & 1 & 0.25 & 1.5 \\ 0 & 0 & 1 & 2 \end{array}\right]" />
-          </div>
-          <div className="border-t pt-4">
-            <h4 className="font-semibold">Step 3: Eliminate entries ABOVE the pivots</h4>
+          </ExampleStep>
+
+          <ExampleStep stepNumber={3} title="Eliminate Entries ABOVE the Pivots">
              <p className="text-sm text-muted-foreground mb-2">This is "upwards" elimination, starting from the rightmost pivot.</p>
-             <p className="text-sm mb-2">Our rightmost pivot is the `1` in R3, C3. We use it to clear the `0.25` and `0.5` above it.</p>
+             <p className="text-sm mb-2">Use the pivot in R3 to clear entries above it:</p>
              <ul className="list-disc text-sm pl-5 space-y-1">
-                <li>R2 &rarr; R2 - 0.25 * R3 gives `[0, 1, 0 | 1]`</li>
-                <li>R1 &rarr; R1 - 0.5 * R3 gives `[1, 0.5, 0 | 1.5]`</li>
+                <li>R2 &rarr; R2 - 0.25 * R3</li>
+                <li>R1 &rarr; R1 - 0.5 * R3</li>
              </ul>
-              <p className="text-sm text-muted-foreground my-2">Matrix is now:</p>
+              <p className="text-sm text-muted-foreground my-2">The matrix becomes:</p>
              <BlockMath math="\left[\begin{array}{ccc|c} 1 & 0.5 & 0 & 1.5 \\ 0 & 1 & 0 & 1 \\ 0 & 0 & 1 & 2 \end{array}\right]" />
-             <p className="text-sm my-2">Now use the next pivot (the `1` in R2, C2) to clear the `0.5` above it.</p>
+             <p className="text-sm my-2">Now use the pivot in R2 to clear the entry above it:</p>
              <ul className="list-disc text-sm pl-5 space-y-1">
-                <li>R1 &rarr; R1 - 0.5 * R2 gives `[1, 0, 0 | 1]`</li>
+                <li>R1 &rarr; R1 - 0.5 * R2</li>
              </ul>
-          </div>
+          </ExampleStep>
+
            <Alert variant="default" className="border-green-500/50">
                <CheckCircle className="h-4 w-4 text-green-400" />
                 <AlertTitle>Final RREF Matrix:</AlertTitle>
@@ -105,17 +98,16 @@ export default function RREFPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <ul className="list-disc pl-5 space-y-2">
-                <li><strong>Uniqueness:</strong> Every matrix has one and only one unique Reduced Row Echelon Form. This makes RREF a definitive "fingerprint" for a matrix. Two different-looking matrices that have the same RREF are, in a deep sense, the same.</li>
-                <li><strong>Readability:</strong> As we saw, for systems with a unique solution, the RREF gives you the answer directly. For systems with infinite solutions, it makes the relationship between pivot and free variables exceptionally clear.</li>
+                <li><strong>Uniqueness:</strong> Every matrix has one and only one unique Reduced Row Echelon Form. This makes RREF a definitive "fingerprint" for a matrix.</li>
+                <li><strong>Readability:</strong> For systems with a unique solution, the RREF gives you the answer directly. For systems with infinite solutions, it makes the relationship between pivot and free variables exceptionally clear.</li>
                 <li><strong>Theoretical Power:</strong> RREF is the ultimate tool for understanding a matrix's fundamental properties. It tells you the rank, the basis for the column space, and the basis for the null space, all in one neat package.</li>
             </ul>
         </CardContent>
       </Card>
 
-      <p className="text-center text-muted-foreground">
-        <strong>Up Next:</strong> We will learn how to "store" the process of elimination in matrices themselves, leading to the elegant and computationally vital **LU Decomposition**.
-      </p>
-
+      <NextUpNavigation href="/linear-algebra-for-quantitative-finance/lu-decomposition">
+        LU Decomposition
+      </NextUpNavigation>
     </div>
   );
 }
