@@ -65,7 +65,7 @@ export function InteractiveMatrixTransformation() {
         });
         
         // Standard Grid
-        const gridHelper = new THREE.GridHelper(50, 25, 0x444444, 0x444444);
+        const gridHelper = new THREE.GridHelper(50, 50, 0x444444, 0x444444);
         gridHelper.rotation.x = Math.PI / 2;
         scene.add(gridHelper);
 
@@ -76,19 +76,21 @@ export function InteractiveMatrixTransformation() {
         // Standard Basis Vectors (non-interactive)
         const iHat = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
         const jHat = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
+        scene.add(iHat, jHat);
         
         // Draggable New Basis Vectors
         iHatPrimeRef.current = new THREE.ArrowHelper(iHatPrime.clone().normalize(), iHatPrime.length(), 0xff8a65, 0.3, 0.2);
         jHatPrimeRef.current = new THREE.ArrowHelper(jHatPrime.clone().normalize(), jHatPrime.length(), 0x69f0ae, 0.3, 0.2);
+        scene.add(iHatPrimeRef.current, jHatPrimeRef.current);
 
         // Resultant Vector (v)
         const initialV = iHatPrime.clone().multiplyScalar(newBasisCoords.x).add(jHatPrime.clone().multiplyScalar(newBasisCoords.y));
         vectorVRef.current = new THREE.ArrowHelper(initialV.clone().normalize(), initialV.length(), 0xffffff, 0.3, 0.2);
+        scene.add(vectorVRef.current);
 
         // Vector Label for v
         vectorLabelRef.current = createLabel("v", '#ffffff');
-        
-        scene.add(iHat, jHat, iHatPrimeRef.current, jHatPrimeRef.current, vectorVRef.current, vectorLabelRef.current);
+        scene.add(vectorLabelRef.current);
         
         // Interactivity
         const cleanupI = makeObjectsDraggable(iHatPrimeRef.current, camera, renderer.domElement, { onDrag: (obj, pos) => setIHatPrime(pos.clone().setZ(0)) });
@@ -124,6 +126,7 @@ export function InteractiveMatrixTransformation() {
                 }
             }
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Updates visualization based on state changes
@@ -205,3 +208,5 @@ export function InteractiveMatrixTransformation() {
         </div>
     );
 }
+
+    
