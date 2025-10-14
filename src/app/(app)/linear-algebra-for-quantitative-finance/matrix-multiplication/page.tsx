@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // Dynamically import the animation component with SSR turned off
 const MatrixMultiplicationAnimation = dynamic(
-  () => import('@/components/app/matrix-multiplication-animation').then(mod => mod.MatrixMultiplicationAnimation),
+  () => import('@/components/linear-algebra-animations/matrix-multiplication-animation').then(mod => mod.MatrixMultiplicationAnimation),
   { 
     ssr: false,
     loading: () => <Skeleton className="w-full h-full" />
