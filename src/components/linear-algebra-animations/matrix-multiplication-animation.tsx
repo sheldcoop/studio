@@ -11,8 +11,8 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
-const initialMatrixA: Matrix2D = { a: 0, b: -1, c: 1, d: 0 }; // 90-degree rotation
-const initialMatrixB: Matrix2D = { a: 1, b: 1, c: 0, d: 1 }; // Shear
+const initialMatrixA: Matrix2D = { a: 0, b: 1, c: -1, d: 0 }; // 90-degree rotation clockwise
+const initialMatrixB: Matrix2D = { a: 1, b: 0, c: 1, d: 1 }; // Shear
 
 const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix: (m: Matrix2D) => void, label: string }) => {
     const handleChange = (key: keyof Matrix2D, value: string) => {
@@ -44,7 +44,7 @@ export function MatrixMultiplicationAnimation() {
         currentMatrix: { a: 1, b: 0, c: 0, d: 1 } as Matrix2D,
         isAnimating: false,
         progress: 0,
-        duration: 1500,
+        duration: 1500, // in ms
     });
     
     const [matrixA, setMatrixA] = useState<Matrix2D>(initialMatrixA);
@@ -71,7 +71,8 @@ export function MatrixMultiplicationAnimation() {
 
 
     useEffect(() => {
-        // C = B * A (Note: transformations apply right-to-left, so B then A)
+        // C = B * A (Note: transformations apply right-to-left)
+        // This is the standard mathematical definition of matrix multiplication for transformations.
         const c_a = matrixB.a * matrixA.a + matrixB.b * matrixA.c;
         const c_b = matrixB.a * matrixA.b + matrixB.b * matrixA.d;
         const c_c = matrixB.c * matrixA.a + matrixB.d * matrixA.c;
@@ -98,26 +99,15 @@ export function MatrixMultiplicationAnimation() {
                 t
             );
             
-             // Create a THREE.js Matrix4 for transformation
-            const transformMatrix = new THREE.Matrix4().set(
-                newMatrix.a, newMatrix.c, 0, 0,
-                newMatrix.b, newMatrix.d, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1
-            );
-
-            // Apply transformation to a copy of the original vertices
-            const transformedVertices = originalGridVertices.current.slice();
+            // This is the correct way to apply the transformation to the geometry
+            const transformedVertices = originalGridVertices.current.slice(); // Work on a copy
             for (let i = 0; i < transformedVertices.length; i += 3) {
-                const vertex = new THREE.Vector3(
-                    transformedVertices[i],
-                    transformedVertices[i+1],
-                    transformedVertices[i+2]
-                );
-                vertex.applyMatrix4(transformMatrix);
-                transformedVertices[i] = vertex.x;
-                transformedVertices[i+1] = vertex.y;
-                transformedVertices[i+2] = vertex.z;
+                const x = transformedVertices[i];
+                const y = transformedVertices[i+1];
+                
+                // Apply the 2D matrix transformation
+                transformedVertices[i] = newMatrix.a * x + newMatrix.c * y;
+                transformedVertices[i+1] = newMatrix.b * x + newMatrix.d * y;
             }
 
             // Update the grid geometries with the new vertex positions
@@ -132,7 +122,6 @@ export function MatrixMultiplicationAnimation() {
                 }
             });
 
-
             if (t >= 1) {
                 animationState.current.isAnimating = false;
                 animationState.current.currentMatrix = animationState.current.targetMatrix;
@@ -142,21 +131,23 @@ export function MatrixMultiplicationAnimation() {
     
     return (
         <div className="w-full">
-            <InteractiveScene cameraPosition={new THREE.Vector3(0, 0, 10)}>
-                <AnimationLoop callback={handleAnimate} />
-                <primitive object={drawAxes(new THREE.Scene(), { size: 5, tickInterval: 1 })} />
-                <primitive object={drawGrid(new THREE.Scene(), { size: 5 })} ref={gridRef} />
-            </InteractiveScene>
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-background">
+                <InteractiveScene cameraPosition={new THREE.Vector3(0, 0, 10)}>
+                    <AnimationLoop callback={handleAnimate} />
+                    <primitive object={drawAxes(new THREE.Scene(), { size: 5, tickInterval: 1 })} />
+                    <primitive object={drawGrid(new THREE.Scene(), { size: 5 })} ref={gridRef} />
+                </InteractiveScene>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <MatrixInput matrix={matrixA} setMatrix={setMatrixA} label="Matrix A (Rotation)" />
                 <MatrixInput matrix={matrixB} setMatrix={setMatrixB} label="Matrix B (Shear)" />
                  <Card>
-                    <CardHeader className="p-2 pt-4"><CardTitle className="text-sm font-semibold text-center">Combined (C = AB)</CardTitle></CardHeader>
+                    <CardHeader className="p-2 pt-4"><CardTitle className="text-sm font-semibold text-center">Combined (C = BA)</CardTitle></CardHeader>
                     <CardContent className="p-2">
                          <div className="grid grid-cols-2 gap-2 text-center text-sm font-mono p-2 bg-muted rounded-md">
-                            <span>{matrixC.a.toFixed(2)}</span><span>{matrixC.c.toFixed(2)}</span>
-                            <span>{matrixC.b.toFixed(2)}</span><span>{matrixC.d.toFixed(2)}</span>
+                            <span>{matrixC.a.toFixed(2)}</span><span>{matrixC.b.toFixed(2)}</span>
+                            <span>{matrixC.c.toFixed(2)}</span><span>{matrixC.d.toFixed(2)}</span>
                         </div>
                     </CardContent>
                 </Card>
@@ -170,4 +161,3 @@ export function MatrixMultiplicationAnimation() {
         </div>
     );
 }
-

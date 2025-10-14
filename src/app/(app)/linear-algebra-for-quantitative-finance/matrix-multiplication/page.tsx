@@ -18,7 +18,7 @@ const MatrixMultiplicationAnimation = dynamic(
   () => import('@/components/linear-algebra-animations/matrix-multiplication-animation').then(mod => mod.MatrixMultiplicationAnimation),
   { 
     ssr: false,
-    loading: () => <Skeleton className="w-full h-full" />
+    loading: () => <Skeleton className="aspect-video w-full" />
   }
 );
 
