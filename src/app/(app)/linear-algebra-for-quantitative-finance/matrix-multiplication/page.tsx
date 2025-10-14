@@ -12,15 +12,7 @@ import { NextUpNavigation } from '@/components/app/next-up-navigation';
 import { InteractiveVisualizationWrapper } from '@/components/app/interactive-visualization-wrapper';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-
-// Dynamically import the animation component with SSR turned off
-const InteractiveMatrixTransformation = dynamic(
-  () => import('@/components/linear-algebra-animations/InteractiveMatrixTransformation').then(mod => mod.InteractiveMatrixTransformation),
-  { 
-    ssr: false,
-    loading: () => <Skeleton className="aspect-video w-full" />
-  }
-);
+import { InteractiveMatrixTransformation } from '@/components/linear-algebra-animations/InteractiveMatrixTransformation';
 
 
 export default function MatrixMultiplicationPage() {

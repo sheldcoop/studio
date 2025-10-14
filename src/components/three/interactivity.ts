@@ -63,6 +63,7 @@ export const makeObjectsDraggable = (
     const raycaster = new THREE.Raycaster();
     let isDragging = false;
     let selectedObject: THREE.Object3D | null = null;
+    const draggableItems = Array.isArray(objectsToDrag) ? objectsToDrag : [objectsToDrag];
 
     const onMouseDown = (event: MouseEvent) => {
         const mouse = new THREE.Vector2();
@@ -72,21 +73,14 @@ export const makeObjectsDraggable = (
 
         raycaster.setFromCamera(mouse, camera);
         
-        const draggableItems = Array.isArray(objectsToDrag) ? objectsToDrag : [objectsToDrag];
+        // We check intersection with the draggable items themselves.
+        // This requires them to have geometry to be intersected. ArrowHelpers work well.
         const intersects = raycaster.intersectObjects(draggableItems, true);
 
         if (intersects.length > 0) {
             isDragging = true;
-            // The intersected object might be a child mesh of the object we want to drag (e.g., an arrowhead).
-            // We traverse up to find the actual object that is in our draggableItems list.
-            let currentObject = intersects[0].object;
-            while(currentObject.parent && !draggableItems.includes(currentObject)) {
-                currentObject = currentObject.parent;
-            }
-            selectedObject = currentObject;
+            selectedObject = draggableItems[0]; // Assume we drag the whole helper
 
-            // Attempt to disable camera controls for a better drag experience
-            // This is a common pattern for libraries like OrbitControls
             if ((camera as any).controls) {
                 (camera as any).controls.enabled = false;
             }
@@ -104,7 +98,7 @@ export const makeObjectsDraggable = (
         }
     };
 
-    const onMouseUp = (event: MouseEvent) => {
+    const onMouseUp = () => {
         if (isDragging && selectedObject) {
             if ((camera as any).controls) {
                 (camera as any).controls.enabled = true;
