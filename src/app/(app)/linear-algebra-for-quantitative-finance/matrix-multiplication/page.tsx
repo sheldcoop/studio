@@ -14,8 +14,8 @@ import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Dynamically import the animation component with SSR turned off
-const VectorRotationAnimation = dynamic(
-  () => import('@/components/linear-algebra-animations/vector-rotation-animation').then(mod => mod.VectorRotationAnimation),
+const InteractiveMatrixTransformation = dynamic(
+  () => import('@/components/linear-algebra-animations/InteractiveMatrixTransformation').then(mod => mod.InteractiveMatrixTransformation),
   { 
     ssr: false,
     loading: () => <Skeleton className="aspect-video w-full" />
@@ -48,9 +48,8 @@ export default function MatrixMultiplicationPage() {
         
         <InteractiveVisualizationWrapper
           title="Visualizing a Transformation"
-          description="Enter a 2x2 matrix to see how it transforms the vector v = [2, 1]. Start with the default 90-degree rotation matrix to see why it's called that."
         >
-          <VectorRotationAnimation />
+          <InteractiveMatrixTransformation />
         </InteractiveVisualizationWrapper>
         
         <PitfallAlert title="Order Matters! AB ≠ BA">
