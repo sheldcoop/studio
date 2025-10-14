@@ -1,13 +1,14 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { Label } from '@/components/ui/label';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { BlockMath } from 'react-katex';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
+import { createLabel } from '../three/ui-helpers';
 
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,7 @@ export function InteractiveMatrixTransformation() {
     const iHatRef = useRef<THREE.ArrowHelper | null>(null);
     const jHatRef = useRef<THREE.ArrowHelper | null>(null);
     const vectorVRef = useRef<THREE.ArrowHelper | null>(null);
+    const vectorLabelRef = useRef<THREE.Sprite | null>(null);
 
     // This useEffect hook is for one-time scene setup.
     useEffect(() => {
@@ -64,7 +66,7 @@ export function InteractiveMatrixTransformation() {
         });
         
         // Grid
-        const gridHelper = new THREE.GridHelper(frustumSize, frustumSize);
+        const gridHelper = new THREE.GridHelper(100, 100); // Make grid much larger
         gridHelper.rotation.x = Math.PI / 2;
         scene.add(gridHelper);
         cleanupFunctions.push(() => {
@@ -81,7 +83,10 @@ export function InteractiveMatrixTransformation() {
         // Main Draggable Vector
         vectorVRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xffffff, 0.25, 0.15);
         
-        scene.add(iHatRef.current, jHatRef.current, vectorVRef.current);
+        // Vector Label
+        vectorLabelRef.current = createLabel(`[${vector.x.toFixed(2)}, ${vector.y.toFixed(2)}]`, '#ffffff', 0.4);
+        
+        scene.add(iHatRef.current, jHatRef.current, vectorVRef.current, vectorLabelRef.current);
         
         // Interactivity
         const onDrag = (obj: THREE.Object3D, pos: THREE.Vector3) => {
@@ -133,16 +138,30 @@ export function InteractiveMatrixTransformation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [theme]);
 
-    // This useEffect hook is for updating the vector when state changes
+    // This useEffect hook is for updating the vector and its label when state changes
     useEffect(() => {
         if (vectorVRef.current) {
             const length = vector.length();
             if (length > 0.01) {
                 vectorVRef.current.setDirection(vector.clone().normalize());
+                // Use constant head size
                 vectorVRef.current.setLength(length, 0.25, 0.15);
             } else {
                 vectorVRef.current.setLength(0, 0, 0); // Hide vector if it's at the origin
             }
+        }
+        if (vectorLabelRef.current) {
+            // Recreate label texture to update text
+            const newLabelText = `[${vector.x.toFixed(2)}, ${vector.y.toFixed(2)}]`;
+            const newLabelSprite = createLabel(newLabelText, '#ffffff', 0.4);
+            
+            // Dispose of the old texture to prevent memory leaks
+            if (vectorLabelRef.current.material.map) {
+                vectorLabelRef.current.material.map.dispose();
+            }
+            
+            vectorLabelRef.current.material.map = newLabelSprite.material.map;
+            vectorLabelRef.current.position.set(vector.x, vector.y, 0).add(new THREE.Vector3(0.5, 0.5, 0));
         }
     }, [vector]);
 
