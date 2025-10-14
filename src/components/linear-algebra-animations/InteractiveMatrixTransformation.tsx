@@ -54,21 +54,28 @@ export function InteractiveMatrixTransformation() {
             renderer.dispose();
         });
 
-        // Axes with labels
+        // Axes and Grid
         const axesGroup = drawAxes(scene, { size: 5, showLabels: true, tickInterval: 1 });
+        const gridHelper = new THREE.GridHelper(10, 10, 0x888888, 0x444444);
+        gridHelper.rotation.x = Math.PI / 2;
+        scene.add(gridHelper);
         cleanupFunctions.push(() => {
             scene.remove(axesGroup);
+            scene.remove(gridHelper);
             axesGroup.children.forEach(child => {
-                if (child instanceof THREE.Line || child instanceof THREE.ArrowHelper) {
-                    child.geometry.dispose();
-                    (child.material as THREE.Material).dispose();
+                if (child instanceof THREE.Line || child instanceof THREE.ArrowHelper || child instanceof THREE.Sprite) {
+                    (child as any).geometry?.dispose();
+                    (child as any).material?.dispose();
                 }
             });
+            gridHelper.geometry.dispose();
+            (gridHelper.material as THREE.Material).dispose();
         });
 
+
         // Basis Vectors
-        iHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.3, 0.15); // Red
-        jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.3, 0.15); // Green
+        iHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.2, 0.1); // Red
+        jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.2, 0.1); // Green
         
         // Main Draggable Vector
         const dirV = new THREE.Vector3(2, 1, 0).normalize();

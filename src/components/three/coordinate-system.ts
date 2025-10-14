@@ -9,6 +9,7 @@ type AxesOptions = {
     showLabels?: boolean;
     tickInterval?: number;
     size?: number;
+    showZ?: boolean; // New option to control Z-axis visibility
 };
 
 /**
@@ -18,18 +19,19 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
     const {
         showLabels = true,
         tickInterval = 1,
-        size = 10
+        size = 10,
+        showZ = false, // Default to false for 2D focus
     } = options;
 
     const group = new THREE.Group();
 
-    const axes = {
+    const axesConfig = {
         x: { dir: new THREE.Vector3(1, 0, 0), color: 0xff0000, label: 'x' },
         y: { dir: new THREE.Vector3(0, 1, 0), color: 0x00ff00, label: 'y' },
-        z: { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: 'z' },
+        ...(showZ && { z: { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: 'z' } }),
     };
 
-    for (const [axisName, axis] of Object.entries(axes)) {
+    for (const [axisName, axis] of Object.entries(axesConfig)) {
         // Main axis line
         const endPoint = axis.dir.clone().multiplyScalar(size);
         const startPoint = axis.dir.clone().multiplyScalar(-size);
