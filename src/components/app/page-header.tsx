@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const pageHeaderVariants = cva(
-  'mb-8 flex flex-col gap-4',
+  'mb-8 flex flex-col items-center justify-center text-center',
   {
     variants: {
       variant: {
@@ -28,11 +28,11 @@ export function PageHeader({ title, description, children, variant, className }:
   return (
     <div className={cn(pageHeaderVariants({ variant, className }))}>
       <div className="grid flex-1 gap-1">
-        <h1 className="font-headline text-3xl font-bold tracking-tight md:text-4xl truncate">
+        <h1 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
           {title}
         </h1>
         {description && (
-          <p className="text-lg text-muted-foreground">{description}</p>
+          <p className="max-w-3xl text-lg text-muted-foreground">{description}</p>
         )}
       </div>
       {children && <div className="flex shrink-0 items-center gap-2">{children}</div>}

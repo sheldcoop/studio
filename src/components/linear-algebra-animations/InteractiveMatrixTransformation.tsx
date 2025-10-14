@@ -15,9 +15,9 @@ export function InteractiveMatrixTransformation() {
     
     // State for the vectors
     const [vectorV, setVectorV] = useState(new THREE.Vector3(2, 1, 0));
-    const [iHatPrime, setIHatPrime] = useState(new THREE.Vector3(1, 0, 0));
-    const [jHatPrime, setJHatPrime] = useState(new THREE.Vector3(0, 1, 0));
-    const [newCoords, setNewCoords] = useState({ x: 2, y: 1 });
+    const [iHatPrime, setIHatPrime] = useState(new THREE.Vector3(1.5, 0.5, 0));
+    const [jHatPrime, setJHatPrime] = useState(new THREE.Vector3(-0.5, 1, 0));
+    const [newCoords, setNewCoords] = useState({ x: 0, y: 0 });
 
     // Refs for three.js objects
     const sceneRef = useRef<THREE.Scene | null>(null);
@@ -31,6 +31,7 @@ export function InteractiveMatrixTransformation() {
     const jHatPrimeRef = useRef<THREE.ArrowHelper | null>(null);
     const vectorLabelRef = useRef<THREE.Sprite | null>(null);
     const transformedGridRef = useRef<THREE.Group | null>(null);
+    const standardGridRef = useRef<THREE.GridHelper | null>(null);
 
     // One-time scene setup
     useEffect(() => {
@@ -69,29 +70,30 @@ export function InteractiveMatrixTransformation() {
             renderer.dispose();
         });
         
-        // Standard Grid
+        // Standard Grid (as a fallback)
         const gridHelper = new THREE.GridHelper(50, 25);
+        standardGridRef.current = gridHelper;
         gridHelper.rotation.x = Math.PI / 2;
         (gridHelper.material as THREE.LineBasicMaterial).opacity = 0.2;
         (gridHelper.material as THREE.LineBasicMaterial).transparent = true;
         scene.add(gridHelper);
 
-        // Transformed Grid (initially hidden)
+        // Transformed Grid
         transformedGridRef.current = new THREE.Group();
         scene.add(transformedGridRef.current);
 
-        // Basis Vectors
+        // Standard Basis Vectors (non-interactive)
         const iHat = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.2, 0.1); 
         const jHat = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.2, 0.1);
         
-        // Draggable Basis Vectors
-        iHatPrimeRef.current = new THREE.ArrowHelper(iHatPrime.clone().normalize(), iHatPrime.length(), 0xffcdd2, 0.25, 0.15);
-        jHatPrimeRef.current = new THREE.ArrowHelper(jHatPrime.clone().normalize(), jHatPrime.length(), 0xc8e6c9, 0.25, 0.15);
+        // Draggable New Basis Vectors
+        iHatPrimeRef.current = new THREE.ArrowHelper(iHatPrime.clone().normalize(), iHatPrime.length(), 0xf44336, 0.3, 0.2);
+        jHatPrimeRef.current = new THREE.ArrowHelper(jHatPrime.clone().normalize(), jHatPrime.length(), 0x4caf50, 0.3, 0.2);
 
-        // Main Draggable Vector
-        vectorVRef.current = new THREE.ArrowHelper(vectorV.clone().normalize(), vectorV.length(), 0xffffff, 0.25, 0.15);
+        // Main Draggable Vector (v)
+        vectorVRef.current = new THREE.ArrowHelper(vectorV.clone().normalize(), vectorV.length(), 0xffffff, 0.3, 0.2);
 
-        // Vector Label
+        // Vector Label for v
         vectorLabelRef.current = createLabel("v", '#ffffff');
         
         scene.add(iHat, jHat, iHatPrimeRef.current, jHatPrimeRef.current, vectorVRef.current, vectorLabelRef.current);
@@ -138,7 +140,7 @@ export function InteractiveMatrixTransformation() {
         // Update draggable vector `v`
         if (vectorVRef.current && vectorLabelRef.current) {
             const length = vectorV.length();
-            vectorVRef.current.setLength(length, 0.25, 0.15);
+            vectorVRef.current.setLength(length, 0.3, 0.2);
             if (length > 0.01) vectorVRef.current.setDirection(vectorV.clone().normalize());
             vectorLabelRef.current.position.copy(vectorV).add(new THREE.Vector3(0.5, 0.5, 0));
         }
@@ -146,35 +148,48 @@ export function InteractiveMatrixTransformation() {
         // Update draggable basis vectors `i'` and `j'`
         if (iHatPrimeRef.current) {
             const len = iHatPrime.length();
-            iHatPrimeRef.current.setLength(len, 0.25, 0.15);
+            iHatPrimeRef.current.setLength(len, 0.3, 0.2);
             if (len > 0.01) iHatPrimeRef.current.setDirection(iHatPrime.clone().normalize());
         }
         if (jHatPrimeRef.current) {
              const len = jHatPrime.length();
-            jHatPrimeRef.current.setLength(len, 0.25, 0.15);
+            jHatPrimeRef.current.setLength(len, 0.3, 0.2);
             if (len > 0.01) jHatPrimeRef.current.setDirection(jHatPrime.clone().normalize());
         }
 
         // Update transformed grid
         if (transformedGridRef.current && sceneRef.current) {
+            // Clear the old grid
             while (transformedGridRef.current.children.length > 0) {
                 transformedGridRef.current.remove(transformedGridRef.current.children[0]);
             }
+            // Draw the new one based on the new basis vectors
             drawTransformedGrid(transformedGridRef.current, { 
                 matrix: { a: iHatPrime.x, b: jHatPrime.x, c: iHatPrime.y, d: jHatPrime.y },
                 transformedColor: 0x888888
             });
+            // Hide the standard grid if the transformed one is active
+            if (standardGridRef.current) {
+                standardGridRef.current.visible = false;
+            }
         }
         
-        // Calculate new coordinates
+        // --- The Core Logic: Change of Basis Calculation ---
+        // We want to solve x*iHatPrime + y*jHatPrime = vectorV
+        // This is a system of linear equations:
+        // iHatPrime.x * x + jHatPrime.x * y = vectorV.x
+        // iHatPrime.y * x + jHatPrime.y * y = vectorV.y
         const det = iHatPrime.x * jHatPrime.y - iHatPrime.y * jHatPrime.x;
-        if (Math.abs(det) > 0.001) {
+        if (Math.abs(det) > 0.001) { // Check if the basis is valid (not collinear)
             const invDet = 1 / det;
+            // Using Cramer's rule to solve for x and y
             const newX = invDet * (vectorV.x * jHatPrime.y - vectorV.y * jHatPrime.x);
             const newY = invDet * (vectorV.y * iHatPrime.x - vectorV.x * iHatPrime.y);
             setNewCoords({ x: newX, y: newY });
+        } else {
+            // Basis is invalid (collinear vectors), coordinates are undefined
+            setNewCoords({ x: NaN, y: NaN });
         }
-
 
     }, [vectorV, iHatPrime, jHatPrime]);
 
@@ -191,7 +206,7 @@ export function InteractiveMatrixTransformation() {
                  <div className="text-center">
                     <Label className="font-semibold text-primary">Vector Coords (New Basis)</Label>
                      <div className="font-mono text-lg p-2 mt-2 text-primary">
-                        <BlockMath math={`v_{new} = \\begin{bmatrix} ${newCoords.x.toFixed(2)} \\\\ ${newCoords.y.toFixed(2)} \\end{bmatrix}`} />
+                        <BlockMath math={`v_{new} = \\begin{bmatrix} ${isNaN(newCoords.x) ? '?' : newCoords.x.toFixed(2)} \\\\ ${isNaN(newCoords.y) ? '?' : newCoords.y.toFixed(2)} \\end{bmatrix}`} />
                     </div>
                 </div>
             </div>

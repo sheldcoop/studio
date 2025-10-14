@@ -6,20 +6,21 @@ import { drawArrow, drawShading, drawPlane } from './primitives'; // Assuming pr
 
 /**
  * Creates a THREE.Matrix4 from a 2D matrix object for transformations on the XY plane.
- * The p5.js matrix {a, b, c, d} corresponds to a row-major [[a, b], [c, d]] matrix.
+ * The matrix {a, b, c, d} corresponds to a row-major [[a, b], [c, d]] matrix.
+ * This is used to transform standard grid lines to their new positions.
  */
 const matrix4From2D = (m: { a: number; b: number; c: number; d: number }) => {
     const mat4 = new THREE.Matrix4();
     // THREE.js matrices are column-major.
-    // To represent the transformation v' = M * v where M is row-major [[a, b], [c, d]],
-    // the Matrix4 should be set up as:
-    // a, c, 0, 0
-    // b, d, 0, 0
+    // To represent the transformation v' = M * v where M is defined by new basis vectors
+    // i' = [a, c] and j' = [b, d], the Matrix4 should be set up as:
+    // a, b, 0, 0
+    // c, d, 0, 0
     // 0, 0, 1, 0
     // 0, 0, 0, 1
     mat4.set(
-        m.a, m.c, 0, 0,
-        m.b, m.d, 0, 0,
+        m.a, m.b, 0, 0,
+        m.c, m.d, 0, 0,
         0,   0,   1, 0,
         0,   0,   0, 1
     );
@@ -39,7 +40,7 @@ type TransformedGridOptions = {
 };
 
 /**
- * Applies a matrix transformation to a grid and visualizes the result.
+ * Visualizes a skewed grid based on a transformation matrix.
  * Returns a THREE.Group containing the transformed grid.
  */
 export const drawTransformedGrid = (parent: THREE.Group, options: TransformedGridOptions): void => {
@@ -54,11 +55,11 @@ export const drawTransformedGrid = (parent: THREE.Group, options: TransformedGri
     const m = matrix4From2D(matrix);
     const step = size / divisions;
 
-    // Create a base grid and transform it
-    for (let i = -size / 2; i <= size / 2; i += step) {
+    // Create a base grid and transform each line
+    for (let i = -divisions; i <= divisions; i++) {
         // Lines parallel to the original Y-axis
-        const startX = new THREE.Vector3(i, -size/2, 0);
-        const endX = new THREE.Vector3(i, size/2, 0);
+        const startX = new THREE.Vector3(i, -divisions, 0);
+        const endX = new THREE.Vector3(i, divisions, 0);
         startX.applyMatrix4(m);
         endX.applyMatrix4(m);
         const geomX = new THREE.BufferGeometry().setFromPoints([startX, endX]);
@@ -66,8 +67,8 @@ export const drawTransformedGrid = (parent: THREE.Group, options: TransformedGri
         parent.add(lineX);
 
         // Lines parallel to the original X-axis
-        const startY = new THREE.Vector3(-size/2, i, 0);
-        const endY = new THREE.Vector3(size/2, i, 0);
+        const startY = new THREE.Vector3(-divisions, i, 0);
+        const endY = new THREE.Vector3(divisions, i, 0);
         startY.applyMatrix4(m);
         endY.applyMatrix4(m);
         const geomY = new THREE.BufferGeometry().setFromPoints([startY, endY]);
