@@ -313,5 +313,3 @@ export function InteractiveMatrixTransformation() {
         </div>
     );
 }
-
-    
