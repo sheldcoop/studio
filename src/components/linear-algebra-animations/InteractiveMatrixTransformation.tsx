@@ -79,8 +79,8 @@ export function InteractiveMatrixTransformation() {
         scene.add(iHat, jHat);
         
         // Draggable New Basis Vectors
-        iHatPrimeRef.current = new THREE.ArrowHelper(iHatPrime.clone().normalize(), iHatPrime.length(), 0xff8a65, 0.3, 0.2);
-        jHatPrimeRef.current = new THREE.ArrowHelper(jHatPrime.clone().normalize(), jHatPrime.length(), 0x69f0ae, 0.3, 0.2);
+        iHatPrimeRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), 1, 0xff8a65, 0.3, 0.2);
+        jHatPrimeRef.current = new THREE.ArrowHelper(new THREE.Vector3(0,1,0), 1, 0x69f0ae, 0.3, 0.2);
         scene.add(iHatPrimeRef.current, jHatPrimeRef.current);
 
         // Resultant Vector (v)
@@ -139,6 +139,8 @@ export function InteractiveMatrixTransformation() {
             if (length > 0.01) {
               vectorVRef.current.setLength(length, 0.3, 0.2);
               vectorVRef.current.setDirection(v.clone().normalize());
+            } else {
+              vectorVRef.current.setLength(0,0,0);
             }
         }
         
@@ -154,6 +156,8 @@ export function InteractiveMatrixTransformation() {
             if(len > 0.01) {
               iHatPrimeRef.current.setLength(len, 0.3, 0.2);
               iHatPrimeRef.current.setDirection(iHatPrime.clone().normalize());
+            } else {
+              iHatPrimeRef.current.setLength(0,0,0);
             }
         }
         if (jHatPrimeRef.current) {
@@ -161,6 +165,8 @@ export function InteractiveMatrixTransformation() {
             if(len > 0.01) {
               jHatPrimeRef.current.setLength(len, 0.3, 0.2);
               jHatPrimeRef.current.setDirection(jHatPrime.clone().normalize());
+            } else {
+                jHatPrimeRef.current.setLength(0,0,0);
             }
         }
 
@@ -208,5 +214,3 @@ export function InteractiveMatrixTransformation() {
         </div>
     );
 }
-
-    
