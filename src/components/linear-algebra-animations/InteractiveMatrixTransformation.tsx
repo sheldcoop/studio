@@ -66,7 +66,7 @@ export function InteractiveMatrixTransformation() {
         });
         
         // Grid
-        const gridHelper = new THREE.GridHelper(100, 100); // Make grid much larger
+        const gridHelper = new THREE.GridHelper(100, 50); // size, divisions
         gridHelper.rotation.x = Math.PI / 2;
         scene.add(gridHelper);
         cleanupFunctions.push(() => {
@@ -136,7 +136,7 @@ export function InteractiveMatrixTransformation() {
         };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [theme]);
+    }, []);
 
     // This useEffect hook is for updating the vector and its label when state changes
     useEffect(() => {
