@@ -64,7 +64,8 @@ export function InteractiveMatrixTransformation() {
         });
         
         // Grid
-        const gridHelper = new THREE.GridHelper(frustumSize * 2, frustumSize * 2, 0x888888, 0x444444);
+        const gridHelper = new THREE.GridHelper(frustumSize, frustumSize);
+        gridHelper.rotation.x = Math.PI / 2;
         scene.add(gridHelper);
         cleanupFunctions.push(() => {
             scene.remove(gridHelper);
