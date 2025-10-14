@@ -151,9 +151,15 @@ export const drawVector = drawArrow;
 
 export class Vector extends THREE.ArrowHelper {
     private label?: THREE.Sprite;
+    private headLengthValue: number;
 
     constructor(dir: THREE.Vector3, length: number, color?: THREE.ColorRepresentation, headLength?: number, headWidth?: number, labelText?: string, origin: THREE.Vector3 = new THREE.Vector3(0,0,0)) {
-        super(dir, origin, length, color, headLength, headWidth);
+        // Use default values if not provided, consistent with ArrowHelper
+        const hLength = headLength === undefined ? length * 0.2 : headLength;
+        const hWidth = headWidth === undefined ? hLength * 0.2 : headWidth;
+
+        super(dir, origin, length, color, hLength, hWidth);
+        this.headLengthValue = hLength;
 
         if (labelText) {
             this.label = createLabel(labelText, color, 0.4);
@@ -166,10 +172,10 @@ export class Vector extends THREE.ArrowHelper {
 
     private updateLabelPosition() {
         if (this.label) {
-            // Correctly get direction from quaternion
             const direction = new THREE.Vector3(0, 1, 0).applyQuaternion(this.quaternion);
             const tipPosition = this.position.clone().add(direction.multiplyScalar(this.scale.y));
-            this.label.position.copy(tipPosition).add(new THREE.Vector3(0, this.head.scale.y * 1.5, 0));
+            // Offset the label by the head length to position it just beyond the tip
+            this.label.position.copy(tipPosition).add(new THREE.Vector3(0, this.headLengthValue * 1.5, 0));
         }
     }
 
@@ -180,6 +186,10 @@ export class Vector extends THREE.ArrowHelper {
 
     setLength(length: number, headLength?: number, headWidth?: number) {
         super.setLength(length, headLength, headWidth);
+        // Update stored head length if it changes
+        if (headLength !== undefined) {
+            this.headLengthValue = headLength;
+        }
         this.updateLabelPosition();
     }
 }
