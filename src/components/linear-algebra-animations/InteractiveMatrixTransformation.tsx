@@ -27,8 +27,9 @@ export function InteractiveMatrixTransformation() {
     const jHatRef = useRef<THREE.ArrowHelper | null>(null);
     const vectorVRef = useRef<THREE.ArrowHelper | null>(null);
 
-    const setupScene = useCallback(() => {
-        if (!mountRef.current) return [];
+    // This useEffect hook is for one-time scene setup.
+    useEffect(() => {
+        if (!mountRef.current) return;
 
         const currentMount = mountRef.current;
         const cleanupFunctions: (() => void)[] = [];
@@ -65,14 +66,13 @@ export function InteractiveMatrixTransformation() {
             });
         });
 
-
         // Basis Vectors
         iHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.3, 0.15); // Red
         jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.3, 0.15); // Green
         
         // Main Draggable Vector
-        const dirV = vector.clone().normalize();
-        const lenV = vector.length();
+        const dirV = new THREE.Vector3(2, 1, 0).normalize();
+        const lenV = new THREE.Vector3(2, 1, 0).length();
         vectorVRef.current = new THREE.ArrowHelper(dirV, new THREE.Vector3(0,0,0), lenV, 0xffffff, lenV * 0.15, lenV * 0.1);
         
         scene.add(iHatRef.current, jHatRef.current, vectorVRef.current);
@@ -84,10 +84,19 @@ export function InteractiveMatrixTransformation() {
             setVector(newVector);
         };
         
-        // Only make the main vector draggable
-        const cleanupDrag = makeObjectsDraggable(vectorVRef.current, camera, renderer.domElement, { onDrag });
-        cleanupFunctions.push(cleanupDrag);
+        if (vectorVRef.current) {
+            const cleanupDrag = makeObjectsDraggable(vectorVRef.current, camera, renderer.domElement, { onDrag });
+            cleanupFunctions.push(cleanupDrag);
+        }
         
+        const animate = () => {
+            animationFrameIdRef.current = requestAnimationFrame(animate);
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        };
+        animate();
+
         // Resize Listener
         const handleResize = () => {
             if (currentMount) {
@@ -99,32 +108,6 @@ export function InteractiveMatrixTransformation() {
         window.addEventListener('resize', handleResize);
         cleanupFunctions.push(() => window.removeEventListener('resize', handleResize));
         
-        return cleanupFunctions;
-
-    }, [theme]);
-
-    useEffect(() => {
-        const cleanupFunctions = setupScene();
-        
-        const animate = () => {
-            animationFrameIdRef.current = requestAnimationFrame(animate);
-            if (rendererRef.current && sceneRef.current && cameraRef.current) {
-                 if (vectorVRef.current) {
-                    const length = vector.length();
-                    if (length > 0.01) {
-                        vectorVRef.current.setDirection(vector.clone().normalize());
-                        vectorVRef.current.setLength(length, length * 0.15, length * 0.1);
-                    } else {
-                        // If vector is at origin, just hide it by setting length to 0
-                        vectorVRef.current.setLength(0,0,0);
-                    }
-                }
-                rendererRef.current.render(sceneRef.current, cameraRef.current);
-            }
-        };
-        
-        animate();
-
         return () => {
             if (animationFrameIdRef.current) {
                 cancelAnimationFrame(animationFrameIdRef.current);
@@ -136,7 +119,21 @@ export function InteractiveMatrixTransformation() {
                 }
             }
         };
-    }, [setupScene, vector]);
+
+    }, [theme]); // Rerun only if the theme changes
+
+    // This useEffect hook is for updating the vector when state changes
+    useEffect(() => {
+        if (vectorVRef.current) {
+            const length = vector.length();
+            if (length > 0.01) {
+                vectorVRef.current.setDirection(vector.clone().normalize());
+                vectorVRef.current.setLength(length, length * 0.15, length * 0.1);
+            } else {
+                vectorVRef.current.setLength(0, 0, 0); // Hide vector if it's at the origin
+            }
+        }
+    }, [vector]);
 
 
     return (
