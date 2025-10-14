@@ -35,13 +35,13 @@ const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix
 
 
 export function MatrixMultiplicationAnimation() {
-    const gridRef = useRef<THREE.Group>();
+    const gridRef = useRef<THREE.Group>(null);
     const animationState = useRef({
         targetMatrix: { a: 1, b: 0, c: 0, d: 1 } as Matrix2D,
         currentMatrix: { a: 1, b: 0, c: 0, d: 1 } as Matrix2D,
         isAnimating: false,
         progress: 0,
-        duration: 2000,
+        duration: 1500, // Slightly faster animation
     });
     
     const [matrixA, setMatrixA] = useState<Matrix2D>(initialMatrixA);
@@ -76,13 +76,15 @@ export function MatrixMultiplicationAnimation() {
                 t
             );
 
-            // Re-draw the grid with the new matrix
-            if (gridRef.current.children[1]) { // Assuming grid is the second child after axes
-                const transformedGrid = gridRef.current.children[1] as THREE.Group;
-                transformedGrid.children.forEach(child => {
-                     // This is a simplified approach. A more robust implementation would update vertices.
-                });
-            }
+            // Apply the transformation to the grid group
+            gridRef.current.matrix.set(
+                newMatrix.a, newMatrix.c, 0, 0,
+                newMatrix.b, newMatrix.d, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+            );
+            gridRef.current.matrixAutoUpdate = false;
+
 
             if (t >= 1) {
                 animationState.current.isAnimating = false;
@@ -95,8 +97,8 @@ export function MatrixMultiplicationAnimation() {
         <div className="w-full">
             <InteractiveScene cameraPosition={new THREE.Vector3(0, 0, 10)}>
                 <AnimationLoop callback={handleAnimate} />
+                <primitive object={drawAxes(new THREE.Scene(), { size: 5, tickInterval: 1 })} />
                 <group ref={gridRef}>
-                    <primitive object={drawAxes(new THREE.Scene(), { size: 5, tickInterval: 1 })} />
                     <primitive object={drawGrid(new THREE.Scene(), { size: 5 })} />
                 </group>
             </InteractiveScene>
@@ -123,4 +125,3 @@ export function MatrixMultiplicationAnimation() {
         </div>
     );
 }
-
