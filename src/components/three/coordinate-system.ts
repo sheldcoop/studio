@@ -2,6 +2,8 @@
 import * as THREE from 'three';
 import { createLabel } from './ui-helpers';
 
+type ParentObject = THREE.Scene | THREE.Group;
+
 type AxesOptions = {
     scaleFactor?: number;
     showLabels?: boolean;
@@ -12,7 +14,7 @@ type AxesOptions = {
 /**
  * Draws 3D Cartesian axes (X: red, Y: green, Z: blue) with numeric tick labels.
  */
-export const drawAxes = (scene: THREE.Scene, options: AxesOptions = {}): THREE.Group => {
+export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE.Group => {
     const {
         scaleFactor = 1,
         showLabels = true,
@@ -73,7 +75,7 @@ export const drawAxes = (scene: THREE.Scene, options: AxesOptions = {}): THREE.G
         }
     }
     group.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    scene.add(group);
+    parent.add(group);
     return group;
 };
 
@@ -88,7 +90,7 @@ type GridOptions = {
 /**
  * Draws a transformed grid defined by two basis vectors, with a standard grid underneath.
  */
-export const drawGrid = (scene: THREE.Scene, options: GridOptions = {}): THREE.Group => {
+export const drawGrid = (parent: ParentObject, options: GridOptions = {}): THREE.Group => {
     const {
         b1 = new THREE.Vector3(1, 0, 0),
         b2 = new THREE.Vector3(0, 0, 1), // Default to XZ plane
@@ -120,7 +122,7 @@ export const drawGrid = (scene: THREE.Scene, options: GridOptions = {}): THREE.G
     }
 
     group.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    scene.add(group);
+    parent.add(group);
     return group;
 };
 
@@ -165,7 +167,7 @@ type LineOptions = {
 /**
  * Draws a line for the equation ax + by = c across the specified size.
  */
-export const drawLine = (scene: THREE.Scene, options: LineOptions): THREE.Line => {
+export const drawLine = (parent: ParentObject, options: LineOptions): THREE.Line => {
     const { a, b, c, scaleFactor = 1, color = 0xffffff, size = 10 } = options;
 
     const points = [];
@@ -190,7 +192,7 @@ export const drawLine = (scene: THREE.Scene, options: LineOptions): THREE.Line =
     const line = new THREE.Line(geometry, material);
     
     line.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    scene.add(line);
+    parent.add(line);
     return line;
 };
 
@@ -204,7 +206,7 @@ type GridInPlaneOptions = {
 /**
  * Draws a grid on an arbitrary plane in 3D space.
  */
-export const drawGridInPlane = (scene: THREE.Scene, options: GridInPlaneOptions): THREE.Group => {
+export const drawGridInPlane = (parent: ParentObject, options: GridInPlaneOptions): THREE.Group => {
     const { plane, gridColor = 0x888888, scaleFactor = 1, size = 10 } = options;
 
     const group = new THREE.Group();
@@ -222,6 +224,6 @@ export const drawGridInPlane = (scene: THREE.Scene, options: GridInPlaneOptions)
 
     group.add(grid);
     group.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    scene.add(group);
+    parent.add(group);
     return group;
 };

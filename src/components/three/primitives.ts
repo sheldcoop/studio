@@ -8,6 +8,8 @@ type BaseOptions = {
     label?: string;
 };
 
+type ParentObject = THREE.Scene | THREE.Group;
+
 type PlaneOptions = BaseOptions & {
     size?: number;
     position?: THREE.Vector3;
@@ -17,7 +19,7 @@ type PlaneOptions = BaseOptions & {
 /**
  * Draws a plane. Returns a THREE.Group containing the plane and an optional label.
  */
-export const drawPlane = (scene: THREE.Scene, options: PlaneOptions = {}): THREE.Group => {
+export const drawPlane = (parent: ParentObject, options: PlaneOptions = {}): THREE.Group => {
     const {
         color = 0x1565c0,
         scaleFactor = 1,
@@ -50,7 +52,7 @@ export const drawPlane = (scene: THREE.Scene, options: PlaneOptions = {}): THREE
         }
     }
     
-    scene.add(group);
+    parent.add(group);
     return group;
 };
 
@@ -64,7 +66,7 @@ type CircleOptions = BaseOptions & {
 /**
  * Draws a circle. Returns a THREE.Group containing the circle and an optional label.
  */
-export const drawCircle = (scene: THREE.Scene, options: CircleOptions = {}): THREE.Group => {
+export const drawCircle = (parent: ParentObject, options: CircleOptions = {}): THREE.Group => {
     const {
         color = 0xffffff,
         scaleFactor = 1,
@@ -91,7 +93,7 @@ export const drawCircle = (scene: THREE.Scene, options: CircleOptions = {}): THR
         }
     }
     
-    scene.add(group);
+    parent.add(group);
     return group;
 };
 
@@ -106,7 +108,7 @@ type ArrowOptions = BaseOptions & {
 /**
  * Draws a standalone arrow. Returns a THREE.Group containing the arrow and an optional label.
  */
-export const drawArrow = (scene: THREE.Scene, options: ArrowOptions): THREE.Group => {
+export const drawArrow = (parent: ParentObject, options: ArrowOptions): THREE.Group => {
     const {
         color = 0xffffff,
         scaleFactor = 1,
@@ -137,7 +139,7 @@ export const drawArrow = (scene: THREE.Scene, options: ArrowOptions): THREE.Grou
         }
     }
 
-    scene.add(group);
+    parent.add(group);
     return group;
 };
 
@@ -150,7 +152,7 @@ export const drawVector = drawArrow;
 export class Vector extends THREE.ArrowHelper {
     private label?: THREE.Sprite;
 
-    constructor(dir: THREE.Vector3, origin: THREE.Vector3, length: number, color?: THREE.ColorRepresentation, headLength?: number, headWidth?: number, labelText?: string) {
+    constructor(dir: THREE.Vector3, length: number, color?: THREE.ColorRepresentation, headLength?: number, headWidth?: number, labelText?: string, origin: THREE.Vector3 = new THREE.Vector3(0,0,0)) {
         super(dir, origin, length, color, headLength, headWidth);
 
         if (labelText) {
@@ -191,7 +193,7 @@ type ParallelopipedOptions = BaseOptions & {
 /**
  * Draws a 3D parallelopiped wireframe. Returns a THREE.Group containing the lines and an optional label.
  */
-export const drawParallelopiped = (scene: THREE.Scene, options: ParallelopipedOptions): THREE.Group => {
+export const drawParallelopiped = (parent: ParentObject, options: ParallelopipedOptions): THREE.Group => {
     const {
         color = 0xffffff,
         scaleFactor = 1,
@@ -241,7 +243,7 @@ export const drawParallelopiped = (scene: THREE.Scene, options: ParallelopipedOp
         }
     }
 
-    scene.add(group);
+    parent.add(group);
     return group;
 };
 
@@ -253,7 +255,7 @@ type ShadingOptions = BaseOptions & {
  * Draws a 2D shaded region (a filled polygon) on the XY plane.
  * Returns a THREE.Mesh.
  */
-export const drawShading = (scene: THREE.Scene, options: ShadingOptions): THREE.Mesh => {
+export const drawShading = (parent: ParentObject, options: ShadingOptions): THREE.Mesh => {
     const {
         points,
         color = 0xffffff,
@@ -272,6 +274,6 @@ export const drawShading = (scene: THREE.Scene, options: ShadingOptions): THREE.
 
     const mesh = new THREE.Mesh(geometry, material);
     
-    scene.add(mesh);
+    parent.add(mesh);
     return mesh;
 };
