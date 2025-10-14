@@ -17,6 +17,27 @@ class VectorArrow extends THREE.ArrowHelper {
     }
 }
 
+const drawLinearCombinationHelpers = (scene: THREE.Scene, b1: THREE.Vector3, b2: THREE.Vector3, x: number, y: number): THREE.Group => {
+    const group = new THREE.Group();
+    const p1 = b1.clone().multiplyScalar(x);
+    const p2 = b2.clone().multiplyScalar(y);
+
+    const material1 = new THREE.LineDashedMaterial({ color: 0xff8a65, dashSize: 0.1, gapSize: 0.1, transparent: true, opacity: 0.7 });
+    const geom1 = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), p1]);
+    const line1 = new THREE.Line(geom1, material1);
+    line1.computeLineDistances();
+    group.add(line1);
+
+    const material2 = new THREE.LineDashedMaterial({ color: 0x69f0ae, dashSize: 0.1, gapSize: 0.1, transparent: true, opacity: 0.7 });
+    const geom2 = new THREE.BufferGeometry().setFromPoints([p1, p1.clone().add(p2)]);
+    const line2 = new THREE.Line(geom2, material2);
+    line2.computeLineDistances();
+    group.add(line2);
+
+    scene.add(group);
+    return group;
+}
+
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
     
@@ -38,6 +59,7 @@ export function InteractiveMatrixTransformation() {
     const b2Ref = useRef<VectorArrow | null>(null);
     const vLabelRef = useRef<THREE.Sprite | null>(null);
     const transformedGridRef = useRef<THREE.Group | null>(null);
+    const combinationHelpersRef = useRef<THREE.Group | null>(null);
 
     // One-time scene setup
     useEffect(() => {
@@ -71,7 +93,7 @@ export function InteractiveMatrixTransformation() {
             renderer.dispose();
         });
         
-        // Step 1: Grids
+        // Grids
         const standardGrid = new THREE.GridHelper(50, 50, 0x444444, 0x444444);
         standardGrid.rotation.x = Math.PI / 2;
         scene.add(standardGrid);
@@ -79,7 +101,7 @@ export function InteractiveMatrixTransformation() {
         transformedGridRef.current = new THREE.Group();
         scene.add(transformedGridRef.current);
 
-        // Step 2: Arrows
+        // Arrows
         const iHat = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
         const jHat = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
         scene.add(iHat, jHat);
@@ -88,7 +110,6 @@ export function InteractiveMatrixTransformation() {
         b2Ref.current = new VectorArrow(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
         scene.add(b1Ref.current, b2Ref.current);
 
-        // Step 3: Calculate and display v
         const initialV = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
         vRef.current = new VectorArrow(initialV.clone().normalize(), new THREE.Vector3(0,0,0), initialV.length(), 0xffffff, 0.3, 0.2);
         scene.add(vRef.current);
@@ -96,7 +117,9 @@ export function InteractiveMatrixTransformation() {
         vLabelRef.current = createLabel("v", '#ffffff');
         scene.add(vLabelRef.current);
         
-        // Step 5: Interactivity
+        combinationHelpersRef.current = new THREE.Group();
+        scene.add(combinationHelpersRef.current);
+
         const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { 
             onDrag: (obj, pos) => setB1Pos(pos.clone().setZ(0)) 
         });
@@ -163,7 +186,6 @@ export function InteractiveMatrixTransformation() {
         }
 
         if (transformedGridRef.current && sceneRef.current) {
-            // Step 6: Update Transformed Grid
             while (transformedGridRef.current.children.length > 0) {
                 const child = transformedGridRef.current.children[0];
                 transformedGridRef.current.remove(child);
@@ -172,10 +194,22 @@ export function InteractiveMatrixTransformation() {
             }
             drawTransformedGrid(transformedGridRef.current, { 
                 matrix: { a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y },
-                color: 0x4fc3f7,
+                gridColor: 0x4fc3f7, // Correct parameter name
                 divisions: 25,
                 size: 50
             });
+            transformedGridRef.current.position.z = 0.1; // Prevent z-fighting
+        }
+
+        if (combinationHelpersRef.current && sceneRef.current) {
+             while (combinationHelpersRef.current.children.length > 0) {
+                const child = combinationHelpersRef.current.children[0];
+                combinationHelpersRef.current.remove(child);
+                (child as any).geometry?.dispose();
+                (child as any).material?.dispose();
+            }
+            const newHelpers = drawLinearCombinationHelpers(sceneRef.current, b1Pos, b2Pos, coords.x, coords.y);
+            combinationHelpersRef.current.add(newHelpers);
         }
         
     }, [coords, b1Pos, b2Pos]);

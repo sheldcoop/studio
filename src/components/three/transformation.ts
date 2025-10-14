@@ -25,7 +25,7 @@ const matrix4From2D = (m: { a: number; b: number; c: number; d: number }) => {
 
 type TransformedGridOptions = {
     matrix: { a: number; b: number; c: number; d: number };
-    color?: THREE.ColorRepresentation;
+    gridColor?: THREE.ColorRepresentation;
     size?: number;
     divisions?: number;
 };
@@ -37,12 +37,12 @@ type TransformedGridOptions = {
 export const drawTransformedGrid = (parent: THREE.Group, options: TransformedGridOptions): void => {
     const {
         matrix,
-        color = 0x888888,
+        gridColor = 0x888888,
         size = 50,
         divisions = 25,
     } = options;
 
-    const material = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.5 });
+    const material = new THREE.LineBasicMaterial({ color: gridColor, transparent: true, opacity: 0.5 });
     const m4 = matrix4From2D(matrix);
     const step = size / divisions;
 
