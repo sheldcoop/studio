@@ -110,7 +110,12 @@ export const drawAngleBetweenVectors = (scene: THREE.Scene, options: AngleOption
         const angleInDegrees = THREE.MathUtils.radToDeg(angle);
         const label = createLabel(`θ = ${angleInDegrees.toFixed(1)}°`, color, 0.3);
         label.position.copy(textPos);
-        label.applyMatrix4(matrix);
+        
+        // Use the same transformation for the label position
+        const labelWorldPosition = new THREE.Vector3(textPos.x, textPos.y, textPos.z);
+        labelWorldPosition.applyMatrix4(matrix);
+        label.position.copy(labelWorldPosition);
+
         group.add(label);
     }
     

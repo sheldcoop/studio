@@ -141,6 +141,46 @@ export const drawArrow = (scene: THREE.Scene, options: ArrowOptions): THREE.Grou
     return group;
 };
 
+/**
+ * A more specific version of drawArrow for drawing vectors.
+ * This is an alias for drawArrow to make code more readable.
+ */
+export const drawVector = drawArrow;
+
+export class Vector extends THREE.ArrowHelper {
+    private label?: THREE.Sprite;
+
+    constructor(dir: THREE.Vector3, origin: THREE.Vector3, length: number, color?: THREE.ColorRepresentation, headLength?: number, headWidth?: number, labelText?: string) {
+        super(dir, origin, length, color, headLength, headWidth);
+
+        if (labelText) {
+            this.label = createLabel(labelText, color, 0.4);
+            if (this.label) {
+                this.add(this.label); // Add label as a child of the ArrowHelper group
+                this.updateLabelPosition();
+            }
+        }
+    }
+
+    private updateLabelPosition() {
+        if (this.label) {
+            // Position label at the tip of the arrow
+            const tipPosition = this.position.clone().add(this.getDirection(new THREE.Vector3()).multiplyScalar(this.scale.y));
+             this.label.position.copy(tipPosition).add(new THREE.Vector3(0, this.head.scale.y * 1.5, 0));
+        }
+    }
+
+    setDirection(dir: THREE.Vector3) {
+        super.setDirection(dir);
+        this.updateLabelPosition();
+    }
+
+    setLength(length: number, headLength?: number, headWidth?: number) {
+        super.setLength(length, headLength, headWidth);
+        this.updateLabelPosition();
+    }
+}
+
 type ParallelopipedOptions = BaseOptions & {
     v1: THREE.Vector3;
     v2: THREE.Vector3;
