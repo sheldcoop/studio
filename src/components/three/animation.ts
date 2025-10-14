@@ -134,7 +134,32 @@ export const fadeIn = (object: THREE.Object3D, duration: number, onUpdate: (opac
  * Fades out a Three.js object by animating its opacity.
  */
 export const fadeOut = (object: THREE.Object3D, duration: number, onUpdate: (opacity: number) => void) => {
-    // Similar implementation to fadeIn, but animates opacity from 1 to 0
+    let startTime: number | null = null;
+
+    const animate = (time: number) => {
+        if (startTime === null) startTime = time;
+        const progress = Math.min((time - startTime) / duration, 1);
+        const opacity = 1 - easeInOutCubic(progress);
+
+        object.traverse((child) => {
+            if (child instanceof THREE.Mesh || child instanceof THREE.Line || child instanceof THREE.Sprite) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(m => {
+                        m.transparent = true;
+                        m.opacity = opacity;
+                    });
+                } else {
+                    child.material.transparent = true;
+                    child.material.opacity = opacity;
+                }
+            }
+        });
+
+        onUpdate(opacity);
+        if (progress < 1) requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
 };
 
 /**
@@ -142,13 +167,14 @@ export const fadeOut = (object: THREE.Object3D, duration: number, onUpdate: (opa
  */
 export const pulseEffect = (object: THREE.Object3D, duration: number, pulseIntensity: number) => {
     let startTime: number | null = null;
+    const initialScale = object.scale.clone();
 
     const animate = (time: number) => {
         if (startTime === null) startTime = time;
         const progress = (time - startTime) / duration;
-        const scale = 1 + Math.sin(progress * Math.PI * 2) * pulseIntensity;
+        const scaleFactor = 1 + Math.sin(progress * Math.PI * 2) * pulseIntensity;
         
-        object.scale.set(scale, scale, scale);
+        object.scale.set(initialScale.x * scaleFactor, initialScale.y * scaleFactor, initialScale.z * scaleFactor);
 
         requestAnimationFrame(animate);
     };

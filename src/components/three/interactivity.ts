@@ -77,16 +77,18 @@ export const makeObjectsDraggable = (
 
         if (intersects.length > 0) {
             isDragging = true;
-            selectedObject = intersects[0].object;
-            
-            // Find the top-level group if the intersected object is a child
-            while (selectedObject.parent && draggableItems.includes(selectedObject.parent)) {
-                selectedObject = selectedObject.parent;
+            // The intersected object might be a child mesh of the object we want to drag (e.g., an arrowhead).
+            // We traverse up to find the actual object that is in our draggableItems list.
+            let currentObject = intersects[0].object;
+            while(currentObject.parent && !draggableItems.includes(currentObject)) {
+                currentObject = currentObject.parent;
             }
+            selectedObject = currentObject;
 
             // Attempt to disable camera controls for a better drag experience
-            if (camera.parent && 'enabled' in camera.parent) {
-                (camera.parent as any).enabled = false;
+            // This is a common pattern for libraries like OrbitControls
+            if ((camera as any).controls) {
+                (camera as any).controls.enabled = false;
             }
 
             onDragStart?.(selectedObject);
@@ -104,8 +106,8 @@ export const makeObjectsDraggable = (
 
     const onMouseUp = (event: MouseEvent) => {
         if (isDragging && selectedObject) {
-            if (camera.parent && 'enabled' in camera.parent) {
-                (camera.parent as any).enabled = true;
+            if ((camera as any).controls) {
+                (camera as any).controls.enabled = true;
             }
             onDragEnd?.(selectedObject);
         }
@@ -114,13 +116,13 @@ export const makeObjectsDraggable = (
     };
 
     domElement.addEventListener('mousedown', onMouseDown);
-    domElement.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mousemove', onMouseMove); // Listen on window to drag outside the element
     window.addEventListener('mouseup', onMouseUp);
 
     // Return a cleanup function
     return () => {
         domElement.removeEventListener('mousedown', onMouseDown);
-        domElement.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
     };
 };
