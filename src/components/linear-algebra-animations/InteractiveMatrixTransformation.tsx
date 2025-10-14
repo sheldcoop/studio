@@ -55,7 +55,6 @@ export function InteractiveMatrixTransformation() {
         renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         currentMount.appendChild(renderer.domElement);
-        rendererRef.current = renderer;
         cleanupFunctions.push(() => {
             if (renderer.domElement.parentElement === currentMount) {
                 currentMount.removeChild(renderer.domElement);
@@ -65,7 +64,6 @@ export function InteractiveMatrixTransformation() {
 
         // Grid
         const gridHelper = new THREE.GridHelper(frustumSize * 2, frustumSize * 2, 0x888888, 0x444444);
-        gridHelper.rotation.x = Math.PI / 2;
         scene.add(gridHelper);
         cleanupFunctions.push(() => {
             scene.remove(gridHelper);
@@ -78,7 +76,7 @@ export function InteractiveMatrixTransformation() {
         jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.2, 0.1); // Green
         
         // Main Draggable Vector
-        vectorVRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xffffff, 0.2, 0.1);
+        vectorVRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xffffff, 0.2, 0.15);
         
         scene.add(iHatRef.current, jHatRef.current, vectorVRef.current);
         
@@ -138,7 +136,8 @@ export function InteractiveMatrixTransformation() {
             const length = vector.length();
             if (length > 0.01) {
                 vectorVRef.current.setDirection(vector.clone().normalize());
-                vectorVRef.current.setLength(length, length * 0.15, length * 0.1);
+                // Use constant head size to prevent scaling issues
+                vectorVRef.current.setLength(length, 0.25, 0.15);
             } else {
                 vectorVRef.current.setLength(0, 0, 0); // Hide vector if it's at the origin
             }
