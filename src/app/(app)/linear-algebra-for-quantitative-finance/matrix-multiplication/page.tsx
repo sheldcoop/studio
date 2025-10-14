@@ -10,7 +10,18 @@ import { PitfallAlert } from '@/components/app/pitfall-alert';
 import { LessonSummaryCard } from '@/components/app/lesson-summary-card';
 import { NextUpNavigation } from '@/components/app/next-up-navigation';
 import { InteractiveVisualizationWrapper } from '@/components/app/interactive-visualization-wrapper';
-import { MatrixMultiplicationAnimation } from '@/components/app/matrix-multiplication-animation';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Dynamically import the animation component with SSR turned off
+const MatrixMultiplicationAnimation = dynamic(
+  () => import('@/components/app/matrix-multiplication-animation').then(mod => mod.MatrixMultiplicationAnimation),
+  { 
+    ssr: false,
+    loading: () => <Skeleton className="w-full h-full" />
+  }
+);
+
 
 export default function MatrixMultiplicationPage() {
   return (
@@ -37,7 +48,7 @@ export default function MatrixMultiplicationPage() {
         
         <InteractiveVisualizationWrapper
           title="Visualizing Transformation Composition"
-          description="Define two matrices, A and B. Apply them sequentially to the grid, then apply their product C = AB to see that the final result is the same."
+          description="Define two matrices, A and B. Apply them sequentially to the grid, then apply their product C = BA to see that the final result is the same."
         >
           <MatrixMultiplicationAnimation />
         </InteractiveVisualizationWrapper>
