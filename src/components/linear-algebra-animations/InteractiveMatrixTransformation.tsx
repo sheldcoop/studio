@@ -9,42 +9,72 @@ import { cn } from '@/lib/utils';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { createLabel } from '../three/ui-helpers';
 import { drawTransformedGrid } from '../three/transformation';
+import { Button } from '../ui/button';
 
 // A simple extension to make updating arrows easier
 class VectorArrow extends THREE.ArrowHelper {
+    public labelSprite: THREE.Sprite | null = null;
+    
     constructor(dir: THREE.Vector3, origin: THREE.Vector3, length: number, color: THREE.ColorRepresentation, headLength?: number, headWidth?: number) {
         super(dir, origin, length, color, headLength, headWidth);
+    }
+
+    setLabel(text: string, color: THREE.ColorRepresentation, scale: number = 0.4) {
+        if (this.labelSprite) {
+            this.remove(this.labelSprite);
+        }
+        this.labelSprite = createLabel(text, color, scale);
+        this.add(this.labelSprite);
+        this.updateLabelPosition();
+    }
+
+    updateLabelPosition() {
+        if (this.labelSprite) {
+            const offset = new THREE.Vector3(this.cone.position.x, this.cone.position.y, 0).normalize().multiplyScalar(0.5);
+            this.labelSprite.position.copy(this.cone.position).add(offset);
+        }
+    }
+
+    setLength(length: number, headLength?: number, headWidth?: number) {
+        super.setLength(length, headLength, headWidth);
+        this.updateLabelPosition();
     }
 }
 
 const drawLinearCombinationHelpers = (scene: THREE.Scene, b1: THREE.Vector3, b2: THREE.Vector3, x: number, y: number): THREE.Group => {
     const group = new THREE.Group();
+    if (Math.abs(x) < 0.01 && Math.abs(y) < 0.01) return group;
+
     const p1 = b1.clone().multiplyScalar(x);
     const p2 = b2.clone().multiplyScalar(y);
 
-    const material1 = new THREE.LineDashedMaterial({ color: 0xff8a65, dashSize: 0.1, gapSize: 0.1, transparent: true, opacity: 0.7 });
+    const material1 = new THREE.LineDashedMaterial({ color: 0xff8a65, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.7 });
     const geom1 = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), p1]);
     const line1 = new THREE.Line(geom1, material1);
     line1.computeLineDistances();
     group.add(line1);
 
-    const material2 = new THREE.LineDashedMaterial({ color: 0x69f0ae, dashSize: 0.1, gapSize: 0.1, transparent: true, opacity: 0.7 });
+    const material2 = new THREE.LineDashedMaterial({ color: 0x69f0ae, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.7 });
     const geom2 = new THREE.BufferGeometry().setFromPoints([p1, p1.clone().add(p2)]);
     const line2 = new THREE.Line(geom2, material2);
     line2.computeLineDistances();
     group.add(line2);
 
+    group.position.z = -0.1;
     scene.add(group);
     return group;
 }
+
+const initialB1 = new THREE.Vector3(1.5, 0.5, 0);
+const initialB2 = new THREE.Vector3(-0.5, 1, 0);
 
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
     
     // State for the vectors
     const [coords, setCoords] = useState({ x: 2.0, y: 1.0 });
-    const [b1Pos, setB1Pos] = useState(new THREE.Vector3(1.5, 0.5, 0));
-    const [b2Pos, setB2Pos] = useState(new THREE.Vector3(-0.5, 1, 0));
+    const [b1Pos, setB1Pos] = useState(initialB1.clone());
+    const [b2Pos, setB2Pos] = useState(initialB2.clone());
     const [vectorV, setVectorV] = useState(new THREE.Vector3(0, 0, 0));
 
     // Refs for three.js objects
@@ -57,7 +87,6 @@ export function InteractiveMatrixTransformation() {
     const vRef = useRef<VectorArrow | null>(null);
     const b1Ref = useRef<VectorArrow | null>(null);
     const b2Ref = useRef<VectorArrow | null>(null);
-    const vLabelRef = useRef<THREE.Sprite | null>(null);
     const transformedGridRef = useRef<THREE.Group | null>(null);
     const combinationHelpersRef = useRef<THREE.Group | null>(null);
 
@@ -87,7 +116,7 @@ export function InteractiveMatrixTransformation() {
         rendererRef.current = renderer;
         currentMount.appendChild(renderer.domElement);
         cleanupFunctions.push(() => {
-            if (renderer.domElement.parentElement === currentMount) {
+            if (renderer.domElement && renderer.domElement.parentElement === currentMount) {
                 currentMount.removeChild(renderer.domElement);
             }
             renderer.dispose();
@@ -102,20 +131,22 @@ export function InteractiveMatrixTransformation() {
         scene.add(transformedGridRef.current);
 
         // Arrows
-        const iHat = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
-        const jHat = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
+        const iHat = new VectorArrow(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
+        iHat.setLabel('î', 0xff3333, 0.5);
+        const jHat = new VectorArrow(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
+        jHat.setLabel('ĵ', 0x33ff33, 0.5);
         scene.add(iHat, jHat);
         
         b1Ref.current = new VectorArrow(b1Pos.clone().normalize(), new THREE.Vector3(0,0,0), b1Pos.length(), 0xff8a65, 0.3, 0.2);
+        b1Ref.current.setLabel('b₁', 0xff8a65);
         b2Ref.current = new VectorArrow(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
+        b2Ref.current.setLabel('b₂', 0x69f0ae);
         scene.add(b1Ref.current, b2Ref.current);
 
         const initialV = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
         vRef.current = new VectorArrow(initialV.clone().normalize(), new THREE.Vector3(0,0,0), initialV.length(), 0xffffff, 0.3, 0.2);
+        vRef.current.setLabel('v', 0xffffff);
         scene.add(vRef.current);
-
-        vLabelRef.current = createLabel("v", '#ffffff');
-        scene.add(vLabelRef.current);
         
         combinationHelpersRef.current = new THREE.Group();
         scene.add(combinationHelpersRef.current);
@@ -174,16 +205,13 @@ export function InteractiveMatrixTransformation() {
                 } else {
                     arrow.setLength(0, 0, 0); // Hide if zero length
                 }
+                arrow.updateLabelPosition();
             }
         }
 
         updateArrow(b1Ref.current, b1Pos);
         updateArrow(b2Ref.current, b2Pos);
         updateArrow(vRef.current, v);
-
-        if (vLabelRef.current) {
-            vLabelRef.current.position.copy(v).add(new THREE.Vector3(0.5, 0.5, 0));
-        }
 
         if (transformedGridRef.current && sceneRef.current) {
             while (transformedGridRef.current.children.length > 0) {
@@ -194,7 +222,7 @@ export function InteractiveMatrixTransformation() {
             }
             drawTransformedGrid(transformedGridRef.current, { 
                 matrix: { a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y },
-                gridColor: 0x4fc3f7, // Correct parameter name
+                gridColor: 0x4fc3f7,
                 divisions: 25,
                 size: 50
             });
@@ -213,28 +241,70 @@ export function InteractiveMatrixTransformation() {
         }
         
     }, [coords, b1Pos, b2Pos]);
-    
-    const handleCoordChange = (coord: 'x' | 'y', value: string) => {
-        const numValue = parseFloat(value);
-        if (!isNaN(numValue)) {
-            setCoords(prev => ({...prev, [coord]: numValue}));
-        }
-    };
 
+    const handlePreset = (preset: 'reset' | 'shear' | 'rotate' | 'scale') => {
+        switch(preset) {
+            case 'shear':
+                setB1Pos(new THREE.Vector3(1, 0, 0));
+                setB2Pos(new THREE.Vector3(1, 1, 0));
+                break;
+            case 'rotate':
+                setB1Pos(new THREE.Vector3(0, 1, 0));
+                setB2Pos(new THREE.Vector3(-1, 0, 0));
+                break;
+            case 'scale':
+                 setB1Pos(new THREE.Vector3(2, 0, 0));
+                setB2Pos(new THREE.Vector3(0, 2, 0));
+                break;
+            case 'reset':
+            default:
+                setB1Pos(initialB1.clone());
+                setB2Pos(initialB2.clone());
+                setCoords({x: 2.0, y: 1.0});
+                break;
+        }
+    }
+    
     return (
         <div className="w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 items-center p-4 rounded-lg border bg-muted/50">
+                <div className="text-center">
+                    <Label className="font-semibold">Transformation Matrix (M)</Label>
+                    <div className="font-mono text-xl mt-1 p-2 bg-background rounded-md">
+                        <div className="flex justify-center items-center">
+                            <div className="text-3xl font-thin">[</div>
+                            <div className="grid grid-cols-2 gap-x-4 w-32 text-center">
+                                <div className="text-orange-400">{b1Pos.x.toFixed(2)}</div>
+                                <div className="text-green-300">{b2Pos.x.toFixed(2)}</div>
+                                <div className="text-orange-400">{b1Pos.y.toFixed(2)}</div>
+                                <div className="text-green-300">{b2Pos.y.toFixed(2)}</div>
+                            </div>
+                            <div className="text-3xl font-thin">]</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label className="font-semibold text-center block">Preset Transformations</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handlePreset('reset')}>Reset</Button>
+                        <Button variant="outline" size="sm" onClick={() => handlePreset('shear')}>Shear</Button>
+                        <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate 90°</Button>
+                        <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale 2x</Button>
+                    </div>
+                </div>
+            </div>
             <div ref={mountRef} className={cn("relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing")}></div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 p-4 rounded-lg border bg-muted/50 items-center">
                 <div className="text-center">
                     <Label className="font-semibold text-primary">Coordinates in New Basis</Label>
                     <div className="flex justify-center items-center gap-2 mt-2">
-                        <Input className="w-20 h-8 text-center" value={coords.x} onChange={e => handleCoordChange('x', e.target.value)} />
-                        <Input className="w-20 h-8 text-center" value={coords.y} onChange={e => handleCoordChange('y', e.target.value)} />
+                        <Input className="w-20 h-8 text-center" type="number" step="0.1" value={coords.x} onChange={e => setCoords({...coords, x: parseFloat(e.target.value) || 0})} />
+                        <Input className="w-20 h-8 text-center" type="number" step="0.1" value={coords.y} onChange={e => setCoords({...coords, y: parseFloat(e.target.value) || 0})} />
                     </div>
                 </div>
                  <div className="text-2xl font-bold text-muted-foreground text-center">=</div>
                  <div className="text-center">
-                    <Label className="font-semibold">Resulting Vector (Standard Coords)</Label>
+                    <Label className="font-semibold">Resulting Vector (v)</Label>
                      <div className="font-mono text-lg p-2 mt-2">
                         {`[${vectorV.x.toFixed(2)}, ${vectorV.y.toFixed(2)}]`}
                     </div>
@@ -243,3 +313,5 @@ export function InteractiveMatrixTransformation() {
         </div>
     );
 }
+
+    
