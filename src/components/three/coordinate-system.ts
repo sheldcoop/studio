@@ -10,7 +10,7 @@ type AxesOptions = {
 };
 
 /**
- * Draws 3D Cartesian axes (X: red, Y: green, Z: blue).
+ * Draws 3D Cartesian axes (X: red, Y: green, Z: blue) with numeric tick labels.
  */
 export const drawAxes = (scene: THREE.Scene, options: AxesOptions = {}): THREE.Group => {
     const {
@@ -28,15 +28,47 @@ export const drawAxes = (scene: THREE.Scene, options: AxesOptions = {}): THREE.G
         z: { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: 'z' },
     };
 
-    for (const axis of Object.values(axes)) {
-        const arrow = new THREE.ArrowHelper(axis.dir, new THREE.Vector3(0,0,0), size, axis.color, 1, 0.5);
+    for (const [axisName, axis] of Object.entries(axes)) {
+        // Main axis line
+        const arrow = new THREE.ArrowHelper(axis.dir, new THREE.Vector3(0,0,0), size, axis.color, 0.5, 0.2);
         group.add(arrow);
 
         if (showLabels) {
-            const labelSprite = createLabel(axis.label, axis.color, 0.5);
-            if (labelSprite) {
-                labelSprite.position.copy(axis.dir).multiplyScalar(size + 0.8);
-                group.add(labelSprite);
+            // Axis end label (x, y, z)
+            const axisLabelSprite = createLabel(axis.label, axis.color, 0.5);
+            axisLabelSprite.position.copy(axis.dir).multiplyScalar(size + 0.8);
+            group.add(axisLabelSprite);
+
+            // Numeric tick marks and labels
+            const tickMaterial = new THREE.LineBasicMaterial({ color: axis.color });
+            const tickSize = 0.2;
+
+            for (let i = -size; i <= size; i += tickInterval) {
+                if (i === 0) continue; // Skip origin
+
+                const tickStart = axis.dir.clone().multiplyScalar(i);
+                let tickEnd: THREE.Vector3;
+
+                // Create perpendicular tick marks
+                if (axisName === 'x') {
+                    tickEnd = tickStart.clone().add(new THREE.Vector3(0, tickSize, 0));
+                } else if (axisName === 'y') {
+                    tickEnd = tickStart.clone().add(new THREE.Vector3(tickSize, 0, 0));
+                } else { // z-axis
+                    tickEnd = tickStart.clone().add(new THREE.Vector3(tickSize, 0, 0));
+                }
+                
+                const tickGeometry = new THREE.BufferGeometry().setFromPoints([tickStart, tickEnd]);
+                const tick = new THREE.Line(tickGeometry, tickMaterial);
+                group.add(tick);
+
+                const numLabelSprite = createLabel(i.toString(), axis.color, 0.3);
+                numLabelSprite.position.copy(tickStart);
+                // Offset labels slightly from the ticks
+                if(axisName === 'x') numLabelSprite.position.y -= 0.4;
+                else numLabelSprite.position.x -= 0.4;
+
+                group.add(numLabelSprite);
             }
         }
     }
