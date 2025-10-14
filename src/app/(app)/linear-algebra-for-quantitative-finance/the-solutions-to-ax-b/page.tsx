@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Diamond, Star } from 'lucide-react';
+import { AlertTriangle, Diamond, Star, Infinity } from 'lucide-react';
 import { PitfallAlert } from '@/components/app/pitfall-alert';
+import { NextUpNavigation } from '@/components/app/next-up-navigation';
 
 export default function SolutionsToAxBPage() {
   return (
@@ -60,7 +61,7 @@ export default function SolutionsToAxBPage() {
 
       <Card className="border-sky-500/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline text-sky-400"><InfinityIcon /> Case 2: Infinite Solutions — "The Free Variable"</CardTitle>
+          <CardTitle className="flex items-center gap-2 font-headline text-sky-400"><Infinity /> Case 2: Infinite Solutions — "The Free Variable"</CardTitle>
           <CardDescription>
             This happens when there are no contradictions, but some equations are redundant, giving us freedom.
           </CardDescription>
@@ -104,9 +105,9 @@ export default function SolutionsToAxBPage() {
         </CardContent>
       </Card>
       
-      <p className="text-center text-muted-foreground">
-        <strong>Up Next:</strong> We will see how this <strong>process</strong> of elimination can be captured and stored in matrices themselves, leading to the elegant and computationally vital <strong>LU Decomposition</strong>.
-      </p>
+      <NextUpNavigation href="/linear-algebra-for-quantitative-finance/lu-decomposition">
+        LU Decomposition
+      </NextUpNavigation>
     </div>
   );
 }

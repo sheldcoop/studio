@@ -6,8 +6,8 @@ import 'katex/dist/katex.min.css';
 import { PageSection } from '@/components/app/page-section';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { ExampleStep } from '@/components/app/example-step';
-import { LessonSummaryCard } from '@/components/app/lesson-summary-card';
 import { PitfallAlert } from '@/components/app/pitfall-alert';
+import { NextUpNavigation } from '@/components/app/next-up-navigation';
 
 export default function DiagonalizationPage() {
   return (
@@ -100,7 +100,9 @@ export default function DiagonalizationPage() {
         <p className="prose prose-invert max-w-none">
             One of the most immediate applications is calculating high powers of a matrix, a common task in modeling systems that evolve over time.
         </p>
-        <p className="prose prose-invert max-w-none">What is `A¹⁰⁰`? Calculating `A*A*A...` one hundred times would be a nightmare. But with diagonalization, it's trivial.</p>
+        <p className="prose prose-invert max-w-none">
+            What is `A¹⁰⁰`? Calculating `A*A*A...` one hundred times would be a nightmare. But with diagonalization, it's trivial.
+        </p>
         <BlockMath math="A^2 = (PDP^{-1})(PDP^{-1}) = P D (P^{-1}P) D P^{-1} = PDIDP^{-1} = PD^2P^{-1}" />
         <p className="prose prose-invert max-w-none">The pattern holds for any power `k`:</p>
         <FormulaBlock>
