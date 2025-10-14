@@ -4,8 +4,8 @@
 import { useState, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { BlockMath } from 'react-katex';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { createLabel } from '../three/ui-helpers';
 import { drawTransformedGrid } from '../three/transformation';
@@ -14,10 +14,10 @@ export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
     
     // State for the vectors
-    const [vectorV, setVectorV] = useState(new THREE.Vector3(2, 1, 0));
+    const [newBasisCoords, setNewBasisCoords] = useState({ x: 2.0, y: 1.0 });
     const [iHatPrime, setIHatPrime] = useState(new THREE.Vector3(1.5, 0.5, 0));
     const [jHatPrime, setJHatPrime] = useState(new THREE.Vector3(-0.5, 1, 0));
-    const [newCoords, setNewCoords] = useState({ x: 0, y: 0 });
+    const [vectorV, setVectorV] = useState(new THREE.Vector3(0, 0, 0)); // This will be calculated
 
     // Refs for three.js objects
     const sceneRef = useRef<THREE.Scene | null>(null);
@@ -31,7 +31,6 @@ export function InteractiveMatrixTransformation() {
     const jHatPrimeRef = useRef<THREE.ArrowHelper | null>(null);
     const vectorLabelRef = useRef<THREE.Sprite | null>(null);
     const transformedGridRef = useRef<THREE.Group | null>(null);
-    const standardGridRef = useRef<THREE.GridHelper | null>(null);
 
     // One-time scene setup
     useEffect(() => {
@@ -40,24 +39,19 @@ export function InteractiveMatrixTransformation() {
         const currentMount = mountRef.current;
         const cleanupFunctions: (() => void)[] = [];
 
-        // Scene and Camera
         const scene = new THREE.Scene();
         sceneRef.current = scene;
 
         const aspect = currentMount.clientWidth / currentMount.clientHeight;
         const frustumSize = 12;
         const camera = new THREE.OrthographicCamera(
-            frustumSize * aspect / -2,
-            frustumSize * aspect / 2,
-            frustumSize / 2,
-            frustumSize / -2,
-            0.1,
-            100
+            frustumSize * aspect / -2, frustumSize * aspect / 2,
+            frustumSize / 2, frustumSize / -2,
+            0.1, 100
         );
         camera.position.set(0, 0, 10);
         cameraRef.current = camera;
         
-        // Renderer
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -72,35 +66,34 @@ export function InteractiveMatrixTransformation() {
         
         // Standard Grid
         const gridHelper = new THREE.GridHelper(50, 25, 0x444444, 0x444444);
-        standardGridRef.current = gridHelper;
         gridHelper.rotation.x = Math.PI / 2;
         scene.add(gridHelper);
 
-        // Transformed Grid
+        // Transformed Grid Group
         transformedGridRef.current = new THREE.Group();
         scene.add(transformedGridRef.current);
 
         // Standard Basis Vectors (non-interactive)
-        const iHat = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.2, 0.1); 
-        const jHat = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.2, 0.1);
+        const iHat = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
+        const jHat = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
         
         // Draggable New Basis Vectors
-        iHatPrimeRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), iHatPrime.length(), 0xff8a65, 0.3, 0.2);
-        jHatPrimeRef.current = new THREE.ArrowHelper(new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,0), jHatPrime.length(), 0x69f0ae, 0.3, 0.2);
+        iHatPrimeRef.current = new THREE.ArrowHelper(iHatPrime.clone().normalize(), iHatPrime.length(), 0xff8a65, 0.3, 0.2);
+        jHatPrimeRef.current = new THREE.ArrowHelper(jHatPrime.clone().normalize(), jHatPrime.length(), 0x69f0ae, 0.3, 0.2);
 
-        // Main Draggable Vector (v)
-        vectorVRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), vectorV.length(), 0xffffff, 0.3, 0.2);
+        // Resultant Vector (v)
+        const initialV = iHatPrime.clone().multiplyScalar(newBasisCoords.x).add(jHatPrime.clone().multiplyScalar(newBasisCoords.y));
+        vectorVRef.current = new THREE.ArrowHelper(initialV.clone().normalize(), initialV.length(), 0xffffff, 0.3, 0.2);
 
         // Vector Label for v
-        vectorLabelRef.current = createLabel(`(${vectorV.x.toFixed(2)}, ${vectorV.y.toFixed(2)})`, '#ffffff');
+        vectorLabelRef.current = createLabel("v", '#ffffff');
         
         scene.add(iHat, jHat, iHatPrimeRef.current, jHatPrimeRef.current, vectorVRef.current, vectorLabelRef.current);
         
         // Interactivity
-        const cleanupV = makeObjectsDraggable(vectorVRef.current, camera, renderer.domElement, { onDrag: (obj, pos) => setVectorV(pos.clone().setZ(0)) });
         const cleanupI = makeObjectsDraggable(iHatPrimeRef.current, camera, renderer.domElement, { onDrag: (obj, pos) => setIHatPrime(pos.clone().setZ(0)) });
         const cleanupJ = makeObjectsDraggable(jHatPrimeRef.current, camera, renderer.domElement, { onDrag: (obj, pos) => setJHatPrime(pos.clone().setZ(0)) });
-        cleanupFunctions.push(cleanupV, cleanupI, cleanupJ);
+        cleanupFunctions.push(cleanupI, cleanupJ);
         
         const animate = () => {
             animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -135,21 +128,24 @@ export function InteractiveMatrixTransformation() {
 
     // Updates visualization based on state changes
     useEffect(() => {
-        // Update draggable vector `v`
-        if (vectorVRef.current && vectorLabelRef.current) {
-            const length = vectorV.length();
+        const v = iHatPrime.clone().multiplyScalar(newBasisCoords.x).add(jHatPrime.clone().multiplyScalar(newBasisCoords.y));
+        setVectorV(v);
+
+        if (vectorVRef.current) {
+            const length = v.length();
             if (length > 0.01) {
               vectorVRef.current.setLength(length, 0.3, 0.2);
-              vectorVRef.current.setDirection(vectorV.clone().normalize());
+              vectorVRef.current.setDirection(v.clone().normalize());
             }
-            // Update label
+        }
+        
+        if (vectorLabelRef.current) {
             sceneRef.current?.remove(vectorLabelRef.current);
-            vectorLabelRef.current = createLabel(`(${vectorV.x.toFixed(2)}, ${vectorV.y.toFixed(2)})`, '#ffffff');
-            vectorLabelRef.current.position.copy(vectorV).add(new THREE.Vector3(0.5, 0.5, 0));
+            vectorLabelRef.current = createLabel(`(${newBasisCoords.x.toFixed(2)}, ${newBasisCoords.y.toFixed(2)})`, '#ffffff');
+            vectorLabelRef.current.position.copy(v).add(new THREE.Vector3(0.5, 0.5, 0));
             sceneRef.current?.add(vectorLabelRef.current);
         }
 
-        // Update draggable basis vectors `i'` and `j'`
         if (iHatPrimeRef.current) {
             const len = iHatPrime.length();
             if(len > 0.01) {
@@ -165,53 +161,47 @@ export function InteractiveMatrixTransformation() {
             }
         }
 
-        // Update transformed grid
         if (transformedGridRef.current && sceneRef.current) {
-            // Clear the old grid
             while (transformedGridRef.current.children.length > 0) {
                 transformedGridRef.current.remove(transformedGridRef.current.children[0]);
             }
-            // Draw the new one based on the new basis vectors
             drawTransformedGrid(transformedGridRef.current, { 
                 matrix: { a: iHatPrime.x, b: jHatPrime.x, c: iHatPrime.y, d: jHatPrime.y },
-                transformedColor: 0x64b5f6, // A nice light blue color
+                transformedColor: 0x64b5f6,
                 divisions: 25,
                 size: 50
             });
         }
         
-        // The Core Logic: Change of Basis Calculation
-        const det = iHatPrime.x * jHatPrime.y - iHatPrime.y * jHatPrime.x;
-        if (Math.abs(det) > 0.01) { 
-            const invDet = 1 / det;
-            const newX = invDet * (vectorV.x * jHatPrime.y - vectorV.y * jHatPrime.x);
-            const newY = invDet * (vectorV.y * iHatPrime.x - vectorV.x * iHatPrime.y);
-            setNewCoords({ x: newX, y: newY });
-        } else {
-            setNewCoords({ x: NaN, y: NaN });
+    }, [newBasisCoords, iHatPrime, jHatPrime]);
+    
+    const handleCoordChange = (coord: 'x' | 'y', value: string) => {
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+            setNewBasisCoords(prev => ({...prev, [coord]: numValue}));
         }
+    };
 
-    }, [vectorV, iHatPrime, jHatPrime]);
 
     return (
         <div className="w-full">
             <div ref={mountRef} className={cn("relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing")}></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 p-4 rounded-lg border bg-muted/50">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 p-4 rounded-lg border bg-muted/50 items-center">
                 <div className="text-center">
-                    <Label className="font-semibold">Vector Coords (Standard Basis)</Label>
-                    <div className="font-mono text-lg p-2 mt-2">
-                        <BlockMath math={`v = \\begin{bmatrix} ${vectorV.x.toFixed(2)} \\\\ ${vectorV.y.toFixed(2)} \\end{bmatrix}`} />
+                    <Label className="font-semibold text-primary">Coordinates in New Basis</Label>
+                    <div className="flex justify-center items-center gap-2 mt-2">
+                        <Input className="w-20 h-8 text-center" value={newBasisCoords.x} onChange={e => handleCoordChange('x', e.target.value)} />
+                        <Input className="w-20 h-8 text-center" value={newBasisCoords.y} onChange={e => handleCoordChange('y', e.target.value)} />
                     </div>
                 </div>
+                 <div className="text-2xl font-bold text-muted-foreground text-center">=</div>
                  <div className="text-center">
-                    <Label className="font-semibold text-primary">Vector Coords (New Basis)</Label>
-                     <div className="font-mono text-lg p-2 mt-2 text-primary">
-                        <BlockMath math={`v_{new} = \\begin{bmatrix} ${isNaN(newCoords.x) ? '?' : newCoords.x.toFixed(2)} \\\\ ${isNaN(newCoords.y) ? '?' : newCoords.y.toFixed(2)} \\end{bmatrix}`} />
+                    <Label className="font-semibold">Resulting Vector (Standard Coords)</Label>
+                     <div className="font-mono text-lg p-2 mt-2">
+                        {`[${vectorV.x.toFixed(2)}, ${vectorV.y.toFixed(2)}]`}
                     </div>
                 </div>
             </div>
         </div>
     );
 }
-
-    
