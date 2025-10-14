@@ -11,6 +11,7 @@ import { LessonSummaryCard } from '@/components/app/lesson-summary-card';
 import { NextUpNavigation } from '@/components/app/next-up-navigation';
 import { InteractiveVisualizationWrapper } from '@/components/app/interactive-visualization-wrapper';
 import { InteractiveMatrixTransformation } from '@/components/linear-algebra-animations/InteractiveMatrixTransformation';
+import { FormulaBlock } from '@/components/app/formula-block';
 
 
 export default function MatrixMultiplicationPage() {
@@ -23,8 +24,8 @@ export default function MatrixMultiplicationPage() {
       />
 
       <article className="prose prose-invert max-w-none space-y-6">
-        <p>Matrix multiplication is arguably the most important operation in linear algebra. But the standard row-column calculation rule often feels arbitrary and unmotivated. The secret to understanding it is to first grasp what it means to multiply a **matrix by a vector**.</p>
-        <p>The profound idea is this: **Matrix-vector multiplication is a linear combination of the matrix's columns, where the weights are the components of the vector.**</p>
+        <p>Matrix multiplication is arguably the most important operation in linear algebra. But the standard row-column calculation rule often feels arbitrary and unmotivated. The secret to understanding it is to first grasp what it means to multiply a <strong>matrix by a vector</strong>.</p>
+        <p>The profound idea is this: <strong>Matrix-vector multiplication is a linear combination of the matrix's columns, where the weights are the components of the vector.</strong></p>
       </article>
 
       <PageSection title='The "Why": A Change of Language'>
