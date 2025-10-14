@@ -35,49 +35,45 @@ type TransformedGridOptions = {
     originalColor?: THREE.ColorRepresentation;
     transformedColor?: THREE.ColorRepresentation;
     size?: number;
+    divisions?: number;
 };
 
 /**
  * Applies a matrix transformation to a grid and visualizes the result.
  * Returns a THREE.Group containing the transformed grid.
  */
-export const drawTransformedGrid = (scene: THREE.Scene, options: TransformedGridOptions): THREE.Group => {
+export const drawTransformedGrid = (parent: THREE.Group, options: TransformedGridOptions): void => {
     const {
         matrix,
-        scaleFactor = 1,
-        transformedColor = 0x4fc3f7,
-        size = 10
+        transformedColor = 0x888888,
+        size = 50,
+        divisions = 25,
     } = options;
 
-    const group = new THREE.Group();
-    const material = new THREE.LineBasicMaterial({ color: transformedColor });
-
+    const material = new THREE.LineBasicMaterial({ color: transformedColor, transparent: true, opacity: 0.5 });
     const m = matrix4From2D(matrix);
+    const step = size / divisions;
 
     // Create a base grid and transform it
-    for (let i = -size; i <= size; i++) {
-        // Lines along x-axis transformed
-        const startX = new THREE.Vector3(-size, i, 0);
-        const endX = new THREE.Vector3(size, i, 0);
+    for (let i = -size / 2; i <= size / 2; i += step) {
+        // Lines parallel to the original Y-axis
+        const startX = new THREE.Vector3(i, -size/2, 0);
+        const endX = new THREE.Vector3(i, size/2, 0);
         startX.applyMatrix4(m);
         endX.applyMatrix4(m);
         const geomX = new THREE.BufferGeometry().setFromPoints([startX, endX]);
         const lineX = new THREE.Line(geomX, material);
-        group.add(lineX);
+        parent.add(lineX);
 
-        // Lines along y-axis transformed
-        const startY = new THREE.Vector3(i, -size, 0);
-        const endY = new THREE.Vector3(i, size, 0);
+        // Lines parallel to the original X-axis
+        const startY = new THREE.Vector3(-size/2, i, 0);
+        const endY = new THREE.Vector3(size/2, i, 0);
         startY.applyMatrix4(m);
         endY.applyMatrix4(m);
         const geomY = new THREE.BufferGeometry().setFromPoints([startY, endY]);
         const lineY = new THREE.Line(geomY, material);
-        group.add(lineY);
+        parent.add(lineY);
     }
-    
-    group.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    scene.add(group);
-    return group;
 };
 
 
