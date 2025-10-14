@@ -76,14 +76,17 @@ export function MatrixMultiplicationAnimation() {
                 t
             );
 
-            // Apply the transformation to the grid group
-            gridRef.current.matrix.set(
-                newMatrix.a, newMatrix.c, 0, 0,
-                newMatrix.b, newMatrix.d, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1
-            );
-            gridRef.current.matrixAutoUpdate = false;
+            // Apply the transformation to the grid group's matrix
+            // This is a more direct way to control the transformation
+            if (gridRef.current) {
+                gridRef.current.matrix.set(
+                    newMatrix.a, newMatrix.c, 0, 0,
+                    newMatrix.b, newMatrix.d, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                );
+                gridRef.current.matrixAutoUpdate = false;
+            }
 
 
             if (t >= 1) {
@@ -125,3 +128,4 @@ export function MatrixMultiplicationAnimation() {
         </div>
     );
 }
+
