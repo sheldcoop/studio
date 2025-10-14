@@ -2,9 +2,12 @@
 'use client';
 
 import { PageHeader } from '@/components/app/page-header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import { PageSection } from '@/components/app/page-section';
+import { ExampleStep } from '@/components/app/example-step';
+import { NextUpNavigation } from '@/components/app/next-up-navigation';
+import { KeyConceptAlert } from '@/components/app/key-concept-alert';
 
 export default function GramSchmidtPage() {
   return (
@@ -30,77 +33,60 @@ export default function GramSchmidtPage() {
         </p>
       </article>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">The Goal: Orthonormal Bases</CardTitle>
-          <CardDescription>
-            A set of vectors <InlineMath math="\{q_1, q_2, ..., q_n\}" /> is orthonormal if they are mutually orthogonal (dot product is 0) and all have a length of 1.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Working with an orthonormal basis is a dream. Projections become trivial, and matrices whose columns are orthonormal (our <strong>Orthogonal Matrices, `Q`</strong>) are numerically perfect, with a condition number of 1.</p>
-        </CardContent>
-      </Card>
+      <PageSection title="The Goal: Orthonormal Bases">
+        <KeyConceptAlert title="Orthonormal Basis">
+            <p>A set of vectors <InlineMath math="\{q_1, q_2, ..., q_n\}" /> is orthonormal if they are mutually orthogonal (dot product is 0) and all have a length of 1.</p>
+            <p className="mt-2">Working with an orthonormal basis is a dream. Projections become trivial, and matrices whose columns are orthonormal (our <strong>Orthogonal Matrices, `Q`</strong>) are numerically perfect, with a condition number of 1.</p>
+        </KeyConceptAlert>
+      </PageSection>
       
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">The Algorithm: Step-by-Step Purification</CardTitle>
-          <CardDescription>
+      <PageSection title="The Algorithm: Step-by-Step Purification">
+        <p className="prose prose-invert max-w-none mb-4">
             The process takes a set of independent vectors <InlineMath math="\{v_1, v_2, ...\}" /> and generates an orthonormal set <InlineMath math="\{q_1, q_2, ...\}" /> that spans the same space.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <h4 className="font-semibold text-lg">Step 1: The First Vector (The Anchor)</h4>
+        </p>
+        <div className="space-y-6">
+          <ExampleStep stepNumber={1} title="The First Vector (The Anchor)">
             <p className="text-muted-foreground">Take the first vector <InlineMath math="v_1" />, which becomes our first orthogonal vector <InlineMath math="u_1" />. Then, normalize it.</p>
             <BlockMath math="q_1 = \frac{v_1}{\|v_1\|}" />
-          </div>
-          <div className="border-t pt-4">
-            <h4 className="font-semibold text-lg">Step 2: The Second Vector (The Subtraction Trick)</h4>
+          </ExampleStep>
+          <ExampleStep stepNumber={2} title="The Second Vector (The Subtraction Trick)">
             <p className="text-muted-foreground">Take the second vector <InlineMath math="v_2" /> and subtract its projection onto the first new vector <InlineMath math="q_1" />. This removes any component of <InlineMath math="v_2" /> that is parallel to <InlineMath math="q_1" />, leaving only the orthogonal part <InlineMath math="u_2" />.</p>
             <BlockMath math="u_2 = v_2 - (q_1^T v_2) q_1" />
             <p className="mt-2 text-muted-foreground">Then normalize <InlineMath math="u_2" /> to get <InlineMath math="q_2" />.</p>
             <BlockMath math="q_2 = \frac{u_2}{\|u_2\|}" />
-          </div>
-          <div className="border-t pt-4">
-            <h4 className="font-semibold text-lg">Step 3: The Third Vector and Beyond...</h4>
+          </ExampleStep>
+          <ExampleStep stepNumber={3} title="The Third Vector and Beyond...">
             <p className="text-muted-foreground">The pattern continues. To find <InlineMath math="u_3" />, take <InlineMath math="v_3" /> and subtract its projections onto <strong>all</strong> previously found orthonormal vectors (<InlineMath math="q_1" /> and <InlineMath math="q_2" />).</p>
             <BlockMath math="u_3 = v_3 - (q_1^T v_3) q_1 - (q_2^T v_3) q_2" />
             <p className="mt-2 text-muted-foreground">Then normalize.</p>
-          </div>
-        </CardContent>
-      </Card>
+          </ExampleStep>
+        </div>
+      </PageSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">A Concrete Example</CardTitle>
-          <CardDescription>Let's orthonormalize the basis <InlineMath math="v_1 = [3, 4]" /> and <InlineMath math="v_2 = [1, 5]" />.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-semibold">Step 1: Process <InlineMath math="v_1" /></h4>
+      <PageSection title="A Concrete Example">
+        <p className="prose prose-invert max-w-none mb-4">Let's orthonormalize the basis <InlineMath math="v_1 = [3, 4]" /> and <InlineMath math="v_2 = [1, 5]" />.</p>
+        <div className="space-y-4">
+            <ExampleStep stepNumber={1} title="Process `v₁`">
               <p><InlineMath math="\|v_1\| = \sqrt{3^2 + 4^2} = 5" /></p>
               <p className="font-bold text-primary"><InlineMath math="q_1 = \frac{1}{5}[3, 4] = [0.6, 0.8]" /></p>
-            </div>
-            <div className="border-t pt-4">
-              <h4 className="font-semibold">Step 2: Process <InlineMath math="v_2" /></h4>
+            </ExampleStep>
+            <ExampleStep stepNumber={2} title="Process `v₂`">
               <p>Subtract the projection of <InlineMath math="v_2" /> onto <InlineMath math="q_1" />:</p>
               <p><InlineMath math="q_1^T v_2 = (0.6)(1) + (0.8)(5) = 4.6" /></p>
               <p><InlineMath math="u_2 = [1, 5] - 4.6 \cdot [0.6, 0.8] = [1, 5] - [2.76, 3.68] = [-1.76, 1.32]" /></p>
               <p>Normalize <InlineMath math="u_2" />:</p>
               <p><InlineMath math="\|u_2\| = \sqrt{(-1.76)^2 + (1.32)^2} = \sqrt{3.0976 + 1.7424} = \sqrt{4.84} = 2.2" /></p>
               <p className="font-bold text-primary"><InlineMath math="q_2 = \frac{1}{2.2}[-1.76, 1.32] = [-0.8, 0.6]" /></p>
-            </div>
-             <div className="border-t pt-4">
-              <h4 className="font-semibold">Result</h4>
+            </ExampleStep>
+            <ExampleStep stepNumber={3} title="Result">
               <p>Our new orthonormal basis is <InlineMath math="\{ q_1=[0.6, 0.8], q_2=[-0.8, 0.6] \}" />.</p>
-            </div>
-        </CardContent>
-      </Card>
+            </ExampleStep>
+        </div>
+      </PageSection>
       
-      <p className="text-center text-muted-foreground">
-        <strong>Up Next:</strong> We will assemble these new orthonormal vectors into a matrix `Q` to form the QR Decomposition.
-      </p>
+      <NextUpNavigation href="/linear-algebra-for-quantitative-finance/the-qr-decomposition">
+        The QR Decomposition
+      </NextUpNavigation>
     </div>
   );
 }
