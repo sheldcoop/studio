@@ -52,7 +52,10 @@ class VectorArrow extends THREE.ArrowHelper {
 
     updateLabelPosition() {
         const dir = new THREE.Vector3();
-        this.getDirection(dir);
+        // This was the source of the error. `getDirection` is not a public method.
+        // It's better to calculate direction from the line's matrix.
+        this.line.getWorldDirection(dir);
+
         const offsetScale = 0.7;
 
         if (this.labelSprite) {
@@ -64,21 +67,19 @@ class VectorArrow extends THREE.ArrowHelper {
             this.coordLabelSprite.position.copy(this.line.position).add(offset);
         }
         if (this.lengthLabelSprite) {
-            const offset = dir.clone().multiplyScalar(this.line.scale.y + offsetScale * 0.5).add(new THREE.Vector3(0, 0.3, 0));
+             const offset = dir.clone().multiplyScalar(this.line.scale.y + offsetScale * 0.5).add(new THREE.Vector3(0, 0.3, 0));
             this.lengthLabelSprite.position.copy(this.line.position).add(offset);
         }
     }
 
-    setDirection(dir: THREE.Vector3) {
+    // Renamed to avoid overriding parent's setDirection
+    setDirectionAndLength(dir: THREE.Vector3, length: number) {
         super.setDirection(dir);
-        this.updateLabelPosition();
-    }
-
-    setLength(length: number, headLength?: number, headWidth?: number) {
-        super.setLength(length, headLength, headWidth);
+        super.setLength(length, 0.3, 0.2);
         this.updateLabelPosition();
     }
 }
+
 
 const drawLinearCombinationHelpers = (scene: THREE.Scene, b1: THREE.Vector3, b2: THREE.Vector3, x: number, y: number): THREE.Group => {
     const group = new THREE.Group();
@@ -280,8 +281,7 @@ export function InteractiveMatrixTransformation() {
             if (arrow) {
                 const length = vector.length();
                 if (length > 0.001) {
-                    arrow.setLength(length, 0.3, 0.2);
-                    arrow.setDirection(vector.clone().normalize());
+                    arrow.setDirectionAndLength(vector.clone().normalize(), length);
                 } else {
                     arrow.setLength(0, 0, 0);
                 }
