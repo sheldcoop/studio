@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 /**
@@ -88,6 +87,7 @@ export const drawAngleBetweenVectors = (scene: THREE.Scene, options: AngleOption
     const radius = options.radius ?? Math.min(v1.length(), v2.length()) * 0.4;
     
     const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
+    if (normal.lengthSq() < 0.001) normal.set(0,0,1); // Fallback for co-linear vectors
     
     const curve = new THREE.ArcCurve(0, 0, radius, 0, angle, false);
     const points = curve.getPoints(50);
@@ -96,25 +96,24 @@ export const drawAngleBetweenVectors = (scene: THREE.Scene, options: AngleOption
 
     const arc = new THREE.Line(geometry, material);
 
-    const xAxis = v1.clone().normalize();
-    const zAxis = normal;
-    const yAxis = new THREE.Vector3().crossVectors(zAxis, xAxis).normalize();
-
-    const matrix = new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis);
+    // Align arc with the plane of the two vectors
+    const firstAxis = v1.clone().normalize();
+    const secondAxis = new THREE.Vector3().crossVectors(normal, firstAxis).normalize();
+    const matrix = new THREE.Matrix4().makeBasis(firstAxis, secondAxis, normal);
     arc.applyMatrix4(matrix);
 
     group.add(arc);
 
     if (showAngleText) {
-        const textPos = v1.clone().normalize().add(v2.clone().normalize()).normalize().multiplyScalar(radius * 1.3);
-        const angleInDegrees = THREE.MathUtils.radToDeg(angle);
-        const label = createLabel(`θ = ${angleInDegrees.toFixed(1)}°`, color, 0.3);
-        label.position.copy(textPos);
+        // Place label in the middle of the arc
+        const midAngle = angle / 2;
+        const textPos = new THREE.Vector3(radius * Math.cos(midAngle), radius * Math.sin(midAngle), 0).multiplyScalar(1.2);
         
-        // Use the same transformation for the label position
-        const labelWorldPosition = new THREE.Vector3(textPos.x, textPos.y, textPos.z);
-        labelWorldPosition.applyMatrix4(matrix);
-        label.position.copy(labelWorldPosition);
+        const angleInDegrees = THREE.MathUtils.radToDeg(angle);
+        const label = createLabel(`${angleInDegrees.toFixed(0)}°`, color, 0.3);
+
+        label.position.copy(textPos);
+        label.position.applyMatrix4(matrix);
 
         group.add(label);
     }

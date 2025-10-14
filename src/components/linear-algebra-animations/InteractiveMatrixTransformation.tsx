@@ -7,48 +7,71 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
-import { createLabel } from '../three/ui-helpers';
+import { createLabel, drawAngleBetweenVectors } from '../three/ui-helpers';
 import { drawTransformedGrid } from '../three/transformation';
 import { Button } from '../ui/button';
 import { easeInOutCubic } from '../three/animation';
+import { Slider } from '../ui/slider';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { CheckCircle } from 'lucide-react';
 
 // A simple extension to make updating arrows easier
 class VectorArrow extends THREE.ArrowHelper {
     public labelSprite: THREE.Sprite | null = null;
     public coordLabelSprite: THREE.Sprite | null = null;
+    public lengthLabelSprite: THREE.Sprite | null = null;
 
     constructor(dir: THREE.Vector3, origin: THREE.Vector3, length: number, color: THREE.ColorRepresentation, headLength?: number, headWidth?: number) {
         super(dir, origin, length, color, headLength, headWidth);
     }
 
     setLabel(text: string, color: THREE.ColorRepresentation, scale: number = 0.4) {
-        if (this.labelSprite) {
-            this.remove(this.labelSprite);
-        }
+        if (this.labelSprite) this.remove(this.labelSprite);
         this.labelSprite = createLabel(text, color, scale);
         this.add(this.labelSprite);
         this.updateLabelPosition();
     }
     
     setCoordsLabel(coords: THREE.Vector3, color: THREE.ColorRepresentation) {
-        if (this.coordLabelSprite) {
-            this.remove(this.coordLabelSprite);
-        }
+        if (this.coordLabelSprite) this.remove(this.coordLabelSprite);
         const text = `(${coords.x.toFixed(2)}, ${coords.y.toFixed(2)})`;
         this.coordLabelSprite = createLabel(text, color, 0.35);
         this.add(this.coordLabelSprite);
         this.updateLabelPosition();
     }
 
+    setLengthLabel(length: number | null, color: THREE.ColorRepresentation) {
+        if (this.lengthLabelSprite) this.remove(this.lengthLabelSprite);
+        if (length === null) return;
+        
+        const text = `|v| = ${length.toFixed(2)}`;
+        this.lengthLabelSprite = createLabel(text, color, 0.35);
+        this.add(this.lengthLabelSprite);
+        this.updateLabelPosition();
+    }
+
     updateLabelPosition() {
+        const dir = new THREE.Vector3();
+        this.getDirection(dir);
+        const offsetScale = 0.7;
+
         if (this.labelSprite) {
-            const offset = new THREE.Vector3(this.cone.position.x, this.cone.position.y, 0).normalize().multiplyScalar(0.7);
-            this.labelSprite.position.copy(this.cone.position).add(offset);
+            const offset = dir.clone().multiplyScalar(this.line.scale.y + offsetScale);
+            this.labelSprite.position.copy(this.line.position).add(offset);
         }
         if (this.coordLabelSprite) {
-            const offset = new THREE.Vector3(this.cone.position.x, this.cone.position.y, 0).normalize().multiplyScalar(0.4);
-            this.coordLabelSprite.position.copy(this.cone.position).add(offset);
+            const offset = dir.clone().multiplyScalar(this.line.scale.y + offsetScale * 0.5).add(new THREE.Vector3(0, -0.3, 0));
+            this.coordLabelSprite.position.copy(this.line.position).add(offset);
         }
+        if (this.lengthLabelSprite) {
+            const offset = dir.clone().multiplyScalar(this.line.scale.y + offsetScale * 0.5).add(new THREE.Vector3(0, 0.3, 0));
+            this.lengthLabelSprite.position.copy(this.line.position).add(offset);
+        }
+    }
+
+    setDirection(dir: THREE.Vector3) {
+        super.setDirection(dir);
+        this.updateLabelPosition();
     }
 
     setLength(length: number, headLength?: number, headWidth?: number) {
@@ -81,19 +104,22 @@ const drawLinearCombinationHelpers = (scene: THREE.Scene, b1: THREE.Vector3, b2:
     return group;
 }
 
-
 const initialB1 = new THREE.Vector3(1.5, 0.5, 0);
 const initialB2 = new THREE.Vector3(-0.5, 1, 0);
 
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
     
-    // State for the vectors
+    // State for vectors & coordinates
     const [coords, setCoords] = useState({ x: 2.0, y: 1.0 });
     const [b1Pos, setB1Pos] = useState(initialB1.clone());
     const [b2Pos, setB2Pos] = useState(initialB2.clone());
     const [vectorV, setVectorV] = useState(new THREE.Vector3(0, 0, 0));
     const [determinant, setDeterminant] = useState(0);
+
+    // State for new rotation mode
+    const [mode, setMode] = useState<'explore' | 'rotation'>('explore');
+    const [rotationAngle, setRotationAngle] = useState(0);
 
     // Refs for three.js objects
     const sceneRef = useRef<THREE.Scene | null>(null);
@@ -101,12 +127,15 @@ export function InteractiveMatrixTransformation() {
     const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
     const animationFrameIdRef = useRef<number>();
     
-    // Refs for the visual objects
+    // Refs for visual objects
     const vRef = useRef<VectorArrow | null>(null);
     const b1Ref = useRef<VectorArrow | null>(null);
     const b2Ref = useRef<VectorArrow | null>(null);
+    const iHatRef = useRef<VectorArrow | null>(null);
+    const jHatRef = useRef<VectorArrow | null>(null);
     const transformedGridRef = useRef<THREE.Group | null>(null);
     const combinationHelpersRef = useRef<THREE.Group | null>(null);
+    const angleArcRef = useRef<THREE.Group | null>(null);
 
     // One-time scene setup
     useEffect(() => {
@@ -149,31 +178,31 @@ export function InteractiveMatrixTransformation() {
         scene.add(transformedGridRef.current);
 
         // Arrows
-        const iHat = new VectorArrow(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
-        iHat.setLabel('î', 0xff3333, 0.5);
-        const jHat = new VectorArrow(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
-        jHat.setLabel('ĵ', 0x33ff33, 0.5);
-        scene.add(iHat, jHat);
+        iHatRef.current = new VectorArrow(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
+        jHatRef.current = new VectorArrow(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
+        iHatRef.current.setLabel('î', 0xff3333, 0.5);
+        jHatRef.current.setLabel('ĵ', 0x33ff33, 0.5);
+        scene.add(iHatRef.current, jHatRef.current);
         
         b1Ref.current = new VectorArrow(b1Pos.clone().normalize(), new THREE.Vector3(0,0,0), b1Pos.length(), 0xff8a65, 0.3, 0.2);
-        b1Ref.current.setLabel('b₁', 0xff8a65);
         b2Ref.current = new VectorArrow(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
-        b2Ref.current.setLabel('b₂', 0x69f0ae);
         scene.add(b1Ref.current, b2Ref.current);
 
         const initialV = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
         vRef.current = new VectorArrow(initialV.clone().normalize(), new THREE.Vector3(0,0,0), initialV.length(), 0xffffff, 0.3, 0.2);
-        vRef.current.setLabel('v', 0xffffff);
         scene.add(vRef.current);
         
         combinationHelpersRef.current = new THREE.Group();
         scene.add(combinationHelpersRef.current);
 
+        angleArcRef.current = new THREE.Group();
+        scene.add(angleArcRef.current);
+
         const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { 
-            onDrag: (obj, pos) => setB1Pos(pos.clone().setZ(0)) 
+            onDrag: (obj, pos) => { if(mode === 'explore') setB1Pos(pos.clone().setZ(0)) }
         });
         const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { 
-            onDrag: (obj, pos) => setB2Pos(pos.clone().setZ(0)) 
+            onDrag: (obj, pos) => { if(mode === 'explore') setB2Pos(pos.clone().setZ(0)) }
         });
         cleanupFunctions.push(cleanupB1, cleanupB2);
         
@@ -209,32 +238,63 @@ export function InteractiveMatrixTransformation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Effect to update visualization when state changes
+    // Effect to handle rotation mode
     useEffect(() => {
-        const v = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
+        if (mode === 'rotation') {
+            const angleRad = THREE.MathUtils.degToRad(rotationAngle);
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
+            
+            // Start with a perpendicular basis for clarity
+            const baseB1 = new THREE.Vector3(2, 0, 0);
+            const baseB2 = new THREE.Vector3(0, 2, 0);
+
+            const newB1 = new THREE.Vector3(
+                baseB1.x * cos - baseB1.y * sin,
+                baseB1.x * sin + baseB1.y * cos,
+                0
+            );
+            const newB2 = new THREE.Vector3(
+                baseB2.x * cos - baseB2.y * sin,
+                baseB2.x * sin + baseB2.y * cos,
+                0
+            );
+            setB1Pos(newB1);
+            setB2Pos(newB2);
+        }
+    }, [mode, rotationAngle]);
+
+
+    // Effect to update visualization when any state changes
+    useEffect(() => {
+        const b1 = b1Pos;
+        const b2 = b2Pos;
+
+        const v = b1.clone().multiplyScalar(coords.x).add(b2.clone().multiplyScalar(coords.y));
         setVectorV(v);
         
-        const det = b1Pos.x * b2Pos.y - b1Pos.y * b2Pos.x;
+        const det = b1.x * b2.y - b1.y * b2.x;
         setDeterminant(det);
 
-        const updateArrow = (arrow: VectorArrow | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string) => {
+        const updateArrow = (arrow: VectorArrow | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string, showCoords = true, showLength: boolean = false) => {
             if (arrow) {
                 const length = vector.length();
                 if (length > 0.001) {
                     arrow.setLength(length, 0.3, 0.2);
                     arrow.setDirection(vector.clone().normalize());
                 } else {
-                    arrow.setLength(0, 0, 0); // Hide if zero length
+                    arrow.setLength(0, 0, 0);
                 }
-                 if(label) arrow.setLabel(label, color);
-                 arrow.setCoordsLabel(vector, color);
+                 if (label) arrow.setLabel(label, color);
+                 if (showCoords) arrow.setCoordsLabel(vector, color);
+                 arrow.setLengthLabel(showLength ? length : null, color);
                  arrow.updateLabelPosition();
             }
         }
 
-        updateArrow(b1Ref.current, b1Pos, 0xff8a65, 'b₁');
-        updateArrow(b2Ref.current, b2Pos, 0x69f0ae, 'b₂');
-        updateArrow(vRef.current, v, 0xffffff, 'v');
+        updateArrow(b1Ref.current, b1, 0xff8a65, 'b₁', true, mode === 'rotation');
+        updateArrow(b2Ref.current, b2, 0x69f0ae, 'b₂', true, mode === 'rotation');
+        updateArrow(vRef.current, v, 0xffffff, 'v', true, mode === 'rotation');
 
         if (transformedGridRef.current && sceneRef.current) {
             while (transformedGridRef.current.children.length > 0) {
@@ -244,7 +304,7 @@ export function InteractiveMatrixTransformation() {
                 if ((child as any).material) (child as any).material.dispose();
             }
             drawTransformedGrid(transformedGridRef.current, { 
-                matrix: { a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y },
+                matrix: { a: b1.x, b: b2.x, c: b1.y, d: b2.y },
                 gridColor: 0x4fc3f7,
                 divisions: 25,
                 size: 50
@@ -259,11 +319,24 @@ export function InteractiveMatrixTransformation() {
                  if ((child as any).geometry) (child as any).geometry.dispose();
                 if ((child as any).material) (child as any).material.dispose();
             }
-            const newHelpers = drawLinearCombinationHelpers(sceneRef.current, b1Pos, b2Pos, coords.x, coords.y);
+            const newHelpers = drawLinearCombinationHelpers(sceneRef.current, b1, b2, coords.x, coords.y);
             combinationHelpersRef.current.add(...newHelpers.children);
         }
         
-    }, [coords, b1Pos, b2Pos]);
+        if (angleArcRef.current && sceneRef.current) {
+            while (angleArcRef.current.children.length > 0) {
+                const child = angleArcRef.current.children[0];
+                angleArcRef.current.remove(child);
+                if ((child as any).geometry) (child as any).geometry.dispose();
+                if ((child as any).material) (child as any).material.dispose();
+            }
+            if(mode === 'rotation') {
+                const newArc = drawAngleBetweenVectors(sceneRef.current, { v1: b1, v2: b2, color: 0xffeb3b, showAngleText: true, radius: 1 });
+                angleArcRef.current.add(newArc);
+            }
+        }
+        
+    }, [coords, b1Pos, b2Pos, mode]);
 
     const animateTo = (targetB1: THREE.Vector3, targetB2: THREE.Vector3) => {
         const startB1 = b1Pos.clone();
@@ -291,6 +364,7 @@ export function InteractiveMatrixTransformation() {
 
 
     const handlePreset = (preset: 'reset' | 'shear' | 'rotate' | 'scale') => {
+        setMode('explore'); // Exit rotation mode if active
         switch(preset) {
             case 'shear':
                 animateTo(new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 1, 0));
@@ -337,9 +411,25 @@ export function InteractiveMatrixTransformation() {
                         <Button variant="outline" size="sm" onClick={() => handlePreset('shear')}>Shear</Button>
                         <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate 90°</Button>
                         <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale 2x</Button>
+                        <Button variant={mode === 'rotation' ? 'default' : 'outline'} size="sm" className="col-span-2" onClick={() => setMode(mode === 'rotation' ? 'explore' : 'rotation')}>Rotation Detective</Button>
                     </div>
                 </div>
             </div>
+            {mode === 'rotation' && (
+                 <Alert className="mb-4 border-blue-500/50">
+                    <CheckCircle className="h-4 w-4 text-blue-400" />
+                    <AlertTitle className="font-semibold text-blue-400">Rotation Detective Mode</AlertTitle>
+                    <AlertDescription>
+                        <div className="space-y-3 mt-2">
+                             <Label>Rotate Basis by: {rotationAngle.toFixed(0)}°</Label>
+                             <Slider min={0} max={360} step={1} value={[rotationAngle]} onValueChange={(v) => setRotationAngle(v[0])} />
+                             <p className="text-xs text-muted-foreground">✓ Lengths preserved: |b₁| = {b1Pos.length().toFixed(2)}, |b₂| = {b2Pos.length().toFixed(2)}</p>
+                             <p className="text-xs text-muted-foreground">✓ Angle preserved: {(b1Pos.angleTo(b2Pos) * 180 / Math.PI).toFixed(0)}°</p>
+                             <p className="text-xs text-muted-foreground">✓ Determinant preserved: {determinant.toFixed(2)}</p>
+                        </div>
+                    </AlertDescription>
+                </Alert>
+            )}
             <div ref={mountRef} className={cn("relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing")}></div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 p-4 rounded-lg border bg-muted/50 items-center">
                 <div className="text-center">
@@ -360,3 +450,154 @@ export function InteractiveMatrixTransformation() {
         </div>
     );
 }
+
+```
+  </change>
+  <change>
+    <file>/src/components/three/ui-helpers.ts</file>
+    <content><![CDATA[
+import * as THREE from 'three';
+
+/**
+ * Creates a text label as a sprite. Handles multiline text.
+ */
+export const createLabel = (
+    text: string,
+    color: THREE.ColorRepresentation = 0xffffff,
+    scale: number = 0.5,
+    font: string = 'Arial',
+    fontSize: number = 64
+): THREE.Sprite => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) return new THREE.Sprite();
+
+    const fontStyle = `bold ${fontSize}px ${font}`;
+    context.font = fontStyle;
+    
+    const lines = text.split('\n');
+    const widths = lines.map(line => context.measureText(line).width);
+    canvas.width = Math.max(...widths);
+    canvas.height = (fontSize * 1.2) * lines.length;
+
+    // Re-set font after canvas resize
+    context.font = fontStyle;
+    context.fillStyle = new THREE.Color(color).getStyle();
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+
+    lines.forEach((line, index) => {
+        context.fillText(line, canvas.width / 2, (canvas.height / lines.length) * (index + 0.5));
+    });
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const sprite = new THREE.Sprite(material);
+    sprite.scale.set((canvas.width / 100) * scale, (canvas.height / 100) * scale, 1);
+    return sprite;
+};
+
+type LabelOptions = {
+    position: THREE.Vector3;
+    text: string;
+    color?: THREE.ColorRepresentation;
+    offset?: THREE.Vector3;
+    scale?: number;
+};
+
+/**
+ * Draws a label in 3D space, typically for a vector or point.
+ */
+export const drawLabel = (scene: THREE.Scene, options: LabelOptions): THREE.Sprite => {
+    const { position, text, color = 0xffffff, offset = new THREE.Vector3(0.5, 0.5, 0), scale = 0.4 } = options;
+
+    const labelSprite = createLabel(text, color, scale);
+    labelSprite.position.copy(position).add(offset);
+    
+    scene.add(labelSprite);
+    return labelSprite;
+};
+
+type AngleOptions = {
+    v1: THREE.Vector3;
+    v2: THREE.Vector3;
+    color?: THREE.ColorRepresentation;
+    showAngleText?: boolean;
+    radius?: number;
+};
+
+/**
+ * Draws an arc showing the angle between two vectors in 3D space.
+ */
+export const drawAngleBetweenVectors = (scene: THREE.Scene, options: AngleOptions): THREE.Group => {
+    const { v1, v2, color = 0xffffff, showAngleText = true } = options;
+    const group = new THREE.Group();
+
+    const angle = v1.angleTo(v2);
+
+    // Don't draw if vectors are collinear
+    if (angle < 1e-4 || Math.abs(angle - Math.PI) < 1e-4) {
+        return group;
+    }
+
+    const radius = options.radius ?? Math.min(v1.length(), v2.length()) * 0.4;
+    
+    const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
+    if (normal.lengthSq() < 0.001) normal.set(0,0,1); // Fallback for co-linear vectors
+    
+    const curve = new THREE.ArcCurve(0, 0, radius, 0, angle, false);
+    const points = curve.getPoints(50);
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({ color });
+
+    const arc = new THREE.Line(geometry, material);
+
+    // Align arc with the plane of the two vectors
+    const firstAxis = v1.clone().normalize();
+    const secondAxis = new THREE.Vector3().crossVectors(normal, firstAxis).normalize();
+    const matrix = new THREE.Matrix4().makeBasis(firstAxis, secondAxis, normal);
+    arc.applyMatrix4(matrix);
+
+    group.add(arc);
+
+    if (showAngleText) {
+        // Place label in the middle of the arc
+        const midAngle = angle / 2;
+        const textPos = new THREE.Vector3(radius * Math.cos(midAngle), radius * Math.sin(midAngle), 0).multiplyScalar(1.2);
+        
+        const angleInDegrees = THREE.MathUtils.radToDeg(angle);
+        const label = createLabel(`${angleInDegrees.toFixed(0)}°`, color, 0.3);
+
+        label.position.copy(textPos);
+        label.position.applyMatrix4(matrix);
+
+        group.add(label);
+    }
+    
+    scene.add(group);
+    return group;
+};
+
+
+type MatrixNotationOptions = {
+    matrix: { a: number; b: number; c: number; d: number };
+    position: THREE.Vector3;
+    color?: THREE.ColorRepresentation;
+    scale?: number;
+};
+
+/**
+ * Renders a 2D matrix in standard bracket notation as a sprite in 3D space.
+ */
+export const drawMatrixNotation = (scene: THREE.Scene, options: MatrixNotationOptions): THREE.Sprite => {
+    const { matrix, position, color = 0xffffff, scale = 0.5 } = options;
+    const text = `[[${matrix.a.toFixed(1)}, ${matrix.b.toFixed(1)}]\n [${matrix.c.toFixed(1)}, ${matrix.d.toFixed(1)}]]`;
+    
+    const label = createLabel(text, color, scale, 'monospace');
+    label.position.copy(position);
+
+    scene.add(label);
+    return label;
+};
