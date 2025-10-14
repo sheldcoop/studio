@@ -1,168 +1,226 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { easeInOutCubic } from '@/components/three/animation';
 import { BlockMath } from 'react-katex';
-import { animateTransformation } from '@/components/three/animation';
-import { mouseToWorld } from '@/components/three/interactivity';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 
 type Matrix2D = { a: number; b: number; c: number; d: number };
 
+const INITIAL_VECTOR = new THREE.Vector3(2, 1, 0);
+const ROTATION_MATRIX: Matrix2D = { a: 0, b: -1, c: 1, d: 0 };
+const SHEAR_MATRIX: Matrix2D = { a: 1, b: 1, c: 0, d: 1 };
 const IDENTITY_MATRIX: Matrix2D = { a: 1, b: 0, c: 0, d: 1 };
-
-function createGrid(color: THREE.Color, size = 10, divisions = 10) {
-    const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.3 });
-    const points: THREE.Vector3[] = [];
-    const step = size / divisions;
-
-    for (let i = 0; i <= divisions; i++) {
-        const pos = -size / 2 + i * step;
-        points.push(new THREE.Vector3(-size / 2, pos, 0));
-        points.push(new THREE.Vector3(size / 2, pos, 0));
-        points.push(new THREE.Vector3(pos, -size / 2, 0));
-        points.push(new THREE.Vector3(pos, size / 2, 0));
-    }
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    return new THREE.LineSegments(geometry, material);
-}
-
-function createVector(color: THREE.Color, x: number, y: number): THREE.ArrowHelper {
-    const dir = new THREE.Vector3(x, y, 0).normalize();
-    const length = new THREE.Vector3(x,y,0).length();
-    return new THREE.ArrowHelper(dir, new THREE.Vector3(0,0,0), length, color, 0.4, 0.2);
-}
 
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
     const { theme } = useTheme();
-    const [displayMatrix, setDisplayMatrix] = useState<Matrix2D>(IDENTITY_MATRIX);
+    const [matrix, setMatrix] = useState<Matrix2D>(ROTATION_MATRIX);
+    const [isPlaying, setIsPlaying] = useState(false);
+    
+    // Store three.js objects in refs to persist across renders
+    const sceneRef = useRef<THREE.Scene | null>(null);
+    const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+    const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+    const animationFrameIdRef = useRef<number>();
+    const iHatRef = useRef<THREE.ArrowHelper | null>(null);
+    const jHatRef = useRef<THREE.ArrowHelper | null>(null);
+    const vectorVRef = useRef<THREE.ArrowHelper | null>(null);
+    const gridRef = useRef<THREE.GridHelper | null>(null);
 
-    useEffect(() => {
-        if (!mountRef.current) return;
+    const animationState = useRef({
+        progress: 0,
+        duration: 2000, // 2 seconds
+        isAnimating: false,
+        fromMatrix: { ...IDENTITY_MATRIX },
+        toMatrix: { ...matrix }
+    });
+
+    const setupScene = useCallback(() => {
+        if (!mountRef.current) return [];
+
         const currentMount = mountRef.current;
-
+        
         const computedStyle = getComputedStyle(document.documentElement);
         const primaryColorValue = computedStyle.getPropertyValue('--primary').trim();
         const primaryColor = new THREE.Color(`hsl(${primaryColorValue})`);
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 100);
-        camera.position.set(0, 0, 8);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        currentMount.appendChild(renderer.domElement);
-
-        const grid = createGrid(new THREE.Color(0x888888));
-        scene.add(grid);
-
-        const iHat = createVector(new THREE.Color(0xf44336), 1, 0); // Red
-        const jHat = createVector(new THREE.Color(0x4caf50), 0, 1); // Green
-        scene.add(iHat, jHat);
-
-        const transformedGrid = createGrid(primaryColor);
-        scene.add(transformedGrid);
-
-        let currentMatrix = { ...IDENTITY_MATRIX };
-        const animationState = {
-            from: { ...IDENTITY_MATRIX },
-            to: { ...IDENTITY_MATRIX },
-            progress: 1,
-            duration: 500, // ms
-        };
+        sceneRef.current = new THREE.Scene();
+        cameraRef.current = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 100);
+        cameraRef.current.position.set(0, 0, 8);
         
-        let lastFrameTime = 0;
+        rendererRef.current = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        rendererRef.current.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        rendererRef.current.setPixelRatio(window.devicePixelRatio);
+        currentMount.appendChild(rendererRef.current.domElement);
 
-        const animate = (time: number) => {
-            animationFrameId = requestAnimationFrame(animate);
+        gridRef.current = new THREE.GridHelper(10, 10);
+        gridRef.current.rotation.x = Math.PI / 2;
+        (gridRef.current.material as THREE.LineBasicMaterial).transparent = true;
+        (gridRef.current.material as THREE.LineBasicMaterial).opacity = 0.2;
+        sceneRef.current.add(gridRef.current);
 
-            const delta = time - (lastFrameTime || time);
-            lastFrameTime = time;
+        const createVector = (dir: THREE.Vector3, color: THREE.Color) => {
+            return new THREE.ArrowHelper(dir.clone().normalize(), new THREE.Vector3(0,0,0), dir.length(), color, 0.3, 0.15);
+        }
 
-            if (animationState.progress < 1) {
-                animationState.progress += delta / animationState.duration;
-                animationState.progress = Math.min(animationState.progress, 1);
-                currentMatrix = animateTransformation(animationState.from, animationState.to, animationState.progress);
+        iHatRef.current = createVector(new THREE.Vector3(1, 0, 0), new THREE.Color(0xf44336)); // Red
+        jHatRef.current = createVector(new THREE.Vector3(0, 1, 0), new THREE.Color(0x4caf50)); // Green
+        vectorVRef.current = createVector(INITIAL_VECTOR, primaryColor);
+        
+        sceneRef.current.add(iHatRef.current, jHatRef.current, vectorVRef.current);
+        
+        return [
+            () => {
+                cancelAnimationFrame(animationFrameIdRef.current!);
+                if (mountRef.current && rendererRef.current?.domElement) {
+                    mountRef.current.removeChild(rendererRef.current.domElement);
+                }
+                rendererRef.current?.dispose();
+            }
+        ];
+    }, [theme]);
+    
+    useEffect(() => {
+        const [cleanup] = setupScene();
+        
+        const animate = () => {
+            animationFrameIdRef.current = requestAnimationFrame(animate);
+            if (!rendererRef.current || !sceneRef.current || !cameraRef.current || !iHatRef.current || !jHatRef.current || !vectorVRef.current || !gridRef.current) return;
+            
+            if (animationState.current.isAnimating) {
+                animationState.current.progress += 16; // Roughly 60fps
+                const t = Math.min(animationState.current.progress / animationState.current.duration, 1);
+                const easedT = easeInOutCubic(t);
+
+                const currentMatrix = {
+                    a: animationState.current.fromMatrix.a + (animationState.current.toMatrix.a - animationState.current.fromMatrix.a) * easedT,
+                    b: animationState.current.fromMatrix.b + (animationState.current.toMatrix.b - animationState.current.fromMatrix.b) * easedT,
+                    c: animationState.current.fromMatrix.c + (animationState.current.toMatrix.c - animationState.current.fromMatrix.c) * easedT,
+                    d: animationState.current.fromMatrix.d + (animationState.current.toMatrix.d - animationState.current.fromMatrix.d) * easedT,
+                };
                 
+                // Update Basis Vectors
+                iHatRef.current.setDirection(new THREE.Vector3(currentMatrix.a, currentMatrix.c, 0).normalize());
+                iHatRef.current.setLength(new THREE.Vector3(currentMatrix.a, currentMatrix.c, 0).length());
+                jHatRef.current.setDirection(new THREE.Vector3(currentMatrix.b, currentMatrix.d, 0).normalize());
+                jHatRef.current.setLength(new THREE.Vector3(currentMatrix.b, currentMatrix.d, 0).length());
+                
+                // Update Vector V
+                const newV = new THREE.Vector3(
+                    INITIAL_VECTOR.x * currentMatrix.a + INITIAL_VECTOR.y * currentMatrix.b,
+                    INITIAL_VECTOR.x * currentMatrix.c + INITIAL_VECTOR.y * currentMatrix.d,
+                    0
+                );
+                vectorVRef.current.setDirection(newV.clone().normalize());
+                vectorVRef.current.setLength(newV.length());
+
+                // Update Grid
                 const matrix4 = new THREE.Matrix4().set(
-                    currentMatrix.a, currentMatrix.b, 0, 0,
-                    currentMatrix.c, currentMatrix.d, 0, 0,
+                    currentMatrix.a, currentMatrix.c, 0, 0,
+                    currentMatrix.b, currentMatrix.d, 0, 0,
                     0, 0, 1, 0,
                     0, 0, 0, 1
                 );
-                
-                transformedGrid.matrix.copy(matrix4);
-                transformedGrid.matrixAutoUpdate = false;
-                
-                iHat.setDirection(new THREE.Vector3(currentMatrix.a, currentMatrix.c, 0).normalize());
-                iHat.setLength(new THREE.Vector3(currentMatrix.a, currentMatrix.c, 0).length(), 0.4, 0.2);
+                gridRef.current.matrix.copy(matrix4);
+                gridRef.current.matrixAutoUpdate = false;
 
-                jHat.setDirection(new THREE.Vector3(currentMatrix.b, currentMatrix.d, 0).normalize());
-                jHat.setLength(new THREE.Vector3(currentMatrix.b, currentMatrix.d, 0).length(), 0.4, 0.2);
 
-                setDisplayMatrix(currentMatrix);
+                if (t >= 1) {
+                    animationState.current.isAnimating = false;
+                    setIsPlaying(false);
+                }
             }
-            
-            renderer.render(scene, camera);
+
+            rendererRef.current.render(sceneRef.current, cameraRef.current);
         };
-        let animationFrameId = requestAnimationFrame(animate);
-
-        const handleMouseMove = (event: MouseEvent) => {
-            const worldPos = mouseToWorld(event, camera, renderer.domElement);
-            if (worldPos) {
-                 animationState.from = { ...currentMatrix };
-                 animationState.to = {
-                    a: worldPos.x / 2, // Scale down for less extreme transformations
-                    d: worldPos.y / 2,
-                    b: -worldPos.y / 4,
-                    c: worldPos.x / 4,
-                 };
-                 animationState.progress = 0;
-            }
-        };
-
-        const resetAnimation = () => {
-             animationState.from = { ...currentMatrix };
-             animationState.to = { ...IDENTITY_MATRIX };
-             animationState.progress = 0;
-        }
-
-        currentMount.addEventListener('mousemove', handleMouseMove);
-        currentMount.addEventListener('mouseleave', resetAnimation);
-
-        const handleResize = () => {
-            if (currentMount) {
-                camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-            }
-        };
-        window.addEventListener('resize', handleResize);
+        
+        animate();
 
         return () => {
-            window.removeEventListener('resize', handleResize);
-            currentMount.removeEventListener('mousemove', handleMouseMove);
-            currentMount.removeEventListener('mouseleave', resetAnimation);
-            cancelAnimationFrame(animationFrameId);
-            currentMount.removeChild(renderer.domElement);
-            renderer.dispose();
+            cleanup();
         };
-    }, [theme]);
+
+    }, [setupScene]);
     
+    const handlePlayPause = () => {
+        if (!animationState.current.isAnimating) {
+            animationState.current.fromMatrix = { a: 1, b: 0, c: 0, d: 1 };
+            animationState.current.toMatrix = { ...matrix };
+            animationState.current.progress = 0;
+            animationState.current.isAnimating = true;
+        } else {
+             animationState.current.isAnimating = !animationState.current.isAnimating;
+        }
+        setIsPlaying(animationState.current.isAnimating);
+    }
+    
+    const handleReset = () => {
+        animationState.current.isAnimating = false;
+        setIsPlaying(false);
+        animationState.current.progress = 0;
+        const identity = { ...IDENTITY_MATRIX };
+        if (iHatRef.current && jHatRef.current && vectorVRef.current && gridRef.current) {
+            iHatRef.current.setDirection(new THREE.Vector3(identity.a, identity.c, 0).normalize());
+            iHatRef.current.setLength(1);
+            jHatRef.current.setDirection(new THREE.Vector3(identity.b, identity.d, 0).normalize());
+            jHatRef.current.setLength(1);
+            vectorVRef.current.setDirection(INITIAL_VECTOR.clone().normalize());
+            vectorVRef.current.setLength(INITIAL_VECTOR.length());
+            gridRef.current.matrix.identity();
+        }
+    }
+
+    const handleMatrixInputChange = (key: keyof Matrix2D, value: string) => {
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+            setMatrix({ ...matrix, [key]: numValue });
+        }
+    };
+
     return (
         <div className="w-full">
-            <div ref={mountRef} className={cn("relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-muted/20 cursor-crosshair")}></div>
-            <div className="flex flex-col md:flex-row justify-center items-center gap-4 mt-4 text-center">
-                 <p className="text-sm text-muted-foreground">Move your mouse over the grid to transform the space.</p>
-                 <div className="font-mono text-lg p-2 mt-2 rounded-md bg-muted/50 border">
-                    <BlockMath math={`M = \\begin{bmatrix} ${displayMatrix.a.toFixed(2)} & ${displayMatrix.b.toFixed(2)} \\\\ ${displayMatrix.c.toFixed(2)} & ${displayMatrix.d.toFixed(2)} \\end{bmatrix}`} />
-                 </div>
+            <div ref={mountRef} className={cn("relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-muted/20")}></div>
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4 mt-4 text-center p-4 rounded-lg border bg-muted/50">
+                 <div className="space-y-2">
+                    <Label className="font-semibold">Transformation Matrix</Label>
+                    <div className="flex justify-center items-center gap-2">
+                        <div className="text-4xl font-thin">[</div>
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1 w-24">
+                            <Input className="h-8 text-center" type="text" value={matrix.a} onChange={e => handleMatrixInputChange('a', e.target.value)} />
+                            <Input className="h-8 text-center" type="text" value={matrix.b} onChange={e => handleMatrixInputChange('b', e.target.value)} />
+                            <Input className="h-8 text-center" type="text" value={matrix.c} onChange={e => handleMatrixInputChange('c', e.target.value)} />
+                            <Input className="h-8 text-center" type="text" value={matrix.d} onChange={e => handleMatrixInputChange('d', e.target.value)} />
+                        </div>
+                        <div className="text-4xl font-thin">]</div>
+                    </div>
+                </div>
+                 <div className="space-y-2">
+                    <Label className="font-semibold">Vector</Label>
+                     <div className="font-mono text-lg p-2 mt-2">
+                        <BlockMath math={`v = \\begin{bmatrix} ${INITIAL_VECTOR.x} \\\\ ${INITIAL_VECTOR.y} \\end{bmatrix}`} />
+                    </div>
+                </div>
+                 <div className="flex flex-col items-center gap-2">
+                     <Button onClick={handlePlayPause}>
+                         {isPlaying ? <Pause className="h-4 w-4 mr-2"/> : <Play className="h-4 w-4 mr-2"/> }
+                         {isPlaying ? 'Pause' : 'Play'}
+                     </Button>
+                     <Button onClick={handleReset} variant="secondary" size="sm">
+                         <RotateCcw className="h-4 w-4 mr-2" />
+                         Reset
+                     </Button>
+                </div>
             </div>
         </div>
     );
 }
+
+    
