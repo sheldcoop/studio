@@ -26,9 +26,9 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
     const group = new THREE.Group();
 
     const axesConfig = {
-        x: { dir: new THREE.Vector3(1, 0, 0), color: 0xff0000, label: 'x' },
-        y: { dir: new THREE.Vector3(0, 1, 0), color: 0x00ff00, label: 'y' },
-        ...(showZ && { z: { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: 'z' } }),
+        x: { dir: new THREE.Vector3(1, 0, 0), color: 0xff3333, label: 'î' },
+        y: { dir: new THREE.Vector3(0, 1, 0), color: 0x33ff33, label: 'ĵ' },
+        ...(showZ && { z: { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: 'k' } }),
     };
 
     for (const [axisName, axis] of Object.entries(axesConfig)) {
@@ -36,44 +36,15 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
         const endPoint = axis.dir.clone().multiplyScalar(size);
         const startPoint = axis.dir.clone().multiplyScalar(-size);
         const lineGeom = new THREE.BufferGeometry().setFromPoints([startPoint, endPoint]);
-        const lineMat = new THREE.LineBasicMaterial({ color: axis.color });
+        const lineMat = new THREE.LineBasicMaterial({ color: axis.color, transparent: true, opacity: 0.3 });
         const line = new THREE.Line(lineGeom, lineMat);
         group.add(line);
 
 
         if (showLabels) {
             const axisLabelSprite = createLabel(axis.label, axis.color, 0.5);
-            axisLabelSprite.position.copy(axis.dir).multiplyScalar(size + 0.8);
+            axisLabelSprite.position.copy(axis.dir).multiplyScalar(1.2); // Position label at the end of the unit vector
             group.add(axisLabelSprite);
-
-            const tickMaterial = new THREE.LineBasicMaterial({ color: axis.color, transparent: true, opacity: 0.5 });
-            const tickSize = 0.2;
-
-            for (let i = -size; i <= size; i += tickInterval) {
-                if (i === 0) continue; 
-
-                const tickStart = axis.dir.clone().multiplyScalar(i);
-                let tickEnd: THREE.Vector3;
-
-                if (axisName === 'x') {
-                    tickEnd = tickStart.clone().add(new THREE.Vector3(0, tickSize, 0));
-                } else if (axisName === 'y') {
-                    tickEnd = tickStart.clone().add(new THREE.Vector3(tickSize, 0, 0));
-                } else { // z-axis
-                    tickEnd = tickStart.clone().add(new THREE.Vector3(tickSize, 0, 0));
-                }
-                
-                const tickGeometry = new THREE.BufferGeometry().setFromPoints([tickStart, tickEnd]);
-                const tick = new THREE.Line(tickGeometry, tickMaterial);
-                group.add(tick);
-
-                const numLabelSprite = createLabel(i.toString(), axis.color, 0.3);
-                numLabelSprite.position.copy(tickStart);
-                if(axisName === 'x') numLabelSprite.position.y -= 0.4;
-                else numLabelSprite.position.x -= 0.4;
-
-                group.add(numLabelSprite);
-            }
         }
     }
     parent.add(group);
@@ -91,10 +62,10 @@ type GridOptions = {
 export const drawGrid = (parent: ParentObject, options: GridOptions = {}): THREE.GridHelper => {
     const {
         gridColor = 0x888888,
-        size = 10,
+        size = 50,
     } = options;
 
-    const grid = new THREE.GridHelper(size * 2, size * 2, gridColor, gridColor);
+    const grid = new THREE.GridHelper(size, size, gridColor, gridColor);
     grid.rotation.x = Math.PI / 2;
     parent.add(grid);
     return grid;

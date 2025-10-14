@@ -10,14 +10,21 @@ import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { createLabel } from '../three/ui-helpers';
 import { drawTransformedGrid } from '../three/transformation';
 
+// A simple extension to make updating arrows easier
+class VectorArrow extends THREE.ArrowHelper {
+    constructor(dir: THREE.Vector3, origin: THREE.Vector3, length: number, color: THREE.ColorRepresentation, headLength?: number, headWidth?: number) {
+        super(dir, origin, length, color, headLength, headWidth);
+    }
+}
+
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
     
     // State for the vectors
-    const [newBasisCoords, setNewBasisCoords] = useState({ x: 2.0, y: 1.0 });
-    const [iHatPrime, setIHatPrime] = useState(new THREE.Vector3(1.5, 0.5, 0));
-    const [jHatPrime, setJHatPrime] = useState(new THREE.Vector3(-0.5, 1, 0));
-    const [vectorV, setVectorV] = useState(new THREE.Vector3(0, 0, 0)); // This will be calculated
+    const [coords, setCoords] = useState({ x: 2.0, y: 1.0 });
+    const [b1Pos, setB1Pos] = useState(new THREE.Vector3(1.5, 0.5, 0));
+    const [b2Pos, setB2Pos] = useState(new THREE.Vector3(-0.5, 1, 0));
+    const [vectorV, setVectorV] = useState(new THREE.Vector3(0, 0, 0));
 
     // Refs for three.js objects
     const sceneRef = useRef<THREE.Scene | null>(null);
@@ -26,10 +33,10 @@ export function InteractiveMatrixTransformation() {
     const animationFrameIdRef = useRef<number>();
     
     // Refs for the visual objects
-    const vectorVRef = useRef<THREE.ArrowHelper | null>(null);
-    const iHatPrimeRef = useRef<THREE.ArrowHelper | null>(null);
-    const jHatPrimeRef = useRef<THREE.ArrowHelper | null>(null);
-    const vectorLabelRef = useRef<THREE.Sprite | null>(null);
+    const vRef = useRef<VectorArrow | null>(null);
+    const b1Ref = useRef<VectorArrow | null>(null);
+    const b2Ref = useRef<VectorArrow | null>(null);
+    const vLabelRef = useRef<THREE.Sprite | null>(null);
     const transformedGridRef = useRef<THREE.Group | null>(null);
 
     // One-time scene setup
@@ -64,38 +71,39 @@ export function InteractiveMatrixTransformation() {
             renderer.dispose();
         });
         
-        // Standard Grid
-        const gridHelper = new THREE.GridHelper(50, 50, 0x444444, 0x444444);
-        gridHelper.rotation.x = Math.PI / 2;
-        scene.add(gridHelper);
+        // Step 1: Grids
+        const standardGrid = new THREE.GridHelper(50, 50, 0x444444, 0x444444);
+        standardGrid.rotation.x = Math.PI / 2;
+        scene.add(standardGrid);
 
-        // Transformed Grid Group
         transformedGridRef.current = new THREE.Group();
         scene.add(transformedGridRef.current);
 
-        // Standard Basis Vectors (non-interactive)
+        // Step 2: Arrows
         const iHat = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
         const jHat = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
         scene.add(iHat, jHat);
         
-        // Draggable New Basis Vectors
-        iHatPrimeRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), 1, 0xff8a65, 0.3, 0.2);
-        jHatPrimeRef.current = new THREE.ArrowHelper(new THREE.Vector3(0,1,0), 1, 0x69f0ae, 0.3, 0.2);
-        scene.add(iHatPrimeRef.current, jHatPrimeRef.current);
+        b1Ref.current = new VectorArrow(b1Pos.clone().normalize(), new THREE.Vector3(0,0,0), b1Pos.length(), 0xff8a65, 0.3, 0.2);
+        b2Ref.current = new VectorArrow(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
+        scene.add(b1Ref.current, b2Ref.current);
 
-        // Resultant Vector (v)
-        const initialV = iHatPrime.clone().multiplyScalar(newBasisCoords.x).add(jHatPrime.clone().multiplyScalar(newBasisCoords.y));
-        vectorVRef.current = new THREE.ArrowHelper(initialV.clone().normalize(), initialV.length(), 0xffffff, 0.3, 0.2);
-        scene.add(vectorVRef.current);
+        // Step 3: Calculate and display v
+        const initialV = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
+        vRef.current = new VectorArrow(initialV.clone().normalize(), new THREE.Vector3(0,0,0), initialV.length(), 0xffffff, 0.3, 0.2);
+        scene.add(vRef.current);
 
-        // Vector Label for v
-        vectorLabelRef.current = createLabel("v", '#ffffff');
-        scene.add(vectorLabelRef.current);
+        vLabelRef.current = createLabel("v", '#ffffff');
+        scene.add(vLabelRef.current);
         
-        // Interactivity
-        const cleanupI = makeObjectsDraggable(iHatPrimeRef.current, camera, renderer.domElement, { onDrag: (obj, pos) => setIHatPrime(pos.clone().setZ(0)) });
-        const cleanupJ = makeObjectsDraggable(jHatPrimeRef.current, camera, renderer.domElement, { onDrag: (obj, pos) => setJHatPrime(pos.clone().setZ(0)) });
-        cleanupFunctions.push(cleanupI, cleanupJ);
+        // Step 5: Interactivity
+        const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { 
+            onDrag: (obj, pos) => setB1Pos(pos.clone().setZ(0)) 
+        });
+        const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { 
+            onDrag: (obj, pos) => setB2Pos(pos.clone().setZ(0)) 
+        });
+        cleanupFunctions.push(cleanupB1, cleanupB2);
         
         const animate = () => {
             animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -129,68 +137,55 @@ export function InteractiveMatrixTransformation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Updates visualization based on state changes
+    // Effect to update visualization when state changes
     useEffect(() => {
-        const v = iHatPrime.clone().multiplyScalar(newBasisCoords.x).add(jHatPrime.clone().multiplyScalar(newBasisCoords.y));
+        const v = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
         setVectorV(v);
 
-        if (vectorVRef.current) {
-            const length = v.length();
-            if (length > 0.01) {
-              vectorVRef.current.setLength(length, 0.3, 0.2);
-              vectorVRef.current.setDirection(v.clone().normalize());
-            } else {
-              vectorVRef.current.setLength(0,0,0);
+        const updateArrow = (arrow: VectorArrow | null, vector: THREE.Vector3) => {
+            if (arrow) {
+                const length = vector.length();
+                if (length > 0.001) {
+                    arrow.setLength(length, 0.3, 0.2);
+                    arrow.setDirection(vector.clone().normalize());
+                } else {
+                    arrow.setLength(0, 0, 0); // Hide if zero length
+                }
             }
-        }
-        
-        if (vectorLabelRef.current) {
-            sceneRef.current?.remove(vectorLabelRef.current);
-            vectorLabelRef.current = createLabel(`(${newBasisCoords.x.toFixed(2)}, ${newBasisCoords.y.toFixed(2)})`, '#ffffff');
-            vectorLabelRef.current.position.copy(v).add(new THREE.Vector3(0.5, 0.5, 0));
-            sceneRef.current?.add(vectorLabelRef.current);
         }
 
-        if (iHatPrimeRef.current) {
-            const len = iHatPrime.length();
-            if(len > 0.01) {
-              iHatPrimeRef.current.setLength(len, 0.3, 0.2);
-              iHatPrimeRef.current.setDirection(iHatPrime.clone().normalize());
-            } else {
-              iHatPrimeRef.current.setLength(0,0,0);
-            }
-        }
-        if (jHatPrimeRef.current) {
-             const len = jHatPrime.length();
-            if(len > 0.01) {
-              jHatPrimeRef.current.setLength(len, 0.3, 0.2);
-              jHatPrimeRef.current.setDirection(jHatPrime.clone().normalize());
-            } else {
-                jHatPrimeRef.current.setLength(0,0,0);
-            }
+        updateArrow(b1Ref.current, b1Pos);
+        updateArrow(b2Ref.current, b2Pos);
+        updateArrow(vRef.current, v);
+
+        if (vLabelRef.current) {
+            vLabelRef.current.position.copy(v).add(new THREE.Vector3(0.5, 0.5, 0));
         }
 
         if (transformedGridRef.current && sceneRef.current) {
+            // Step 6: Update Transformed Grid
             while (transformedGridRef.current.children.length > 0) {
-                transformedGridRef.current.remove(transformedGridRef.current.children[0]);
+                const child = transformedGridRef.current.children[0];
+                transformedGridRef.current.remove(child);
+                (child as any).geometry?.dispose();
+                (child as any).material?.dispose();
             }
             drawTransformedGrid(transformedGridRef.current, { 
-                matrix: { a: iHatPrime.x, b: jHatPrime.x, c: iHatPrime.y, d: jHatPrime.y },
-                transformedColor: 0x64b5f6,
+                matrix: { a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y },
+                color: 0x4fc3f7,
                 divisions: 25,
                 size: 50
             });
         }
         
-    }, [newBasisCoords, iHatPrime, jHatPrime]);
+    }, [coords, b1Pos, b2Pos]);
     
     const handleCoordChange = (coord: 'x' | 'y', value: string) => {
         const numValue = parseFloat(value);
         if (!isNaN(numValue)) {
-            setNewBasisCoords(prev => ({...prev, [coord]: numValue}));
+            setCoords(prev => ({...prev, [coord]: numValue}));
         }
     };
-
 
     return (
         <div className="w-full">
@@ -199,8 +194,8 @@ export function InteractiveMatrixTransformation() {
                 <div className="text-center">
                     <Label className="font-semibold text-primary">Coordinates in New Basis</Label>
                     <div className="flex justify-center items-center gap-2 mt-2">
-                        <Input className="w-20 h-8 text-center" value={newBasisCoords.x} onChange={e => handleCoordChange('x', e.target.value)} />
-                        <Input className="w-20 h-8 text-center" value={newBasisCoords.y} onChange={e => handleCoordChange('y', e.target.value)} />
+                        <Input className="w-20 h-8 text-center" value={coords.x} onChange={e => handleCoordChange('x', e.target.value)} />
+                        <Input className="w-20 h-8 text-center" value={coords.y} onChange={e => handleCoordChange('y', e.target.value)} />
                     </div>
                 </div>
                  <div className="text-2xl font-bold text-muted-foreground text-center">=</div>

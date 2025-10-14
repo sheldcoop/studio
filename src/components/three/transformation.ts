@@ -1,23 +1,16 @@
 
 import * as THREE from 'three';
-import { drawArrow, drawShading, drawPlane } from './primitives'; // Assuming primitives.ts is in the same directory
+import { drawArrow, drawShading, drawPlane } from './primitives'; 
 
 // --- HELPER FUNCTIONS ---
 
 /**
  * Creates a THREE.Matrix4 from a 2D matrix object for transformations on the XY plane.
- * The matrix {a, b, c, d} corresponds to a row-major [[a, b], [c, d]] matrix.
- * This is used to transform standard grid lines to their new positions.
+ * The matrix {a, b, c, d} corresponds to the new basis vectors as columns:
+ * b1 = [a, c], b2 = [b, d]
  */
 const matrix4From2D = (m: { a: number; b: number; c: number; d: number }) => {
     const mat4 = new THREE.Matrix4();
-    // THREE.js matrices are column-major.
-    // To represent the transformation v' = M * v where M is defined by new basis vectors
-    // i' = [a, c] and j' = [b, d], the Matrix4 should be set up as:
-    // a, b, 0, 0
-    // c, d, 0, 0
-    // 0, 0, 1, 0
-    // 0, 0, 0, 1
     mat4.set(
         m.a, m.b, 0, 0,
         m.c, m.d, 0, 0,
@@ -32,9 +25,7 @@ const matrix4From2D = (m: { a: number; b: number; c: number; d: number }) => {
 
 type TransformedGridOptions = {
     matrix: { a: number; b: number; c: number; d: number };
-    scaleFactor?: number;
-    originalColor?: THREE.ColorRepresentation;
-    transformedColor?: THREE.ColorRepresentation;
+    color?: THREE.ColorRepresentation;
     size?: number;
     divisions?: number;
 };
@@ -46,31 +37,30 @@ type TransformedGridOptions = {
 export const drawTransformedGrid = (parent: THREE.Group, options: TransformedGridOptions): void => {
     const {
         matrix,
-        transformedColor = 0x888888,
+        color = 0x888888,
         size = 50,
         divisions = 25,
     } = options;
 
-    const material = new THREE.LineBasicMaterial({ color: transformedColor, transparent: true, opacity: 0.5 });
-    const m = matrix4From2D(matrix);
+    const material = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.5 });
+    const m4 = matrix4From2D(matrix);
     const step = size / divisions;
 
-    // Create a base grid and transform each line
     for (let i = -divisions; i <= divisions; i++) {
-        // Lines parallel to the original Y-axis
-        const startX = new THREE.Vector3(i, -divisions, 0);
-        const endX = new THREE.Vector3(i, divisions, 0);
-        startX.applyMatrix4(m);
-        endX.applyMatrix4(m);
+        // Create lines parallel to the original Y-axis and transform them
+        const startX = new THREE.Vector3(i * step / (size / divisions), -size/2, 0);
+        const endX = new THREE.Vector3(i * step / (size / divisions), size/2, 0);
+        startX.applyMatrix4(m4);
+        endX.applyMatrix4(m4);
         const geomX = new THREE.BufferGeometry().setFromPoints([startX, endX]);
         const lineX = new THREE.Line(geomX, material);
         parent.add(lineX);
 
-        // Lines parallel to the original X-axis
-        const startY = new THREE.Vector3(-divisions, i, 0);
-        const endY = new THREE.Vector3(divisions, i, 0);
-        startY.applyMatrix4(m);
-        endY.applyMatrix4(m);
+        // Create lines parallel to the original X-axis and transform them
+        const startY = new THREE.Vector3(-size/2, i * step / (size / divisions), 0);
+        const endY = new THREE.Vector3(size/2, i * step / (size / divisions), 0);
+        startY.applyMatrix4(m4);
+        endY.applyMatrix4(m4);
         const geomY = new THREE.BufferGeometry().setFromPoints([startY, endY]);
         const lineY = new THREE.Line(geomY, material);
         parent.add(lineY);

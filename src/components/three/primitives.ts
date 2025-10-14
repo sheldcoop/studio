@@ -17,6 +17,42 @@ type PlaneOptions = BaseOptions & {
 };
 
 /**
+ * A wrapper class for THREE.ArrowHelper to make it easier to update its
+ * length and direction after creation.
+ */
+export class Vector extends THREE.ArrowHelper {
+    constructor(
+        dir: THREE.Vector3,
+        origin: THREE.Vector3,
+        length: number,
+        color: THREE.ColorRepresentation,
+        headLength?: number,
+        headWidth?: number,
+        public label?: string,
+        public labelOffset?: THREE.Vector3
+    ) {
+        super(dir, origin, length, color, headLength, headWidth);
+
+        if (this.label) {
+            const labelSprite = createLabel(this.label, color, 0.4);
+            const finalPos = this.position.clone().add(this.cone.position).add(labelOffset || new THREE.Vector3(0.3, 0.3, 0));
+            labelSprite.position.copy(finalPos);
+            this.add(labelSprite);
+        }
+    }
+
+    // Method to update the label's position
+    updateLabelPosition() {
+        const labelSprite = this.children.find(child => child instanceof THREE.Sprite);
+        if (labelSprite) {
+            const finalPos = this.position.clone().add(this.cone.position).add(this.labelOffset || new THREE.Vector3(0.3, 0.3, 0));
+            labelSprite.position.copy(finalPos);
+        }
+    }
+}
+
+
+/**
  * Draws a plane. Returns a THREE.Group containing the plane and an optional label.
  */
 export const drawPlane = (parent: ParentObject, options: PlaneOptions = {}): THREE.Group => {
@@ -122,7 +158,6 @@ export const drawArrow = (parent: ParentObject, options: ArrowOptions): THREE.Gr
     const length = dir.length();
     dir.normalize();
 
-    // The head length and width should also be scaled
     const headLength = (options.headLength || 0.2);
     const headWidth = (options.headWidth || 0.1);
 
@@ -132,7 +167,7 @@ export const drawArrow = (parent: ParentObject, options: ArrowOptions): THREE.Gr
     if (label) {
         const labelSprite = createLabel(label, color, 0.4);
         if (labelSprite) {
-            labelSprite.position.copy(destination).add(new THREE.Vector3(0, headWidth * 1.5, 0));
+            labelSprite.position.copy(destination).add(new THREE.Vector3(0.3, 0.3, 0));
             group.add(labelSprite);
         }
     }
