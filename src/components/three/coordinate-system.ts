@@ -16,7 +16,6 @@ type AxesOptions = {
  */
 export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE.Group => {
     const {
-        scaleFactor = 1,
         showLabels = true,
         tickInterval = 1,
         size = 10
@@ -31,27 +30,23 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
     };
 
     for (const [axisName, axis] of Object.entries(axes)) {
-        // Main axis line
         const arrow = new THREE.ArrowHelper(axis.dir, new THREE.Vector3(0,0,0), size, axis.color, 0.5, 0.2);
         group.add(arrow);
 
         if (showLabels) {
-            // Axis end label (x, y, z)
             const axisLabelSprite = createLabel(axis.label, axis.color, 0.5);
             axisLabelSprite.position.copy(axis.dir).multiplyScalar(size + 0.8);
             group.add(axisLabelSprite);
 
-            // Numeric tick marks and labels
-            const tickMaterial = new THREE.LineBasicMaterial({ color: axis.color });
+            const tickMaterial = new THREE.LineBasicMaterial({ color: axis.color, transparent: true, opacity: 0.5 });
             const tickSize = 0.2;
 
             for (let i = -size; i <= size; i += tickInterval) {
-                if (i === 0) continue; // Skip origin
+                if (i === 0) continue; 
 
                 const tickStart = axis.dir.clone().multiplyScalar(i);
                 let tickEnd: THREE.Vector3;
 
-                // Create perpendicular tick marks
                 if (axisName === 'x') {
                     tickEnd = tickStart.clone().add(new THREE.Vector3(0, tickSize, 0));
                 } else if (axisName === 'y') {
@@ -66,7 +61,6 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
 
                 const numLabelSprite = createLabel(i.toString(), axis.color, 0.3);
                 numLabelSprite.position.copy(tickStart);
-                // Offset labels slightly from the ticks
                 if(axisName === 'x') numLabelSprite.position.y -= 0.4;
                 else numLabelSprite.position.x -= 0.4;
 
@@ -74,56 +68,28 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
             }
         }
     }
-    group.scale.set(scaleFactor, scaleFactor, scaleFactor);
     parent.add(group);
     return group;
 };
 
 type GridOptions = {
-    b1?: THREE.Vector3;
-    b2?: THREE.Vector3;
     gridColor?: THREE.ColorRepresentation;
-    scaleFactor?: number;
     size?: number;
 };
 
 /**
- * Draws a transformed grid defined by two basis vectors, with a standard grid underneath.
+ * Draws a standard grid on the XY plane.
  */
-export const drawGrid = (parent: ParentObject, options: GridOptions = {}): THREE.Group => {
+export const drawGrid = (parent: ParentObject, options: GridOptions = {}): THREE.GridHelper => {
     const {
-        b1 = new THREE.Vector3(1, 0, 0),
-        b2 = new THREE.Vector3(0, 0, 1), // Default to XZ plane
         gridColor = 0x888888,
-        scaleFactor = 1,
         size = 10,
     } = options;
 
-    const group = new THREE.Group();
-
-    // Standard grid for reference
-    const standardGrid = new THREE.GridHelper(size * 2, size * 2, 0x444444, 0x444444);
-    group.add(standardGrid);
-
-    // Transformed grid lines
-    const material = new THREE.LineBasicMaterial({ color: gridColor });
-    const range = Math.floor(size);
-
-    for (let i = -range; i <= range; i++) {
-        const p1 = b1.clone().multiplyScalar(i).add(b2.clone().multiplyScalar(-range));
-        const p2 = b1.clone().multiplyScalar(i).add(b2.clone().multiplyScalar(range));
-        const geomX = new THREE.BufferGeometry().setFromPoints([p1, p2]);
-        group.add(new THREE.Line(geomX, material));
-
-        const p3 = b2.clone().multiplyScalar(i).add(b1.clone().multiplyScalar(-range));
-        const p4 = b2.clone().multiplyScalar(i).add(b1.clone().multiplyScalar(range));
-        const geomY = new THREE.BufferGeometry().setFromPoints([p3, p4]);
-        group.add(new THREE.Line(geomY, material));
-    }
-
-    group.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    parent.add(group);
-    return group;
+    const grid = new THREE.GridHelper(size * 2, size * 2, gridColor, gridColor);
+    grid.rotation.x = Math.PI / 2;
+    parent.add(grid);
+    return grid;
 };
 
 /**
@@ -211,10 +177,8 @@ export const drawGridInPlane = (parent: ParentObject, options: GridInPlaneOption
 
     const group = new THREE.Group();
 
-    // Create a helper grid
     const grid = new THREE.GridHelper(size * 2, size * 2, gridColor, gridColor);
 
-    // Position and orient the grid to match the plane
     const coplanarPoint = new THREE.Vector3();
     plane.coplanarPoint(coplanarPoint);
     grid.position.copy(coplanarPoint);

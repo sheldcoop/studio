@@ -3,9 +3,8 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
-import { InteractiveScene, AnimationLoop, useThree } from '../three/InteractiveScene';
-import { drawAxes } from '../three/coordinate-system';
-import { drawVector, Vector as VectorClass } from '../three/primitives';
+import { drawAxes, drawGrid } from '../three/coordinate-system';
+import { Vector } from '../three/primitives';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -14,7 +13,7 @@ import { BlockMath } from 'react-katex';
 
 type Matrix2D = { a: number, b: number, c: number, d: number };
 
-const initialMatrix: Matrix2D = { a: 0, b: -1, c: 1, d: 0 }; // 90-degree rotation counter-clockwise
+const initialMatrix: Matrix2D = { a: 0, b: -1, c: 1, d: 0 };
 const initialVector = new THREE.Vector3(2, 1, 0);
 
 const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix: (m: Matrix2D) => void, label: string }) => {
@@ -42,83 +41,96 @@ const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix
     );
 };
 
-function SceneSetup({ animationState }: { animationState: React.MutableRefObject<any>}) {
-    const { scene } = useThree();
-    const vectorRef = useRef<VectorClass | null>(null);
-    
-    // This effect sets up the scene and the animation callback
-    useEffect(() => {
-        if (!scene) return;
-        
-        const group = new THREE.Group();
-        drawAxes(group, { size: 4, tickInterval: 1 });
-        drawVector(group, { origin: new THREE.Vector3(0,0,0), destination: initialVector, color: 0x888888, label: `v = [${initialVector.x}, ${initialVector.y}]` });
-        
-        const animatedVector = new VectorClass(initialVector.clone().normalize(), initialVector.length(), 0xff8a65, undefined, undefined, 'v\'', new THREE.Vector3(0,0,0));
-        vectorRef.current = animatedVector;
-        group.add(animatedVector);
-        scene.add(group);
-
-        // Define the animation logic that will be called by the loop
-        const handleAnimate = (time: number, delta: number) => {
-            if (!animationState.current.isAnimating || !vectorRef.current) return;
-            
-            const duration = animationState.current.duration;
-            animationState.current.progress = Math.min(animationState.current.progress + (delta * 1000), duration);
-            const t = animationState.current.progress / duration;
-            const easedT = easeInOutCubic(t);
-            
-            const currentVec = new THREE.Vector3().lerpVectors(
-                animationState.current.startVector,
-                animationState.current.targetVector,
-                easedT
-            );
-            
-            if (currentVec.length() > 0) {
-                vectorRef.current.setLength(currentVec.length());
-                vectorRef.current.setDirection(currentVec.clone().normalize());
-            }
-
-            if (t >= 1) {
-                animationState.current.isAnimating = false;
-            }
-        };
-
-        // Store the callback on a window object to be picked up by AnimationLoop
-        (window as any).animationCallback = handleAnimate;
-        
-        return () => {
-             // Cleanup scene objects
-            while(scene.children.length > 0){ 
-                scene.remove(scene.children[0]); 
-            }
-            delete (window as any).animationCallback;
-        }
-    }, [scene, animationState]);
-
-    return null;
-}
-
-
 export function VectorRotationAnimation() {
+    const mountRef = useRef<HTMLDivElement>(null);
     const [matrix, setMatrix] = useState<Matrix2D>(initialMatrix);
-    const [transformedVector, setTransformedVector] = useState({x: -1, y: 2}); // Initial transformed state
+    const [transformedVector, setTransformedVector] = useState({x: -1, y: 2});
 
-     // Initialize animationState with the correct initial target vector
     const animationState = useRef({
-        startVector: initialVector.clone(),
-        targetVector: new THREE.Vector3(transformedVector.x, transformedVector.y, 0),
+        startVector: new THREE.Vector3(),
+        targetVector: new THREE.Vector3(-1, 2, 0),
         isAnimating: false,
         progress: 0,
-        duration: 800, // 0.8 second animation
+        duration: 800,
     });
 
+    useEffect(() => {
+        if (!mountRef.current) return;
+        const currentMount = mountRef.current;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 100);
+        camera.position.set(0, 0, 8);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        currentMount.appendChild(renderer.domElement);
+
+        drawAxes(scene, { size: 4, tickInterval: 1 });
+        drawGrid(scene, { size: 4 });
+
+        const staticVector = new Vector(initialVector.clone().normalize(), initialVector.length(), 0x888888, 0.2, 0.1, `v = [${initialVector.x}, ${initialVector.y}]`);
+        scene.add(staticVector);
+        
+        const animatedVector = new Vector(animationState.current.targetVector.clone().normalize(), animationState.current.targetVector.length(), 0xff8a65, 0.2, 0.1, "v'");
+        scene.add(animatedVector);
+
+        const clock = new THREE.Clock();
+        let animationFrameId: number;
+
+        const animate = () => {
+            animationFrameId = requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+
+            if (animationState.current.isAnimating) {
+                animationState.current.progress += delta * 1000;
+                const t = Math.min(animationState.current.progress / animationState.current.duration, 1);
+                const easedT = easeInOutCubic(t);
+
+                const currentVec = new THREE.Vector3().lerpVectors(
+                    animationState.current.startVector,
+                    animationState.current.targetVector,
+                    easedT
+                );
+                
+                if (currentVec.length() > 0.001) {
+                    animatedVector.setDirection(currentVec.clone().normalize());
+                }
+                animatedVector.setLength(currentVec.length());
+
+                if (t >= 1) {
+                    animationState.current.isAnimating = false;
+                }
+            }
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        const handleResize = () => {
+            if (currentMount) {
+                camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            cancelAnimationFrame(animationFrameId);
+            currentMount.removeChild(renderer.domElement);
+            renderer.dispose();
+        };
+    }, []);
+    
     // Apply the very first transformation on component mount
     useEffect(() => {
         handleApply();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
 
     const handleApply = () => {
         if (animationState.current.isAnimating) return;
@@ -129,16 +141,14 @@ export function VectorRotationAnimation() {
         
         setTransformedVector({ x: transformedX, y: transformedY });
         
-        // The current position of the vector is needed to start the animation smoothly
-        const startVec = animationState.current.targetVector.clone();
+        const currentAnimatedVector = new THREE.Vector3().copy(animationState.current.targetVector);
 
-        animationState.current.startVector.copy(startVec);
+        animationState.current.startVector.copy(currentAnimatedVector);
         animationState.current.targetVector.copy(target);
         animationState.current.isAnimating = true;
         animationState.current.progress = 0;
     };
-    
-    // A function to reset the state of the component
+
     const resetState = () => {
       setMatrix(initialMatrix);
       
@@ -158,16 +168,7 @@ export function VectorRotationAnimation() {
     
     return (
         <div className="w-full">
-            <div className="relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-background">
-                <InteractiveScene cameraPosition={new THREE.Vector3(0, 0, 8)}>
-                    <SceneSetup animationState={animationState} />
-                    <AnimationLoop callback={(time, delta) => {
-                        if ((window as any).animationCallback) {
-                            (window as any).animationCallback(time, delta);
-                        }
-                    }} />
-                </InteractiveScene>
-            </div>
+            <div ref={mountRef} className="relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-background"></div>
 
             <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 mt-4 p-4 rounded-md border bg-muted/50">
                 <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Matrix (M)" />

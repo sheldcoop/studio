@@ -8,10 +8,9 @@ interface InteractiveVisualizationWrapperProps {
   title: string;
   description: string;
   children: ReactNode;
-  controls?: ReactNode;
 }
 
-export function InteractiveVisualizationWrapper({ title, description, children, controls }: InteractiveVisualizationWrapperProps) {
+export function InteractiveVisualizationWrapper({ title, description, children }: InteractiveVisualizationWrapperProps) {
   return (
     <Card>
       <CardHeader>
@@ -20,11 +19,6 @@ export function InteractiveVisualizationWrapper({ title, description, children, 
       </CardHeader>
       <CardContent>
         {children}
-        {controls && (
-            <div className="mt-4 flex justify-center gap-8">
-                {controls}
-            </div>
-        )}
       </CardContent>
     </Card>
   )
