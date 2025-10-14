@@ -1,14 +1,13 @@
 
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { Label } from '@/components/ui/label';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { BlockMath } from 'react-katex';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
-import { drawAxes } from '../three/coordinate-system';
 
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
@@ -18,7 +17,7 @@ export function InteractiveMatrixTransformation() {
 
     // Store three.js objects in refs to persist across re-renders
     const sceneRef = useRef<THREE.Scene | null>(null);
-    const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+    const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
     const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
     const animationFrameIdRef = useRef<number>();
 
@@ -37,8 +36,18 @@ export function InteractiveMatrixTransformation() {
         // Scene and Camera
         const scene = new THREE.Scene();
         sceneRef.current = scene;
-        const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 100);
-        camera.position.set(0, 0, 8);
+
+        const aspect = currentMount.clientWidth / currentMount.clientHeight;
+        const frustumSize = 12;
+        const camera = new THREE.OrthographicCamera(
+            frustumSize * aspect / -2,
+            frustumSize * aspect / 2,
+            frustumSize / 2,
+            frustumSize / -2,
+            0.1,
+            100
+        );
+        camera.position.set(0, 0, 10);
         cameraRef.current = camera;
         
         // Renderer
@@ -54,33 +63,22 @@ export function InteractiveMatrixTransformation() {
             renderer.dispose();
         });
 
-        // Axes and Grid
-        const axesGroup = drawAxes(scene, { size: 5, showLabels: true, tickInterval: 1 });
-        const gridHelper = new THREE.GridHelper(10, 10, 0x888888, 0x444444);
+        // Grid
+        const gridHelper = new THREE.GridHelper(frustumSize * 2, frustumSize * 2, 0x888888, 0x444444);
         gridHelper.rotation.x = Math.PI / 2;
         scene.add(gridHelper);
         cleanupFunctions.push(() => {
-            scene.remove(axesGroup);
             scene.remove(gridHelper);
-            axesGroup.children.forEach(child => {
-                if (child instanceof THREE.Line || child instanceof THREE.ArrowHelper || child instanceof THREE.Sprite) {
-                    (child as any).geometry?.dispose();
-                    (child as any).material?.dispose();
-                }
-            });
             gridHelper.geometry.dispose();
             (gridHelper.material as THREE.Material).dispose();
         });
-
 
         // Basis Vectors
         iHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.2, 0.1); // Red
         jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.2, 0.1); // Green
         
         // Main Draggable Vector
-        const dirV = new THREE.Vector3(2, 1, 0).normalize();
-        const lenV = new THREE.Vector3(2, 1, 0).length();
-        vectorVRef.current = new THREE.ArrowHelper(dirV, new THREE.Vector3(0,0,0), lenV, 0xffffff, lenV * 0.15, lenV * 0.1);
+        vectorVRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xffffff, 0.2, 0.1);
         
         scene.add(iHatRef.current, jHatRef.current, vectorVRef.current);
         
@@ -106,10 +104,14 @@ export function InteractiveMatrixTransformation() {
 
         // Resize Listener
         const handleResize = () => {
-            if (currentMount) {
-              camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-              camera.updateProjectionMatrix();
-              renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+            if (currentMount && cameraRef.current && rendererRef.current) {
+                const aspect = currentMount.clientWidth / currentMount.clientHeight;
+                cameraRef.current.left = frustumSize * aspect / -2;
+                cameraRef.current.right = frustumSize * aspect / 2;
+                cameraRef.current.top = frustumSize / 2;
+                cameraRef.current.bottom = frustumSize / -2;
+                cameraRef.current.updateProjectionMatrix();
+                rendererRef.current.setSize(currentMount.clientWidth, currentMount.clientHeight);
             }
         };
         window.addEventListener('resize', handleResize);
@@ -127,7 +129,8 @@ export function InteractiveMatrixTransformation() {
             }
         };
 
-    }, [theme]); // Rerun only if the theme changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [theme]);
 
     // This useEffect hook is for updating the vector when state changes
     useEffect(() => {
