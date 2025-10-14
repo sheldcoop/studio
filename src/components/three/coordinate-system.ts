@@ -30,8 +30,14 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
     };
 
     for (const [axisName, axis] of Object.entries(axes)) {
-        const arrow = new THREE.ArrowHelper(axis.dir, new THREE.Vector3(0,0,0), size, axis.color, 0.5, 0.2);
-        group.add(arrow);
+        // Main axis line
+        const endPoint = axis.dir.clone().multiplyScalar(size);
+        const startPoint = axis.dir.clone().multiplyScalar(-size);
+        const lineGeom = new THREE.BufferGeometry().setFromPoints([startPoint, endPoint]);
+        const lineMat = new THREE.LineBasicMaterial({ color: axis.color });
+        const line = new THREE.Line(lineGeom, lineMat);
+        group.add(line);
+
 
         if (showLabels) {
             const axisLabelSprite = createLabel(axis.label, axis.color, 0.5);

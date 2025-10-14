@@ -8,6 +8,8 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { BlockMath } from 'react-katex';
 import { makeObjectsDraggable, mouseToWorld } from '@/components/three/interactivity';
+import { drawAxes } from '../three/coordinate-system';
+import { Vector as VectorClass } from '../three/primitives';
 
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
@@ -23,7 +25,7 @@ export function InteractiveMatrixTransformation() {
 
     const iHatRef = useRef<THREE.ArrowHelper | null>(null);
     const jHatRef = useRef<THREE.ArrowHelper | null>(null);
-    const vectorVRef = useRef<THREE.ArrowHelper | null>(null);
+    const vectorVRef = useRef<VectorClass | null>(null);
 
     // This useCallback will handle the entire scene setup
     const setupScene = useCallback(() => {
@@ -31,10 +33,6 @@ export function InteractiveMatrixTransformation() {
 
         const currentMount = mountRef.current;
         const cleanupFunctions: (() => void)[] = [];
-
-        const computedStyle = getComputedStyle(document.documentElement);
-        const primaryColor = new THREE.Color(computedStyle.getPropertyValue('--primary').trim());
-        const mutedColor = new THREE.Color(computedStyle.getPropertyValue('--muted-foreground').trim());
 
         // Scene and Camera
         const scene = new THREE.Scene();
@@ -56,23 +54,16 @@ export function InteractiveMatrixTransformation() {
             renderer.dispose();
         });
 
-        // Grid
-        const grid = new THREE.GridHelper(10, 10, mutedColor, mutedColor);
-        grid.rotation.x = Math.PI / 2;
-        (grid.material as THREE.LineBasicMaterial).transparent = true;
-        (grid.material as THREE.LineBasicMaterial).opacity = 0.25;
-        scene.add(grid);
+        // Axes with labels
+        const axesGroup = drawAxes(scene, { size: 5, showLabels: true, tickInterval: 1 });
         cleanupFunctions.push(() => {
-            grid.geometry.dispose();
-            (grid.material as THREE.Material).dispose();
-        });
-        
-        // Axes
-        const axesHelper = new THREE.AxesHelper(5);
-        scene.add(axesHelper);
-        cleanupFunctions.push(() => {
-            axesHelper.geometry.dispose();
-            (axesHelper.material as THREE.Material).dispose();
+            scene.remove(axesGroup);
+            axesGroup.children.forEach(child => {
+                if (child instanceof THREE.Line || child instanceof THREE.ArrowHelper) {
+                    child.geometry.dispose();
+                    (child.material as THREE.Material).dispose();
+                }
+            });
         });
 
 
@@ -84,23 +75,14 @@ export function InteractiveMatrixTransformation() {
         // Main Draggable Vector
         const dir = vector.clone().normalize();
         const len = vector.length();
-        vectorVRef.current = new THREE.ArrowHelper(dir, new THREE.Vector3(0, 0, 0), len, primaryColor, 0.4, 0.2);
+        vectorVRef.current = new VectorClass(dir, len, 'hsl(var(--primary))', len * 0.2, len * 0.1, 'v');
         scene.add(vectorVRef.current);
         
         // Interactivity
         const onDrag = (obj: THREE.Object3D, pos: THREE.Vector3) => {
             const newVector = pos.clone();
+            newVector.z = 0; // Keep it in the 2D plane
             setVector(newVector);
-
-            if (vectorVRef.current) {
-                const length = newVector.length();
-                if (length > 0.1) { // Prevent normalization of zero vector
-                    vectorVRef.current.setDirection(newVector.clone().normalize());
-                    vectorVRef.current.setLength(length);
-                } else {
-                    vectorVRef.current.setLength(0);
-                }
-            }
         };
 
         const cleanupDrag = makeObjectsDraggable(vectorVRef.current, camera, renderer.domElement, { onDrag });
@@ -119,7 +101,7 @@ export function InteractiveMatrixTransformation() {
         
         return cleanupFunctions;
 
-    }, [theme, vector]); // Re-run setup if theme or vector changes from external source
+    }, [theme]); // Only re-run setup if theme changes
 
     useEffect(() => {
         const cleanupFunctions = setupScene();
@@ -127,6 +109,15 @@ export function InteractiveMatrixTransformation() {
         const animate = () => {
             animationFrameIdRef.current = requestAnimationFrame(animate);
             if (rendererRef.current && sceneRef.current && cameraRef.current) {
+                 if (vectorVRef.current) {
+                    const length = vector.length();
+                    if (length > 0.01) {
+                        vectorVRef.current.setDirection(vector.clone().normalize());
+                        vectorVRef.current.setLength(length, length * 0.2, length * 0.1);
+                    } else {
+                        vectorVRef.current.setLength(0);
+                    }
+                }
                 rendererRef.current.render(sceneRef.current, cameraRef.current);
             }
         };
@@ -138,14 +129,13 @@ export function InteractiveMatrixTransformation() {
                 cancelAnimationFrame(animationFrameIdRef.current);
             }
             cleanupFunctions.forEach(fn => fn());
-            // Clear the mount point
             if (mountRef.current) {
                 while (mountRef.current.firstChild) {
                     mountRef.current.removeChild(mountRef.current.firstChild);
                 }
             }
         };
-    }, [setupScene]);
+    }, [setupScene, vector]);
 
 
     return (
