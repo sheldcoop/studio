@@ -1,33 +1,6 @@
 
 import * as THREE from 'three';
-
-// A helper to create text labels as sprites
-const createLabel = (text: string, color: THREE.ColorRepresentation, scale: number) => {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    if (!context) return null;
-
-    const fontSize = 64;
-    context.font = `bold ${fontSize}px Arial`;
-    const metrics = context.measureText(text);
-    canvas.width = metrics.width;
-    canvas.height = fontSize * 1.2;
-
-    context.font = `bold ${fontSize}px Arial`;
-    context.fillStyle = new THREE.Color(color).getStyle();
-    context.fillText(text, 0, fontSize);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-
-    const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
-    const sprite = new THREE.Sprite(material);
-    
-    // Scale the sprite based on its texture dimensions and the global scale factor
-    sprite.scale.set(canvas.width / 100 * scale, canvas.height / 100 * scale, 1);
-    
-    return sprite;
-};
+import { createLabel } from './ui-helpers';
 
 type BaseOptions = {
     color?: THREE.ColorRepresentation;
