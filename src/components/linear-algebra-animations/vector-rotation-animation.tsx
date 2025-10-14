@@ -50,19 +50,22 @@ function SceneSetup({ animationState }: { animationState: React.MutableRefObject
     useEffect(() => {
         if (!scene) return;
         
-        drawAxes(scene, { size: 4, tickInterval: 1 });
-        drawVector(scene, { origin: new THREE.Vector3(0,0,0), destination: initialVector, color: 0x888888, label: `v = [${initialVector.x}, ${initialVector.y}]` });
+        const group = new THREE.Group();
+        drawAxes(group, { size: 4, tickInterval: 1 });
+        drawVector(group, { origin: new THREE.Vector3(0,0,0), destination: initialVector, color: 0x888888, label: `v = [${initialVector.x}, ${initialVector.y}]` });
         
         const animatedVector = new VectorClass(initialVector.clone().normalize(), initialVector.length(), 0xff8a65, undefined, undefined, 'v\'', new THREE.Vector3(0,0,0));
         vectorRef.current = animatedVector;
-        scene.add(animatedVector);
+        group.add(animatedVector);
+        scene.add(group);
 
         // Define the animation logic that will be called by the loop
         const handleAnimate = (time: number, delta: number) => {
             if (!animationState.current.isAnimating || !vectorRef.current) return;
             
-            animationState.current.progress += delta;
-            const t = Math.min(animationState.current.progress / animationState.current.duration, 1);
+            const duration = animationState.current.duration;
+            animationState.current.progress = Math.min(animationState.current.progress + (delta * 1000), duration);
+            const t = animationState.current.progress / duration;
             const easedT = easeInOutCubic(t);
             
             const currentVec = new THREE.Vector3().lerpVectors(
@@ -99,15 +102,23 @@ function SceneSetup({ animationState }: { animationState: React.MutableRefObject
 
 export function VectorRotationAnimation() {
     const [matrix, setMatrix] = useState<Matrix2D>(initialMatrix);
-    const [transformedVector, setTransformedVector] = useState(initialVector.clone());
+    const [transformedVector, setTransformedVector] = useState({x: -1, y: 2}); // Initial transformed state
 
+     // Initialize animationState with the correct initial target vector
     const animationState = useRef({
         startVector: initialVector.clone(),
-        targetVector: initialVector.clone(),
+        targetVector: new THREE.Vector3(transformedVector.x, transformedVector.y, 0),
         isAnimating: false,
         progress: 0,
         duration: 800, // 0.8 second animation
     });
+
+    // Apply the very first transformation on component mount
+    useEffect(() => {
+        handleApply();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
 
     const handleApply = () => {
         if (animationState.current.isAnimating) return;
@@ -116,7 +127,7 @@ export function VectorRotationAnimation() {
         const transformedY = matrix.c * initialVector.x + matrix.d * initialVector.y;
         const target = new THREE.Vector3(transformedX, transformedY, 0);
         
-        setTransformedVector(target);
+        setTransformedVector({ x: transformedX, y: transformedY });
         
         // The current position of the vector is needed to start the animation smoothly
         const startVec = animationState.current.targetVector.clone();
@@ -130,11 +141,19 @@ export function VectorRotationAnimation() {
     // A function to reset the state of the component
     const resetState = () => {
       setMatrix(initialMatrix);
-      setTransformedVector(initialVector);
-      animationState.current.targetVector.copy(initialVector);
-      if ((window as any).startVectorAnimation) {
-            (window as any).startVectorAnimation(initialMatrix);
-      }
+      
+      const target = new THREE.Vector3(
+        initialMatrix.a * initialVector.x + initialMatrix.b * initialVector.y,
+        initialMatrix.c * initialVector.x + initialMatrix.d * initialVector.y,
+        0
+      );
+      setTransformedVector({ x: target.x, y: target.y });
+      
+      const startVec = animationState.current.targetVector.clone();
+      animationState.current.startVector.copy(startVec);
+      animationState.current.targetVector.copy(target);
+      animationState.current.isAnimating = true;
+      animationState.current.progress = 0;
     }
     
     return (
