@@ -61,7 +61,7 @@ export default function SpecialMatricesPage() {
         </DefinitionCard>
       </PageSection>
 
-      <PageSection title='4. Symmetric Matrices - "The Quant\'s Favorite"'>
+      <PageSection title="4. Symmetric Matrices - &quot;The Quant's Favorite&quot;">
           <DefinitionCard title="Structure & Importance">
             <p>A symmetric matrix is a square matrix that is unchanged by a transpose. In other words, <InlineMath math="A = A^T" />.</p>
             <BlockMath math="A = \begin{bmatrix} 1 & 5 & -2 \\ 5 & 8 & 4 \\ -2 & 4 & 0 \end{bmatrix}" />
