@@ -166,9 +166,10 @@ export class Vector extends THREE.ArrowHelper {
 
     private updateLabelPosition() {
         if (this.label) {
-            // Position label at the tip of the arrow
-            const tipPosition = this.position.clone().add(this.getDirection(new THREE.Vector3()).multiplyScalar(this.scale.y));
-             this.label.position.copy(tipPosition).add(new THREE.Vector3(0, this.head.scale.y * 1.5, 0));
+            // Correctly get direction from quaternion
+            const direction = new THREE.Vector3(0, 1, 0).applyQuaternion(this.quaternion);
+            const tipPosition = this.position.clone().add(direction.multiplyScalar(this.scale.y));
+            this.label.position.copy(tipPosition).add(new THREE.Vector3(0, this.head.scale.y * 1.5, 0));
         }
     }
 
