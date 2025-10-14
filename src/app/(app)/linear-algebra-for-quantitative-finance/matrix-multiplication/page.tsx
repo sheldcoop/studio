@@ -1,4 +1,6 @@
 
+'use client';
+
 import { PageHeader } from '@/components/app/page-header';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
@@ -7,6 +9,8 @@ import { PageSection } from '@/components/app/page-section';
 import { PitfallAlert } from '@/components/app/pitfall-alert';
 import { LessonSummaryCard } from '@/components/app/lesson-summary-card';
 import { NextUpNavigation } from '@/components/app/next-up-navigation';
+import { InteractiveVisualizationWrapper } from '@/components/app/interactive-visualization-wrapper';
+import { MatrixMultiplicationAnimation } from '@/components/app/matrix-multiplication-animation';
 
 export default function MatrixMultiplicationPage() {
   return (
@@ -30,6 +34,14 @@ export default function MatrixMultiplicationPage() {
         <p className="prose prose-invert max-w-none">Yes. That new matrix <InlineMath math="M" /> is the <strong>product</strong> of <InlineMath math="Shear" /> and <InlineMath math="Rot" />.</p>
         <BlockMath math="M = Shear \cdot Rot" />
         <p className="prose prose-invert max-w-none font-semibold">Matrix multiplication is the composition of linear transformations. It's how we combine multiple transformations into a single, equivalent one.</p>
+        
+        <InteractiveVisualizationWrapper
+          title="Visualizing Transformation Composition"
+          description="Define two matrices, A and B. Apply them sequentially to the grid, then apply their product C = AB to see that the final result is the same."
+        >
+          <MatrixMultiplicationAnimation />
+        </InteractiveVisualizationWrapper>
+        
         <PitfallAlert title="Order Matters! AB ≠ BA">
             <p>Thinking about transformations makes it immediately obvious why the order of matrix multiplication is critical. Rotating then shearing gives you one result. Shearing then rotating gives you a completely different result! This is why, in general, <InlineMath math="AB" /> is not the same as <InlineMath math="BA" />. Matrix multiplication is <strong>not commutative</strong>.</p>
         </PitfallAlert>
