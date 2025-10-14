@@ -4,17 +4,45 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { Label } from '@/components/ui/label';
-import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { BlockMath } from 'react-katex';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { createLabel } from '../three/ui-helpers';
+import { Input } from '../ui/input';
+
+type Matrix2D = { a: number, b: number, c: number, d: number };
+
+const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix: (m: Matrix2D) => void, label: string }) => {
+    const handleChange = (key: keyof Matrix2D, value: string) => {
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+            setMatrix({ ...matrix, [key]: numValue });
+        }
+    };
+
+    return (
+        <div className="space-y-2 text-center">
+            <Label className="font-semibold">{label}</Label>
+            <div className="flex justify-center items-center gap-2">
+                <div className="text-4xl font-thin">[</div>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 w-24">
+                    <Input className="h-8 text-center" type="text" value={matrix.a} onChange={e => handleChange('a', e.target.value)} />
+                    <Input className="h-8 text-center" type="text" value={matrix.b} onChange={e => handleChange('b', e.target.value)} />
+                    <Input className="h-8 text-center" type="text" value={matrix.c} onChange={e => handleChange('c', e.target.value)} />
+                    <Input className="h-8 text-center" type="text" value={matrix.d} onChange={e => handleChange('d', e.target.value)} />
+                </div>
+                 <div className="text-4xl font-thin">]</div>
+            </div>
+        </div>
+    );
+};
+
 
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
-    const { theme } = useTheme();
-
+    
     const [vector, setVector] = useState(new THREE.Vector3(2, 1, 0));
+    const [matrix, setMatrix] = useState<Matrix2D>({ a: 1, b: 1, c: 0, d: 1 }); // Default to a shear
 
     // Store three.js objects in refs to persist across re-renders
     const sceneRef = useRef<THREE.Scene | null>(null);
@@ -25,8 +53,12 @@ export function InteractiveMatrixTransformation() {
     // Refs for the arrow helpers
     const iHatRef = useRef<THREE.ArrowHelper | null>(null);
     const jHatRef = useRef<THREE.ArrowHelper | null>(null);
+    const iHatTransformedRef = useRef<THREE.ArrowHelper | null>(null);
+    const jHatTransformedRef = useRef<THREE.ArrowHelper | null>(null);
     const vectorVRef = useRef<THREE.ArrowHelper | null>(null);
+    const vectorTransformedRef = useRef<THREE.ArrowHelper | null>(null);
     const vectorLabelRef = useRef<THREE.Sprite | null>(null);
+    const vectorTransformedLabelRef = useRef<THREE.Sprite | null>(null);
 
     // This useEffect hook is for one-time scene setup.
     useEffect(() => {
@@ -66,7 +98,7 @@ export function InteractiveMatrixTransformation() {
         });
         
         // Grid
-        const gridHelper = new THREE.GridHelper(100, 50); // size, divisions
+        const gridHelper = new THREE.GridHelper(50, 25);
         gridHelper.rotation.x = Math.PI / 2;
         scene.add(gridHelper);
         cleanupFunctions.push(() => {
@@ -77,21 +109,27 @@ export function InteractiveMatrixTransformation() {
 
 
         // Basis Vectors
-        iHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.2, 0.1); // Red
-        jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.2, 0.1); // Green
+        iHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.2, 0.1); 
+        jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.2, 0.1);
         
+        // Transformed Basis Vectors
+        iHatTransformedRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xffcdd2, 0.2, 0.1); // Lighter red
+        jHatTransformedRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0xc8e6c9, 0.2, 0.1); // Lighter green
+
         // Main Draggable Vector
         vectorVRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xffffff, 0.25, 0.15);
+        vectorTransformedRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xffb74d, 0.25, 0.15); // Orange
+
+        // Vector Labels
+        vectorLabelRef.current = createLabel(`v`, '#ffffff');
+        vectorTransformedLabelRef.current = createLabel(`v'`, '#ffb74d');
         
-        // Vector Label
-        vectorLabelRef.current = createLabel(`[${vector.x.toFixed(2)}, ${vector.y.toFixed(2)}]`, '#ffffff', 0.4);
-        
-        scene.add(iHatRef.current, jHatRef.current, vectorVRef.current, vectorLabelRef.current);
+        scene.add(iHatRef.current, jHatRef.current, iHatTransformedRef.current, jHatTransformedRef.current, vectorVRef.current, vectorTransformedRef.current, vectorLabelRef.current, vectorTransformedLabelRef.current);
         
         // Interactivity
         const onDrag = (obj: THREE.Object3D, pos: THREE.Vector3) => {
             const newVector = pos.clone();
-            newVector.z = 0; // Keep it in the 2D plane
+            newVector.z = 0; 
             setVector(newVector);
         };
         
@@ -138,45 +176,80 @@ export function InteractiveMatrixTransformation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // This useEffect hook is for updating the vector and its label when state changes
+    // This useEffect hook updates the visualization when state changes
     useEffect(() => {
-        if (vectorVRef.current) {
+        // Original vector `v`
+        if (vectorVRef.current && vectorLabelRef.current) {
             const length = vector.length();
             if (length > 0.01) {
                 vectorVRef.current.setDirection(vector.clone().normalize());
-                // Use constant head size
                 vectorVRef.current.setLength(length, 0.25, 0.15);
             } else {
-                vectorVRef.current.setLength(0, 0, 0); // Hide vector if it's at the origin
+                vectorVRef.current.setLength(0, 0, 0); 
             }
+            vectorLabelRef.current.position.copy(vector).add(new THREE.Vector3(0.5, 0.5, 0));
         }
-        if (vectorLabelRef.current) {
-            // Recreate label texture to update text
-            const newLabelText = `[${vector.x.toFixed(2)}, ${vector.y.toFixed(2)}]`;
-            const newLabelSprite = createLabel(newLabelText, '#ffffff', 0.4);
-            
-            // Dispose of the old texture to prevent memory leaks
-            if (vectorLabelRef.current.material.map) {
-                vectorLabelRef.current.material.map.dispose();
+
+        // Transformed basis vectors i' and j'
+        const iHatPrime = new THREE.Vector3(matrix.a, matrix.c, 0);
+        const jHatPrime = new THREE.Vector3(matrix.b, matrix.d, 0);
+
+        if (iHatTransformedRef.current) {
+            const len = iHatPrime.length();
+            iHatTransformedRef.current.setDirection(iHatPrime.clone().normalize());
+            iHatTransformedRef.current.setLength(len, 0.2, 0.1);
+        }
+        if (jHatTransformedRef.current) {
+             const len = jHatPrime.length();
+            jHatTransformedRef.current.setDirection(jHatPrime.clone().normalize());
+            jHatTransformedRef.current.setLength(len, 0.2, 0.1);
+        }
+
+        // Transformed vector v'
+        const transformedVector = new THREE.Vector3(
+            vector.x * matrix.a + vector.y * matrix.b,
+            vector.x * matrix.c + vector.y * matrix.d,
+            0
+        );
+        if (vectorTransformedRef.current && vectorTransformedLabelRef.current) {
+            const length = transformedVector.length();
+            if (length > 0.01) {
+                vectorTransformedRef.current.setDirection(transformedVector.clone().normalize());
+                vectorTransformedRef.current.setLength(length, 0.25, 0.15);
+            } else {
+                vectorTransformedRef.current.setLength(0, 0, 0);
             }
-            
-            vectorLabelRef.current.material.map = newLabelSprite.material.map;
-            vectorLabelRef.current.position.set(vector.x, vector.y, 0).add(new THREE.Vector3(0.5, 0.5, 0));
+            vectorTransformedLabelRef.current.position.copy(transformedVector).add(new THREE.Vector3(0.5, 0.5, 0));
         }
-    }, [vector]);
+
+    }, [vector, matrix]);
 
 
     return (
         <div className="w-full">
             <div ref={mountRef} className={cn("relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing")}></div>
-             <div className="flex justify-center items-center gap-8 mt-4 p-4 rounded-lg border bg-muted/50">
+             <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 mt-4 p-4 rounded-lg border bg-muted/50">
+                 <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Matrix (M)" />
+
+                <div className="text-2xl font-bold text-muted-foreground hidden md:block">×</div>
+
                 <div className="text-center">
                     <Label className="font-semibold">Vector (v)</Label>
                     <div className="font-mono text-lg p-2 mt-2">
                         <BlockMath math={`v = \\begin{bmatrix} ${vector.x.toFixed(2)} \\\\ ${vector.y.toFixed(2)} \\end{bmatrix}`} />
                     </div>
                 </div>
+
+                 <div className="text-2xl font-bold text-muted-foreground">=</div>
+                
+                <div className="text-center">
+                    <Label className="font-semibold text-[#ffb74d]">Result (v')</Label>
+                     <div className="font-mono text-lg p-2 mt-2">
+                        <BlockMath math={`v' = \\begin{bmatrix} ${(matrix.a * vector.x + matrix.b * vector.y).toFixed(2)} \\\\ ${(matrix.c * vector.x + matrix.d * vector.y).toFixed(2)} \\end{bmatrix}`} />
+                    </div>
+                </div>
              </div>
         </div>
     );
 }
+
