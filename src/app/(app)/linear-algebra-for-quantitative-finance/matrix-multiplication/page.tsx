@@ -48,7 +48,7 @@ export default function MatrixMultiplicationPage() {
         
         <InteractiveVisualizationWrapper
           title="Visualizing a Transformation"
-          description="Enter a 2x2 matrix to see how it transforms the vector [1, 2]. Start with the default 90-degree rotation matrix to see why it's called that."
+          description="Enter a 2x2 matrix to see how it transforms the vector v = [2, 1]. Start with the default 90-degree rotation matrix to see why it's called that."
         >
           <VectorRotationAnimation />
         </InteractiveVisualizationWrapper>
