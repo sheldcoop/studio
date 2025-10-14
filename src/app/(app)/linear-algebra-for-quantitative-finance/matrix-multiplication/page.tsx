@@ -14,8 +14,8 @@ import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Dynamically import the animation component with SSR turned off
-const MatrixMultiplicationAnimation = dynamic(
-  () => import('@/components/linear-algebra-animations/matrix-multiplication-animation').then(mod => mod.MatrixMultiplicationAnimation),
+const VectorRotationAnimation = dynamic(
+  () => import('@/components/linear-algebra-animations/vector-rotation-animation').then(mod => mod.VectorRotationAnimation),
   { 
     ssr: false,
     loading: () => <Skeleton className="aspect-video w-full" />
@@ -47,10 +47,10 @@ export default function MatrixMultiplicationPage() {
         <p className="prose prose-invert max-w-none font-semibold">Matrix multiplication is the composition of linear transformations. It's how we combine multiple transformations into a single, equivalent one.</p>
         
         <InteractiveVisualizationWrapper
-          title="Visualizing Transformation Composition"
-          description="Define two matrices, A and B. Apply them sequentially to the grid, then apply their product C = BA to see that the final result is the same."
+          title="Visualizing a Transformation"
+          description="Enter a 2x2 matrix to see how it transforms the vector [1, 2]. Start with the default 90-degree rotation matrix to see why it's called that."
         >
-          <MatrixMultiplicationAnimation />
+          <VectorRotationAnimation />
         </InteractiveVisualizationWrapper>
         
         <PitfallAlert title="Order Matters! AB ≠ BA">
