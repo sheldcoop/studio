@@ -111,7 +111,6 @@ type ArrowOptions = BaseOptions & {
 export const drawArrow = (parent: ParentObject, options: ArrowOptions): THREE.Group => {
     const {
         color = 0xffffff,
-        scaleFactor = 1,
         label,
         origin,
         destination,
@@ -147,48 +146,6 @@ export const drawArrow = (parent: ParentObject, options: ArrowOptions): THREE.Gr
  * This is an alias for drawArrow to make code more readable.
  */
 export const drawVector = drawArrow;
-
-export class Vector extends THREE.ArrowHelper {
-    private label?: THREE.Sprite;
-    private headLengthValue: number;
-
-    constructor(dir: THREE.Vector3, length: number, color?: THREE.ColorRepresentation, headLength?: number, headWidth?: number, labelText?: string, origin: THREE.Vector3 = new THREE.Vector3(0,0,0)) {
-        const hLength = headLength === undefined ? length * 0.2 : headLength;
-        const hWidth = headWidth === undefined ? hLength * 0.2 : headWidth;
-
-        super(dir, origin, length, color, hLength, hWidth);
-        this.headLengthValue = hLength;
-
-        if (labelText) {
-            this.label = createLabel(labelText, color, 0.4);
-            if (this.label) {
-                this.add(this.label); 
-                this.updateLabelPosition();
-            }
-        }
-    }
-
-    private updateLabelPosition() {
-        if (this.label) {
-            const direction = new THREE.Vector3(0, 1, 0).applyQuaternion(this.quaternion);
-            const tipPosition = this.position.clone().add(direction.multiplyScalar(this.scale.y));
-            this.label.position.copy(tipPosition).add(new THREE.Vector3(0, this.headLengthValue * 1.5, 0));
-        }
-    }
-
-    setDirection(dir: THREE.Vector3) {
-        super.setDirection(dir);
-        this.updateLabelPosition();
-    }
-
-    setLength(length: number, headLength?: number, headWidth?: number) {
-        super.setLength(length, headLength, headWidth);
-        if (headLength !== undefined) {
-            this.headLengthValue = headLength;
-        }
-        this.updateLabelPosition();
-    }
-}
 
 type ParallelopipedOptions = BaseOptions & {
     v1: THREE.Vector3;

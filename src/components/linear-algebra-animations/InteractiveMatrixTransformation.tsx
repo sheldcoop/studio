@@ -7,9 +7,8 @@ import { Label } from '@/components/ui/label';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { BlockMath } from 'react-katex';
-import { makeObjectsDraggable, mouseToWorld } from '@/components/three/interactivity';
+import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawAxes } from '../three/coordinate-system';
-import { Vector as VectorClass } from '../three/primitives';
 
 export function InteractiveMatrixTransformation() {
     const mountRef = useRef<HTMLDivElement>(null);
@@ -23,11 +22,11 @@ export function InteractiveMatrixTransformation() {
     const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
     const animationFrameIdRef = useRef<number>();
 
+    // Refs for the arrow helpers
     const iHatRef = useRef<THREE.ArrowHelper | null>(null);
     const jHatRef = useRef<THREE.ArrowHelper | null>(null);
-    const vectorVRef = useRef<VectorClass | null>(null);
+    const vectorVRef = useRef<THREE.ArrowHelper | null>(null);
 
-    // This useCallback will handle the entire scene setup
     const setupScene = useCallback(() => {
         if (!mountRef.current) return [];
 
@@ -70,13 +69,13 @@ export function InteractiveMatrixTransformation() {
         // Basis Vectors
         iHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.3, 0.15); // Red
         jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.3, 0.15); // Green
-        scene.add(iHatRef.current, jHatRef.current);
         
         // Main Draggable Vector
-        const dir = vector.clone().normalize();
-        const len = vector.length();
-        vectorVRef.current = new VectorClass(dir, len, 'hsl(var(--primary))', len * 0.2, len * 0.1, 'v');
-        scene.add(vectorVRef.current);
+        const dirV = vector.clone().normalize();
+        const lenV = vector.length();
+        vectorVRef.current = new THREE.ArrowHelper(dirV, new THREE.Vector3(0,0,0), lenV, 0xffffff, lenV * 0.15, lenV * 0.1);
+        
+        scene.add(iHatRef.current, jHatRef.current, vectorVRef.current);
         
         // Interactivity
         const onDrag = (obj: THREE.Object3D, pos: THREE.Vector3) => {
@@ -84,7 +83,8 @@ export function InteractiveMatrixTransformation() {
             newVector.z = 0; // Keep it in the 2D plane
             setVector(newVector);
         };
-
+        
+        // Only make the main vector draggable
         const cleanupDrag = makeObjectsDraggable(vectorVRef.current, camera, renderer.domElement, { onDrag });
         cleanupFunctions.push(cleanupDrag);
         
@@ -101,7 +101,7 @@ export function InteractiveMatrixTransformation() {
         
         return cleanupFunctions;
 
-    }, [theme]); // Only re-run setup if theme changes
+    }, [theme]);
 
     useEffect(() => {
         const cleanupFunctions = setupScene();
@@ -113,9 +113,10 @@ export function InteractiveMatrixTransformation() {
                     const length = vector.length();
                     if (length > 0.01) {
                         vectorVRef.current.setDirection(vector.clone().normalize());
-                        vectorVRef.current.setLength(length, length * 0.2, length * 0.1);
+                        vectorVRef.current.setLength(length, length * 0.15, length * 0.1);
                     } else {
-                        vectorVRef.current.setLength(0);
+                        // If vector is at origin, just hide it by setting length to 0
+                        vectorVRef.current.setLength(0,0,0);
                     }
                 }
                 rendererRef.current.render(sceneRef.current, cameraRef.current);
