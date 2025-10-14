@@ -54,6 +54,7 @@ export function InteractiveMatrixTransformation() {
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
+        rendererRef.current = renderer;
         currentMount.appendChild(renderer.domElement);
         cleanupFunctions.push(() => {
             if (renderer.domElement.parentElement === currentMount) {
@@ -61,7 +62,7 @@ export function InteractiveMatrixTransformation() {
             }
             renderer.dispose();
         });
-
+        
         // Grid
         const gridHelper = new THREE.GridHelper(frustumSize * 2, frustumSize * 2, 0x888888, 0x444444);
         scene.add(gridHelper);
@@ -71,12 +72,13 @@ export function InteractiveMatrixTransformation() {
             (gridHelper.material as THREE.Material).dispose();
         });
 
+
         // Basis Vectors
         iHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xf44336, 0.2, 0.1); // Red
         jHatRef.current = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x4caf50, 0.2, 0.1); // Green
         
         // Main Draggable Vector
-        vectorVRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xffffff, 0.2, 0.15);
+        vectorVRef.current = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xffffff, 0.25, 0.15);
         
         scene.add(iHatRef.current, jHatRef.current, vectorVRef.current);
         
@@ -136,7 +138,6 @@ export function InteractiveMatrixTransformation() {
             const length = vector.length();
             if (length > 0.01) {
                 vectorVRef.current.setDirection(vector.clone().normalize());
-                // Use constant head size to prevent scaling issues
                 vectorVRef.current.setLength(length, 0.25, 0.15);
             } else {
                 vectorVRef.current.setLength(0, 0, 0); // Hide vector if it's at the origin
