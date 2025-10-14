@@ -10,11 +10,13 @@ import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { createLabel } from '../three/ui-helpers';
 import { drawTransformedGrid } from '../three/transformation';
 import { Button } from '../ui/button';
+import { easeInOutCubic } from '../three/animation';
 
 // A simple extension to make updating arrows easier
 class VectorArrow extends THREE.ArrowHelper {
     public labelSprite: THREE.Sprite | null = null;
-    
+    public coordLabelSprite: THREE.Sprite | null = null;
+
     constructor(dir: THREE.Vector3, origin: THREE.Vector3, length: number, color: THREE.ColorRepresentation, headLength?: number, headWidth?: number) {
         super(dir, origin, length, color, headLength, headWidth);
     }
@@ -27,11 +29,25 @@ class VectorArrow extends THREE.ArrowHelper {
         this.add(this.labelSprite);
         this.updateLabelPosition();
     }
+    
+    setCoordsLabel(coords: THREE.Vector3, color: THREE.ColorRepresentation) {
+        if (this.coordLabelSprite) {
+            this.remove(this.coordLabelSprite);
+        }
+        const text = `(${coords.x.toFixed(2)}, ${coords.y.toFixed(2)})`;
+        this.coordLabelSprite = createLabel(text, color, 0.35);
+        this.add(this.coordLabelSprite);
+        this.updateLabelPosition();
+    }
 
     updateLabelPosition() {
         if (this.labelSprite) {
-            const offset = new THREE.Vector3(this.cone.position.x, this.cone.position.y, 0).normalize().multiplyScalar(0.5);
+            const offset = new THREE.Vector3(this.cone.position.x, this.cone.position.y, 0).normalize().multiplyScalar(0.7);
             this.labelSprite.position.copy(this.cone.position).add(offset);
+        }
+        if (this.coordLabelSprite) {
+            const offset = new THREE.Vector3(this.cone.position.x, this.cone.position.y, 0).normalize().multiplyScalar(0.4);
+            this.coordLabelSprite.position.copy(this.cone.position).add(offset);
         }
     }
 
@@ -65,6 +81,7 @@ const drawLinearCombinationHelpers = (scene: THREE.Scene, b1: THREE.Vector3, b2:
     return group;
 }
 
+
 const initialB1 = new THREE.Vector3(1.5, 0.5, 0);
 const initialB2 = new THREE.Vector3(-0.5, 1, 0);
 
@@ -76,6 +93,7 @@ export function InteractiveMatrixTransformation() {
     const [b1Pos, setB1Pos] = useState(initialB1.clone());
     const [b2Pos, setB2Pos] = useState(initialB2.clone());
     const [vectorV, setVectorV] = useState(new THREE.Vector3(0, 0, 0));
+    const [determinant, setDeterminant] = useState(0);
 
     // Refs for three.js objects
     const sceneRef = useRef<THREE.Scene | null>(null);
@@ -195,8 +213,11 @@ export function InteractiveMatrixTransformation() {
     useEffect(() => {
         const v = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
         setVectorV(v);
+        
+        const det = b1Pos.x * b2Pos.y - b1Pos.y * b2Pos.x;
+        setDeterminant(det);
 
-        const updateArrow = (arrow: VectorArrow | null, vector: THREE.Vector3) => {
+        const updateArrow = (arrow: VectorArrow | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string) => {
             if (arrow) {
                 const length = vector.length();
                 if (length > 0.001) {
@@ -205,20 +226,22 @@ export function InteractiveMatrixTransformation() {
                 } else {
                     arrow.setLength(0, 0, 0); // Hide if zero length
                 }
-                arrow.updateLabelPosition();
+                 if(label) arrow.setLabel(label, color);
+                 arrow.setCoordsLabel(vector, color);
+                 arrow.updateLabelPosition();
             }
         }
 
-        updateArrow(b1Ref.current, b1Pos);
-        updateArrow(b2Ref.current, b2Pos);
-        updateArrow(vRef.current, v);
+        updateArrow(b1Ref.current, b1Pos, 0xff8a65, 'b₁');
+        updateArrow(b2Ref.current, b2Pos, 0x69f0ae, 'b₂');
+        updateArrow(vRef.current, v, 0xffffff, 'v');
 
         if (transformedGridRef.current && sceneRef.current) {
             while (transformedGridRef.current.children.length > 0) {
                 const child = transformedGridRef.current.children[0];
                 transformedGridRef.current.remove(child);
-                (child as any).geometry?.dispose();
-                (child as any).material?.dispose();
+                if ((child as any).geometry) (child as any).geometry.dispose();
+                if ((child as any).material) (child as any).material.dispose();
             }
             drawTransformedGrid(transformedGridRef.current, { 
                 matrix: { a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y },
@@ -226,40 +249,61 @@ export function InteractiveMatrixTransformation() {
                 divisions: 25,
                 size: 50
             });
-            transformedGridRef.current.position.z = 0.1; // Prevent z-fighting
+            transformedGridRef.current.position.z = 0.1;
         }
 
         if (combinationHelpersRef.current && sceneRef.current) {
              while (combinationHelpersRef.current.children.length > 0) {
                 const child = combinationHelpersRef.current.children[0];
                 combinationHelpersRef.current.remove(child);
-                (child as any).geometry?.dispose();
-                (child as any).material?.dispose();
+                 if ((child as any).geometry) (child as any).geometry.dispose();
+                if ((child as any).material) (child as any).material.dispose();
             }
             const newHelpers = drawLinearCombinationHelpers(sceneRef.current, b1Pos, b2Pos, coords.x, coords.y);
-            combinationHelpersRef.current.add(newHelpers);
+            combinationHelpersRef.current.add(...newHelpers.children);
         }
         
     }, [coords, b1Pos, b2Pos]);
 
+    const animateTo = (targetB1: THREE.Vector3, targetB2: THREE.Vector3) => {
+        const startB1 = b1Pos.clone();
+        const startB2 = b2Pos.clone();
+        const duration = 500;
+        let startTime: number | null = null;
+    
+        const animate = (time: number) => {
+            if (startTime === null) startTime = time;
+            const progress = Math.min((time - startTime) / duration, 1);
+            const easedProgress = easeInOutCubic(progress);
+    
+            const newB1 = new THREE.Vector3().lerpVectors(startB1, targetB1, easedProgress);
+            const newB2 = new THREE.Vector3().lerpVectors(startB2, targetB2, easedProgress);
+            
+            setB1Pos(newB1);
+            setB2Pos(newB2);
+    
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+        requestAnimationFrame(animate);
+    };
+
+
     const handlePreset = (preset: 'reset' | 'shear' | 'rotate' | 'scale') => {
         switch(preset) {
             case 'shear':
-                setB1Pos(new THREE.Vector3(1, 0, 0));
-                setB2Pos(new THREE.Vector3(1, 1, 0));
+                animateTo(new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 1, 0));
                 break;
             case 'rotate':
-                setB1Pos(new THREE.Vector3(0, 1, 0));
-                setB2Pos(new THREE.Vector3(-1, 0, 0));
+                animateTo(new THREE.Vector3(0, 1, 0), new THREE.Vector3(-1, 0, 0));
                 break;
             case 'scale':
-                 setB1Pos(new THREE.Vector3(2, 0, 0));
-                setB2Pos(new THREE.Vector3(0, 2, 0));
+                 animateTo(new THREE.Vector3(2, 0, 0), new THREE.Vector3(0, 2, 0));
                 break;
             case 'reset':
             default:
-                setB1Pos(initialB1.clone());
-                setB2Pos(initialB2.clone());
+                animateTo(initialB1.clone(), initialB2.clone());
                 setCoords({x: 2.0, y: 1.0});
                 break;
         }
@@ -280,6 +324,9 @@ export function InteractiveMatrixTransformation() {
                                 <div className="text-green-300">{b2Pos.y.toFixed(2)}</div>
                             </div>
                             <div className="text-3xl font-thin">]</div>
+                        </div>
+                         <div className={cn("text-xs mt-1", determinant < 0 ? 'text-red-400' : 'text-muted-foreground')}>
+                            det(M) = {determinant.toFixed(2)}
                         </div>
                     </div>
                 </div>
