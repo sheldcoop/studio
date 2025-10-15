@@ -83,14 +83,14 @@ const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix
         <div className="space-y-2 text-center">
             <Label className="font-semibold">{label}</Label>
             <div className="flex justify-center items-center gap-2">
-                <div className="text-4xl font-thin">[</div>
-                <div className="grid grid-cols-2 gap-x-2 gap-y-1 w-28">
-                    <Input className="h-8 text-center" type="text" value={matrix.a.toFixed(2)} onChange={e => handleChange('a', e.target.value)} />
-                    <Input className="h-8 text-center" type="text" value={matrix.b.toFixed(2)} onChange={e => handleChange('b', e.target.value)} />
-                    <Input className="h-8 text-center" type="text" value={matrix.c.toFixed(2)} onChange={e => handleChange('c', e.target.value)} />
-                    <Input className="h-8 text-center" type="text" value={matrix.d.toFixed(2)} onChange={e => handleChange('d', e.target.value)} />
+                <div className="text-5xl font-thin text-muted-foreground">[</div>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 w-32 text-center">
+                    <Input className="h-9 text-center border-orange-400/50" type="text" value={matrix.a.toFixed(2)} onChange={e => handleChange('a', e.target.value)} />
+                    <Input className="h-9 text-center border-green-300/50" type="text" value={matrix.b.toFixed(2)} onChange={e => handleChange('b', e.target.value)} />
+                    <Input className="h-9 text-center border-orange-400/50" type="text" value={matrix.c.toFixed(2)} onChange={e => handleChange('c', e.target.value)} />
+                    <Input className="h-9 text-center border-green-300/50" type="text" value={matrix.d.toFixed(2)} onChange={e => handleChange('d', e.target.value)} />
                 </div>
-                 <div className="text-4xl font-thin">]</div>
+                 <div className="text-5xl font-thin text-muted-foreground">]</div>
             </div>
         </div>
     );
@@ -316,7 +316,6 @@ export function Determinant2DAnimation() {
                 arrow.setDirectionAndLength(length > 0.001 ? vector.clone().normalize() : new THREE.Vector3(1,0,0), length);
                 if (label) arrow.setLabel(label, color);
 
-                // Only show coordinate label if not at origin
                 if (length > 0.1) {
                     arrow.setCoordsLabel(vector, color);
                 } else if (arrow.coordLabelSprite) {
