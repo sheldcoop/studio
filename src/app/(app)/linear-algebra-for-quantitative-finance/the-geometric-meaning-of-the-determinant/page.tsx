@@ -1,4 +1,5 @@
 
+'use client';
 import { PageHeader } from '@/components/app/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { InlineMath, BlockMath } from 'react-katex';
@@ -44,9 +45,9 @@ export default function DeterminantMeaningPage() {
         <CardContent className="space-y-4">
            <p>Consider a matrix `C` where the columns are linearly dependent:</p>
            <BlockMath math="C = \begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}" />
-           <p>The determinant is <InlineMath math="1 \times 4 - 2 \times 2 = 0" />. The transformation squashes the entire 2D plane onto a single line. The resulting "parallelogram" has **zero area**.</p>
+           <p>The determinant is <InlineMath math="1 \times 4 - 2 \times 2 = 0" />. The transformation squashes the entire 2D plane onto a single line. The resulting "parallelogram" has <strong>zero area</strong>.</p>
             <PitfallAlert title="The Ultimate Test for Invertibility">
-               A determinant of zero means the transformation collapses space into a lower dimension. Such a matrix has linearly dependent columns, a non-trivial null space, and is **not invertible** (singular).
+               A determinant of zero means the transformation collapses space into a lower dimension. Such a matrix has linearly dependent columns, a non-trivial null space, and is <strong>not invertible</strong> (singular).
             </PitfallAlert>
         </CardContent>
       </Card>
@@ -54,7 +55,7 @@ export default function DeterminantMeaningPage() {
       <LessonSummaryCard title="Summary: The Essence of the Determinant">
         <li><strong>Scaling Factor:</strong> The absolute value `|det(A)|` is the factor by which area (2D) or volume (3D) is scaled.</li>
         <li><strong>Orientation Flip:</strong> The sign of `det(A)` tells you if the orientation of space has been reversed (negative) or preserved (positive).</li>
-        <li><strong>Invertibility Test:</strong> `det(A) = 0` is the definitive sign that the transformation squashes space into a lower dimension. Such a matrix is **not invertible**.</li>
+        <li><strong>Invertibility Test:</strong> `det(A) = 0` is the definitive sign that the transformation squashes space into a lower dimension. Such a matrix is <strong>not invertible</strong>.</li>
       </LessonSummaryCard>
       
       <NextUpNavigation href="/linear-algebra-for-quantitative-finance/calculation-and-properties-of-the-determinant">
