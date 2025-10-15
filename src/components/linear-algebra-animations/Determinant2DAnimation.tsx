@@ -8,14 +8,12 @@ import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawShading, Vector } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { AlertCircle, TrendingUp, TrendingDown, ChevronsRight } from 'lucide-react';
+import { AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { easeInOutCubic } from '../three/animation';
 import { BlockMath } from 'react-katex';
-import { Progress } from '@/components/ui/progress';
-import { createLabel } from '../three/ui-helpers';
 
 type Matrix2D = { a: number, b: number, c: number, d: number };
 
@@ -99,6 +97,32 @@ const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix
     );
 };
 
+const drawManualGrid = (scene: THREE.Scene, size: number, divisions: number, color: THREE.ColorRepresentation) => {
+    const group = new THREE.Group();
+    const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.3 });
+    const step = size / divisions;
+
+    for (let i = 0; i <= divisions; i++) {
+        const pos = i * step;
+        // Horizontal line
+        const hGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, pos, 0), new THREE.Vector3(size, pos, 0)]);
+        const hLine = new THREE.Line(hGeom, material);
+        group.add(hLine);
+        // Vertical line
+        const vGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(pos, 0, 0), new THREE.Vector3(pos, size, 0)]);
+        const vLine = new THREE.Line(vGeom, material);
+        group.add(vLine);
+    }
+    // Add axes lines
+    const axesMat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.7 });
+    const xGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0.01), new THREE.Vector3(size, 0, 0.01)]);
+    const yGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0.01), new THREE.Vector3(0, size, 0.01)]);
+    group.add(new THREE.Line(xGeom, axesMat), new THREE.Line(yGeom, axesMat));
+
+    scene.add(group);
+    return group;
+}
+
 
 export function Determinant2DAnimation() {
     const mountRef = useRef<HTMLDivElement>(null);
@@ -108,7 +132,6 @@ export function Determinant2DAnimation() {
     const [b2Pos, setB2Pos] = useState(new THREE.Vector3(initialMatrix.b, initialMatrix.d, 0));
     const [determinant, setDeterminant] = useState(0);
     const [matrixInput, setMatrixInput] = useState(initialMatrix);
-    const [storyStage, setStoryStage] = useState(0);
 
     // Refs for three.js objects
     const sceneRef = useRef<THREE.Scene | null>(null);
@@ -218,9 +241,7 @@ export function Determinant2DAnimation() {
             renderer.dispose();
         });
         
-        const grid = new THREE.GridHelper(50, 25, 0x888888, 0x444444);
-        grid.rotation.x = Math.PI / 2;
-        scene.add(grid);
+        drawManualGrid(scene, 50, 50, 0x444444);
 
         // Unit Square
         unitSquareRef.current = drawShading(scene, {
@@ -246,10 +267,10 @@ export function Determinant2DAnimation() {
         // Draggability
         if (b1Ref.current && b2Ref.current) {
             const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { 
-                onDrag: (obj, pos) => { if(mode === 'explore') setB1Pos(pos.clone().setZ(0)) }
+                onDrag: (obj, pos) => { setB1Pos(pos.clone().setZ(0)) }
             });
             const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { 
-                onDrag: (obj, pos) => { if(mode === 'explore') setB2Pos(pos.clone().setZ(0)) }
+                onDrag: (obj, pos) => { setB2Pos(pos.clone().setZ(0)) }
             });
             cleanupFunctions.push(cleanupB1, cleanupB2);
         }
