@@ -1,12 +1,13 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
-import { createLabel } from '@/components/three/ui-helpers';
-import { drawShading } from '@/components/three/primitives';
+import { createLabel, drawShading } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
+import { AlertCircle, Maximize, Minimize, RotateCcw, VolumeX } from 'lucide-react';
 
 // A simple extension to make updating arrows easier
 class VectorArrow extends THREE.ArrowHelper {
@@ -61,6 +62,7 @@ export function Determinant2DAnimation() {
     const b1Ref = useRef<VectorArrow | null>(null);
     const b2Ref = useRef<VectorArrow | null>(null);
     const parallelogramRef = useRef<THREE.Mesh | null>(null);
+    const unitSquareRef = useRef<THREE.Mesh | null>(null);
 
     // One-time scene setup
     useEffect(() => {
@@ -97,6 +99,13 @@ export function Determinant2DAnimation() {
         const grid = new THREE.GridHelper(50, 50, 0x888888, 0x888888);
         grid.rotation.x = Math.PI / 2;
         scene.add(grid);
+
+        // Unit Square
+        unitSquareRef.current = drawShading(scene, {
+            points: [new THREE.Vector2(0,0), new THREE.Vector2(1,0), new THREE.Vector2(1,1), new THREE.Vector2(0,1)],
+            color: 0xffd700 // Gold
+        });
+        unitSquareRef.current.position.z = -0.1; // Behind transformed area
 
         b1Ref.current = new VectorArrow(b1Pos.clone().normalize(), new THREE.Vector3(0,0,0), b1Pos.length(), 0xff8a65, 0.3, 0.2);
         b2Ref.current = new VectorArrow(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
@@ -171,23 +180,55 @@ export function Determinant2DAnimation() {
                 new THREE.Vector2(b2Pos.x, b2Pos.y),
             ];
             
-            const newColor = det >= 0 ? 0x4dd0e1 : 0xf06292; // Cyan for positive, Pink for negative
+            let newColor;
+            if (det < 0) newColor = 0xba68c8; // Purple for flipped
+            else if (Math.abs(det) < 0.1) newColor = 0xe57373; // Red for collapsed
+            else if (Math.abs(det) < 0.95) newColor = 0xffd54f; // Yellow for shrunk
+            else if (Math.abs(det) < 1.05) newColor = 0x4dd0e1; // Blue for preserved
+            else newColor = 0x81c784; // Green for stretched
+
             parallelogramRef.current = drawShading(sceneRef.current, { points, color: newColor });
         }
         
     }, [b1Pos, b2Pos]);
 
+    const getStatusMessage = () => {
+        const absDet = Math.abs(determinant);
+        if (determinant < 0) return { icon: <AlertCircle />, text: "Orientation Flipped!", color: "text-purple-400" };
+        if (absDet < 0.1) return { icon: <VolumeX />, text: "Collapsed to a Line!", color: "text-red-400" };
+        if (absDet < 0.95) return { icon: <Minimize />, text: "Area Shrunk", color: "text-yellow-400" };
+        if (absDet < 1.05) return { icon: <RotateCcw />, text: "Area Preserved (Rotation)", color: "text-cyan-400" };
+        return { icon: <Maximize />, text: "Area Stretched", color: "text-green-400" };
+    }
+
+    const status = getStatusMessage();
+
     return (
         <Card className="w-full">
             <CardContent className="p-4">
                  <div ref={mountRef} className="relative aspect-[4/3] md:aspect-video w-full overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing"></div>
-                 <div className="mt-4 text-center">
-                    <p className="font-mono text-2xl font-bold tracking-tight">
-                        det(M) = <span className={cn(determinant < 0 && "text-destructive")}>{determinant.toFixed(3)}</span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">Drag the tips of the vectors to change the transformation.</p>
+                 <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div className="p-2 bg-muted rounded-lg">
+                        <p className="text-xs font-semibold text-muted-foreground">ORIGINAL AREA</p>
+                        <p className="font-mono text-xl font-bold tracking-tight text-amber-400">1.00</p>
+                    </div>
+                    <div className="p-2 bg-muted rounded-lg">
+                        <p className="text-xs font-semibold text-muted-foreground">TRANSFORMED AREA</p>
+                        <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}</p>
+                    </div>
+                    <div className="p-2 bg-muted rounded-lg">
+                        <p className="text-xs font-semibold text-muted-foreground">SCALING FACTOR</p>
+                        <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}x</p>
+                    </div>
                  </div>
+                 <div className={cn("flex items-center justify-center gap-2 text-sm font-semibold mt-4", status.color)}>
+                    {status.icon}
+                    <p>{status.text}</p>
+                 </div>
+                 <p className="text-xs text-muted-foreground text-center mt-2">Drag the vector tips to change the transformation.</p>
             </CardContent>
         </Card>
     );
 }
+
+```)
