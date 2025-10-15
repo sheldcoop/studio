@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -18,6 +19,7 @@ const nextConfig = {
   },
   experimental: {
     instrumentationHook: false,
+    allowedDevOrigins: ["https://6000-firebase-quantpreptheory-2-1760335537174.cluster-fnjdffmttjhy2qqdugh3yehhs2.cloudworkstations.dev"],
   },
 };
 
