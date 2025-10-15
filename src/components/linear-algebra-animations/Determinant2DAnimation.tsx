@@ -1,19 +1,20 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { createLabel } from '@/components/three/ui-helpers';
 import { drawShading } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { AlertCircle, Maximize, Minimize, RotateCcw, VolumeX, TrendingUp, TrendingDown, ChevronsRight, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { easeInOutCubic } from '../three/animation';
 import { BlockMath } from 'react-katex';
+import { Progress } from '@/components/ui/progress';
 
 // A simple extension to make updating arrows easier
 class VectorArrow extends THREE.ArrowHelper {
@@ -47,48 +48,86 @@ class VectorArrow extends THREE.ArrowHelper {
     }
 }
 
-const initialMatrix = { a: 2, b: 1, c: 1, d: 2 };
+type Matrix2D = { a: number, b: number, c: number, d: number };
+
+const initialMatrix: Matrix2D = { a: 2, b: 1, c: 1, d: 2 };
 
 const getExplanation = (det: number) => {
   const absDet = Math.abs(det);
-  
+  let colorClass = 'text-primary';
+
   if (Math.abs(det) < 0.01) {
+    colorClass = 'text-red-400';
     return {
         icon: <VolumeX className="h-5 w-5"/>,
         title: "Collapsed Transformation",
-        text: "The matrix collapses 2D space into a line or a point. The two column vectors are parallel (linearly dependent). This transformation is NOT invertible."
+        text: "The matrix collapses 2D space into a line or a point. The two column vectors are parallel (linearly dependent). This transformation is NOT invertible.",
+        color: colorClass
     };
   }
   
   if (Math.abs(absDet - 1) < 0.05) {
+     colorClass = 'text-cyan-400';
     return {
         icon: <RotateCcw className="h-5 w-5"/>,
         title: "Rigid Transformation",
-        text: `This is a rigid transformation (like a rotation or shear). Areas are preserved! The unit square's area remains the same.`
+        text: `This is a rigid transformation (like a rotation or shear). Areas are preserved! The unit square's area remains the same.`,
+        color: colorClass
     };
   }
   
   if (det < 0) {
+    colorClass = 'text-purple-400';
     return {
         icon: <AlertCircle className="h-5 w-5"/>,
         title: "Reflective Transformation",
-        text: `Space is FLIPPED! The orientation is reversed (like looking in a mirror). Areas are scaled by ${absDet.toFixed(2)}x.`
+        text: `Space is FLIPPED! The orientation is reversed (like looking in a mirror). Areas are scaled by ${absDet.toFixed(2)}x.`,
+        color: colorClass
     };
   }
   
   if (absDet > 1) {
+    colorClass = 'text-green-400';
     return {
         icon: <TrendingUp className="h-5 w-5"/>,
         title: "Expansive Transformation",
-        text: `Space is STRETCHED. Every area gets multiplied by ${absDet.toFixed(2)}. The unit square becomes ${absDet.toFixed(2)}x larger.`
+        text: `Space is STRETCHED. Every area gets multiplied by ${absDet.toFixed(2)}. The unit square becomes ${absDet.toFixed(2)}x larger.`,
+        color: colorClass
     };
   }
   
+  colorClass = 'text-yellow-400';
   return {
     icon: <TrendingDown className="h-5 w-5"/>,
     title: "Compressive Transformation",
-    text: `Space is COMPRESSED. Every area gets multiplied by ${absDet.toFixed(2)}. The unit square shrinks to ${absDet.toFixed(2)}x its original size.`
+    text: `Space is COMPRESSED. Every area gets multiplied by ${absDet.toFixed(2)}. The unit square shrinks to ${absDet.toFixed(2)}x its original size.`,
+    color: colorClass
   };
+};
+
+const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix: (m: Matrix2D) => void, label: string }) => {
+    const handleChange = (key: keyof Matrix2D, value: string) => {
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+            setMatrix({ ...matrix, [key]: numValue });
+        }
+    };
+
+    return (
+        <div className="space-y-2 text-center">
+            <Label className="font-semibold">{label}</Label>
+            <div className="flex justify-center items-center gap-2">
+                <div className="text-4xl font-thin">[</div>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 w-24">
+                    <Input className="h-8 text-center" type="text" value={matrix.a.toFixed(2)} onChange={e => handleChange('a', e.target.value)} />
+                    <Input className="h-8 text-center" type="text" value={matrix.b.toFixed(2)} onChange={e => handleChange('b', e.target.value)} />
+                    <Input className="h-8 text-center" type="text" value={matrix.c.toFixed(2)} onChange={e => handleChange('c', e.target.value)} />
+                    <Input className="h-8 text-center" type="text" value={matrix.d.toFixed(2)} onChange={e => handleChange('d', e.target.value)} />
+                </div>
+                 <div className="text-4xl font-thin">]</div>
+            </div>
+        </div>
+    );
 };
 
 
@@ -448,5 +487,3 @@ export function Determinant2DAnimation() {
         </Card>
     );
 }
-
-```
