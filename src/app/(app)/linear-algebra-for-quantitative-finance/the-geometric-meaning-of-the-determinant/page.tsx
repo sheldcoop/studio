@@ -43,8 +43,8 @@ export default function DeterminantMeaningPage() {
         </CardHeader>
         <CardContent className="space-y-4">
            <p>Consider a matrix `C` where the columns are linearly dependent:</p>
-           <BlockMath math="C = \begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}" />
-           <p>The determinant is <InlineMath math="1 \times 4 - 2 \times 2 = 0" />. The transformation squashes the entire 2D plane onto a single line. The resulting "parallelogram" has <strong>zero area</strong>.</p>
+           <BlockMath math="C = \\begin{bmatrix} 1 & 2 \\\\ 2 & 4 \\end{bmatrix}" />
+           <p>The determinant is <InlineMath math="1 \\times 4 - 2 \\times 2 = 0" />. The transformation squashes the entire 2D plane onto a single line. The resulting "parallelogram" has <strong>zero area</strong>.</p>
             <PitfallAlert title="The Ultimate Test for Invertibility">
                A determinant of zero means the transformation collapses space into a lower dimension. Such a matrix has linearly dependent columns, a non-trivial null space, and is <strong>not invertible</strong> (singular).
             </PitfallAlert>
