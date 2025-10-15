@@ -27,13 +27,17 @@ export class Vector extends THREE.ArrowHelper {
 
     constructor(
         dir: THREE.Vector3,
-        origin: THREE.Vector3,
         length: number,
         color: THREE.ColorRepresentation,
         headLength?: number,
         headWidth?: number,
+        label?: string,
+        origin: THREE.Vector3 = new THREE.Vector3(0,0,0)
     ) {
         super(dir, origin, length, color, headLength, headWidth);
+        if (label) {
+            this.setLabel(label, color);
+        }
     }
 
     setLabel(text: string, color: THREE.ColorRepresentation, scale: number = 0.4) {
