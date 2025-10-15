@@ -215,7 +215,7 @@ export function Determinant2DAnimation() {
             renderer.dispose();
         });
         
-        const grid = new THREE.GridHelper(50, 50, 0x888888, 0x444444);
+        const grid = new THREE.GridHelper(50, 25, 0x888888, 0x444444); // Divisions set to 25 to double cell size
         grid.rotation.x = Math.PI / 2;
         scene.add(grid);
 

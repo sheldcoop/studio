@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { TransformationControls } from '@/components/app/TransformationControls';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
@@ -85,18 +85,16 @@ export function InteractiveMatrixTransformation() {
         scene.add(transformedGridRef.current);
 
         // Arrows
-        iHatRef.current = new Vector(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
-        jHatRef.current = new Vector(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
-        iHatRef.current.setLabel('î', 0xff3333, 0.5);
-        jHatRef.current.setLabel('ĵ', 0x33ff33, 0.5);
+        iHatRef.current = new Vector(new THREE.Vector3(1, 0, 0), 1, 0xff3333, 0.2, 0.1, 'î'); 
+        jHatRef.current = new Vector(new THREE.Vector3(0, 1, 0), 1, 0x33ff33, 0.2, 0.1, 'ĵ');
         scene.add(iHatRef.current, jHatRef.current);
         
-        b1Ref.current = new Vector(b1Pos.clone().normalize(), new THREE.Vector3(0,0,0), b1Pos.length(), 0xff8a65, 0.3, 0.2);
-        b2Ref.current = new Vector(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
+        b1Ref.current = new Vector(b1Pos.clone().normalize(), b1Pos.length(), 0xff8a65, 0.3, 0.2, 'b₁');
+        b2Ref.current = new Vector(b2Pos.clone().normalize(), b2Pos.length(), 0x69f0ae, 0.3, 0.2, 'b₂');
         scene.add(b1Ref.current, b2Ref.current);
 
         const initialV = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
-        vRef.current = new Vector(initialV.clone().normalize(), new THREE.Vector3(0,0,0), initialV.length(), 0xffffff, 0.3, 0.2);
+        vRef.current = new Vector(initialV.clone().normalize(), initialV.length(), 0xffffff, 0.3, 0.2, 'v');
         scene.add(vRef.current);
         
         combinationHelpersRef.current = new THREE.Group();
@@ -201,6 +199,9 @@ export function InteractiveMatrixTransformation() {
         updateArrow(b1Ref.current, b1, 0xff8a65, 'b₁', true, mode === 'rotation');
         updateArrow(b2Ref.current, b2, 0x69f0ae, 'b₂', true, mode === 'rotation');
         updateArrow(vRef.current, v, 0xffffff, 'v', true, mode === 'rotation');
+        updateArrow(iHatRef.current, new THREE.Vector3(1,0,0), 0xff3333, 'î');
+        updateArrow(jHatRef.current, new THREE.Vector3(0,1,0), 0x33ff33, 'ĵ');
+
 
         if (transformedGridRef.current && sceneRef.current) {
             while (transformedGridRef.current.children.length > 0) {

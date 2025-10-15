@@ -20,10 +20,13 @@ type PlaneOptions = BaseOptions & {
  * A wrapper class for THREE.ArrowHelper to make it easier to update its
  * length, direction, and labels after creation.
  */
-export class Vector extends THREE.ArrowHelper {
+export class Vector extends THREE.Group {
     public labelSprite: THREE.Sprite | null = null;
     public coordLabelSprite: THREE.Sprite | null = null;
     public lengthLabelSprite: THREE.Sprite | null = null;
+    public arrow: THREE.ArrowHelper;
+    public line: THREE.Line;
+    public cone: THREE.Mesh;
 
     constructor(
         dir: THREE.Vector3,
@@ -34,10 +37,16 @@ export class Vector extends THREE.ArrowHelper {
         label?: string,
         origin: THREE.Vector3 = new THREE.Vector3(0,0,0)
     ) {
-        super(dir, origin, length, color, headLength, headWidth);
+        super();
+        this.arrow = new THREE.ArrowHelper(dir, origin, length, color, headLength, headWidth);
+        this.add(this.arrow);
+        this.line = this.arrow.line;
+        this.cone = this.arrow.cone;
+
         if (label) {
             this.setLabel(label, color);
         }
+        this.setCoordsLabel(dir.clone().multiplyScalar(length), color);
     }
 
     setLabel(text: string, color: THREE.ColorRepresentation, scale: number = 0.4) {
@@ -67,29 +76,29 @@ export class Vector extends THREE.ArrowHelper {
 
     updateLabelPosition() {
         const dir = new THREE.Vector3();
-        this.line.getWorldDirection(dir);
+        this.arrow.line.getWorldDirection(dir);
 
-        const length = this.line.scale.y;
+        const length = this.arrow.line.scale.y;
 
         const offsetScale = 0.7;
 
         if (this.labelSprite) {
             const offset = dir.clone().multiplyScalar(length + offsetScale);
-            this.labelSprite.position.copy(this.line.position).add(offset);
+            this.labelSprite.position.copy(this.arrow.line.position).add(offset);
         }
         if (this.coordLabelSprite) {
             const offset = dir.clone().multiplyScalar(length + offsetScale * 0.5).add(new THREE.Vector3(0, -0.3, 0));
-            this.coordLabelSprite.position.copy(this.line.position).add(offset);
+            this.coordLabelSprite.position.copy(this.arrow.line.position).add(offset);
         }
         if (this.lengthLabelSprite) {
              const offset = dir.clone().multiplyScalar(length + offsetScale * 0.5).add(new THREE.Vector3(0, 0.3, 0));
-            this.lengthLabelSprite.position.copy(this.line.position).add(offset);
+            this.lengthLabelSprite.position.copy(this.arrow.line.position).add(offset);
         }
     }
 
     setDirectionAndLength(dir: THREE.Vector3, length: number) {
         if (length < 1e-6) {
-            this.setLength(0, 0, 0);
+            this.arrow.setLength(0, 0, 0);
             if(this.labelSprite) this.labelSprite.visible = false;
             if(this.coordLabelSprite) this.coordLabelSprite.visible = false;
             if(this.lengthLabelSprite) this.lengthLabelSprite.visible = false;
@@ -99,8 +108,18 @@ export class Vector extends THREE.ArrowHelper {
         if(this.coordLabelSprite) this.coordLabelSprite.visible = true;
         if(this.lengthLabelSprite) this.lengthLabelSprite.visible = true;
 
-        super.setDirection(dir);
-        super.setLength(length, 0.3, 0.2);
+        this.arrow.setDirection(dir);
+        this.arrow.setLength(length, 0.3, 0.2);
+        this.updateLabelPosition();
+    }
+
+     setLength(len: number, headLength?: number, headWidth?: number) {
+        this.arrow.setLength(len, headLength, headWidth);
+        this.updateLabelPosition();
+    }
+
+    setDirection(dir: THREE.Vector3) {
+        this.arrow.setDirection(dir);
         this.updateLabelPosition();
     }
 }
