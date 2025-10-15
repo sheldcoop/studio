@@ -116,13 +116,6 @@ export function Determinant2DAnimation() {
     const parallelogramRef = useRef<THREE.Mesh | null>(null);
     const unitSquareRef = useRef<THREE.Mesh | null>(null);
     
-    const applyMatrix = () => {
-        animateTo(
-            new THREE.Vector3(matrix.a, matrix.c, 0),
-            new THREE.Vector3(matrix.b, matrix.d, 0)
-        );
-    };
-
     const animateTo = useCallback((targetB1: THREE.Vector3, targetB2: THREE.Vector3) => {
         const startB1 = b1Pos.clone();
         const startB2 = b2Pos.clone();
@@ -147,23 +140,31 @@ export function Determinant2DAnimation() {
         requestAnimationFrame(animate);
     }, [b1Pos, b2Pos]);
 
+    const applyMatrix = () => {
+        animateTo(
+            new THREE.Vector3(matrix.a, matrix.c, 0),
+            new THREE.Vector3(matrix.b, matrix.d, 0)
+        );
+    };
+
     const handlePreset = useCallback((preset: 'identity' | 'shear' | 'rotate' | 'scale' | 'collapse' | 'reflect') => {
         let newMatrix: Matrix2D;
         switch(preset) {
             case 'shear':
-                newMatrix = { a: 1, b: 1, c: 0, d: 1 };
+                newMatrix = { a: 1, b: 1, c: 0, d: 1 }; // Shear along x
                 break;
             case 'rotate':
+                // Rotate 90° counterclockwise
                 newMatrix = { a: 0, b: -1, c: 1, d: 0 };
                 break;
             case 'scale':
-                newMatrix = { a: 2, b: 0, c: 0, d: 2 };
+                newMatrix = { a: 2, b: 0, c: 0, d: 2 }; // Uniform 2x scaling
                 break;
              case 'collapse':
-                newMatrix = { a: 1, b: 2, c: 2, d: 4 };
+                newMatrix = { a: 1, b: 1, c: 1, d: 1 }; // Collapse to diagonal line
                 break;
             case 'reflect':
-                newMatrix = { a: -1, b: 0, c: 0, d: 1 };
+                newMatrix = { a: -1, b: 0, c: 0, d: 1 }; // Reflect across y-axis
                 break;
             case 'identity':
             default:
@@ -187,9 +188,11 @@ export function Determinant2DAnimation() {
         const scene = new THREE.Scene();
         sceneRef.current = scene;
 
-        const frustumSize = 8;
         const aspect = currentMount.clientWidth / currentMount.clientHeight;
+        const frustumSize = 10;
         const camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 0.1, 100);
+        camera.position.set(2, 2, 10);
+        camera.lookAt(2, 2, 0);
         cameraRef.current = camera;
         
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -203,19 +206,56 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 20; // Each cell is 1x1
-        const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x444444, 0x444444);
+        const gridDivisions = 10;
+        const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
+        grid.position.set(0, 0, -0.2);
         scene.add(grid);
-        
-        camera.position.set(0, 0, 10);
-        camera.lookAt(0, 0, 0);
 
+        const axesMaterial = new THREE.LineBasicMaterial({ color: 0x888888 });
+        const xAxisGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-10, 0, 0), new THREE.Vector3(10, 0, 0)]);
+        const yAxisGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -10, 0), new THREE.Vector3(0, 10, 0)]);
+        scene.add(new THREE.Line(xAxisGeom, axesMaterial));
+        scene.add(new THREE.Line(yAxisGeom, axesMaterial));
+        
+        const addGridLabel = (text: string, position: THREE.Vector3, color: number) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d')!;
+            ctx.font = 'bold 48px Arial';
+            canvas.width = 100;
+            canvas.height = 60;
+            ctx.font = 'bold 48px Arial';
+            ctx.fillStyle = new THREE.Color(color).getStyle();
+            ctx.fillText(text, 10, 45);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture }));
+            sprite.scale.set(0.5, 0.3, 1);
+            sprite.position.copy(position);
+            scene.add(sprite);
+        };
+        
+        for (let i = -10; i <= 10; i += 2) {
+            if (i !== 0) {
+                addGridLabel(i.toString(), new THREE.Vector3(i, -0.5, 0), 0x888888);
+                addGridLabel(i.toString(), new THREE.Vector3(-0.5, i, 0), 0x888888);
+            }
+        }
+        
         unitSquareRef.current = drawShading(scene, {
             points: [new THREE.Vector2(0,0), new THREE.Vector2(1,0), new THREE.Vector2(1,1), new THREE.Vector2(0,1)],
             color: 0xffd700
         });
-        if(unitSquareRef.current) unitSquareRef.current.position.z = -0.1;
+        if(unitSquareRef.current) {
+            unitSquareRef.current.position.z = -0.1;
+            (unitSquareRef.current.material as THREE.MeshBasicMaterial).opacity = 0.6;
+        }
+
+        const outlineMaterial = new THREE.LineBasicMaterial({ color: 0xffaa00, linewidth: 2 });
+        const outlinePoints = [ new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 1, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), ];
+        const outlineGeom = new THREE.BufferGeometry().setFromPoints(outlinePoints);
+        const outline = new THREE.Line(outlineGeom, outlineMaterial);
+        scene.add(outline);
         
         iHatRef.current = new Vector(new THREE.Vector3(1, 0, 0), 1, 0xff3333, 0.2, 0.1, 'î'); 
         jHatRef.current = new Vector(new THREE.Vector3(0, 1, 0), 1, 0x33ff33, 0.2, 0.1, 'ĵ');
@@ -355,6 +395,18 @@ export function Determinant2DAnimation() {
                                 <p className="text-xs font-semibold text-muted-foreground">SCALING FACTOR</p>
                                 <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}x</p>
                             </div>
+                        </div>
+                        <div className="text-center p-3 bg-muted/30 rounded-lg">
+                            <p className="text-xs text-muted-foreground mb-1">Determinant Formula:</p>
+                            <div className="font-mono text-sm">
+                                <BlockMath math={`\\text{det}(M) = (a \\times d) - (b \\times c)`} />
+                            </div>
+                            <div className="font-mono text-sm mt-1">
+                                <BlockMath math={`= (${matrix.a.toFixed(2)} \\times ${matrix.d.toFixed(2)}) - (${matrix.b.toFixed(2)} \\times ${matrix.c.toFixed(2)})`} />
+                            </div>
+                            <p className={cn("font-mono text-lg font-bold mt-1", status.color)}>
+                                = {determinant.toFixed(2)}
+                            </p>
                         </div>
                     </div>
                      <Card className={cn("border-2", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
