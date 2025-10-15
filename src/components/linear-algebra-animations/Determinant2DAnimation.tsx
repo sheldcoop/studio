@@ -365,22 +365,24 @@ export function Determinant2DAnimation() {
                     <div ref={mountRef} className="absolute inset-0"></div>
                 </div>
                 
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                        <div className="p-2 bg-muted rounded-lg">
-                            <p className="text-xs font-semibold text-muted-foreground">ORIGINAL AREA</p>
-                            <p className="font-mono text-xl font-bold tracking-tight text-amber-400">1.00</p>
-                        </div>
-                        <div className="p-2 bg-muted rounded-lg">
-                            <p className="text-xs font-semibold text-muted-foreground">TRANSFORMED AREA</p>
-                            <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}</p>
-                        </div>
-                        <div className="p-2 bg-muted rounded-lg">
-                            <p className="text-xs font-semibold text-muted-foreground">SCALING FACTOR</p>
-                            <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}x</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                            <div className="p-2 bg-muted rounded-lg">
+                                <p className="text-xs font-semibold text-muted-foreground">ORIGINAL AREA</p>
+                                <p className="font-mono text-xl font-bold tracking-tight text-amber-400">1.00</p>
+                            </div>
+                            <div className="p-2 bg-muted rounded-lg">
+                                <p className="text-xs font-semibold text-muted-foreground">TRANSFORMED AREA</p>
+                                <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}</p>
+                            </div>
+                            <div className="p-2 bg-muted rounded-lg">
+                                <p className="text-xs font-semibold text-muted-foreground">SCALING FACTOR</p>
+                                <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}x</p>
+                            </div>
                         </div>
                     </div>
-                    <Card className={cn("border-2", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
+                     <Card className={cn("border-2", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
                         <CardHeader className="p-4 flex flex-row items-center gap-3">
                             <div className={cn("flex-shrink-0", status.color)}>{status.icon}</div>
                             <CardTitle className="text-lg">{status.title}</CardTitle>
