@@ -29,8 +29,8 @@ export default function DeterminantMeaningPage() {
       <DefinitionCard title="The Determinant">
         <p>The determinant of a 2x2 matrix <InlineMath math="A = [[a, b], [c, d]]" /> is the area of the parallelogram formed by the transformed basis vectors. Its value is `det(A) = ad - bc`.</p>
         <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-            <li><strong>`det(A) > 0`</strong>: Preserves orientation (no flipping). The area is scaled by `det(A)`.</li>
-            <li><strong>`det(A) < 0`</strong>: Reverses orientation (a flip occurred). The absolute value `|det(A)|` is the scaling factor.</li>
+            <li><strong>`det(A) &gt 0`</strong>: Preserves orientation (no flipping). The area is scaled by `det(A)`.</li>
+            <li><strong>`det(A) &lt 0`</strong>: Reverses orientation (a flip occurred). The absolute value `|det(A)|` is the scaling factor.</li>
         </ul>
       </DefinitionCard>
 
