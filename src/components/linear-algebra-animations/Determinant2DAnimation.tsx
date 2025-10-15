@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -188,7 +187,7 @@ export function Determinant2DAnimation() {
         const scene = new THREE.Scene();
         sceneRef.current = scene;
 
-        const frustumSize = 12;
+        const frustumSize = 8;
         const aspect = currentMount.clientWidth / currentMount.clientHeight;
         const camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 0.1, 100);
         cameraRef.current = camera;
@@ -204,11 +203,11 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 20;
+        const gridDivisions = 20; // Each cell is 1x1
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x444444, 0x444444);
         grid.rotation.x = Math.PI / 2;
         scene.add(grid);
-
+        
         camera.position.set(0, 0, 10);
         camera.lookAt(0, 0, 0);
 
