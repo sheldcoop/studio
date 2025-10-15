@@ -8,9 +8,9 @@ import { drawShading, Vector } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, TrendingDown, ChevronsRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { easeInOutCubic } from '../three/animation';
 import { BlockMath } from 'react-katex';
 import { Progress } from '@/components/ui/progress';
@@ -85,7 +85,7 @@ const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix
             <Label className="font-semibold">{label}</Label>
             <div className="flex justify-center items-center gap-2">
                 <div className="text-4xl font-thin">[</div>
-                <div className="grid grid-cols-2 gap-x-2 gap-y-1 w-32">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 w-28">
                     <Input className="h-8 text-center" type="text" value={matrix.a.toFixed(2)} onChange={e => handleChange('a', e.target.value)} />
                     <Input className="h-8 text-center" type="text" value={matrix.b.toFixed(2)} onChange={e => handleChange('b', e.target.value)} />
                     <Input className="h-8 text-center" type="text" value={matrix.c.toFixed(2)} onChange={e => handleChange('c', e.target.value)} />
@@ -305,7 +305,9 @@ export function Determinant2DAnimation() {
                  arrow.updateLabelPosition();
             }
         }
-
+        
+        updateArrow(iHatRef.current, new THREE.Vector3(1,0,0), 0xff3333, 'î');
+        updateArrow(jHatRef.current, new THREE.Vector3(0,1,0), 0x33ff33, 'ĵ');
         updateArrow(b1Ref.current, b1Pos, 0xff8a65, 'b₁');
         updateArrow(b2Ref.current, b2Pos, 0x69f0ae, 'b₂');
 
@@ -377,9 +379,9 @@ export function Determinant2DAnimation() {
                     <span className="text-sm text-muted-foreground whitespace-nowrap">{storyStage + 1} / {storyContent.length}</span>
                 </div>
             </CardHeader>
-            <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="p-4 grid grid-cols-1 md:grid-cols-5 gap-4">
                 {/* Left Column for Controls */}
-                <div className="space-y-4">
+                <div className="space-y-4 md:col-span-2">
                      <Card>
                          <CardHeader className="p-4">
                              <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -450,7 +452,7 @@ export function Determinant2DAnimation() {
                 </div>
 
                  {/* Right Column for Visualization */}
-                <div className="relative aspect-square md:aspect-auto w-full h-full min-h-[400px] md:min-h-0 overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing">
+                <div className="md:col-span-3 relative aspect-square md:aspect-auto w-full h-full min-h-[400px] md:min-h-0 overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing">
                     <div ref={mountRef} className="absolute inset-0"></div>
                 </div>
             </CardContent>
