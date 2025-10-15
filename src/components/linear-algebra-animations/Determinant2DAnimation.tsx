@@ -4,7 +4,8 @@
 import { useState, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
-import { createLabel, drawShading } from '@/components/three/primitives';
+import { createLabel } from '@/components/three/ui-helpers';
+import { drawShading } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertCircle, Maximize, Minimize, RotateCcw, VolumeX } from 'lucide-react';
@@ -105,7 +106,7 @@ export function Determinant2DAnimation() {
             points: [new THREE.Vector2(0,0), new THREE.Vector2(1,0), new THREE.Vector2(1,1), new THREE.Vector2(0,1)],
             color: 0xffd700 // Gold
         });
-        unitSquareRef.current.position.z = -0.1; // Behind transformed area
+        if(unitSquareRef.current) unitSquareRef.current.position.z = -0.1; // Behind transformed area
 
         b1Ref.current = new VectorArrow(b1Pos.clone().normalize(), new THREE.Vector3(0,0,0), b1Pos.length(), 0xff8a65, 0.3, 0.2);
         b2Ref.current = new VectorArrow(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
@@ -116,13 +117,15 @@ export function Determinant2DAnimation() {
         parallelogramRef.current = new THREE.Mesh();
         scene.add(parallelogramRef.current);
         
-        const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { 
-            onDrag: (obj, pos) => setB1Pos(pos.clone().setZ(0))
-        });
-        const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { 
-            onDrag: (obj, pos) => setB2Pos(pos.clone().setZ(0))
-        });
-        cleanupFunctions.push(cleanupB1, cleanupB2);
+        if (b1Ref.current && b2Ref.current) {
+            const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { 
+                onDrag: (obj, pos) => setB1Pos(pos.clone().setZ(0))
+            });
+            const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { 
+                onDrag: (obj, pos) => setB2Pos(pos.clone().setZ(0))
+            });
+            cleanupFunctions.push(cleanupB1, cleanupB2);
+        }
         
         const animate = () => {
             animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -230,5 +233,3 @@ export function Determinant2DAnimation() {
         </Card>
     );
 }
-
-```)
