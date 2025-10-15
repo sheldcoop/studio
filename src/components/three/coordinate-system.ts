@@ -26,9 +26,9 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
     const group = new THREE.Group();
 
     const axesConfig = {
-        x: { dir: new THREE.Vector3(1, 0, 0), color: 0xff3333, label: 'î' },
-        y: { dir: new THREE.Vector3(0, 1, 0), color: 0x33ff33, label: 'ĵ' },
-        ...(showZ && { z: { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: 'k' } }),
+        x: { dir: new THREE.Vector3(1, 0, 0), color: 0xff3333, label: 'x' },
+        y: { dir: new THREE.Vector3(0, 1, 0), color: 0x33ff33, label: 'y' },
+        ...(showZ && { z: { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: 'z' } }),
     };
 
     for (const [axisName, axis] of Object.entries(axesConfig)) {
@@ -43,7 +43,7 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
 
         if (showLabels) {
             const axisLabelSprite = createLabel(axis.label, axis.color, 0.5);
-            axisLabelSprite.position.copy(axis.dir).multiplyScalar(1.2); // Position label at the end of the unit vector
+            axisLabelSprite.position.copy(axis.dir).multiplyScalar(size + 0.5); // Position label at the end of the axis line
             group.add(axisLabelSprite);
         }
     }
@@ -54,6 +54,7 @@ export const drawAxes = (parent: ParentObject, options: AxesOptions = {}): THREE
 type GridOptions = {
     gridColor?: THREE.ColorRepresentation;
     size?: number;
+    divisions?: number;
 };
 
 /**
@@ -63,9 +64,10 @@ export const drawGrid = (parent: ParentObject, options: GridOptions = {}): THREE
     const {
         gridColor = 0x888888,
         size = 50,
+        divisions = 25,
     } = options;
 
-    const grid = new THREE.GridHelper(size, size, gridColor, gridColor);
+    const grid = new THREE.GridHelper(size, divisions, gridColor, gridColor);
     grid.rotation.x = Math.PI / 2;
     parent.add(grid);
     return grid;

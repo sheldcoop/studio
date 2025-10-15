@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawShading, Vector } from '@/components/three/primitives';
@@ -215,7 +216,7 @@ export function Determinant2DAnimation() {
             renderer.dispose();
         });
         
-        const grid = new THREE.GridHelper(50, 25, 0x888888, 0x444444); // Divisions set to 25 to double cell size
+        const grid = new THREE.GridHelper(50, 25, 0x888888, 0x444444);
         grid.rotation.x = Math.PI / 2;
         scene.add(grid);
 
