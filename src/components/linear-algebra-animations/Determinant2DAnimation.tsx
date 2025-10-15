@@ -241,7 +241,9 @@ export function Determinant2DAnimation() {
             renderer.dispose();
         });
         
-        drawManualGrid(scene, 50, 50, 0x444444);
+        const grid = new THREE.GridHelper(50, 25, 0x444444, 0x444444);
+        grid.rotation.x = Math.PI / 2;
+        scene.add(grid);
 
         // Unit Square
         unitSquareRef.current = drawShading(scene, {
