@@ -315,7 +315,15 @@ export function Determinant2DAnimation() {
                 const length = vector.length();
                 arrow.setDirectionAndLength(length > 0.001 ? vector.clone().normalize() : new THREE.Vector3(1,0,0), length);
                 if (label) arrow.setLabel(label, color);
-                arrow.setCoordsLabel(vector, color);
+
+                // Only show coordinate label if not at origin
+                if (length > 0.1) {
+                    arrow.setCoordsLabel(vector, color);
+                } else if (arrow.coordLabelSprite) {
+                    arrow.remove(arrow.coordLabelSprite);
+                    arrow.coordLabelSprite = null;
+                }
+                
                 arrow.updateLabelPosition();
             }
         }
