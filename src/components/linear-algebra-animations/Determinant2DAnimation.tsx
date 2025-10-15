@@ -97,33 +97,6 @@ const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix
     );
 };
 
-const drawManualGrid = (scene: THREE.Scene, size: number, divisions: number, color: THREE.ColorRepresentation) => {
-    const group = new THREE.Group();
-    const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.3 });
-    const step = size / divisions;
-
-    for (let i = 0; i <= divisions; i++) {
-        const pos = i * step;
-        // Horizontal line
-        const hGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, pos, 0), new THREE.Vector3(size, pos, 0)]);
-        const hLine = new THREE.Line(hGeom, material);
-        group.add(hLine);
-        // Vertical line
-        const vGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(pos, 0, 0), new THREE.Vector3(pos, size, 0)]);
-        const vLine = new THREE.Line(vGeom, material);
-        group.add(vLine);
-    }
-    // Add axes lines
-    const axesMat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.7 });
-    const xGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0.01), new THREE.Vector3(size, 0, 0.01)]);
-    const yGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0.01), new THREE.Vector3(0, size, 0.01)]);
-    group.add(new THREE.Line(xGeom, axesMat), new THREE.Line(yGeom, axesMat));
-
-    scene.add(group);
-    return group;
-}
-
-
 export function Determinant2DAnimation() {
     const mountRef = useRef<HTMLDivElement>(null);
     
@@ -225,8 +198,6 @@ export function Determinant2DAnimation() {
             frustumSize / 2, frustumSize / -2,
             0.1, 100
         );
-        camera.position.set(2, 2, 10);
-        camera.lookAt(2,2,0)
         cameraRef.current = camera;
         
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -241,9 +212,16 @@ export function Determinant2DAnimation() {
             renderer.dispose();
         });
         
-        const grid = new THREE.GridHelper(50, 25, 0x444444, 0x444444);
+        // --- Corrected Grid and Camera Setup ---
+        const gridSize = 20;
+        const gridDivisions = 20; // This makes each cell 1x1
+        const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x444444, 0x444444);
         grid.rotation.x = Math.PI / 2;
+        grid.position.set(gridSize / 2, gridSize / 2, -0.2); // Offset to align with the unit square
         scene.add(grid);
+
+        camera.position.set(gridSize / 2, gridSize / 2, 10);
+        camera.lookAt(gridSize / 2, gridSize / 2, 0);
 
         // Unit Square
         unitSquareRef.current = drawShading(scene, {
@@ -368,11 +346,9 @@ export function Determinant2DAnimation() {
             </CardHeader>
             <CardContent className="p-4 space-y-4">
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/50">
-                    <div>
-                        <MatrixInput matrix={matrixInput} setMatrix={setMatrixInput} label="Transformation Matrix (M)" />
-                        <div className="flex justify-center mt-2">
-                            <Button onClick={applyMatrix} size="sm">Apply Matrix</Button>
-                        </div>
+                    <div className="flex justify-center items-center gap-4">
+                        <MatrixInput matrix={matrixInput} setMatrix={setMatrixInput} label="Matrix M" />
+                        <Button onClick={applyMatrix}>Apply</Button>
                     </div>
                     <div className="space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
