@@ -215,7 +215,7 @@ export function Determinant2DAnimation() {
             renderer.dispose();
         });
         
-        const grid = new THREE.GridHelper(50, 50, 0x888888, 0x888888);
+        const grid = new THREE.GridHelper(50, 50, 0x888888, 0x444444);
         grid.rotation.x = Math.PI / 2;
         scene.add(grid);
 
@@ -289,7 +289,7 @@ export function Determinant2DAnimation() {
         setDeterminant(det);
         setMatrixInput({ a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y });
 
-        const updateArrow = (arrow: Vector | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string, showCoords = true) => {
+        const updateArrow = (arrow: Vector | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string) => {
             if (arrow) {
                 const length = vector.length();
                 if (length > 0.001) {
@@ -298,7 +298,7 @@ export function Determinant2DAnimation() {
                     arrow.setLength(0, 0, 0);
                 }
                  if (label) arrow.setLabel(label, color);
-                 if (showCoords) arrow.setCoordsLabel(vector, color);
+                 arrow.setCoordsLabel(vector, color);
                  arrow.updateLabelPosition();
             }
         }
@@ -341,14 +341,14 @@ export function Determinant2DAnimation() {
                 <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/50">
-                    <div>
+                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 p-4 rounded-lg border bg-muted/50">
+                    <div className="lg:col-span-2">
                         <MatrixInput matrix={matrixInput} setMatrix={setMatrixInput} label="Transformation Matrix (M)" />
                         <div className="flex justify-center mt-2">
                             <Button onClick={applyMatrix} size="sm">Apply Matrix</Button>
                         </div>
                     </div>
-                    <div>
+                    <div className="lg:col-span-3">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
@@ -365,7 +365,7 @@ export function Determinant2DAnimation() {
                     <div ref={mountRef} className="absolute inset-0"></div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                             <div className="p-2 bg-muted rounded-lg">
