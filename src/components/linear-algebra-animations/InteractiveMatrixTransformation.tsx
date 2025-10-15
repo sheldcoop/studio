@@ -5,97 +5,11 @@ import { useState, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { TransformationControls } from '@/components/app/TransformationControls';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
-import { createLabel, drawAngleBetweenVectors } from '../three/ui-helpers';
-import { drawTransformedGrid } from '../three/transformation';
+import { drawAngleBetweenVectors } from '../three/ui-helpers';
+import { drawTransformedGrid, drawLinearCombination } from '../three/transformation';
 import { easeInOutCubic } from '../three/animation';
+import { Vector } from '../three/primitives';
 
-
-// A simple extension to make updating arrows easier
-class VectorArrow extends THREE.ArrowHelper {
-    public labelSprite: THREE.Sprite | null = null;
-    public coordLabelSprite: THREE.Sprite | null = null;
-    public lengthLabelSprite: THREE.Sprite | null = null;
-
-    constructor(dir: THREE.Vector3, origin: THREE.Vector3, length: number, color: THREE.ColorRepresentation, headLength?: number, headWidth?: number) {
-        super(dir, origin, length, color, headLength, headWidth);
-    }
-
-    setLabel(text: string, color: THREE.ColorRepresentation, scale: number = 0.4) {
-        if (this.labelSprite) this.remove(this.labelSprite);
-        this.labelSprite = createLabel(text, color, scale);
-        this.add(this.labelSprite);
-        this.updateLabelPosition();
-    }
-    
-    setCoordsLabel(coords: THREE.Vector3, color: THREE.ColorRepresentation) {
-        if (this.coordLabelSprite) this.remove(this.coordLabelSprite);
-        const text = `(${coords.x.toFixed(2)}, ${coords.y.toFixed(2)})`;
-        this.coordLabelSprite = createLabel(text, color, 0.35);
-        this.add(this.coordLabelSprite);
-        this.updateLabelPosition();
-    }
-
-    setLengthLabel(length: number | null, color: THREE.ColorRepresentation) {
-        if (this.lengthLabelSprite) this.remove(this.lengthLabelSprite);
-        if (length === null) return;
-        
-        const text = `|v| = ${length.toFixed(2)}`;
-        this.lengthLabelSprite = createLabel(text, color, 0.35);
-        this.add(this.lengthLabelSprite);
-        this.updateLabelPosition();
-    }
-
-    updateLabelPosition() {
-        const dir = new THREE.Vector3();
-        this.line.getWorldDirection(dir);
-
-        const offsetScale = 0.7;
-
-        if (this.labelSprite) {
-            const offset = dir.clone().multiplyScalar(this.line.scale.y + offsetScale);
-            this.labelSprite.position.copy(this.line.position).add(offset);
-        }
-        if (this.coordLabelSprite) {
-            const offset = dir.clone().multiplyScalar(this.line.scale.y + offsetScale * 0.5).add(new THREE.Vector3(0, -0.3, 0));
-            this.coordLabelSprite.position.copy(this.line.position).add(offset);
-        }
-        if (this.lengthLabelSprite) {
-             const offset = dir.clone().multiplyScalar(this.line.scale.y + offsetScale * 0.5).add(new THREE.Vector3(0, 0.3, 0));
-            this.lengthLabelSprite.position.copy(this.line.position).add(offset);
-        }
-    }
-
-    setDirectionAndLength(dir: THREE.Vector3, length: number) {
-        super.setDirection(dir);
-        super.setLength(length, 0.3, 0.2);
-        this.updateLabelPosition();
-    }
-}
-
-
-const drawLinearCombinationHelpers = (scene: THREE.Scene, b1: THREE.Vector3, b2: THREE.Vector3, x: number, y: number): THREE.Group => {
-    const group = new THREE.Group();
-    if (Math.abs(x) < 0.01 && Math.abs(y) < 0.01) return group;
-
-    const p1 = b1.clone().multiplyScalar(x);
-    const p2 = b2.clone().multiplyScalar(y);
-
-    const material1 = new THREE.LineDashedMaterial({ color: 0xff8a65, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.7 });
-    const geom1 = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), p1]);
-    const line1 = new THREE.Line(geom1, material1);
-    line1.computeLineDistances();
-    group.add(line1);
-
-    const material2 = new THREE.LineDashedMaterial({ color: 0x69f0ae, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.7 });
-    const geom2 = new THREE.BufferGeometry().setFromPoints([p1, p1.clone().add(p2)]);
-    const line2 = new THREE.Line(geom2, material2);
-    line2.computeLineDistances();
-    group.add(line2);
-
-    group.position.z = -0.1;
-    scene.add(group);
-    return group;
-}
 
 const initialB1 = new THREE.Vector3(1.5, 0.5, 0);
 const initialB2 = new THREE.Vector3(-0.5, 1, 0);
@@ -121,11 +35,11 @@ export function InteractiveMatrixTransformation() {
     const animationFrameIdRef = useRef<number>();
     
     // Refs for visual objects
-    const vRef = useRef<VectorArrow | null>(null);
-    const b1Ref = useRef<VectorArrow | null>(null);
-    const b2Ref = useRef<VectorArrow | null>(null);
-    const iHatRef = useRef<VectorArrow | null>(null);
-    const jHatRef = useRef<VectorArrow | null>(null);
+    const vRef = useRef<Vector | null>(null);
+    const b1Ref = useRef<Vector | null>(null);
+    const b2Ref = useRef<Vector | null>(null);
+    const iHatRef = useRef<Vector | null>(null);
+    const jHatRef = useRef<Vector | null>(null);
     const transformedGridRef = useRef<THREE.Group | null>(null);
     const combinationHelpersRef = useRef<THREE.Group | null>(null);
     const angleArcRef = useRef<THREE.Group | null>(null);
@@ -171,18 +85,18 @@ export function InteractiveMatrixTransformation() {
         scene.add(transformedGridRef.current);
 
         // Arrows
-        iHatRef.current = new VectorArrow(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
-        jHatRef.current = new VectorArrow(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
+        iHatRef.current = new Vector(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, 0xff3333, 0.2, 0.1); 
+        jHatRef.current = new Vector(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1, 0x33ff33, 0.2, 0.1);
         iHatRef.current.setLabel('î', 0xff3333, 0.5);
         jHatRef.current.setLabel('ĵ', 0x33ff33, 0.5);
         scene.add(iHatRef.current, jHatRef.current);
         
-        b1Ref.current = new VectorArrow(b1Pos.clone().normalize(), new THREE.Vector3(0,0,0), b1Pos.length(), 0xff8a65, 0.3, 0.2);
-        b2Ref.current = new VectorArrow(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
+        b1Ref.current = new Vector(b1Pos.clone().normalize(), new THREE.Vector3(0,0,0), b1Pos.length(), 0xff8a65, 0.3, 0.2);
+        b2Ref.current = new Vector(b2Pos.clone().normalize(), new THREE.Vector3(0,0,0), b2Pos.length(), 0x69f0ae, 0.3, 0.2);
         scene.add(b1Ref.current, b2Ref.current);
 
         const initialV = b1Pos.clone().multiplyScalar(coords.x).add(b2Pos.clone().multiplyScalar(coords.y));
-        vRef.current = new VectorArrow(initialV.clone().normalize(), new THREE.Vector3(0,0,0), initialV.length(), 0xffffff, 0.3, 0.2);
+        vRef.current = new Vector(initialV.clone().normalize(), new THREE.Vector3(0,0,0), initialV.length(), 0xffffff, 0.3, 0.2);
         scene.add(vRef.current);
         
         combinationHelpersRef.current = new THREE.Group();
@@ -269,7 +183,7 @@ export function InteractiveMatrixTransformation() {
         const det = b1.x * b2.y - b1.y * b2.x;
         setDeterminant(det);
 
-        const updateArrow = (arrow: VectorArrow | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string, showCoords = true, showLength: boolean = false) => {
+        const updateArrow = (arrow: Vector | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string, showCoords = true, showLength: boolean = false) => {
             if (arrow) {
                 const length = vector.length();
                 if (length > 0.001) {
@@ -311,7 +225,7 @@ export function InteractiveMatrixTransformation() {
                  if ((child as any).geometry) (child as any).geometry.dispose();
                 if ((child as any).material) (child as any).material.dispose();
             }
-            const newHelpers = drawLinearCombinationHelpers(sceneRef.current, b1, b2, coords.x, coords.y);
+            const newHelpers = drawLinearCombination(sceneRef.current, b1, b2, coords.x, coords.y);
             combinationHelpersRef.current.add(...newHelpers.children);
         }
         
@@ -393,4 +307,3 @@ export function InteractiveMatrixTransformation() {
         </div>
     );
 }
-

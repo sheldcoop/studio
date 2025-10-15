@@ -18,9 +18,13 @@ type PlaneOptions = BaseOptions & {
 
 /**
  * A wrapper class for THREE.ArrowHelper to make it easier to update its
- * length and direction after creation.
+ * length, direction, and labels after creation.
  */
 export class Vector extends THREE.ArrowHelper {
+    public labelSprite: THREE.Sprite | null = null;
+    public coordLabelSprite: THREE.Sprite | null = null;
+    public lengthLabelSprite: THREE.Sprite | null = null;
+
     constructor(
         dir: THREE.Vector3,
         origin: THREE.Vector3,
@@ -28,26 +32,72 @@ export class Vector extends THREE.ArrowHelper {
         color: THREE.ColorRepresentation,
         headLength?: number,
         headWidth?: number,
-        public label?: string,
-        public labelOffset?: THREE.Vector3
     ) {
         super(dir, origin, length, color, headLength, headWidth);
+    }
 
-        if (this.label) {
-            const labelSprite = createLabel(this.label, color, 0.4);
-            const finalPos = this.position.clone().add(this.cone.position).add(labelOffset || new THREE.Vector3(0.3, 0.3, 0));
-            labelSprite.position.copy(finalPos);
-            this.add(labelSprite);
+    setLabel(text: string, color: THREE.ColorRepresentation, scale: number = 0.4) {
+        if (this.labelSprite) this.remove(this.labelSprite);
+        this.labelSprite = createLabel(text, color, scale);
+        this.add(this.labelSprite);
+        this.updateLabelPosition();
+    }
+    
+    setCoordsLabel(coords: THREE.Vector3, color: THREE.ColorRepresentation) {
+        if (this.coordLabelSprite) this.remove(this.coordLabelSprite);
+        const text = `(${coords.x.toFixed(2)}, ${coords.y.toFixed(2)})`;
+        this.coordLabelSprite = createLabel(text, color, 0.35);
+        this.add(this.coordLabelSprite);
+        this.updateLabelPosition();
+    }
+
+    setLengthLabel(length: number | null, color: THREE.ColorRepresentation) {
+        if (this.lengthLabelSprite) this.remove(this.lengthLabelSprite);
+        if (length === null) return;
+        
+        const text = `|v| = ${length.toFixed(2)}`;
+        this.lengthLabelSprite = createLabel(text, color, 0.35);
+        this.add(this.lengthLabelSprite);
+        this.updateLabelPosition();
+    }
+
+    updateLabelPosition() {
+        const dir = new THREE.Vector3();
+        this.line.getWorldDirection(dir);
+
+        const length = this.line.scale.y;
+
+        const offsetScale = 0.7;
+
+        if (this.labelSprite) {
+            const offset = dir.clone().multiplyScalar(length + offsetScale);
+            this.labelSprite.position.copy(this.line.position).add(offset);
+        }
+        if (this.coordLabelSprite) {
+            const offset = dir.clone().multiplyScalar(length + offsetScale * 0.5).add(new THREE.Vector3(0, -0.3, 0));
+            this.coordLabelSprite.position.copy(this.line.position).add(offset);
+        }
+        if (this.lengthLabelSprite) {
+             const offset = dir.clone().multiplyScalar(length + offsetScale * 0.5).add(new THREE.Vector3(0, 0.3, 0));
+            this.lengthLabelSprite.position.copy(this.line.position).add(offset);
         }
     }
 
-    // Method to update the label's position
-    updateLabelPosition() {
-        const labelSprite = this.children.find(child => child instanceof THREE.Sprite);
-        if (labelSprite) {
-            const finalPos = this.position.clone().add(this.cone.position).add(this.labelOffset || new THREE.Vector3(0.3, 0.3, 0));
-            labelSprite.position.copy(finalPos);
+    setDirectionAndLength(dir: THREE.Vector3, length: number) {
+        if (length < 1e-6) {
+            this.setLength(0, 0, 0);
+            if(this.labelSprite) this.labelSprite.visible = false;
+            if(this.coordLabelSprite) this.coordLabelSprite.visible = false;
+            if(this.lengthLabelSprite) this.lengthLabelSprite.visible = false;
+            return;
         }
+        if(this.labelSprite) this.labelSprite.visible = true;
+        if(this.coordLabelSprite) this.coordLabelSprite.visible = true;
+        if(this.lengthLabelSprite) this.lengthLabelSprite.visible = true;
+
+        super.setDirection(dir);
+        super.setLength(length, 0.3, 0.2);
+        this.updateLabelPosition();
     }
 }
 

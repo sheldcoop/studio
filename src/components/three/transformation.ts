@@ -152,6 +152,34 @@ export const drawProjection = (scene: THREE.Scene, options: ProjectionOptions): 
     return group;
 };
 
+/**
+ * Draws dashed helper lines to visualize a linear combination.
+ * @returns A THREE.Group containing the dashed lines.
+ */
+export const drawLinearCombination = (scene: THREE.Scene, b1: THREE.Vector3, b2: THREE.Vector3, x: number, y: number): THREE.Group => {
+    const group = new THREE.Group();
+    if (Math.abs(x) < 0.01 && Math.abs(y) < 0.01) return group;
+
+    const p1 = b1.clone().multiplyScalar(x);
+    const p2 = b2.clone().multiplyScalar(y);
+
+    const material1 = new THREE.LineDashedMaterial({ color: 0xff8a65, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.7 });
+    const geom1 = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), p1]);
+    const line1 = new THREE.Line(geom1, material1);
+    line1.computeLineDistances();
+    group.add(line1);
+
+    const material2 = new THREE.LineDashedMaterial({ color: 0x69f0ae, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.7 });
+    const geom2 = new THREE.BufferGeometry().setFromPoints([p1, p1.clone().add(p2)]);
+    const line2 = new THREE.Line(geom2, material2);
+    line2.computeLineDistances();
+    group.add(line2);
+
+    group.position.z = -0.1;
+    scene.add(group);
+    return group;
+}
+
 // --- MATH VISUALIZATION FUNCTIONS ---
 
 type EigenspaceOptions = {
