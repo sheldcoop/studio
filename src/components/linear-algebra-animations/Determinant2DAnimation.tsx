@@ -15,6 +15,7 @@ import { Label } from '../ui/label';
 import { easeInOutCubic } from '../three/animation';
 import { BlockMath } from 'react-katex';
 import { Progress } from '@/components/ui/progress';
+import { createLabel } from '../three/ui-helpers';
 
 type Matrix2D = { a: number, b: number, c: number, d: number };
 
@@ -195,13 +196,14 @@ export function Determinant2DAnimation() {
         sceneRef.current = scene;
 
         const aspect = currentMount.clientWidth / currentMount.clientHeight;
-        const frustumSize = 10;
+        const frustumSize = 12;
         const camera = new THREE.OrthographicCamera(
             frustumSize * aspect / -2, frustumSize * aspect / 2,
             frustumSize / 2, frustumSize / -2,
             0.1, 100
         );
-        camera.position.set(0, 0, 10);
+        camera.position.set(2, 2, 10);
+        camera.lookAt(2,2,0)
         cameraRef.current = camera;
         
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -244,10 +246,10 @@ export function Determinant2DAnimation() {
         // Draggability
         if (b1Ref.current && b2Ref.current) {
             const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { 
-                onDrag: (obj, pos) => setB1Pos(pos.clone().setZ(0))
+                onDrag: (obj, pos) => { if(mode === 'explore') setB1Pos(pos.clone().setZ(0)) }
             });
             const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { 
-                onDrag: (obj, pos) => setB2Pos(pos.clone().setZ(0))
+                onDrag: (obj, pos) => { if(mode === 'explore') setB2Pos(pos.clone().setZ(0)) }
             });
             cleanupFunctions.push(cleanupB1, cleanupB2);
         }
@@ -342,14 +344,14 @@ export function Determinant2DAnimation() {
                 <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
-                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 p-4 rounded-lg border bg-muted/50">
-                    <div className="lg:col-span-2">
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/50">
+                    <div>
                         <MatrixInput matrix={matrixInput} setMatrix={setMatrixInput} label="Transformation Matrix (M)" />
                         <div className="flex justify-center mt-2">
                             <Button onClick={applyMatrix} size="sm">Apply Matrix</Button>
                         </div>
                     </div>
-                    <div className="lg:col-span-3">
+                    <div className="space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
