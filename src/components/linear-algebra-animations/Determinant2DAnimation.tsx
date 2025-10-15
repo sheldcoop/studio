@@ -145,7 +145,6 @@ export function Determinant2DAnimation() {
             
             setB1Pos(newB1);
             setB2Pos(newB2);
-            setMatrixInput({ a: newB1.x, b: newB2.x, c: newB1.y, d: newB2.y });
     
             if (progress < 1) {
                 requestAnimationFrame(animate);
@@ -155,35 +154,33 @@ export function Determinant2DAnimation() {
     };
 
     const handlePreset = (preset: 'identity' | 'shear' | 'rotate' | 'scale' | 'collapse' | 'reflect') => {
-        let targetB1: THREE.Vector3, targetB2: THREE.Vector3;
+        let newMatrix: Matrix2D;
         switch(preset) {
             case 'shear':
-                targetB1 = new THREE.Vector3(1, 0, 0);
-                targetB2 = new THREE.Vector3(1, 1, 0);
+                newMatrix = { a: 1, b: 1, c: 0, d: 1 };
                 break;
             case 'rotate':
-                targetB1 = new THREE.Vector3(0, 1, 0);
-                targetB2 = new THREE.Vector3(-1, 0, 0);
+                newMatrix = { a: 0, b: -1, c: 1, d: 0 };
                 break;
             case 'scale':
-                targetB1 = new THREE.Vector3(2, 0, 0);
-                targetB2 = new THREE.Vector3(0, 2, 0);
+                newMatrix = { a: 2, b: 0, c: 0, d: 2 };
                 break;
              case 'collapse':
-                targetB1 = new THREE.Vector3(1, 2, 0);
-                targetB2 = new THREE.Vector3(2, 4, 0);
+                newMatrix = { a: 1, b: 2, c: 2, d: 4 };
                 break;
             case 'reflect':
-                targetB1 = new THREE.Vector3(-1, 0, 0);
-                targetB2 = new THREE.Vector3(0, 1, 0);
+                newMatrix = { a: -1, b: 0, c: 0, d: 1 };
                 break;
             case 'identity':
             default:
-                targetB1 = new THREE.Vector3(1, 0, 0);
-                targetB2 = new THREE.Vector3(0, 1, 0);
+                newMatrix = { a: 1, b: 0, c: 0, d: 1 };
                 break;
         }
-        animateTo(targetB1, targetB2);
+        setMatrixInput(newMatrix);
+        animateTo(
+            new THREE.Vector3(newMatrix.a, newMatrix.c, 0),
+            new THREE.Vector3(newMatrix.b, newMatrix.d, 0)
+        );
     }
 
     // One-time scene setup
@@ -336,124 +333,62 @@ export function Determinant2DAnimation() {
     }, [b1Pos, b2Pos]);
 
     const status = getExplanation(determinant);
-
-    const storyContent = [
-        {
-            title: "Meet the Unit Square",
-            description: "The standard grid is made of unit squares, each with an area of 1. Our basis vectors î and ĵ define the sides of this square.",
-            buttonText: "Next: Transform the Space",
-            visible: true
-        },
-        {
-            title: "Transform the Space",
-            description: "The columns of our matrix tell us where the basis vectors land. Vector î lands at b₁, and ĵ lands at b₂.",
-            buttonText: "Next: The Determinant Secret",
-            visible: true
-        },
-        {
-            title: "The Determinant's Secret",
-            description: "The determinant is the scaling factor of area. The area of the new parallelogram is exactly |det(M)| times the original area.",
-            buttonText: "Explore Presets",
-            visible: true
-        },
-        {
-            title: "Explore Transformations",
-            description: "Use the presets or drag the vectors to see how different matrices affect area and orientation.",
-            buttonText: "Start Over",
-            visible: true
-        }
-    ];
-
-    const handleNextStage = () => {
-        setStoryStage(prev => (prev + 1) % storyContent.length);
-    }
-
-    const stage = storyContent[storyStage];
     
     return (
         <Card className="w-full">
             <CardHeader>
-                <CardTitle className="font-headline">The Determinant Journey</CardTitle>
-                <div className="flex items-center gap-4 pt-2">
-                    <Progress value={(storyStage + 1) / storyContent.length * 100} className="w-full" />
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">{storyStage + 1} / {storyContent.length}</span>
-                </div>
+                <CardTitle className="font-headline">The Interactive Determinant</CardTitle>
+                <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
             </CardHeader>
-            <CardContent className="p-4 grid grid-cols-1 md:grid-cols-5 gap-4">
-                {/* Left Column for Controls */}
-                <div className="space-y-4 md:col-span-2">
-                     <Card>
-                         <CardHeader className="p-4">
-                             <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                                 <div className="flex-shrink-0 bg-primary/10 p-2 rounded-full"><ChevronsRight className="h-5 w-5 text-primary"/></div>
-                                 <span>{stage.title}</span>
-                             </CardTitle>
-                             <CardDescription className="pt-2">{stage.description}</CardDescription>
-                         </CardHeader>
-                         <CardFooter className="p-4 pt-0">
-                            <Button onClick={handleNextStage} className="w-full">{stage.buttonText}</Button>
-                         </CardFooter>
-                     </Card>
-
-                     {storyStage >= 1 && (
-                        <div className="p-4 rounded-lg border bg-muted/50">
-                            <MatrixInput matrix={matrixInput} setMatrix={setMatrixInput} label="Transformation Matrix (M)" />
-                            <div className="flex justify-center mt-2">
-                                <Button onClick={applyMatrix} size="sm">Apply Matrix</Button>
-                            </div>
+            <CardContent className="p-4 space-y-4">
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/50">
+                    <div>
+                        <MatrixInput matrix={matrixInput} setMatrix={setMatrixInput} label="Transformation Matrix (M)" />
+                        <div className="flex justify-center mt-2">
+                            <Button onClick={applyMatrix} size="sm">Apply Matrix</Button>
                         </div>
-                     )}
-                     
-                     {storyStage >= 2 && (
-                        <div className="text-center p-4 bg-muted/50 rounded-lg">
-                            <BlockMath math={`\\text{det}(M) = (${b1Pos.x.toFixed(2)} \\times ${b2Pos.y.toFixed(2)}) - (${b2Pos.x.toFixed(2)} \\times ${b1Pos.y.toFixed(2)}) = ${determinant.toFixed(2)}`} />
+                    </div>
+                    <div>
+                        <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('shear')}>Shear</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('reflect')}>Reflect</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
                         </div>
-                     )}
-
-                    {storyStage >= 3 && (
-                        <>
-                            <div className="p-4 rounded-lg border bg-muted/50">
-                                <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
-                                    <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
-                                    <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
-                                    <Button variant="outline" size="sm" onClick={() => handlePreset('shear')}>Shear</Button>
-                                    <Button variant="outline" size="sm" onClick={() => handlePreset('reflect')}>Reflect</Button>
-                                    <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                                <div className="p-2 bg-muted rounded-lg">
-                                    <p className="text-xs font-semibold text-muted-foreground">ORIGINAL AREA</p>
-                                    <p className="font-mono text-xl font-bold tracking-tight text-amber-400">1.00</p>
-                                </div>
-                                <div className="p-2 bg-muted rounded-lg">
-                                    <p className="text-xs font-semibold text-muted-foreground">TRANSFORMED AREA</p>
-                                    <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}</p>
-                                </div>
-                                <div className="p-2 bg-muted rounded-lg">
-                                    <p className="text-xs font-semibold text-muted-foreground">SCALING FACTOR</p>
-                                    <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}x</p>
-                                </div>
-                            </div>
-                            <Card className={cn("border-2", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
-                                <CardHeader className="p-4 flex flex-row items-center gap-3">
-                                    <div className={cn("flex-shrink-0", status.color)}>{status.icon}</div>
-                                    <CardTitle className="text-lg">{status.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-4 pt-0 text-sm text-muted-foreground">
-                                    {status.text}
-                                </CardContent>
-                            </Card>
-                        </>
-                    )}
+                    </div>
                 </div>
 
-                 {/* Right Column for Visualization */}
-                <div className="md:col-span-3 relative aspect-square md:aspect-auto w-full h-full min-h-[400px] md:min-h-0 overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing">
+                <div className="relative aspect-square md:aspect-video w-full h-full min-h-[400px] md:min-h-0 overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing">
                     <div ref={mountRef} className="absolute inset-0"></div>
+                </div>
+                
+                <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div className="p-2 bg-muted rounded-lg">
+                            <p className="text-xs font-semibold text-muted-foreground">ORIGINAL AREA</p>
+                            <p className="font-mono text-xl font-bold tracking-tight text-amber-400">1.00</p>
+                        </div>
+                        <div className="p-2 bg-muted rounded-lg">
+                            <p className="text-xs font-semibold text-muted-foreground">TRANSFORMED AREA</p>
+                            <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}</p>
+                        </div>
+                        <div className="p-2 bg-muted rounded-lg">
+                            <p className="text-xs font-semibold text-muted-foreground">SCALING FACTOR</p>
+                            <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}x</p>
+                        </div>
+                    </div>
+                    <Card className={cn("border-2", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
+                        <CardHeader className="p-4 flex flex-row items-center gap-3">
+                            <div className={cn("flex-shrink-0", status.color)}>{status.icon}</div>
+                            <CardTitle className="text-lg">{status.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-0 text-sm text-muted-foreground">
+                            {status.text}
+                        </CardContent>
+                    </Card>
                 </div>
             </CardContent>
         </Card>
