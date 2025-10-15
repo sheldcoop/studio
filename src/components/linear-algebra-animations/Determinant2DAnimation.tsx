@@ -100,19 +100,16 @@ const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix
 export function Determinant2DAnimation() {
     const mountRef = useRef<HTMLDivElement>(null);
     
-    // State for vectors & determinant
     const [b1Pos, setB1Pos] = useState(new THREE.Vector3(initialMatrix.a, initialMatrix.c, 0));
     const [b2Pos, setB2Pos] = useState(new THREE.Vector3(initialMatrix.b, initialMatrix.d, 0));
     const [determinant, setDeterminant] = useState(0);
-    const [matrixInput, setMatrixInput] = useState(initialMatrix);
+    const [matrix, setMatrix] = useState(initialMatrix);
 
-    // Refs for three.js objects
     const sceneRef = useRef<THREE.Scene | null>(null);
     const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
     const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
     const animationFrameIdRef = useRef<number>();
     
-    // Refs for visual objects
     const b1Ref = useRef<Vector | null>(null);
     const b2Ref = useRef<Vector | null>(null);
     const iHatRef = useRef<Vector | null>(null);
@@ -122,12 +119,12 @@ export function Determinant2DAnimation() {
     
     const applyMatrix = () => {
         animateTo(
-            new THREE.Vector3(matrixInput.a, matrixInput.c, 0),
-            new THREE.Vector3(matrixInput.b, matrixInput.d, 0)
+            new THREE.Vector3(matrix.a, matrix.c, 0),
+            new THREE.Vector3(matrix.b, matrix.d, 0)
         );
     };
 
-    const animateTo = (targetB1: THREE.Vector3, targetB2: THREE.Vector3) => {
+    const animateTo = useCallback((targetB1: THREE.Vector3, targetB2: THREE.Vector3) => {
         const startB1 = b1Pos.clone();
         const startB2 = b2Pos.clone();
         const duration = 500;
@@ -149,9 +146,9 @@ export function Determinant2DAnimation() {
             }
         };
         requestAnimationFrame(animate);
-    };
+    }, [b1Pos, b2Pos]);
 
-    const handlePreset = (preset: 'identity' | 'shear' | 'rotate' | 'scale' | 'collapse' | 'reflect') => {
+    const handlePreset = useCallback((preset: 'identity' | 'shear' | 'rotate' | 'scale' | 'collapse' | 'reflect') => {
         let newMatrix: Matrix2D;
         switch(preset) {
             case 'shear':
@@ -174,14 +171,14 @@ export function Determinant2DAnimation() {
                 newMatrix = { a: 1, b: 0, c: 0, d: 1 };
                 break;
         }
-        setMatrixInput(newMatrix);
+        setMatrix(newMatrix);
         animateTo(
             new THREE.Vector3(newMatrix.a, newMatrix.c, 0),
             new THREE.Vector3(newMatrix.b, newMatrix.d, 0)
         );
-    }
+    }, [animateTo]);
 
-    // One-time scene setup
+    // Scene setup
     useEffect(() => {
         if (!mountRef.current) return;
 
@@ -191,13 +188,9 @@ export function Determinant2DAnimation() {
         const scene = new THREE.Scene();
         sceneRef.current = scene;
 
-        const aspect = currentMount.clientWidth / currentMount.clientHeight;
         const frustumSize = 12;
-        const camera = new THREE.OrthographicCamera(
-            frustumSize * aspect / -2, frustumSize * aspect / 2,
-            frustumSize / 2, frustumSize / -2,
-            0.1, 100
-        );
+        const aspect = currentMount.clientWidth / currentMount.clientHeight;
+        const camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 0.1, 100);
         cameraRef.current = camera;
         
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -206,54 +199,39 @@ export function Determinant2DAnimation() {
         rendererRef.current = renderer;
         currentMount.appendChild(renderer.domElement);
         cleanupFunctions.push(() => {
-            if (renderer.domElement.parentElement === currentMount) {
-                currentMount.removeChild(renderer.domElement);
-            }
+            if (renderer.domElement.parentElement === currentMount) { currentMount.removeChild(renderer.domElement); }
             renderer.dispose();
         });
         
-        // --- Corrected Grid and Camera Setup ---
         const gridSize = 20;
-        const gridDivisions = 20; // This makes each cell 1x1
+        const gridDivisions = 20;
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x444444, 0x444444);
         grid.rotation.x = Math.PI / 2;
-        grid.position.set(gridSize / 2, gridSize / 2, -0.2); // Offset to align with the unit square
         scene.add(grid);
 
-        camera.position.set(gridSize / 2, gridSize / 2, 10);
-        camera.lookAt(gridSize / 2, gridSize / 2, 0);
+        camera.position.set(0, 0, 10);
+        camera.lookAt(0, 0, 0);
 
-        // Unit Square
         unitSquareRef.current = drawShading(scene, {
             points: [new THREE.Vector2(0,0), new THREE.Vector2(1,0), new THREE.Vector2(1,1), new THREE.Vector2(0,1)],
             color: 0xffd700
         });
         if(unitSquareRef.current) unitSquareRef.current.position.z = -0.1;
-
-        // Basis Vectors
+        
         iHatRef.current = new Vector(new THREE.Vector3(1, 0, 0), 1, 0xff3333, 0.2, 0.1, 'î'); 
         jHatRef.current = new Vector(new THREE.Vector3(0, 1, 0), 1, 0x33ff33, 0.2, 0.1, 'ĵ');
         scene.add(iHatRef.current, jHatRef.current);
         
-        // Transformed Basis Vectors
         b1Ref.current = new Vector(b1Pos.clone().normalize(), b1Pos.length(), 0xff8a65, 0.3, 0.2, 'b₁');
         b2Ref.current = new Vector(b2Pos.clone().normalize(), b2Pos.length(), 0x69f0ae, 0.3, 0.2, 'b₂');
         scene.add(b1Ref.current, b2Ref.current);
         
-        // Transformed Parallelogram
         parallelogramRef.current = new THREE.Mesh();
         scene.add(parallelogramRef.current);
         
-        // Draggability
-        if (b1Ref.current && b2Ref.current) {
-            const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { 
-                onDrag: (obj, pos) => { setB1Pos(pos.clone().setZ(0)) }
-            });
-            const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { 
-                onDrag: (obj, pos) => { setB2Pos(pos.clone().setZ(0)) }
-            });
-            cleanupFunctions.push(cleanupB1, cleanupB2);
-        }
+        const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { onDrag: (obj, pos) => { setB1Pos(pos.clone().setZ(0)) } });
+        const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { onDrag: (obj, pos) => { setB2Pos(pos.clone().setZ(0)) } });
+        cleanupFunctions.push(cleanupB1, cleanupB2);
         
         const animate = () => {
             animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -278,7 +256,7 @@ export function Determinant2DAnimation() {
         return () => {
             if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
             cleanupFunctions.forEach(fn => fn());
-             if (mountRef.current) {
+            if (mountRef.current) {
                 while (mountRef.current.firstChild) {
                     mountRef.current.removeChild(mountRef.current.firstChild);
                 }
@@ -287,23 +265,19 @@ export function Determinant2DAnimation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Effect to update visualization when state changes
+    // Update visualization
     useEffect(() => {
         const det = b1Pos.x * b2Pos.y - b1Pos.y * b2Pos.x;
         setDeterminant(det);
-        setMatrixInput({ a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y });
+        setMatrix({ a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y });
 
         const updateArrow = (arrow: Vector | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string) => {
             if (arrow) {
                 const length = vector.length();
-                if (length > 0.001) {
-                    arrow.setDirectionAndLength(vector.clone().normalize(), length);
-                } else {
-                    arrow.setLength(0, 0, 0);
-                }
-                 if (label) arrow.setLabel(label, color);
-                 arrow.setCoordsLabel(vector, color);
-                 arrow.updateLabelPosition();
+                arrow.setDirectionAndLength(length > 0.001 ? vector.clone().normalize() : new THREE.Vector3(1,0,0), length);
+                if (label) arrow.setLabel(label, color);
+                arrow.setCoordsLabel(vector, color);
+                arrow.updateLabelPosition();
             }
         }
         
@@ -345,9 +319,9 @@ export function Determinant2DAnimation() {
                 <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/50">
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start p-4 rounded-lg border bg-muted/50">
                     <div className="flex justify-center items-center gap-4">
-                        <MatrixInput matrix={matrixInput} setMatrix={setMatrixInput} label="Matrix M" />
+                        <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Matrix M" />
                         <Button onClick={applyMatrix}>Apply</Button>
                     </div>
                     <div className="space-y-2">
