@@ -187,7 +187,7 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 10;
+        const gridDivisions = 20; // Makes each cell 1x1
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
@@ -202,7 +202,6 @@ export function Determinant2DAnimation() {
         const addGridLabel = (text: string, position: THREE.Vector3, color: number) => {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d')!;
-            ctx.font = 'bold 48px Arial';
             canvas.width = 100;
             canvas.height = 60;
             ctx.font = 'bold 48px Arial';
@@ -349,11 +348,8 @@ export function Determinant2DAnimation() {
                     <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                        <div className="flex flex-col items-center gap-4 p-4 rounded-lg border bg-muted/50">
-                            <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Matrix M" />
-                            <Button onClick={applyMatrix}>Apply</Button>
-                        </div>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                        <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Transformation Matrix (M)" />
                         <div className="space-y-2">
                             <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
                             <div className="grid grid-cols-2 gap-2">
@@ -365,6 +361,9 @@ export function Determinant2DAnimation() {
                                 <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
                             </div>
                         </div>
+                    </div>
+                     <div className="flex justify-center mt-4">
+                        <Button onClick={applyMatrix}>Apply Matrix</Button>
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4 p-4">
@@ -383,7 +382,7 @@ export function Determinant2DAnimation() {
                                 <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}x</p>
                             </div>
                         </div>
-                        <div className="text-center p-3 bg-muted/30 rounded-lg">
+                         <div className="text-center p-3 bg-muted/30 rounded-lg">
                             <p className="text-xs text-muted-foreground mb-1">Determinant Formula:</p>
                             <div className="font-mono text-sm">
                                 <BlockMath math={`\\text{det}(M) = (a \\times d) - (b \\times c)`} />
@@ -410,3 +409,6 @@ export function Determinant2DAnimation() {
         </div>
     );
 }
+
+
+    
