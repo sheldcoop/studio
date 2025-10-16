@@ -53,7 +53,6 @@ const getExplanation = (det: number) => {
   return { icon, title, text, color: colorClass };
 };
 
-
 const MatrixInput = ({ matrix, setMatrix, label }: { matrix: Matrix2D, setMatrix: (m: Matrix2D) => void, label: string }) => {
     const handleChange = (key: keyof Matrix2D, value: string) => {
         const numValue = parseFloat(value);
@@ -134,20 +133,19 @@ export function Determinant2DAnimation() {
         let newMatrix: Matrix2D;
         switch(preset) {
             case 'shear':
-                newMatrix = { a: 1, b: 1, c: 0, d: 1 }; // Shear along x
+                newMatrix = { a: 1, b: 1, c: 0, d: 1 };
                 break;
             case 'rotate':
-                // Rotate 90° counterclockwise
                 newMatrix = { a: 0, b: -1, c: 1, d: 0 };
                 break;
             case 'scale':
-                newMatrix = { a: 2, b: 0, c: 0, d: 2 }; // Uniform 2x scaling
+                newMatrix = { a: 2, b: 0, c: 0, d: 2 };
                 break;
              case 'collapse':
-                newMatrix = { a: 1, b: 1, c: 1, d: 1 }; // Collapse to diagonal line
+                newMatrix = { a: 1, b: 1, c: 1, d: 1 };
                 break;
             case 'reflect':
-                newMatrix = { a: -1, b: 0, c: 0, d: 1 }; // Reflect across y-axis
+                newMatrix = { a: -1, b: 0, c: 0, d: 1 };
                 break;
             case 'identity':
             default:
@@ -189,10 +187,10 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 20; // Makes each cell exactly 1x1
+        const gridDivisions = 20;
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
-        grid.position.set(0, 0, -0.2); // Slightly behind objects
+        grid.position.set(0, 0, -0.2); 
         scene.add(grid);
 
         const axesMaterial = new THREE.LineBasicMaterial({ color: 0x888888 });
@@ -349,13 +347,13 @@ export function Determinant2DAnimation() {
             </CardHeader>
             <CardContent className="p-4 space-y-4">
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start p-4 rounded-lg border bg-muted/50">
-                    <div className="flex justify-center items-center gap-4">
+                    <div className="flex flex-col items-center gap-4">
                         <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Matrix M" />
                         <Button onClick={applyMatrix}>Apply</Button>
                     </div>
                     <div className="space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <div className="grid grid-cols-1 gap-2">
                             <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
