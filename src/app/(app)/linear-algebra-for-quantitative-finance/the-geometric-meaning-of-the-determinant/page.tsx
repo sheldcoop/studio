@@ -42,8 +42,8 @@ export default function DeterminantMeaningPage() {
           The number itself tells us by what factor the transformation scales area, while its sign tells us if space has been &quot;flipped&quot; or inverted.
         </p>
         <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-            <li><strong>`det(A) > 0`</strong>: Preserves orientation (no flipping). The area of any shape is scaled by a factor of `det(A)`.</li>
-            <li><strong>`det(A) < 0`</strong>: Reverses orientation (a flip occurred, like looking in a mirror). Areas are scaled by `|det(A)|`.</li>
+            <li><strong>`det(A) &gt; 0`</strong>: Preserves orientation (no flipping). The area of any shape is scaled by a factor of `det(A)`.</li>
+            <li><strong>`det(A) &lt; 0`</strong>: Reverses orientation (a flip occurred, like looking in a mirror). Areas are scaled by `|det(A)|`.</li>
         </ul>
       </DefinitionCard>
 
