@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawShading, Vector } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -187,7 +187,7 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 20;
+        const gridDivisions = 10;
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
@@ -377,9 +377,7 @@ export function Determinant2DAnimation() {
                             = {determinant.toFixed(2)}
                         </p>
                     </div>
-                </CardContent>
-                <CardFooter className="flex flex-col gap-4 p-4">
-                    <div className="w-full space-y-4">
+                     <div className="w-full space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                             <div className="p-2 bg-muted rounded-lg">
                                 <p className="text-xs font-semibold text-muted-foreground">ORIGINAL AREA</p>
@@ -404,7 +402,7 @@ export function Determinant2DAnimation() {
                             </CardContent>
                         </Card>
                     </div>
-                </CardFooter>
+                </CardContent>
             </Card>
         </div>
     );
