@@ -6,13 +6,15 @@ import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawShading, Vector } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { easeInOutCubic } from '../three/animation';
 import { BlockMath } from 'react-katex';
+import { drawAxes } from '../three/coordinate-system';
+import { drawTransformedGrid, drawLinearCombination } from '../three/transformation';
 
 type Matrix2D = { a: number, b: number, c: number, d: number };
 
@@ -185,18 +187,14 @@ export function Determinant2DAnimation() {
             renderer.dispose();
         });
         
-        const gridSize = 20;
-        const gridDivisions = 20;
+        const gridSize = 10;
+        const gridDivisions = 10;
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
         scene.add(grid);
 
-        const axesMaterial = new THREE.LineBasicMaterial({ color: 0x888888 });
-        const xAxisGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-10, 0, 0), new THREE.Vector3(10, 0, 0)]);
-        const yAxisGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -10, 0), new THREE.Vector3(0, 10, 0)]);
-        scene.add(new THREE.Line(xAxisGeom, axesMaterial));
-        scene.add(new THREE.Line(yAxisGeom, axesMaterial));
+        drawAxes(scene, { size: 5, showZ: false });
         
         unitSquareRef.current = drawShading(scene, {
             points: [new THREE.Vector2(0,0), new THREE.Vector2(1,0), new THREE.Vector2(1,1), new THREE.Vector2(0,1)],
@@ -331,7 +329,7 @@ export function Determinant2DAnimation() {
                         <Button onClick={applyMatrix}>Apply Matrix</Button>
                     </div>
                 </CardContent>
-                <CardContent className="flex-col space-y-4">
+                <CardFooter className="flex-col space-y-4">
                     <div className="w-full space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
                         <div className="grid grid-cols-2 gap-2">
@@ -380,8 +378,10 @@ export function Determinant2DAnimation() {
                             </CardContent>
                         </Card>
                     </div>
-                </CardContent>
+                </CardFooter>
             </Card>
         </div>
     );
 }
+
+    
