@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawShading, Vector } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -172,8 +172,7 @@ export function Determinant2DAnimation() {
         const aspect = currentMount.clientWidth / currentMount.clientHeight;
         const frustumSize = 10;
         const camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 0.1, 100);
-        camera.position.set(2, 2, 10);
-        camera.lookAt(2, 2, 0);
+        camera.position.set(0, 0, 10);
         cameraRef.current = camera;
         
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -187,7 +186,7 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 10;
+        const gridDivisions = 20;
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
@@ -198,29 +197,6 @@ export function Determinant2DAnimation() {
         const yAxisGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -10, 0), new THREE.Vector3(0, 10, 0)]);
         scene.add(new THREE.Line(xAxisGeom, axesMaterial));
         scene.add(new THREE.Line(yAxisGeom, axesMaterial));
-        
-        const addGridLabel = (text: string, position: THREE.Vector3, color: number) => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d')!;
-            canvas.width = 100;
-            canvas.height = 60;
-            ctx.font = 'bold 48px Arial';
-            ctx.fillStyle = new THREE.Color(color).getStyle();
-            ctx.fillText(text, 10, 45);
-            
-            const texture = new THREE.CanvasTexture(canvas);
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture }));
-            sprite.scale.set(0.5, 0.3, 1);
-            sprite.position.copy(position);
-            scene.add(sprite);
-        };
-        
-        for (let i = -10; i <= 10; i += 2) {
-            if (i !== 0) {
-                addGridLabel(i.toString(), new THREE.Vector3(i, -0.5, 0), 0x888888);
-                addGridLabel(i.toString(), new THREE.Vector3(-0.5, i, 0), 0x888888);
-            }
-        }
         
         unitSquareRef.current = drawShading(scene, {
             points: [new THREE.Vector2(0,0), new THREE.Vector2(1,0), new THREE.Vector2(1,1), new THREE.Vector2(0,1)],
@@ -355,10 +331,10 @@ export function Determinant2DAnimation() {
                         <Button onClick={applyMatrix}>Apply Matrix</Button>
                     </div>
                 </CardContent>
-                <CardFooter className="flex-col space-y-4">
+                <CardContent className="flex-col space-y-4">
                     <div className="w-full space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
-                        <div className="grid grid-cols-1 gap-2">
+                        <div className="grid grid-cols-2 gap-2">
                             <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
@@ -404,7 +380,7 @@ export function Determinant2DAnimation() {
                             </CardContent>
                         </Card>
                     </div>
-                </CardFooter>
+                </CardContent>
             </Card>
         </div>
     );

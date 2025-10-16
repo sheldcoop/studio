@@ -23,6 +23,7 @@ type PlaneOptions = BaseOptions & {
 export class Vector extends THREE.Group {
     public labelSprite: THREE.Sprite | null = null;
     public coordLabelSprite: THREE.Sprite | null = null;
+    public lengthLabelSprite: THREE.Sprite | null = null;
     public arrow: THREE.ArrowHelper;
     public line: THREE.Line;
     public cone: THREE.Mesh;
@@ -61,6 +62,18 @@ export class Vector extends THREE.Group {
         this.add(this.coordLabelSprite);
         this.updateLabelPosition();
     }
+    
+    setLengthLabel(length: number | null, color: THREE.ColorRepresentation) {
+        if (this.lengthLabelSprite) this.remove(this.lengthLabelSprite);
+        if (length !== null) {
+            const text = `len: ${length.toFixed(2)}`;
+            this.lengthLabelSprite = createLabel(text, color, 0.3);
+            this.add(this.lengthLabelSprite);
+        } else {
+            this.lengthLabelSprite = null;
+        }
+        this.updateLabelPosition();
+    }
 
     updateLabelPosition() {
         const dir = new THREE.Vector3();
@@ -72,12 +85,20 @@ export class Vector extends THREE.Group {
 
         if (this.labelSprite) {
             const offset = dir.clone().multiplyScalar(length + offsetScale * 0.7);
+            // Position label slightly above the tip
+            offset.add(new THREE.Vector3(0, 0.4, 0));
             this.labelSprite.position.copy(this.arrow.line.position).add(offset);
         }
         if (this.coordLabelSprite) {
+            const offset = dir.clone().multiplyScalar(length + offsetScale * 0.7);
             // Position coordinates below the main label
-            const offset = dir.clone().multiplyScalar(length + offsetScale * 0.7).add(new THREE.Vector3(0, -0.4, 0));
             this.coordLabelSprite.position.copy(this.arrow.line.position).add(offset);
+        }
+        if (this.lengthLabelSprite) {
+             const offset = dir.clone().multiplyScalar(length + offsetScale * 0.7);
+            // Position length below coordinates
+            offset.add(new THREE.Vector3(0, -0.35, 0));
+            this.lengthLabelSprite.position.copy(this.arrow.line.position).add(offset);
         }
     }
 
@@ -86,23 +107,15 @@ export class Vector extends THREE.Group {
             this.arrow.setLength(0, 0, 0);
             if(this.labelSprite) this.labelSprite.visible = false;
             if(this.coordLabelSprite) this.coordLabelSprite.visible = false;
+            if(this.lengthLabelSprite) this.lengthLabelSprite.visible = false;
             return;
         }
         if(this.labelSprite) this.labelSprite.visible = true;
         if(this.coordLabelSprite) this.coordLabelSprite.visible = true;
+        if(this.lengthLabelSprite) this.lengthLabelSprite.visible = true;
 
         this.arrow.setDirection(dir);
         this.arrow.setLength(length, 0.3, 0.2);
-        this.updateLabelPosition();
-    }
-
-     setLength(len: number, headLength?: number, headWidth?: number) {
-        this.arrow.setLength(len, headLength, headWidth);
-        this.updateLabelPosition();
-    }
-
-    setDirection(dir: THREE.Vector3) {
-        this.arrow.setDirection(dir);
         this.updateLabelPosition();
     }
 }
