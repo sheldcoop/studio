@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawShading, Vector } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -349,9 +349,14 @@ export function Determinant2DAnimation() {
                     <CardTitle className="font-headline">The Interactive Determinant</CardTitle>
                     <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
                 </CardHeader>
-                <CardContent className="p-4 space-y-4">
+                <CardContent className="space-y-4">
                     <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Transformation Matrix (M)" />
-                    <div className="space-y-2">
+                    <div className="flex justify-center mt-4">
+                        <Button onClick={applyMatrix}>Apply Matrix</Button>
+                    </div>
+                </CardContent>
+                <CardFooter className="flex-col space-y-4">
+                    <div className="w-full space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
                         <div className="grid grid-cols-1 gap-2">
                             <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
@@ -362,10 +367,7 @@ export function Determinant2DAnimation() {
                             <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
                         </div>
                     </div>
-                     <div className="flex justify-center mt-4">
-                        <Button onClick={applyMatrix}>Apply Matrix</Button>
-                    </div>
-                    <div className="text-center p-3 bg-muted/30 rounded-lg">
+                    <div className="text-center p-3 bg-muted/30 rounded-lg w-full">
                         <p className="text-xs text-muted-foreground mb-1">Determinant Formula:</p>
                         <div className="font-mono text-sm">
                             <BlockMath math={`\\text{det}(M) = (a \\times d) - (b \\times c)`} />
@@ -402,7 +404,7 @@ export function Determinant2DAnimation() {
                             </CardContent>
                         </Card>
                     </div>
-                </CardContent>
+                </CardFooter>
             </Card>
         </div>
     );
