@@ -251,4 +251,3 @@ export function EigenvectorAnimation() {
         </div>
     );
 }
-
