@@ -187,7 +187,7 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 10;
+        const gridDivisions = 20;
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
@@ -342,10 +342,6 @@ export function Determinant2DAnimation() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 relative aspect-square w-full min-h-[300px] overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing">
                 <div ref={mountRef} className="absolute inset-0" />
-                 {/* Static HTML Overlays for Explanations */}
-                <div className="absolute top-[20%] left-[25%] pointer-events-none text-white text-lg font-bold p-2 bg-black/30 rounded">Transformed Area</div>
-                <div className="absolute top-[55%] left-[55%] pointer-events-none text-green-300 text-sm font-semibold p-1 bg-black/30 rounded">Transformed Basis Vector b₂</div>
-                <div className="absolute top-[35%] left-[5%] pointer-events-none text-orange-400 text-sm font-semibold p-1 bg-black/30 rounded">Transformed Basis Vector b₁</div>
             </div>
             
             <Card className="lg:col-span-1 w-full">
