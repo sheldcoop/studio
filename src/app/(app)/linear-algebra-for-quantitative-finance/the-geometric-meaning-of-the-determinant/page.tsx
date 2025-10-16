@@ -1,7 +1,7 @@
 
 'use client';
 import { PageHeader } from '@/components/app/page-header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { PitfallAlert } from '@/components/app/pitfall-alert';
@@ -21,13 +21,13 @@ export default function DeterminantMeaningPage() {
 
       <article className="prose prose-invert max-w-none space-y-6">
         <p>
-          Welcome to a new chapter. For this section, we focus exclusively on **square matrices** (`n x n`), where the input and output dimensions are the same. This allows us to ask a fascinating new question:
+          Welcome to a new chapter. For this section, we focus exclusively on <strong>square matrices</strong> (`n x n`), where the input and output dimensions are the same. This allows us to ask a fascinating new question:
         </p>
-        <p className="font-semibold text-primary text-xl">
+        <p className="font-semibold text-primary text-xl text-center">
           When a matrix `A` transforms space, what is its fundamental impact on area and volume? Does it stretch space, squish it, or leave it unchanged?
         </p>
         <p>
-          There is a single, magical number that answers this question for any given transformation. It is the matrix's unique fingerprint. It is called the **determinant**.
+          There is a single, magical number that answers this question for any given transformation. It is the matrix&apos;s unique fingerprint. It is called the <strong>determinant</strong>.
         </p>
       </article>
       
@@ -39,7 +39,7 @@ export default function DeterminantMeaningPage() {
         </p>
         <BlockMath math="\det(A) = ad - bc" />
         <p className="mt-4">
-          The number itself tells us by what factor the transformation scales area, while its sign tells us if space has been "flipped" or inverted.
+          The number itself tells us by what factor the transformation scales area, while its sign tells us if space has been &quot;flipped&quot; or inverted.
         </p>
         <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
             <li><strong>`det(A) > 0`</strong>: Preserves orientation (no flipping). The area of any shape is scaled by a factor of `det(A)`.</li>
@@ -54,15 +54,15 @@ export default function DeterminantMeaningPage() {
         </CardHeader>
         <CardContent className="space-y-4">
            <p>
-            If `det(A) = 0`, it means the transformation squashes all of 2D space into a lower dimension—either a line or a single point. The "parallelogram" formed by the transformed basis vectors has an area of zero.
+            If `det(A) = 0`, it means the transformation squashes all of 2D space into a lower dimension—either a line or a single point. The &quot;parallelogram&quot; formed by the transformed basis vectors has an area of zero.
            </p>
            <p>
-            This only happens when the column vectors of the matrix are **linearly dependent**. They lie on the same line, so they can no longer span a 2D area.
+            This only happens when the column vectors of the matrix are <strong>linearly dependent</strong>. They lie on the same line, so they can no longer span a 2D area.
            </p>
             <PitfallAlert title="The Ultimate Test for Invertibility">
-               A determinant of zero is the definitive sign that a transformation is irreversible. Since the matrix collapses space, you cannot "undo" the transformation to get back to the original input. Information is permanently lost.
+               <div>A determinant of zero is the definitive sign that a transformation is irreversible. Since the matrix collapses space, you cannot &quot;undo&quot; the transformation to get back to the original input. Information is permanently lost.
                <br/><br/>
-               Therefore, a matrix `A` is **invertible** if and only if **`det(A) ≠ 0`**.
+               Therefore, a matrix `A` is <strong>invertible</strong> if and only if <strong>`det(A) ≠ 0`</strong>.</div>
             </PitfallAlert>
         </CardContent>
       </Card>
