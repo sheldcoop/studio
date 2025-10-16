@@ -30,6 +30,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: "Finding the 'special' vectors that are only scaled by a transformation, not rotated off their span (Ax = λx).",
         category: 'sub-topic',
         duration: 30,
+        status: 'not-started',
     }),
      createTopic({
         parent: 'la-module-4',
@@ -38,6 +39,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: "The calculation behind eigenvalues: solving det(A - λI) = 0.",
         category: 'sub-topic',
         duration: 25,
+        status: 'not-started',
     }),
      createTopic({
         parent: 'la-module-4',
@@ -46,6 +48,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: "Decomposing a matrix into its core components: 'changing to the eigenbasis, scaling, and changing back.'",
         category: 'sub-topic',
         duration: 35,
+        status: 'not-started',
     }),
     createTopic({
         parent: 'la-module-4',
@@ -54,6 +57,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: 'Using eigenvalues for tasks like calculating matrix powers (e.g., for Markov chains).',
         category: 'sub-topic',
         duration: 25,
+        status: 'not-started',
     }),
      createTopic({
         parent: 'la-module-4',
@@ -62,6 +66,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: "For symmetric matrices (like covariance matrices), the eigendecomposition is especially beautiful and stable (A = QDQᵀ). This is the theoretical foundation of PCA.",
         category: 'sub-topic',
         duration: 35,
+        status: 'not-started',
     }),
     createTopic({
         parent: 'la-module-4',
@@ -70,6 +75,7 @@ export const linearAlgebraPart2: Topic[] = [
         description: "A highly efficient specialization for symmetric, positive-definite matrices, often used in optimization and financial modeling.",
         category: 'sub-topic',
         duration: 25,
+        status: 'not-started',
     }),
 
     // --- Module 5: Least Squares & QR Decomposition ---
