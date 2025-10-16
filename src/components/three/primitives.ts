@@ -55,11 +55,15 @@ export class Vector extends THREE.Group {
         this.updateLabelPosition();
     }
     
-    setCoordsLabel(coords: THREE.Vector3, color: THREE.ColorRepresentation) {
+    setCoordsLabel(coords: THREE.Vector3 | null, color: THREE.ColorRepresentation) {
         if (this.coordLabelSprite) this.remove(this.coordLabelSprite);
-        const text = `(${coords.x.toFixed(2)}, ${coords.y.toFixed(2)})`;
-        this.coordLabelSprite = createLabel(text, color, 0.35);
-        this.add(this.coordLabelSprite);
+        if (coords) {
+            const text = `(${coords.x.toFixed(2)}, ${coords.y.toFixed(2)})`;
+            this.coordLabelSprite = createLabel(text, color, 0.35);
+            this.add(this.coordLabelSprite);
+        } else {
+            this.coordLabelSprite = null;
+        }
         this.updateLabelPosition();
     }
     
@@ -78,44 +82,54 @@ export class Vector extends THREE.Group {
     updateLabelPosition() {
         const dir = new THREE.Vector3();
         this.arrow.line.getWorldDirection(dir);
+        if(dir.lengthSq() < 0.001) dir.set(0, 1, 0); // Default upward if direction is zero
 
         const length = this.arrow.line.scale.y;
 
-        const offsetScale = 0.7;
+        // Base offset from the arrowhead
+        const baseOffset = dir.clone().multiplyScalar(length + 0.3);
+        const baseLabelPosition = this.arrow.line.position.clone().add(baseOffset);
 
+        // Vertical stacking offset
+        const perpendicularOffset = new THREE.Vector3(0, 1, 0).cross(dir).normalize().multiplyScalar(0.1);
+        if(Math.abs(dir.y) > 0.95) perpendicularOffset.set(1, 0, 0); // Handle vertical vectors
+
+
+        let stackHeight = 0;
+        const spacing = 0.45;
+
+        // Position symbolic label
         if (this.labelSprite) {
-            const offset = dir.clone().multiplyScalar(length + offsetScale * 0.7);
-            // Position label slightly above the tip
-            offset.add(new THREE.Vector3(0, 0.4, 0));
-            this.labelSprite.position.copy(this.arrow.line.position).add(offset);
+            this.labelSprite.position.copy(baseLabelPosition).add(perpendicularOffset.clone().multiplyScalar(stackHeight));
+            stackHeight += spacing;
         }
+
+        // Position coordinate label below the symbol
         if (this.coordLabelSprite) {
-            const offset = dir.clone().multiplyScalar(length + offsetScale * 0.7);
-            // Position coordinates below the main label
-            this.coordLabelSprite.position.copy(this.arrow.line.position).add(offset);
+            this.coordLabelSprite.position.copy(baseLabelPosition).add(perpendicularOffset.clone().multiplyScalar(stackHeight));
+             stackHeight += spacing;
         }
+        
+        // Position length label at the bottom
         if (this.lengthLabelSprite) {
-             const offset = dir.clone().multiplyScalar(length + offsetScale * 0.7);
-            // Position length below coordinates
-            offset.add(new THREE.Vector3(0, -0.35, 0));
-            this.lengthLabelSprite.position.copy(this.arrow.line.position).add(offset);
+            this.lengthLabelSprite.position.copy(baseLabelPosition).add(perpendicularOffset.clone().multiplyScalar(stackHeight));
         }
     }
-
+    
     setDirectionAndLength(dir: THREE.Vector3, length: number) {
-        if (length < 1e-6) {
+        const isVisible = length > 0.1;
+
+        // Toggle visibility of all parts
+        this.visible = isVisible;
+
+        if (!isVisible) {
+            // Hide everything and exit if vector is too short
             this.arrow.setLength(0, 0, 0);
-            if(this.labelSprite) this.labelSprite.visible = false;
-            if(this.coordLabelSprite) this.coordLabelSprite.visible = false;
-            if(this.lengthLabelSprite) this.lengthLabelSprite.visible = false;
             return;
         }
-        if(this.labelSprite) this.labelSprite.visible = true;
-        if(this.coordLabelSprite) this.coordLabelSprite.visible = true;
-        if(this.lengthLabelSprite) this.lengthLabelSprite.visible = true;
-
+        
         this.arrow.setDirection(dir);
-        this.arrow.setLength(length, 0.3, 0.2);
+        this.arrow.setLength(length, 0.3, 0.2); // Adjust head size dynamically if needed
         this.updateLabelPosition();
     }
 }

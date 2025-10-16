@@ -14,7 +14,6 @@ import { Label } from '../ui/label';
 import { easeInOutCubic } from '../three/animation';
 import { BlockMath } from 'react-katex';
 import { drawAxes } from '../three/coordinate-system';
-import { drawTransformedGrid, drawLinearCombination } from '../three/transformation';
 
 type Matrix2D = { a: number, b: number, c: number, d: number };
 
@@ -187,13 +186,6 @@ export function Determinant2DAnimation() {
             renderer.dispose();
         });
         
-        const gridSize = 10;
-        const gridDivisions = 10;
-        const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
-        grid.rotation.x = Math.PI / 2;
-        grid.position.set(0, 0, -0.2); 
-        scene.add(grid);
-
         drawAxes(scene, { size: 5, showZ: false });
         
         unitSquareRef.current = drawShading(scene, {
@@ -258,33 +250,28 @@ export function Determinant2DAnimation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Update visualization
+    // Update visualization based on state changes
     useEffect(() => {
         const det = b1Pos.x * b2Pos.y - b1Pos.y * b2Pos.x;
         setDeterminant(det);
         setMatrix({ a: b1Pos.x, b: b2Pos.x, c: b1Pos.y, d: b2Pos.y });
 
-        const updateArrow = (arrow: Vector | null, vector: THREE.Vector3, color: THREE.ColorRepresentation, label?: string) => {
-            if (arrow) {
-                const length = vector.length();
-                arrow.setDirectionAndLength(length > 0.001 ? vector.clone().normalize() : new THREE.Vector3(1,0,0), length);
-                if (label) arrow.setLabel(label, color);
-
-                if (length > 0.1) {
-                    arrow.setCoordsLabel(vector, color);
-                } else if (arrow.coordLabelSprite) {
-                    arrow.remove(arrow.coordLabelSprite);
-                    arrow.coordLabelSprite = null;
+        const updateVector = (vectorRef: React.MutableRefObject<Vector | null>, newPos: THREE.Vector3, color: THREE.ColorRepresentation, label: string) => {
+            if (vectorRef.current) {
+                const length = newPos.length();
+                if (length > 0.01) {
+                    vectorRef.current.setDirectionAndLength(newPos.clone().normalize(), length);
+                    vectorRef.current.setCoordsLabel(newPos, color);
+                } else {
+                    vectorRef.current.setDirectionAndLength(new THREE.Vector3(1,0,0), 0); // Hide it
+                    vectorRef.current.setCoordsLabel(null, color);
                 }
-                
-                arrow.updateLabelPosition();
+                vectorRef.current.setLabel(label, color);
             }
-        }
+        };
         
-        updateArrow(iHatRef.current, new THREE.Vector3(1,0,0), 0xff3333, 'î');
-        updateArrow(jHatRef.current, new THREE.Vector3(0,1,0), 0x33ff33, 'ĵ');
-        updateArrow(b1Ref.current, b1Pos, 0xff8a65, 'b₁');
-        updateArrow(b2Ref.current, b2Pos, 0x69f0ae, 'b₂');
+        updateVector(b1Ref.current, b1Pos, 0xff8a65, 'b₁');
+        updateVector(b2Ref.current, b2Pos, 0x69f0ae, 'b₂');
 
         if (parallelogramRef.current && sceneRef.current) {
             sceneRef.current.remove(parallelogramRef.current);
@@ -332,7 +319,7 @@ export function Determinant2DAnimation() {
                 <CardFooter className="flex-col space-y-4">
                     <div className="w-full space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-3 gap-2">
                             <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
