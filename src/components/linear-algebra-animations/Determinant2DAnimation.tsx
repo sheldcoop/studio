@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawShading, Vector } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -349,20 +349,21 @@ export function Determinant2DAnimation() {
                     <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    <div className="flex flex-col items-center gap-4 p-4 rounded-lg border bg-muted/50">
-                        <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Matrix M" />
-                        <Button onClick={applyMatrix}>Apply</Button>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
-                        <div className="grid grid-cols-2 gap-2">
-                            <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
-                            <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
-                            <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
-                            <Button variant="outline" size="sm" onClick={() => handlePreset('shear')}>Shear</Button>
-                            <Button variant="outline" size="sm" onClick={() => handlePreset('reflect')}>Reflect</Button>
-                            <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                        <div className="flex flex-col items-center gap-4 p-4 rounded-lg border bg-muted/50">
+                            <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Matrix M" />
+                            <Button onClick={applyMatrix}>Apply</Button>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
+                                <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
+                                <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
+                                <Button variant="outline" size="sm" onClick={() => handlePreset('shear')}>Shear</Button>
+                                <Button variant="outline" size="sm" onClick={() => handlePreset('reflect')}>Reflect</Button>
+                                <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
+                            </div>
                         </div>
                     </div>
                 </CardContent>
