@@ -187,7 +187,7 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 10; 
+        const gridDivisions = 20; 
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
@@ -348,18 +348,16 @@ export function Determinant2DAnimation() {
                     <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    <div className="grid grid-cols-1 gap-4 items-start">
-                        <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Transformation Matrix (M)" />
-                        <div className="space-y-2">
-                            <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
-                            <div className="grid grid-cols-2 gap-2">
-                                <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
-                                <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
-                                <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
-                                <Button variant="outline" size="sm" onClick={() => handlePreset('shear')}>Shear</Button>
-                                <Button variant="outline" size="sm" onClick={() => handlePreset('reflect')}>Reflect</Button>
-                                <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
-                            </div>
+                    <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Transformation Matrix (M)" />
+                    <div className="space-y-2">
+                        <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('shear')}>Shear</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('reflect')}>Reflect</Button>
+                            <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
                         </div>
                     </div>
                      <div className="flex justify-center mt-4">
