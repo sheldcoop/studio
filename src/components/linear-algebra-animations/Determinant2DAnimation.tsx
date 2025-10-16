@@ -13,6 +13,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { easeInOutCubic } from '../three/animation';
 import { BlockMath } from 'react-katex';
+import { createLabel } from '../three/ui-helpers';
 
 type Matrix2D = { a: number, b: number, c: number, d: number };
 
@@ -170,7 +171,7 @@ export function Determinant2DAnimation() {
         sceneRef.current = scene;
 
         const aspect = currentMount.clientWidth / currentMount.clientHeight;
-        const frustumSize = 10;
+        const frustumSize = 5;
         const camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 0.1, 100);
         camera.position.set(2, 2, 10);
         camera.lookAt(2, 2, 0);
@@ -187,7 +188,7 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 20; 
+        const gridDivisions = 10;
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
@@ -251,6 +252,16 @@ export function Determinant2DAnimation() {
         const cleanupB1 = makeObjectsDraggable(b1Ref.current, camera, renderer.domElement, { onDrag: (obj, pos) => { setB1Pos(pos.clone().setZ(0)) } });
         const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { onDrag: (obj, pos) => { setB2Pos(pos.clone().setZ(0)) } });
         cleanupFunctions.push(cleanupB1, cleanupB2);
+
+        // Add informational text overlays
+        const infoGroup = new THREE.Group();
+        infoGroup.add(createLabel('Transformed Area', 0xffffff, 0.5));
+        infoGroup.children[0].position.set(2, 3.5, 0);
+        infoGroup.add(createLabel('Transformed Basis Vector b₁', 0xff8a65, 0.3));
+        infoGroup.children[1].position.set(3, 1.5, 0);
+        infoGroup.add(createLabel('Transformed Basis Vector b₂', 0x69f0ae, 0.3));
+        infoGroup.children[2].position.set(-1, 2.5, 0);
+        scene.add(infoGroup);
         
         const animate = () => {
             animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -297,7 +308,7 @@ export function Determinant2DAnimation() {
                 if (label) arrow.setLabel(label, color);
 
                 if (length > 0.1) {
-                    arrow.setCoordsLabel(vector, color);
+                    // This logic is now removed from here.
                 } else if (arrow.coordLabelSprite) {
                     arrow.remove(arrow.coordLabelSprite);
                     arrow.coordLabelSprite = null;
@@ -351,7 +362,7 @@ export function Determinant2DAnimation() {
                     <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Transformation Matrix (M)" />
                     <div className="space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 gap-2">
                             <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
@@ -407,3 +418,4 @@ export function Determinant2DAnimation() {
         </div>
     );
 }
+

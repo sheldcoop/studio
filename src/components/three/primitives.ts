@@ -46,7 +46,7 @@ export class Vector extends THREE.Group {
         if (label) {
             this.setLabel(label, color);
         }
-        this.setCoordsLabel(dir.clone().multiplyScalar(length), color);
+        // Removed the automatic call to setCoordsLabel
     }
 
     setLabel(text: string, color: THREE.ColorRepresentation, scale: number = 0.4) {
