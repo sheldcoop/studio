@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { makeObjectsDraggable } from '@/components/three/interactivity';
 import { drawShading, Vector } from '@/components/three/primitives';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -187,7 +187,7 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 20;
+        const gridDivisions = 10;
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
@@ -340,20 +340,23 @@ export function Determinant2DAnimation() {
     const status = getExplanation(determinant);
     
     return (
-        <Card className="w-full">
-            <CardHeader>
-                <CardTitle className="font-headline">The Interactive Determinant</CardTitle>
-                <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 space-y-4">
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start p-4 rounded-lg border bg-muted/50">
-                    <div className="flex flex-col items-center gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+            <div ref={mountRef} className="relative aspect-square w-full min-h-[300px] overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing"></div>
+            
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="font-headline">The Interactive Determinant</CardTitle>
+                    <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 space-y-4">
+                    <div className="flex flex-col items-center gap-4 p-4 rounded-lg border bg-muted/50">
                         <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Matrix M" />
                         <Button onClick={applyMatrix}>Apply</Button>
                     </div>
+
                     <div className="space-y-2">
                         <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
-                        <div className="grid grid-cols-1 gap-2">
+                        <div className="grid grid-cols-2 gap-2">
                             <Button variant="outline" size="sm" onClick={() => handlePreset('identity')}>Identity</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('rotate')}>Rotate</Button>
                             <Button variant="outline" size="sm" onClick={() => handlePreset('scale')}>Scale</Button>
@@ -362,14 +365,9 @@ export function Determinant2DAnimation() {
                             <Button variant="outline" size="sm" onClick={() => handlePreset('collapse')}>Collapse</Button>
                         </div>
                     </div>
-                </div>
-
-                <div className="relative aspect-square md:aspect-video w-full h-full min-h-[400px] md:min-h-0 overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing">
-                    <div ref={mountRef} className="absolute inset-0"></div>
-                </div>
-                
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-4">
+                </CardContent>
+                <CardFooter className="flex flex-col gap-4 p-4">
+                    <div className="w-full space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                             <div className="p-2 bg-muted rounded-lg">
                                 <p className="text-xs font-semibold text-muted-foreground">ORIGINAL AREA</p>
@@ -397,7 +395,7 @@ export function Determinant2DAnimation() {
                             </p>
                         </div>
                     </div>
-                     <Card className={cn("border-2", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
+                     <Card className={cn("border-2 w-full", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
                         <CardHeader className="p-4 flex flex-row items-center gap-3">
                             <div className={cn("flex-shrink-0", status.color)}>{status.icon}</div>
                             <CardTitle className="text-lg">{status.title}</CardTitle>
@@ -406,8 +404,8 @@ export function Determinant2DAnimation() {
                             {status.text}
                         </CardContent>
                     </Card>
-                </div>
-            </CardContent>
-        </Card>
+                </CardFooter>
+            </Card>
+        </div>
     );
 }
