@@ -187,7 +187,7 @@ export function Determinant2DAnimation() {
         });
         
         const gridSize = 20;
-        const gridDivisions = 20; // Makes each cell 1x1
+        const gridDivisions = 10; 
         const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x666666, 0x333333);
         grid.rotation.x = Math.PI / 2;
         grid.position.set(0, 0, -0.2); 
@@ -339,16 +339,16 @@ export function Determinant2DAnimation() {
     const status = getExplanation(determinant);
     
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-            <div ref={mountRef} className="relative aspect-square w-full min-h-[300px] overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div ref={mountRef} className="lg:col-span-2 relative aspect-square w-full min-h-[300px] overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing"></div>
             
-            <Card className="w-full">
+            <Card className="lg:col-span-1 w-full">
                 <CardHeader>
                     <CardTitle className="font-headline">The Interactive Determinant</CardTitle>
                     <CardDescription>Drag the colored vectors or enter a matrix to see how the determinant reflects the change in area.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                    <div className="grid grid-cols-1 gap-4 items-start">
                         <MatrixInput matrix={matrix} setMatrix={setMatrix} label="Transformation Matrix (M)" />
                         <div className="space-y-2">
                             <Label className="font-semibold text-center block mb-2">"What If?" Presets</Label>
@@ -409,6 +409,3 @@ export function Determinant2DAnimation() {
         </div>
     );
 }
-
-
-    
