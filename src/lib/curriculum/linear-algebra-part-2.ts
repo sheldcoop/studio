@@ -27,7 +27,6 @@ export const linearAlgebraPart2: Topic[] = [
         parent: 'la-module-4',
         title: 'Eigenvalues & Eigenvectors',
         icon: 'Waypoints',
-        href: '/quantlab/eigen-visualizer',
         description: "Finding the 'special' vectors that are only scaled by a transformation, not rotated off their span (Ax = λx).",
         category: 'sub-topic',
         duration: 30,
