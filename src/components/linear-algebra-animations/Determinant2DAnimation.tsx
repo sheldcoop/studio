@@ -13,7 +13,6 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { easeInOutCubic } from '../three/animation';
 import { BlockMath } from 'react-katex';
-import { createLabel } from '../three/ui-helpers';
 
 type Matrix2D = { a: number, b: number, c: number, d: number };
 
@@ -171,7 +170,7 @@ export function Determinant2DAnimation() {
         sceneRef.current = scene;
 
         const aspect = currentMount.clientWidth / currentMount.clientHeight;
-        const frustumSize = 5;
+        const frustumSize = 10;
         const camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 0.1, 100);
         camera.position.set(2, 2, 10);
         camera.lookAt(2, 2, 0);
@@ -253,16 +252,6 @@ export function Determinant2DAnimation() {
         const cleanupB2 = makeObjectsDraggable(b2Ref.current, camera, renderer.domElement, { onDrag: (obj, pos) => { setB2Pos(pos.clone().setZ(0)) } });
         cleanupFunctions.push(cleanupB1, cleanupB2);
 
-        // Add informational text overlays
-        const infoGroup = new THREE.Group();
-        infoGroup.add(createLabel('Transformed Area', 0xffffff, 0.5));
-        infoGroup.children[0].position.set(2, 3.5, 0);
-        infoGroup.add(createLabel('Transformed Basis Vector b₁', 0xff8a65, 0.3));
-        infoGroup.children[1].position.set(3, 1.5, 0);
-        infoGroup.add(createLabel('Transformed Basis Vector b₂', 0x69f0ae, 0.3));
-        infoGroup.children[2].position.set(-1, 2.5, 0);
-        scene.add(infoGroup);
-        
         const animate = () => {
             animationFrameIdRef.current = requestAnimationFrame(animate);
             if (renderer && scene && camera) renderer.render(scene, camera);
@@ -308,7 +297,7 @@ export function Determinant2DAnimation() {
                 if (label) arrow.setLabel(label, color);
 
                 if (length > 0.1) {
-                    // This logic is now removed from here.
+                    arrow.setCoordsLabel(vector, color);
                 } else if (arrow.coordLabelSprite) {
                     arrow.remove(arrow.coordLabelSprite);
                     arrow.coordLabelSprite = null;
@@ -351,7 +340,13 @@ export function Determinant2DAnimation() {
     
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            <div ref={mountRef} className="lg:col-span-2 relative aspect-square w-full min-h-[300px] overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing"></div>
+            <div className="lg:col-span-2 relative aspect-square w-full min-h-[300px] overflow-hidden rounded-lg border bg-muted/20 cursor-grab active:cursor-grabbing">
+                <div ref={mountRef} className="absolute inset-0" />
+                 {/* Static HTML Overlays for Explanations */}
+                <div className="absolute top-[20%] left-[25%] pointer-events-none text-white text-lg font-bold p-2 bg-black/30 rounded">Transformed Area</div>
+                <div className="absolute top-[55%] left-[55%] pointer-events-none text-green-300 text-sm font-semibold p-1 bg-black/30 rounded">Transformed Basis Vector b₂</div>
+                <div className="absolute top-[35%] left-[5%] pointer-events-none text-orange-400 text-sm font-semibold p-1 bg-black/30 rounded">Transformed Basis Vector b₁</div>
+            </div>
             
             <Card className="lg:col-span-1 w-full">
                 <CardHeader>
@@ -374,6 +369,18 @@ export function Determinant2DAnimation() {
                      <div className="flex justify-center mt-4">
                         <Button onClick={applyMatrix}>Apply Matrix</Button>
                     </div>
+                    <div className="text-center p-3 bg-muted/30 rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-1">Determinant Formula:</p>
+                        <div className="font-mono text-sm">
+                            <BlockMath math={`\\text{det}(M) = (a \\times d) - (b \\times c)`} />
+                        </div>
+                        <div className="font-mono text-sm mt-1">
+                            <BlockMath math={`= (${matrix.a.toFixed(2)} \\times ${matrix.d.toFixed(2)}) - (${matrix.b.toFixed(2)} \\times ${matrix.c.toFixed(2)})`} />
+                        </div>
+                        <p className={cn("font-mono text-lg font-bold mt-1", status.color)}>
+                            = {determinant.toFixed(2)}
+                        </p>
+                    </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4 p-4">
                     <div className="w-full space-y-4">
@@ -391,31 +398,18 @@ export function Determinant2DAnimation() {
                                 <p className={cn("font-mono text-xl font-bold tracking-tight", status.color)}>{Math.abs(determinant).toFixed(2)}x</p>
                             </div>
                         </div>
-                         <div className="text-center p-3 bg-muted/30 rounded-lg">
-                            <p className="text-xs text-muted-foreground mb-1">Determinant Formula:</p>
-                            <div className="font-mono text-sm">
-                                <BlockMath math={`\\text{det}(M) = (a \\times d) - (b \\times c)`} />
-                            </div>
-                            <div className="font-mono text-sm mt-1">
-                                <BlockMath math={`= (${matrix.a.toFixed(2)} \\times ${matrix.d.toFixed(2)}) - (${matrix.b.toFixed(2)} \\times ${matrix.c.toFixed(2)})`} />
-                            </div>
-                            <p className={cn("font-mono text-lg font-bold mt-1", status.color)}>
-                                = {determinant.toFixed(2)}
-                            </p>
-                        </div>
+                         <Card className={cn("border-2 w-full", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
+                            <CardHeader className="p-4 flex flex-row items-center gap-3">
+                                <div className={cn("flex-shrink-0", status.color)}>{status.icon}</div>
+                                <CardTitle className="text-lg">{status.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-4 pt-0 text-sm text-muted-foreground">
+                                {status.text}
+                            </CardContent>
+                        </Card>
                     </div>
-                     <Card className={cn("border-2 w-full", status.color === "text-green-400" ? "border-green-500/50" : status.color === "text-red-400" ? "border-red-500/50" : "border-primary/20" )}>
-                        <CardHeader className="p-4 flex flex-row items-center gap-3">
-                            <div className={cn("flex-shrink-0", status.color)}>{status.icon}</div>
-                            <CardTitle className="text-lg">{status.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0 text-sm text-muted-foreground">
-                            {status.text}
-                        </CardContent>
-                    </Card>
                 </CardFooter>
             </Card>
         </div>
     );
 }
-
