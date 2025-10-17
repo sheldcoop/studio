@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -6,11 +7,6 @@ import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InlineMath } from 'react-katex';
-
-interface ChartDataPoint {
-  name: string;
-  value: number;
-}
 
 interface DistributionChartProps {
   chartData: { [key: string]: string | number }[];
@@ -56,6 +52,7 @@ const BaseChart = ({
           </defs>
         )}
         <ChartPrimitive
+          type="monotone"
           dataKey={yAxisDataKey}
           fill={chartType === 'area' ? `url(#${fillId})` : 'hsl(var(--primary))'}
           stroke={chartType === 'area' ? 'hsl(var(--chart-1))' : undefined}

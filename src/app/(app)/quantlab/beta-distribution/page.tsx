@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -13,7 +12,6 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { DistributionChart } from '@/components/quantlab/DistributionChart';
@@ -53,15 +51,6 @@ const betaPdf = (x: number, alpha: number, beta: number): number => {
     if (B === 0) return Infinity; // Avoid division by zero
     return (Math.pow(x, alpha - 1) * Math.pow(1 - x, beta - 1)) / B;
 };
-
-// Use dynamic import for the chart to avoid SSR issues
-const DynamicDistributionChart = dynamic(
-  () => import('@/components/quantlab/DistributionChart').then(mod => mod.DistributionChart),
-  {
-    ssr: false,
-    loading: () => <Skeleton className="h-[340px] w-full" />,
-  }
-);
 
 
 // --- Main Page Component ---
@@ -144,7 +133,7 @@ export default function BetaDistributionPage() {
                     <Slider id="beta-slider" min={0.1} max={10} step={0.1} value={[beta]} onValueChange={(val) => setBeta(val[0])} />
                 </div>
             </div>
-            <DynamicDistributionChart
+            <DistributionChart
                 chartData={chartData}
                 chartType="area"
                 xAxisDataKey="value"
