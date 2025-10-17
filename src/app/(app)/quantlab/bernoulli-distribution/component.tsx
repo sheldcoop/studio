@@ -1,8 +1,6 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -13,13 +11,11 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FormulaBlock } from '@/components/app/formula-block';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 
 // --- Math & Simulation Logic ---
 const bernoulliProbability = (p: number, k: number): number => {
@@ -28,39 +24,21 @@ const bernoulliProbability = (p: number, k: number): number => {
     return 0;
 };
 
-// --- Chart Component ---
-const BernoulliDistributionChart = ({ p }: { p: number }) => {
-  const chartData = useMemo(() => {
-    return [
-      { outcome: 'Failure (k=0)', probability: bernoulliProbability(p, 0) },
-      { outcome: 'Success (k=1)', probability: bernoulliProbability(p, 1) },
-    ];
-  }, [p]);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="outcome" />
-                <YAxis name="Probability" domain={[0, 1]} />
-                <Tooltip />
-                <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-        </ChartContainer>
-    </div>
-  );
-};
-
-const DynamicBernoulliDistributionChart = dynamic(() => Promise.resolve(BernoulliDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
-});
-
-
 // --- Main Page Component ---
 export default function BernoulliDistributionComponent() {
     const [probability, setProbability] = useState(0.7);
+
+    const { chartData, mean, variance } = useMemo(() => {
+        const data = [
+          { outcome: 'Failure (k=0)', probability: bernoulliProbability(probability, 0) },
+          { outcome: 'Success (k=1)', probability: bernoulliProbability(probability, 1) },
+        ];
+        return {
+            chartData: data,
+            mean: probability,
+            variance: probability * (1-probability)
+        };
+    }, [probability]);
 
   return (
     <>
@@ -96,7 +74,14 @@ export default function BernoulliDistributionComponent() {
                     <Slider id="prob-slider" min={0} max={1} step={0.01} value={[probability]} onValueChange={(val) => setProbability(val[0])} />
                 </div>
             </div>
-            <DynamicBernoulliDistributionChart p={probability} />
+            <DistributionChart 
+                chartData={chartData}
+                chartType="bar"
+                xAxisDataKey="outcome"
+                yAxisDataKey="probability"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
 
