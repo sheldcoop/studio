@@ -12,6 +12,8 @@ import {
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { FDistributionDashboard } from '@/components/quantlab/dashboards/FDistributionDashboard';
+import { PageSection } from '@/components/app/page-section';
+import { FormulaBlock } from '@/components/app/formula-block';
 
 // --- Main Page Component ---
 export default function FDistributionPage() {
@@ -26,7 +28,7 @@ export default function FDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Ratio of Variances" Distribution</CardTitle>
-          </CardHeader>
+          </Header>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
               The F-distribution is a continuous probability distribution that arises frequently as the null distribution of a test statistic, most notably in the Analysis of Variance (ANOVA) and the F-test to compare two variances.
@@ -47,22 +49,41 @@ export default function FDistributionPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">The Formula</CardTitle>
-            <CardDescription>The probability density function (PDF) is defined by its two parameters: the degrees of freedom of the numerator (<InlineMath math="d_1" />) and the denominator (<InlineMath math="d_2" />).</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-lg border bg-muted/50 p-4 text-center">
-              <BlockMath math="f(x; d_1, d_2) = \frac{\sqrt{\frac{(d_1 x)^{d_1} d_2^{d_2}}{(d_1 x + d_2)^{d_1 + d_2}}}}{x B(\frac{d_1}{2}, \frac{d_2}{2})}" />
-            </div>
-            <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-              <li><InlineMath math="d_1" /> is the degrees of freedom for the numerator variance.</li>
-              <li><InlineMath math="d_2" /> is the degrees of freedom for the denominator variance.</li>
-              <li><InlineMath math="B" /> is the Beta function.</li>
-            </ul>
-          </CardContent>
-        </Card>
+        <PageSection title="Core Concepts">
+          <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Probability Density Function (PDF)</CardTitle>
+                  <CardDescription>The PDF is defined by its two parameters: the degrees of freedom of the numerator (<InlineMath math="d_1" />) and the denominator (<InlineMath math="d_2" />).</CardDescription>
+              </CardHeader>
+              <CardContent>
+                   <FormulaBlock>
+                    <BlockMath math="f(x; d_1, d_2) = \frac{\sqrt{\frac{(d_1 x)^{d_1} d_2^{d_2}}{(d_1 x + d_2)^{d_1 + d_2}}}}{x B(\frac{d_1}{2}, \frac{d_2}{2})}" />
+                  </FormulaBlock>
+                   <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                      <li><InlineMath math="d_1 > 0" /> is the degrees of freedom for the numerator variance.</li>
+                      <li><InlineMath math="d_2 > 0" /> is the degrees of freedom for the denominator variance.</li>
+                      <li><InlineMath math="B" /> is the Beta function.</li>
+                  </ul>
+              </CardContent>
+          </Card>
+           <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  <div>
+                      <h4 className="font-semibold">Expected Value (Mean)</h4>
+                      <FormulaBlock><BlockMath math="E[X] = \frac{d_2}{d_2 - 2} \quad \text{for } d_2 > 2" /></FormulaBlock>
+                      <p className="text-sm text-muted-foreground mt-2">The mean is undefined for <InlineMath math="d_2 \le 2" />.</p>
+                  </div>
+                  <div>
+                      <h4 className="font-semibold">Variance</h4>
+                      <FormulaBlock><BlockMath math="Var(X) = \frac{2d_2^2(d_1+d_2-2)}{d_1(d_2-2)^2(d_2-4)} \quad \text{for } d_2 > 4" /></FormulaBlock>
+                      <p className="text-sm text-muted-foreground mt-2">The variance is undefined for <InlineMath math="d_2 \le 4" />.</p>
+                  </div>
+              </CardContent>
+          </Card>
+        </PageSection>
 
       </div>
     </>

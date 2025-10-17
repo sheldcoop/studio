@@ -12,6 +12,8 @@ import {
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { ChiSquaredDashboard } from '@/components/quantlab/dashboards/ChiSquaredDashboard';
+import { FormulaBlock } from '@/components/app/formula-block';
+import { PageSection } from '@/components/app/page-section';
 
 // --- Main Page Component ---
 export default function ChiSquaredDistributionPage() {
@@ -26,7 +28,7 @@ export default function ChiSquaredDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Goodness of Fit" Distribution</CardTitle>
-          </CardHeader>
+          </Header>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Chi-Squared (χ²) distribution is a continuous probability distribution that is widely used in hypothesis testing. It arises as the distribution of a sum of squared independent standard normal random variables. 
@@ -47,22 +49,41 @@ export default function ChiSquaredDistributionPage() {
           </CardContent>
         </Card>
 
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline">The Formula</CardTitle>
-                 <CardDescription>The probability density function (PDF) is defined by one parameter: the degrees of freedom (<InlineMath math="k" />).</CardDescription>
-            </CardHeader>
-            <CardContent>
-                 <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  <BlockMath math="f(x; k) = \frac{1}{2^{k/2}\Gamma(k/2)} x^{k/2-1} e^{-x/2}" />
-                </div>
-                 <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><InlineMath math="x \ge 0" /> is the variable.</li>
-                    <li><InlineMath math="k" /> represents the degrees of freedom.</li>
-                    <li><InlineMath math="\Gamma(k/2)" /> is the Gamma function.</li>
-                </ul>
-            </CardContent>
-        </Card>
+        <PageSection title="Core Concepts">
+          <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Probability Density Function (PDF)</CardTitle>
+                  <CardDescription>The PDF is defined by one parameter: the degrees of freedom (<InlineMath math="k" />).</CardDescription>
+              </CardHeader>
+              <CardContent>
+                   <FormulaBlock>
+                    <BlockMath math="f(x; k) = \frac{1}{2^{k/2}\Gamma(k/2)} x^{k/2-1} e^{-x/2}" />
+                  </FormulaBlock>
+                   <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                      <li><InlineMath math="x \ge 0" /> is the variable.</li>
+                      <li><InlineMath math="k" /> represents the degrees of freedom.</li>
+                      <li><InlineMath math="\Gamma(k/2)" /> is the Gamma function.</li>
+                  </ul>
+              </CardContent>
+          </Card>
+           <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  <div>
+                      <h4 className="font-semibold">Expected Value (Mean)</h4>
+                      <FormulaBlock><BlockMath math="E[X] = k" /></FormulaBlock>
+                      <p className="text-sm text-muted-foreground mt-2">The mean is simply equal to the degrees of freedom.</p>
+                  </div>
+                  <div>
+                      <h4 className="font-semibold">Variance</h4>
+                      <FormulaBlock><BlockMath math="Var(X) = 2k" /></FormulaBlock>
+                       <p className="text-sm text-muted-foreground mt-2">The variance is twice the degrees of freedom.</p>
+                  </div>
+              </CardContent>
+          </Card>
+        </PageSection>
 
       </div>
     </>

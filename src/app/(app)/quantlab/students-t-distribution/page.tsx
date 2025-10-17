@@ -12,6 +12,8 @@ import {
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { TDistributionDashboard } from '@/components/quantlab/dashboards/TDistributionDashboard';
+import { PageSection } from '@/components/app/page-section';
+import { FormulaBlock } from '@/components/app/formula-block';
 
 // --- Main Page Component ---
 export default function TDistributionPage() {
@@ -47,22 +49,39 @@ export default function TDistributionPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">The Formula</CardTitle>
-            <CardDescription>The probability density function (PDF) is defined by its single parameter: the degrees of freedom (<InlineMath math="\nu" /> or `df`).</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-lg border bg-muted/50 p-4 text-center">
-              <BlockMath math="f(t) = \frac{\Gamma(\frac{\nu+1}{2})}{\sqrt{\nu\pi}\Gamma(\frac{\nu}{2})} \left(1 + \frac{t^2}{\nu}\right)^{-\frac{\nu+1}{2}}" />
-            </div>
-            <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-              <li><InlineMath math="\nu" /> (nu) represents the degrees of freedom, which is typically the sample size minus one (n - 1).</li>
-              <li><InlineMath math="\Gamma" /> is the Gamma function.</li>
-            </ul>
-          </CardContent>
-        </Card>
-
+        <PageSection title="Core Concepts">
+          <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Probability Density Function (PDF)</CardTitle>
+                  <CardDescription>The PDF is defined by its single parameter: the degrees of freedom (<InlineMath math="\nu" /> or `df`).</CardDescription>
+              </CardHeader>
+              <CardContent>
+                   <FormulaBlock>
+                    <BlockMath math="f(t) = \frac{\Gamma(\frac{\nu+1}{2})}{\sqrt{\nu\pi}\Gamma(\frac{\nu}{2})} \left(1 + \frac{t^2}{\nu}\right)^{-\frac{\nu+1}{2}}" />
+                  </FormulaBlock>
+                   <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                      <li><InlineMath math="\nu" /> (nu) represents the degrees of freedom, which is typically the sample size minus one (n - 1).</li>
+                      <li><InlineMath math="\Gamma" /> is the Gamma function.</li>
+                  </ul>
+              </CardContent>
+          </Card>
+           <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  <div>
+                      <h4 className="font-semibold">Expected Value (Mean)</h4>
+                      <FormulaBlock><BlockMath math="E[X] = 0 \quad \text{for } \nu > 1" /></FormulaBlock>
+                  </div>
+                  <div>
+                      <h4 className="font-semibold">Variance</h4>
+                      <FormulaBlock><BlockMath math="Var(X) = \frac{\nu}{\nu - 2} \quad \text{for } \nu > 2" /></FormulaBlock>
+                      <p className="text-sm text-muted-foreground mt-2">Notice that the variance is always greater than 1, reflecting the "fatter tails" compared to the standard normal distribution (which has a variance of 1).</p>
+                  </div>
+              </CardContent>
+          </Card>
+        </PageSection>
       </div>
     </>
   );
