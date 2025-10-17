@@ -7,6 +7,7 @@ import { PageSection } from '@/components/app/page-section';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { LessonSummaryCard } from '@/components/app/lesson-summary-card';
 import { NextUpNavigation } from '@/components/app/next-up-navigation';
+import { KeyConceptAlert } from '@/components/app/key-concept-alert';
 
 export default function PMFCDFPage() {
   return (
@@ -69,6 +70,20 @@ export default function PMFCDFPage() {
                 <p className="text-sm text-muted-foreground mt-2">For a discrete variable, the CDF is a step function, jumping up at each possible outcome.</p>
             </CardContent>
         </Card>
+      </PageSection>
+
+      <PageSection title="Applications in Quant Finance & ML">
+        <KeyConceptAlert title="Quant Finance: Modeling Credit Defaults" icon="brain">
+          <p>A portfolio manager holds a basket of 10 similar corporate bonds. Using historical data, they build a PMF for the number of defaults they expect to see in the next year. Let <InlineMath math="X" /> be the number of defaults.</p>
+          <ul className="list-disc pl-5 mt-2 text-sm space-y-1">
+            <li>The **PMF** answers: "What's the probability of exactly 2 defaults?" (<InlineMath math="P(X=2)" />). This is crucial for pricing certain derivatives or setting loss reserves.</li>
+            <li>The **CDF** answers: "What's the probability of 2 or fewer defaults?" (<InlineMath math="P(X \le 2)" />). This is essential for calculating Value-at-Risk (VaR) and understanding the tail risk of the portfolio.</li>
+          </ul>
+        </KeyConceptAlert>
+        <KeyConceptAlert title="Machine Learning: Setting Classification Thresholds" icon="brain">
+          <p>A machine learning model outputs a "probability of default" score for loan applicants, ranging from 0 to 1. The bank needs to decide on a threshold to approve or reject loans.</p>
+          <p className="mt-2">The **CDF** of these scores is the perfect tool. By looking at the CDF, a risk officer can answer questions like: "What score threshold corresponds to the top 5% most risky applicants?" (<InlineMath math="F(x) = 0.95" />). This allows them to set data-driven rules for their lending decisions.</p>
+        </KeyConceptAlert>
       </PageSection>
 
       <LessonSummaryCard title="Summary: PMF vs. CDF">
