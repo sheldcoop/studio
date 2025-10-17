@@ -7,7 +7,11 @@ import { Label } from '@/components/ui/label';
 import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { betaPdf } from '@/lib/math';
 
-export function BetaDashboard() {
+interface DashboardProps {
+    isSubcomponent?: boolean;
+}
+
+export function BetaDashboard({ isSubcomponent }: DashboardProps) {
     const [alpha, setAlpha] = useState(2); // Shape parameter 1
     const [beta, setBeta] = useState(5);   // Shape parameter 2
 
@@ -33,16 +37,18 @@ export function BetaDashboard() {
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                    <Label htmlFor="alpha-slider">Shape (α): {alpha.toFixed(1)}</Label>
-                    <Slider id="alpha-slider" min={0.1} max={10} step={0.1} value={[alpha]} onValueChange={(val) => setAlpha(val[0])} />
+             {!isSubcomponent && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                        <Label htmlFor="alpha-slider">Shape (α): {alpha.toFixed(1)}</Label>
+                        <Slider id="alpha-slider" min={0.1} max={10} step={0.1} value={[alpha]} onValueChange={(val) => setAlpha(val[0])} />
+                    </div>
+                    <div className="space-y-3">
+                        <Label htmlFor="beta-slider">Shape (β): {beta.toFixed(1)}</Label>
+                        <Slider id="beta-slider" min={0.1} max={10} step={0.1} value={[beta]} onValueChange={(val) => setBeta(val[0])} />
+                    </div>
                 </div>
-                <div className="space-y-3">
-                    <Label htmlFor="beta-slider">Shape (β): {beta.toFixed(1)}</Label>
-                    <Slider id="beta-slider" min={0.1} max={10} step={0.1} value={[beta]} onValueChange={(val) => setBeta(val[0])} />
-                </div>
-            </div>
+            )}
             <DistributionChart
                 chartData={chartData}
                 chartType="area"

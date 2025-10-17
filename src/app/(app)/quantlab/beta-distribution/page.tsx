@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -14,9 +15,11 @@ import 'katex/dist/katex.min.css';
 import { BetaDashboard } from '@/components/quantlab/dashboards/BetaDashboard';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { PageSection } from '@/components/app/page-section';
+import { InteractiveFormula } from '@/components/app/interactive-formula';
 
 // --- Main Page Component ---
 export default function BetaDistributionPage() {
+  const [highlightValue, setHighlightValue] = useState<string | number | null>(null);
 
   return (
     <>
@@ -29,7 +32,7 @@ export default function BetaDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Probability of Probabilities" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Beta distribution is a continuous probability distribution defined on the interval [0, 1]. This makes it perfectly suited for modeling random variables that represent probabilities or proportions.
@@ -51,7 +54,7 @@ export default function BetaDistributionPage() {
         </Card>
 
         <PageSection title="Core Concepts">
-          <Card>
+            <Card>
               <CardHeader>
                   <CardTitle className="font-headline">Probability Density Function (PDF)</CardTitle>
                   <CardDescription>The PDF is defined by two positive shape parameters, α and β.</CardDescription>
@@ -60,14 +63,14 @@ export default function BetaDistributionPage() {
                    <FormulaBlock>
                     <BlockMath math="f(x; \alpha, \beta) = \frac{x^{\alpha-1} (1-x)^{\beta-1}}{B(\alpha, \beta)}" />
                   </FormulaBlock>
-                   <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
                       <li><InlineMath math="x" /> is the variable (a probability, between 0 and 1).</li>
                       <li><InlineMath math="\alpha" /> and <InlineMath math="\beta" /> can be thought of as counts of "successes" and "failures".</li>
                       <li><InlineMath math="B(\alpha, \beta)" /> is the Beta function, which acts as a normalizing constant.</li>
                   </ul>
               </CardContent>
           </Card>
-          <Card>
+            <Card>
               <CardHeader>
                   <CardTitle className="font-headline">Cumulative Distribution Function (CDF)</CardTitle>
                   <CardDescription>The CDF is the regularized incomplete beta function.</CardDescription>
