@@ -17,6 +17,7 @@ import { FormulaBlock } from '@/components/app/formula-block';
 import { PageSection } from '@/components/app/page-section';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
 import { InteractiveFormula } from '@/components/app/interactive-formula';
+import { ExampleStep } from '@/components/app/example-step';
 
 // --- Main Page Component ---
 export default function ExponentialDistributionPage() {
@@ -70,31 +71,79 @@ export default function ExponentialDistributionPage() {
                 <ExponentialDashboard isSubcomponent={true} highlightValue={highlight} onBarHover={onHover} />
               )}
             </InteractiveFormula>
-            <InteractiveFormula
-              title="Cumulative Distribution Function (CDF)"
-              description="The CDF gives the probability that the event occurs on or before time x."
-              formula="F(x; \lambda) = 1 - e^{-\lambda x}"
-              explanation={
-                <p className="text-sm mt-4">This simple, closed-form CDF makes the Exponential distribution particularly easy to work with.</p>
-              }
-            >
-                {(highlight, onHover) => (
-                <ExponentialDashboard isSubcomponent={true} showCdf={true} highlightValue={highlight} onBarHover={onHover} />
-              )}
-            </InteractiveFormula>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Cumulative Distribution Function (CDF)</CardTitle>
+                    <CardDescription>The CDF gives the probability that the event occurs on or before time <InlineMath math="x" />. It is derived by integrating the PDF.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <ExampleStep stepNumber={1} title="Set up the Integral">
+                        <p>The CDF, <InlineMath math="F(x)" />, is the integral of the PDF, <InlineMath math="f(t)" />, from 0 up to <InlineMath math="x" />.</p>
+                        <BlockMath math="F(x) = \int_{0}^{x} \lambda e^{-\lambda t} dt" />
+                    </ExampleStep>
+                     <ExampleStep stepNumber={2} title="Calculate the Integral">
+                        <p>We find the antiderivative of <InlineMath math="\lambda e^{-\lambda t}" />.</p>
+                        <BlockMath math="\int \lambda e^{-\lambda t} dt = -e^{-\lambda t}" />
+                    </ExampleStep>
+                     <ExampleStep stepNumber={3} title="Apply the Limits of Integration">
+                        <p>Now we evaluate the antiderivative at the limits <InlineMath math="x" /> and <InlineMath math="0" />.</p>
+                        <BlockMath math="F(x) = \left[-e^{-\lambda t}\right]_{0}^{x} = (-e^{-\lambda x}) - (-e^{-\lambda \cdot 0})" />
+                        <BlockMath math="= -e^{-\lambda x} - (-1)" />
+                    </ExampleStep>
+                    <FormulaBlock>
+                        <CardTitle className="text-lg mb-2">Final CDF Formula</CardTitle>
+                        <BlockMath math="F(x) = 1 - e^{-\lambda x}" />
+                    </FormulaBlock>
+                </CardContent>
+            </Card>
+
            <Card>
               <CardHeader>
-                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
+                  <CardTitle className="font-headline">Expected Value & Variance Derivations</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-8">
                   <div>
-                      <h4 className="font-semibold">Expected Value (Mean)</h4>
-                      <FormulaBlock><BlockMath math="E[X] = \frac{1}{\lambda}" /></FormulaBlock>
-                      <p className="text-sm text-muted-foreground mt-2">The average waiting time is the inverse of the rate. For example, if trades arrive at a rate of λ=2 per minute, the average time between trades is 1/2 = 0.5 minutes.</p>
+                      <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
+                      <p className="text-sm text-muted-foreground mb-4">We use integration by parts: <InlineMath math="\int u \, dv = uv - \int v \, du" />.</p>
+                       <ExampleStep stepNumber={1} title="Set up the Integral">
+                          <p>The expected value <InlineMath math="E[X]" /> is the integral of <InlineMath math="x \cdot f(x)" /> over its domain.</p>
+                          <BlockMath math="E[X] = \int_{0}^{\infty} x \cdot \lambda e^{-\lambda x} dx" />
+                      </ExampleStep>
+                      <ExampleStep stepNumber={2} title="Apply Integration by Parts">
+                            <p>Let <InlineMath math="u=x" /> and <InlineMath math="dv = \lambda e^{-\lambda x} dx" />. Then <InlineMath math="du=dx" /> and <InlineMath math="v = -e^{-\lambda x}" />.</p>
+                            <BlockMath math="E[X] = \left[ -x e^{-\lambda x} \right]_{0}^{\infty} - \int_{0}^{\infty} (-e^{-\lambda x}) dx" />
+                      </ExampleStep>
+                      <ExampleStep stepNumber={3} title="Evaluate the Terms">
+                            <p>The first term <InlineMath math="\left[ -x e^{-\lambda x} \right]_{0}^{\infty}" /> evaluates to 0. (The limit as <InlineMath math="x \to \infty" /> is 0 by L'Hôpital's rule, and the value at 0 is 0).</p>
+                            <p>The second term becomes a simple integral:</p>
+                             <BlockMath math="E[X] = \int_{0}^{\infty} e^{-\lambda x} dx = \left[ -\frac{1}{\lambda} e^{-\lambda x} \right]_{0}^{\infty}" />
+                             <BlockMath math="= (0) - (-\frac{1}{\lambda} e^0) = \frac{1}{\lambda}" />
+                      </ExampleStep>
+                      <FormulaBlock>
+                          <CardTitle className="text-lg mb-2">Expected Value</CardTitle>
+                          <BlockMath math="E[X] = \frac{1}{\lambda}" />
+                      </FormulaBlock>
                   </div>
-                  <div>
-                      <h4 className="font-semibold">Variance</h4>
-                      <FormulaBlock><BlockMath math="Var(X) = \frac{1}{\lambda^2}" /></FormulaBlock>
+                  <div className="border-t pt-8">
+                      <h4 className="font-semibold text-lg">Deriving the Variance</h4>
+                       <p className="text-sm text-muted-foreground mb-4">We use the formula <InlineMath math="Var(X) = E[X^2] - (E[X])^2" />. We already have <InlineMath math="E[X]" />, so we need to find <InlineMath math="E[X^2]" />.</p>
+                      <ExampleStep stepNumber={1} title="Find E[X²]">
+                          <p>This requires applying integration by parts twice.</p>
+                          <BlockMath math="E[X^2] = \int_{0}^{\infty} x^2 \lambda e^{-\lambda x} dx" />
+                          <p>Let <InlineMath math="u = x^2" /> and <InlineMath math="dv = \lambda e^{-\lambda x} dx" />. Then <InlineMath math="du = 2x dx" /> and <InlineMath math="v = -e^{-\lambda x}" />.</p>
+                          <BlockMath math="E[X^2] = \left[ -x^2 e^{-\lambda x} \right]_{0}^{\infty} + \int_{0}^{\infty} 2x e^{-\lambda x} dx" />
+                          <p>The first term is 0. The remaining integral is <InlineMath math="\frac{2}{\lambda} \int_{0}^{\infty} x \lambda e^{-\lambda x} dx" />. We recognize the integral part as <InlineMath math="E[X]" />, which we know is <InlineMath math="1/\lambda" />.</p>
+                           <BlockMath math="E[X^2] = \frac{2}{\lambda} \cdot E[X] = \frac{2}{\lambda} \cdot \frac{1}{\lambda} = \frac{2}{\lambda^2}" />
+                      </ExampleStep>
+                      <ExampleStep stepNumber={2} title="Calculate Variance">
+                          <BlockMath math="Var(X) = E[X^2] - (E[X])^2 = \frac{2}{\lambda^2} - \left(\frac{1}{\lambda}\right)^2" />
+                          <BlockMath math="= \frac{2}{\lambda^2} - \frac{1}{\lambda^2} = \frac{1}{\lambda^2}" />
+                      </ExampleStep>
+                      <FormulaBlock>
+                          <CardTitle className="text-lg mb-2">Variance</CardTitle>
+                           <BlockMath math="Var(X) = \frac{1}{\lambda^2}" />
+                      </FormulaBlock>
                   </div>
               </CardContent>
           </Card>
