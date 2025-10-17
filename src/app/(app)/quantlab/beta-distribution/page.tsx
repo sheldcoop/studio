@@ -16,6 +16,7 @@ import { BetaDashboard } from '@/components/quantlab/dashboards/BetaDashboard';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { PageSection } from '@/components/app/page-section';
 import { InteractiveFormula } from '@/components/app/interactive-formula';
+import { ExampleStep } from '@/components/app/example-step';
 
 // --- Main Page Component ---
 export default function BetaDistributionPage() {
@@ -98,6 +99,52 @@ export default function BetaDistributionPage() {
               </CardContent>
           </Card>
         </PageSection>
+
+        <PageSection title="Key Derivations">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Deriving the Expected Value (Mean)</CardTitle>
+                    <CardDescription>
+                        We derive the mean by calculating the integral of <InlineMath math="x \cdot f(x)"/> over its domain [0, 1].
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                    <ExampleStep stepNumber={1} title="Set up the Integral for E[X]">
+                        <p>The expected value is the integral of <InlineMath math="x"/> times the PDF.</p>
+                        <BlockMath math="E[X] = \int_{0}^{1} x \cdot \frac{x^{\alpha-1} (1-x)^{\beta-1}}{B(\alpha, \beta)} dx" />
+                    </ExampleStep>
+                    <ExampleStep stepNumber={2} title="Simplify the Integral">
+                        <p>Combine the <InlineMath math="x"/> terms and move the constant Beta function outside.</p>
+                        <BlockMath math="E[X] = \frac{1}{B(\alpha, \beta)} \int_{0}^{1} x^{\alpha} (1-x)^{\beta-1} dx" />
+                    </ExampleStep>
+                    <ExampleStep stepNumber={3} title="Recognize the New Integral">
+                        <p>The new integral <InlineMath math="\int_{0}^{1} x^{\alpha} (1-x)^{\beta-1} dx"/> looks very similar to the definition of a Beta function itself. It is exactly equal to <InlineMath math="B(\alpha+1, \beta)"/>.</p>
+                        <BlockMath math="E[X] = \frac{B(\alpha+1, \beta)}{B(\alpha, \beta)}" />
+                    </ExampleStep>
+                    <ExampleStep stepNumber={4} title="Expand Using the Gamma Function">
+                        <p>Now, we use the definition of the Beta function in terms of the Gamma function: <InlineMath math="B(a, b) = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}"/>.</p>
+                        <BlockMath math="E[X] = \frac{\frac{\Gamma(\alpha+1)\Gamma(\beta)}{\Gamma(\alpha+1+\beta)}}{\frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha+\beta)}}" />
+                        <p className="mt-4">This simplifies to:</p>
+                        <BlockMath math="E[X] = \frac{\Gamma(\alpha+1)}{\Gamma(\alpha)} \cdot \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha+\beta+1)}" />
+                    </ExampleStep>
+                     <ExampleStep stepNumber={5} title="Apply the Gamma Function Property">
+                        <p>Using the property <InlineMath math="\Gamma(z+1) = z\Gamma(z)"/>, we have:</p>
+                        <ul className="list-disc pl-5">
+                          <li><InlineMath math="\Gamma(\alpha+1) = \alpha\Gamma(\alpha)"/></li>
+                          <li><InlineMath math="\Gamma(\alpha+\beta+1) = (\alpha+\beta)\Gamma(\alpha+\beta)"/></li>
+                        </ul>
+                         <p className="mt-4">Substituting these in:</p>
+                         <BlockMath math="E[X] = \frac{\alpha\Gamma(\alpha)}{\Gamma(\alpha)} \cdot \frac{\Gamma(\alpha+\beta)}{(\alpha+\beta)\Gamma(\alpha+\beta)}" />
+                         <p className="mt-4">After canceling terms, we get our final result.</p>
+                         <FormulaBlock>
+                              <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
+                              <BlockMath math="E[X] = \frac{\alpha}{\alpha + \beta}" />
+                         </FormulaBlock>
+                    </ExampleStep>
+                </CardContent>
+            </Card>
+        </PageSection>
+
       </div>
     </>
   );
