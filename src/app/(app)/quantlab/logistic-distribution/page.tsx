@@ -14,6 +14,7 @@ import 'katex/dist/katex.min.css';
 import { LogisticDashboard } from '@/components/quantlab/dashboards/LogisticDashboard';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { PageSection } from '@/components/app/page-section';
+import { ExampleStep } from '@/components/app/example-step';
 
 // --- Main Page Component ---
 export default function LogisticDistributionPage() {
@@ -80,6 +81,37 @@ export default function LogisticDistributionPage() {
               </CardContent>
           </Card>
         </PageSection>
+
+        <PageSection title="Key Derivations">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Deriving the Mean & Variance</CardTitle>
+                    <CardDescription>
+                        The derivations for the moments of the Logistic distribution are more involved and typically rely on the properties of its moment-generating function (MGF). We'll outline the key results here.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                    <div className="border-b pb-8">
+                      <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
+                      <p className="text-sm text-muted-foreground mb-4">For a standard logistic distribution where <InlineMath math="\mu=0"/> and <InlineMath math="s=1"/>, the PDF is symmetric around 0. The expected value is the integral of <InlineMath math="x \cdot f(x)"/>, and for any symmetric PDF around 0, this integral is 0. For a general logistic distribution, the location parameter <InlineMath math="\mu"/> simply shifts the entire distribution without changing its shape, thus shifting the mean directly.</p>
+                      <FormulaBlock>
+                            <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
+                            <BlockMath math="E[X] = \mu" />
+                       </FormulaBlock>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-lg">Deriving the Variance</h4>
+                      <p className="text-sm text-muted-foreground mb-4">The variance is derived from the second moment of the distribution, which is found using the moment-generating function. The MGF of a standard logistic distribution is <InlineMath math="M(t) = \pi t \csc(\pi t)"/>. Taking the second derivative of the MGF and evaluating at <InlineMath math="t=0"/> gives <InlineMath math="E[X^2] = \pi^2/3"/>. Since the mean is 0, the variance is also <InlineMath math="\pi^2/3"/>. For the general case with scale parameter <InlineMath math="s"/>, the variance is scaled by <InlineMath math="s^2"/>.</p>
+                      <FormulaBlock>
+                            <CardTitle className="text-lg mb-2">Final Variance Formula</CardTitle>
+                            <BlockMath math="Var(X) = \frac{s^2 \pi^2}{3}" />
+                       </FormulaBlock>
+                    </div>
+                </CardContent>
+            </Card>
+        </PageSection>
+
       </div>
     </>
   );
