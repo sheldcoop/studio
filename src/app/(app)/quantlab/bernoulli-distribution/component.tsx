@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockMath, InlineMath } from 'react-katex';
@@ -44,11 +44,7 @@ const BernoulliDistributionChart = ({ p }: { p: number }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="outcome" />
                 <YAxis name="Probability" domain={[0, 1]} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        formatter={(value) => [Number(value).toFixed(4), 'Probability']}
-                    />}
-                />
+                <Tooltip />
                 <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
             </BarChart>
         </ChartContainer>
