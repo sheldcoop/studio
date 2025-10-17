@@ -84,7 +84,7 @@ export default function HypergeometricDistributionPage() {
 
         <PageSection title="Applications">
           <KeyConceptAlert title="Quantitative Finance: Quality Control in Algo Trading" icon="brain">
-            <p>A high-frequency trading firm executed 1000 trades in a day. Due to a data feed error, they know that 50 of these trades were based on faulty data. An auditor randomly selects 80 trades for review. The firm's risk officer can use the Hypergeometric distribution to calculate the probability that the auditor finds *exactly* `k=0` faulty trades, or `k > 5` faulty trades, to understand their exposure to penalties.</p>
+            <p>A high-frequency trading firm executed 1000 trades in a day. Due to a data feed error, they know that 50 of these trades were based on faulty data. An auditor randomly selects 80 trades for review. The firm's risk officer can use the Hypergeometric distribution to calculate the probability that the auditor finds *exactly* `k=0` faulty trades, or `k &gt 5` faulty trades, to understand their exposure to penalties.</p>
           </KeyConceptAlert>
         </PageSection>
       </div>

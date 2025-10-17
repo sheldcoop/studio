@@ -28,7 +28,7 @@ export default function WeibullDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Time-to-Event" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Weibull distribution is a highly flexible continuous probability distribution. It's widely used in engineering to model reliability and time-to-failure of components. In finance, it can be applied to model the duration of events, such as the time until a corporate bond defaults or the time a stock price stays above a certain level.

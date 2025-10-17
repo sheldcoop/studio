@@ -28,7 +28,7 @@ export default function FDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Ratio of Variances" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
               The F-distribution is a continuous probability distribution that arises frequently as the null distribution of a test statistic, most notably in the Analysis of Variance (ANOVA) and the F-test to compare two variances.
