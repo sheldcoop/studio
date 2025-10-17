@@ -28,7 +28,7 @@ export default function LogisticDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Growth Curve" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Logistic distribution is a continuous probability distribution whose cumulative distribution function is the logistic function, which appears in logistic regression and feedforward neural networks. It resembles the normal distribution but has heavier tails, meaning it gives more probability to extreme events.
@@ -80,7 +80,6 @@ export default function LogisticDistributionPage() {
               </CardContent>
           </Card>
         </PageSection>
-
       </div>
     </>
   );

@@ -29,7 +29,7 @@ export default function LaplaceDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Double Exponential" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Laplace distribution is a continuous probability distribution that is notable for its sharper peak at the mean and its "fatter" tails compared to the Normal distribution. This means it assigns higher probability to values near the mean and also to extreme outlier events.
