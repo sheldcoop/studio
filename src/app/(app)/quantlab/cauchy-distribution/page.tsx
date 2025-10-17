@@ -28,7 +28,7 @@ export default function CauchyDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Black Swan" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Cauchy distribution (also known as the Lorentz distribution) is a continuous probability distribution famous for its heavy, or "fat," tails. This means it assigns a much higher probability to extreme events compared to the normal distribution.
