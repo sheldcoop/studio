@@ -15,6 +15,7 @@ import { LaplaceDashboard } from '@/components/quantlab/dashboards/LaplaceDashbo
 import { FormulaBlock } from '@/components/app/formula-block';
 import { PageSection } from '@/components/app/page-section';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
+import { ExampleStep } from '@/components/app/example-step';
 
 // --- Main Page Component ---
 export default function LaplaceDistributionPage() {
@@ -80,6 +81,65 @@ export default function LaplaceDistributionPage() {
                   </div>
               </CardContent>
           </Card>
+        </PageSection>
+
+        <PageSection title="Key Derivations">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Deriving the Mean & Variance</CardTitle>
+                    <CardDescription>
+                        The mean is straightforward due to symmetry. The variance requires integration by parts.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                    <div className="border-b pb-8">
+                      <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
+                       <ExampleStep stepNumber={1} title="Use Symmetry">
+                            <p>The Laplace PDF is symmetric around <InlineMath math="\mu"/>. The function <InlineMath math="g(x) = (x-\mu)f(x | \mu, b)"/> is an odd function with respect to <InlineMath math="x=\mu"/>. The integral of an odd function over a symmetric interval is zero.</p>
+                            <BlockMath math="E[X-\mu] = \int_{-\infty}^{\infty} (x-\mu) f(x | \mu, b) dx = 0" />
+                       </ExampleStep>
+                       <ExampleStep stepNumber={2} title="Solve for E[X]">
+                            <p>Using the linearity of expectation, <InlineMath math="E[X-\mu] = E[X] - E[\mu] = E[X] - \mu"/>.</p>
+                             <p>Therefore, <InlineMath math="E[X] - \mu = 0"/>, which leads to our result.</p>
+                             <FormulaBlock>
+                                <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
+                                <BlockMath math="E[X] = \mu" />
+                            </FormulaBlock>
+                       </ExampleStep>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-lg">Deriving the Variance</h4>
+                      <p className="text-sm text-muted-foreground mb-4">We need to solve <InlineMath math="Var(X) = E[(X-\mu)^2] = \int_{-\infty}^{\infty} (x-\mu)^2 f(x | \mu, b) dx"/>. Let <InlineMath math="y=x-\mu"/> and use the PDF for <InlineMath math="\mu=0"/> for simplicity.</p>
+                      <ExampleStep stepNumber={1} title="Set up the Integral for E[Y²]">
+                           <BlockMath math="E[Y^2] = \int_{-\infty}^{\infty} y^2 \frac{1}{2b} e^{-|y|/b} dy" />
+                           <p>Since the integrand is an even function, we can simplify this to:</p>
+                           <BlockMath math="E[Y^2] = 2 \int_{0}^{\infty} y^2 \frac{1}{2b} e^{-y/b} dy = \frac{1}{b} \int_{0}^{\infty} y^2 e^{-y/b} dy" />
+                       </ExampleStep>
+                        <ExampleStep stepNumber={2} title="Apply Integration by Parts (First Pass)">
+                            <p>Let <InlineMath math="u = y^2"/> and <InlineMath math="dv = e^{-y/b} dy"/>. Then <InlineMath math="du = 2y dy"/> and <InlineMath math="v = -b e^{-y/b}"/>. Using <InlineMath math="\int u dv = uv - \int v du"/>:</p>
+                            <BlockMath math="\frac{1}{b} \left( \left[ -by^2 e^{-y/b} \right]_0^\infty - \int_0^\infty (-b e^{-y/b})(2y) dy \right)" />
+                            <p>The first term evaluates to 0. We are left with:</p>
+                            <BlockMath math="= \frac{1}{b} \int_0^\infty 2by e^{-y/b} dy = 2 \int_0^\infty y e^{-y/b} dy" />
+                       </ExampleStep>
+                       <ExampleStep stepNumber={3} title="Apply Integration by Parts (Second Pass)">
+                          <p>We integrate <InlineMath math="\int_0^\infty y e^{-y/b} dy"/>. Let <InlineMath math="u=y"/> and <InlineMath math="dv=e^{-y/b}dy"/>. Then <InlineMath math="du=dy"/> and <InlineMath math="v=-be^{-y/b}"/>.</p>
+                          <BlockMath math="\left[ -by e^{-y/b} \right]_0^\infty - \int_0^\infty (-b e^{-y/b}) dy" />
+                          <p>The first term is 0. The second term is:</p>
+                          <BlockMath math="b \int_0^\infty e^{-y/b} dy = b \left[ -b e^{-y/b} \right]_0^\infty = b (-0 - (-b)) = b^2" />
+                       </ExampleStep>
+                       <ExampleStep stepNumber={4} title="Combine Results">
+                           <p>Substituting the result from Step 3 back into the end of Step 2:</p>
+                           <BlockMath math="E[Y^2] = 2 \times (b^2) = 2b^2" />
+                           <p>Since <InlineMath math="Y = X-\mu"/> and <InlineMath math="E[Y]=0"/>, we have <InlineMath math="Var(X) = Var(Y) = E[Y^2] - (E[Y])^2 = 2b^2 - 0"/>.</p>
+                           <FormulaBlock>
+                               <CardTitle className="text-lg mb-2">Final Variance Formula</CardTitle>
+                               <BlockMath math="Var(X) = 2b^2" />
+                           </FormulaBlock>
+                       </ExampleStep>
+                    </div>
+                </CardContent>
+            </Card>
         </PageSection>
 
         <PageSection title="Applications">
