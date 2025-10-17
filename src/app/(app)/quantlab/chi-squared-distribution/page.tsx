@@ -28,7 +28,7 @@ export default function ChiSquaredDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Goodness of Fit" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Chi-Squared (χ²) distribution is a continuous probability distribution that is widely used in hypothesis testing. It arises as the distribution of a sum of squared independent standard normal random variables. 
