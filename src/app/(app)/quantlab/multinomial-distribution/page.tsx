@@ -12,6 +12,9 @@ import {
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { MultinomialDashboard } from '@/components/quantlab/dashboards/MultinomialDashboard';
+import { PageSection } from '@/components/app/page-section';
+import { FormulaBlock } from '@/components/app/formula-block';
+import { KeyConceptAlert } from '@/components/app/key-concept-alert';
 
 // --- Main Page Component ---
 export default function MultinomialDistributionPage() {
@@ -38,24 +41,6 @@ export default function MultinomialDistributionPage() {
         </Card>
 
         <Card>
-            <CardHeader>
-                <CardTitle className="font-headline">The Formula</CardTitle>
-                 <CardDescription>The probability of observing a specific set of counts is:</CardDescription>
-            </CardHeader>
-            <CardContent>
-                 <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  <BlockMath math="P(X_1=x_1, ..., X_c=x_c) = \frac{n!}{x_1!...x_c!} p_1^{x_1} \cdots p_c^{x_c}" />
-                </div>
-                 <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><InlineMath math="n" /> is the total number of trials.</li>
-                    <li><InlineMath math="c" /> is the number of possible outcomes.</li>
-                    <li><InlineMath math="x_i" /> is the number of times outcome <InlineMath math="i" /> occurred.</li>
-                    <li><InlineMath math="p_i" /> is the probability of outcome <InlineMath math="i" /> on a single trial.</li>
-                </ul>
-            </CardContent>
-        </Card>
-
-        <Card>
           <CardHeader>
             <CardTitle className="font-headline">Interactive Multinomial Calculator</CardTitle>
             <CardDescription>Specify the parameters to calculate the probability of a specific result.</CardDescription>
@@ -64,6 +49,48 @@ export default function MultinomialDistributionPage() {
             <MultinomialDashboard />
           </CardContent>
         </Card>
+        
+        <PageSection title="Core Concepts">
+          <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Probability Mass Function (PMF)</CardTitle>
+                  <CardDescription>The PMF gives the probability of observing *exactly* a specific set of counts for each of the `c` possible outcomes.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                  <FormulaBlock>
+                    <BlockMath math="P(X_1=x_1, ..., X_c=x_c) = \frac{n!}{x_1! \cdots x_c!} p_1^{x_1} \cdots p_c^{x_c}" />
+                  </FormulaBlock>
+                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                      <li>The first term is the **multinomial coefficient**, which counts the number of ways to arrange the outcomes.</li>
+                      <li>The second part is the product of the probabilities of achieving the desired count for each outcome.</li>
+                  </ul>
+              </CardContent>
+          </Card>
+          <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  <p>For a multinomial distribution, we look at the mean and variance for the count of a *single* outcome <InlineMath math="X_i" />.</p>
+                  <div>
+                      <h4 className="font-semibold">Expected Value (Mean)</h4>
+                      <FormulaBlock><BlockMath math="E[X_i] = n p_i" /></FormulaBlock>
+                      <p className="text-sm text-muted-foreground mt-2">This is intuitive: if you have 100 trials (`n=100`) and outcome `i` has a 30% chance (`p_i=0.3`), you expect to see it `100 * 0.3 = 30` times.</p>
+                  </div>
+                  <div>
+                      <h4 className="font-semibold">Variance</h4>
+                      <FormulaBlock><BlockMath math="Var(X_i) = n p_i (1-p_i)" /></FormulaBlock>
+                      <p className="text-sm text-muted-foreground mt-2">Notice that the variance for a single outcome's count is the same as if it were a Binomial distribution.</p>
+                  </div>
+              </CardContent>
+          </Card>
+        </PageSection>
+
+        <PageSection title="Applications">
+          <KeyConceptAlert title="Machine Learning: Text Classification" icon="brain">
+            <p>A "Bag of Words" model in NLP treats a document as a collection of word counts. The Multinomial distribution is the fundamental assumption behind models like Naive Bayes for text classification. It's used to model the probability of observing the word counts in a document, given that the document belongs to a certain category (e.g., 'spam', 'finance', 'sports').</p>
+          </KeyConceptAlert>
+        </PageSection>
       </div>
     </>
   );

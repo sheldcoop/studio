@@ -12,6 +12,9 @@ import {
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { DiscreteUniformDashboard } from '@/components/quantlab/dashboards/DiscreteUniformDashboard';
+import { PageSection } from '@/components/app/page-section';
+import { FormulaBlock } from '@/components/app/formula-block';
+import { KeyConceptAlert } from '@/components/app/key-concept-alert';
 
 // --- Main Page Component ---
 export default function DiscreteUniformDistributionPage() {
@@ -26,7 +29,7 @@ export default function DiscreteUniformDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Fair Die Roll" Distribution</CardTitle>
-          </CardHeader>
+          </Header>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
               The Discrete Uniform distribution describes a situation where there are a finite number of outcomes, and each outcome is equally likely to occur.
@@ -38,22 +41,6 @@ export default function DiscreteUniformDistributionPage() {
         </Card>
 
         <Card>
-            <CardHeader>
-                <CardTitle className="font-headline">The Formula</CardTitle>
-                 <CardDescription>The probability mass function (PMF) is:</CardDescription>
-            </CardHeader>
-            <CardContent>
-                 <div className="rounded-lg border bg-muted/50 p-4 text-center">
-                  <BlockMath math="P(X=k) = \frac{1}{n}" />
-                </div>
-                 <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><InlineMath math="k" /> is a specific outcome.</li>
-                    <li><InlineMath math="n" /> is the total number of possible outcomes.</li>
-                </ul>
-            </CardContent>
-        </Card>
-
-        <Card>
           <CardHeader>
             <CardTitle className="font-headline">Interactive Uniform Distribution</CardTitle>
             <CardDescription>Adjust the number of possible outcomes (<InlineMath math="n" />) to see how the probability changes.</CardDescription>
@@ -62,6 +49,46 @@ export default function DiscreteUniformDistributionPage() {
             <DiscreteUniformDashboard />
           </CardContent>
         </Card>
+
+        <PageSection title="Core Concepts">
+            <Card>
+              <CardHeader>
+                  <CardTitle className="font-headline">Probability Mass Function (PMF)</CardTitle>
+                  <CardDescription>The PMF gives the probability of observing *exactly* one specific outcome, `k`.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                  <FormulaBlock>
+                    <BlockMath math="P(X=k) = \frac{1}{n}" />
+                  </FormulaBlock>
+                   <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                      <li><InlineMath math="k" /> is one of the possible outcomes.</li>
+                      <li><InlineMath math="n" /> is the total number of possible outcomes.</li>
+                  </ul>
+              </CardContent>
+          </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div>
+                        <h4 className="font-semibold">Expected Value (Mean)</h4>
+                        <FormulaBlock><BlockMath math="E[X] = \frac{n+1}{2}" /></FormulaBlock>
+                        <p className="text-sm text-muted-foreground mt-2">For a fair die with `n=6`, the expected value is (6+1)/2 = 3.5. This is the balancing point of the distribution.</p>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold">Variance</h4>
+                        <FormulaBlock><BlockMath math="Var(X) = \frac{n^2 - 1}{12}" /></FormulaBlock>
+                    </div>
+                </CardContent>
+            </Card>
+        </PageSection>
+
+        <PageSection title="Applications">
+          <KeyConceptAlert title="Quantitative Finance: Monte Carlo Simulation Assumptions" icon="brain">
+            <p>The Discrete Uniform distribution is often the starting point for Monte Carlo simulations. When modeling a decision with several equally likely strategic choices (e.g., "aggressively buy," "hold," "aggressively sell"), a quant might assign a uniform probability to each choice to simulate a trader's behavior under uncertainty before layering on more complex assumptions.</p>
+          </KeyConceptAlert>
+        </PageSection>
       </div>
     </>
   );
