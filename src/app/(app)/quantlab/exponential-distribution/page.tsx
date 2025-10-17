@@ -72,38 +72,45 @@ export default function ExponentialDistributionPage() {
               )}
             </InteractiveFormula>
             
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline">Cumulative Distribution Function (CDF)</CardTitle>
-                    <CardDescription>The CDF gives the probability that the event occurs on or before time <InlineMath math="x" />. It is derived by integrating the PDF.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                     <ExampleStep stepNumber={1} title="Set up the Integral">
-                        <p>The CDF, <InlineMath math="F(x)" />, is the integral of the PDF, <InlineMath math="f(t)" />, from 0 up to <InlineMath math="x" />.</p>
-                        <BlockMath math="F(x) = \int_{0}^{x} \lambda e^{-\lambda t} dt" />
-                    </ExampleStep>
-                     <ExampleStep stepNumber={2} title="Calculate the Integral">
-                        <p>We find the antiderivative of <InlineMath math="\lambda e^{-\lambda t}" />.</p>
-                        <BlockMath math="\int \lambda e^{-\lambda t} dt = -e^{-\lambda t}" />
-                    </ExampleStep>
-                     <ExampleStep stepNumber={3} title="Apply the Limits of Integration">
-                        <p>Now we evaluate the antiderivative at the limits <InlineMath math="x" /> and <InlineMath math="0" />.</p>
-                        <BlockMath math="F(x) = \left[-e^{-\lambda t}\right]_{0}^{x} = (-e^{-\lambda x}) - (-e^{-\lambda \cdot 0})" />
-                        <BlockMath math="= -e^{-\lambda x} - (-1)" />
-                    </ExampleStep>
-                    <FormulaBlock>
-                        <CardTitle className="text-lg mb-2">Final CDF Formula</CardTitle>
-                        <BlockMath math="F(x) = 1 - e^{-\lambda x}" />
-                    </FormulaBlock>
-                </CardContent>
-            </Card>
+            <InteractiveFormula
+              title="Cumulative Distribution Function (CDF)"
+              description="The CDF gives the probability that the event occurs on or before time x. It is derived by integrating the PDF."
+              formula="F(x) = 1 - e^{-\lambda x}"
+              explanation={
+                <>
+                  <p className="text-sm mt-4">The CDF, <InlineMath math="F(x)" />, is the integral of the PDF, <InlineMath math="f(t)" />, from 0 up to <InlineMath math="x" />. This gives us the total probability accumulated up to time <InlineMath math="x" />.</p>
+                </>
+              }
+            >
+              {(highlight, onHover) => (
+                <ExponentialDashboard isSubcomponent={true} showCdf={true} highlightValue={highlight} onBarHover={onHover} />
+              )}
+            </InteractiveFormula>
 
            <Card>
               <CardHeader>
-                  <CardTitle className="font-headline">Expected Value & Variance Derivations</CardTitle>
+                  <CardTitle className="font-headline">Key Derivations</CardTitle>
+                  <CardDescription>Understanding how the CDF, Mean, and Variance are derived from the PDF.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">
                   <div>
+                      <h4 className="font-semibold text-lg">Deriving the CDF</h4>
+                      <p className="text-sm text-muted-foreground mb-4">We find the CDF by integrating the PDF from 0 to x.</p>
+                      <ExampleStep stepNumber={1} title="Set up the Integral">
+                          <p>The CDF, <InlineMath math="F(x)" />, is the integral of the PDF, <InlineMath math="f(t)" />, from 0 up to <InlineMath math="x" />.</p>
+                          <BlockMath math="F(x) = \int_{0}^{x} \lambda e^{-\lambda t} dt" />
+                      </ExampleStep>
+                      <ExampleStep stepNumber={2} title="Calculate the Integral">
+                          <p>We find the antiderivative of <InlineMath math="\lambda e^{-\lambda t}" />.</p>
+                          <BlockMath math="\int \lambda e^{-\lambda t} dt = -e^{-\lambda t}" />
+                      </ExampleStep>
+                      <ExampleStep stepNumber={3} title="Apply the Limits of Integration">
+                          <p>Now we evaluate the antiderivative at the limits <InlineMath math="x" /> and <InlineMath math="0" />.</p>
+                          <BlockMath math="F(x) = \left[-e^{-\lambda t}\right]_{0}^{x} = (-e^{-\lambda x}) - (-e^{-\lambda \cdot 0})" />
+                          <BlockMath math="= -e^{-\lambda x} - (-1)" />
+                      </ExampleStep>
+                  </div>
+                  <div className="border-t pt-8">
                       <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
                       <p className="text-sm text-muted-foreground mb-4">We use integration by parts: <InlineMath math="\int u \, dv = uv - \int v \, du" />.</p>
                        <ExampleStep stepNumber={1} title="Set up the Integral">
@@ -120,10 +127,7 @@ export default function ExponentialDistributionPage() {
                              <BlockMath math="E[X] = \int_{0}^{\infty} e^{-\lambda x} dx = \left[ -\frac{1}{\lambda} e^{-\lambda x} \right]_{0}^{\infty}" />
                              <BlockMath math="= (0) - (-\frac{1}{\lambda} e^0) = \frac{1}{\lambda}" />
                       </ExampleStep>
-                      <FormulaBlock>
-                          <CardTitle className="text-lg mb-2">Expected Value</CardTitle>
-                          <BlockMath math="E[X] = \frac{1}{\lambda}" />
-                      </FormulaBlock>
+                      <p className="text-sm text-muted-foreground mt-4">This makes intuitive sense: if events happen at a rate of <InlineMath math="\lambda=2"/> per hour, you would expect to wait, on average, <InlineMath math="1/2"/> an hour between them.</p>
                   </div>
                   <div className="border-t pt-8">
                       <h4 className="font-semibold text-lg">Deriving the Variance</h4>
@@ -137,13 +141,12 @@ export default function ExponentialDistributionPage() {
                            <BlockMath math="E[X^2] = \frac{2}{\lambda} \cdot E[X] = \frac{2}{\lambda} \cdot \frac{1}{\lambda} = \frac{2}{\lambda^2}" />
                       </ExampleStep>
                       <ExampleStep stepNumber={2} title="Calculate Variance">
-                          <BlockMath math="Var(X) = E[X^2] - (E[X])^2 = \frac{2}{\lambda^2} - \left(\frac{1}{\lambda}\right)^2" />
-                          <BlockMath math="= \frac{2}{\lambda^2} - \frac{1}{\lambda^2} = \frac{1}{\lambda^2}" />
+                          <BlockMath math="Var(X) = E[X^2] - (E[X])^2 = \frac{2}{\lambda^2} - \left(\frac{1}{\lambda}\right)^2 = \frac{2}{\lambda^2} - \frac{1}{\lambda^2}" />
+                           <FormulaBlock>
+                              <CardTitle className="text-lg mb-2">Final Variance Formula</CardTitle>
+                               <BlockMath math="Var(X) = \frac{1}{\lambda^2}" />
+                          </FormulaBlock>
                       </ExampleStep>
-                      <FormulaBlock>
-                          <CardTitle className="text-lg mb-2">Variance</CardTitle>
-                           <BlockMath math="Var(X) = \frac{1}{\lambda^2}" />
-                      </FormulaBlock>
                   </div>
               </CardContent>
           </Card>
