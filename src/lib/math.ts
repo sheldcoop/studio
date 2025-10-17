@@ -361,9 +361,15 @@ export const logisticPdf = (x: number, mu: number, s: number): number => {
 
 export const factorial = (n: number): number => {
     if (n < 0) return 0;
+    if (n === 0) return 1;
     let result = 1;
     for (let i = 2; i <= n; i++) result *= i;
     return result;
+};
+
+export const poissonProbability = (lambda: number, k: number): number => {
+    if (lambda < 0 || k < 0) return 0;
+    return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
 };
 
 export const multinomialProbability = (n: number, x: number[], p: number[]): number => {
