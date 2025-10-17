@@ -28,7 +28,7 @@ export default function GammaDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Waiting Time" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Gamma distribution is a versatile, two-parameter continuous probability distribution that is strictly positive. It's often used to model the waiting time until a specified number of events occur.
