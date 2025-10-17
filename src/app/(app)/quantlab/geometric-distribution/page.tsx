@@ -10,6 +10,8 @@ import { GeometricDashboard } from '@/components/quantlab/dashboards/GeometricDa
 import { PageSection } from '@/components/app/page-section';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
 import { InteractiveFormula } from '@/components/app/interactive-formula';
+import { ExampleStep } from '@/components/app/example-step';
+import { FormulaBlock } from '@/components/app/formula-block';
 
 export default function GeometricDistributionPage() {
   const [highlightValue, setHighlightValue] = useState<string | number | null>(null);
@@ -79,23 +81,68 @@ export default function GeometricDistributionPage() {
                 <GeometricDashboard isSubcomponent={true} showCdf={true} highlightValue={highlight} onBarHover={onHover} />
               )}
            </InteractiveFormula>
-          
-          <Card>
-              <CardHeader>
-                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                  <div>
-                      <h4 className="font-semibold">Expected Value (Mean)</h4>
-                      <BlockMath math="E[X] = \frac{1}{p}"/>
-                      <p className="text-sm text-muted-foreground mt-2">This is one of the most elegant results in probability. If a trade has a 25% chance of success (p=0.25), you would expect to wait, on average, 1/0.25 = 4 trades for your first winner.</p>
-                  </div>
-                  <div>
-                      <h4 className="font-semibold">Variance</h4>
-                      <BlockMath math="Var(X) = \frac{1-p}{p^2}"/>
-                  </div>
-              </CardContent>
-          </Card>
+        </PageSection>
+
+        <PageSection title="Key Derivations">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Deriving the Mean and Variance</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                    <div className="border-b pb-8">
+                        <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
+                        <ExampleStep stepNumber={1} title="Set up the Infinite Series for E[X]">
+                            <p>The expected value is the sum of each outcome <InlineMath math="k"/> multiplied by its probability <InlineMath math="P(X=k)"/>. Let <InlineMath math="q = 1-p"/>.</p>
+                            <BlockMath math="E[X] = \sum_{k=1}^{\infty} k \cdot P(X=k) = \sum_{k=1}^{\infty} k \cdot q^{k-1}p" />
+                            <p>We can pull the constant <InlineMath math="p"/> out:</p>
+                            <BlockMath math="E[X] = p \sum_{k=1}^{\infty} k q^{k-1} = p(1 + 2q + 3q^2 + 4q^3 + \dots)" />
+                        </ExampleStep>
+                        <ExampleStep stepNumber={2} title="Use the Geometric Series Derivative Trick">
+                            <p>Recall the formula for an infinite geometric series: <InlineMath math="\sum_{k=0}^{\infty} q^k = \frac{1}{1-q}"/>.</p>
+                            <p>If we take the derivative of both sides with respect to <InlineMath math="q"/>, we get:</p>
+                            <BlockMath math="\frac{d}{dq} \left( \sum_{k=0}^{\infty} q^k \right) = \sum_{k=1}^{\infty} k q^{k-1} = \frac{d}{dq} \left( \frac{1}{1-q} \right) = \frac{1}{(1-q)^2}" />
+                            <p>This gives us the value of the summation from Step 1.</p>
+                        </ExampleStep>
+                        <ExampleStep stepNumber={3} title="Substitute and Solve">
+                            <p>Substitute this result back into the equation for <InlineMath math="E[X]"/>:</p>
+                            <BlockMath math="E[X] = p \cdot \frac{1}{(1-q)^2}" />
+                            <p>Since <InlineMath math="q = 1-p"/>, we have <InlineMath math="1-q = p"/>.</p>
+                             <BlockMath math="E[X] = p \cdot \frac{1}{p^2}" />
+                            <FormulaBlock>
+                                <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
+                                <BlockMath math="E[X] = \frac{1}{p}" />
+                            </FormulaBlock>
+                        </ExampleStep>
+                    </div>
+
+                    <div>
+                        <h4 className="font-semibold text-lg">Deriving the Variance</h4>
+                        <p className="text-sm text-muted-foreground mb-4">We use <InlineMath math="Var(X) = E[X^2] - (E[X])^2"/>. A common trick is to first find <InlineMath math="E[X(X-1)]"/> and then use it to find <InlineMath math="E[X^2]"/>.</p>
+                        <ExampleStep stepNumber={1} title="Calculate E[X(X-1)]">
+                            <p>We set up another series:</p>
+                             <BlockMath math="E[X(X-1)] = \sum_{k=1}^{\infty} k(k-1)q^{k-1}p = p \sum_{k=2}^{\infty} k(k-1)q^{k-1}" />
+                             <p>This sum is the second derivative of the geometric series formula with respect to <InlineMath math="q"/>, multiplied by <InlineMath math="q"/>.</p>
+                             <BlockMath math="\frac{d^2}{dq^2} \left( \sum_{k=0}^{\infty} q^k \right) = \sum_{k=2}^{\infty} k(k-1)q^{k-2} = \frac{2}{(1-q)^3}" />
+                              <p>Therefore, the summation part is <InlineMath math="\sum_{k=2}^{\infty} k(k-1)q^{k-1} = \frac{2q}{(1-q)^3}"/>.</p>
+                             <BlockMath math="E[X(X-1)] = p \cdot \frac{2q}{(1-q)^3} = p \cdot \frac{2q}{p^3} = \frac{2q}{p^2}" />
+                        </ExampleStep>
+                        <ExampleStep stepNumber={2} title="Find E[X²]">
+                             <p>Using the property <InlineMath math="E[X(X-1)] = E[X^2 - X] = E[X^2] - E[X]"/>, we can rearrange to solve for <InlineMath math="E[X^2]"/>.</p>
+                             <BlockMath math="E[X^2] = E[X(X-1)] + E[X] = \frac{2q}{p^2} + \frac{1}{p}" />
+                        </ExampleStep>
+                        <ExampleStep stepNumber={3} title="Calculate the Variance">
+                            <BlockMath math="Var(X) = E[X^2] - (E[X])^2 = \left(\frac{2q}{p^2} + \frac{1}{p}\right) - \left(\frac{1}{p}\right)^2" />
+                            <BlockMath math="= \frac{2q}{p^2} + \frac{p}{p^2} - \frac{1}{p^2} = \frac{2q + p - 1}{p^2}" />
+                            <p>Substitute <InlineMath math="p-1 = -q"/>:</p>
+                            <BlockMath math="= \frac{2q - q}{p^2} = \frac{q}{p^2}" />
+                             <FormulaBlock>
+                                <CardTitle className="text-lg mb-2">Final Variance Formula</CardTitle>
+                                <BlockMath math="Var(X) = \frac{1-p}{p^2}" />
+                            </FormulaBlock>
+                        </ExampleStep>
+                    </div>
+                </CardContent>
+            </Card>
         </PageSection>
 
         <PageSection title="Applications">
