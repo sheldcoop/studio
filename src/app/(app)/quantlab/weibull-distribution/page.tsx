@@ -12,8 +12,9 @@ import {
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { WeibullDashboard } from '@/components/quantlab/dashboards/WeibullDashboard';
-import { PageSection } from '@/components/app/page-section';
 import { FormulaBlock } from '@/components/app/formula-block';
+import { PageSection } from '@/components/app/page-section';
+import { ExampleStep } from '@/components/app/example-step';
 
 // --- Main Page Component ---
 export default function WeibullDistributionPage() {
@@ -82,6 +83,44 @@ export default function WeibullDistributionPage() {
                   <p className="text-sm text-muted-foreground mt-2">These are expressed using the Gamma function, <InlineMath math="\Gamma(z)" />.</p>
               </CardContent>
           </Card>
+        </PageSection>
+
+        <PageSection title="Key Derivations">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Deriving the Expected Value (Mean)</CardTitle>
+                    <CardDescription>We derive the mean by calculating the integral of <InlineMath math="x \cdot f(x)"/> over its domain [0, ∞).</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                    <ExampleStep stepNumber={1} title="Set up the Integral for E[X]">
+                        <p>The expected value is the integral of <InlineMath math="x"/> times the PDF.</p>
+                        <BlockMath math="E[X] = \int_{0}^{\infty} x \cdot \frac{k}{\lambda} \left(\frac{x}{\lambda}\right)^{k-1} e^{-(x/\lambda)^k} dx" />
+                    </ExampleStep>
+                    <ExampleStep stepNumber={2} title="Simplify the Expression">
+                        <p>Combine the <InlineMath math="x"/> terms and rearrange.</p>
+                        <BlockMath math="E[X] = \int_{0}^{\infty} \frac{k}{\lambda} \cdot \frac{x^k}{\lambda^{k-1}} \cdot e^{-(x/\lambda)^k} dx = \int_{0}^{\infty} k \frac{x^k}{\lambda^k} e^{-(x/\lambda)^k} dx" />
+                    </ExampleStep>
+                    <ExampleStep stepNumber={3} title="Apply u-Substitution">
+                        <p>This integral becomes much simpler with a substitution. Let <InlineMath math="u = (x/\lambda)^k"/>. Then:</p>
+                        <ul className="list-disc pl-5 text-sm space-y-1">
+                            <li><InlineMath math="x = \lambda u^{1/k}"/></li>
+                            <li>Differentiating with respect to u gives: <InlineMath math="dx = \lambda \frac{1}{k} u^{1/k - 1} du"/></li>
+                        </ul>
+                         <p className="mt-4">Substituting these back into the integral:</p>
+                        <BlockMath math="E[X] = \int_{0}^{\infty} k \cdot u \cdot e^{-u} \cdot \left(\lambda \frac{1}{k} u^{1/k - 1}\right) du" />
+                    </ExampleStep>
+                     <ExampleStep stepNumber={4} title="Simplify and Recognize the Gamma Function">
+                        <p>The `k` terms cancel out. We can combine the `u` terms and pull <InlineMath math="\lambda"/> out of the integral.</p>
+                        <BlockMath math="E[X] = \lambda \int_{0}^{\infty} u \cdot u^{1/k - 1} e^{-u} du = \lambda \int_{0}^{\infty} u^{1/k} e^{-u} du" />
+                        <p className="mt-4">The integral <InlineMath math="\int_{0}^{\infty} t^{z-1}e^{-t}dt"/> is the definition of the Gamma function <InlineMath math="\Gamma(z)"/>. In our case, <InlineMath math="z-1 = 1/k"/>, so <InlineMath math="z = 1 + 1/k"/>.</p>
+                        <p>This gives us the final result:</p>
+                         <FormulaBlock>
+                              <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
+                              <BlockMath math="E[X] = \lambda \Gamma(1 + 1/k)" />
+                         </FormulaBlock>
+                    </ExampleStep>
+                </CardContent>
+            </Card>
         </PageSection>
 
       </div>
