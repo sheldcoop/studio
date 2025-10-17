@@ -15,6 +15,8 @@ import { NormalDashboard } from '@/components/quantlab/dashboards/NormalDashboar
 import { PageSection } from '@/components/app/page-section';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
+import { ExampleStep } from '@/components/app/example-step';
+
 
 // --- Main Page Component ---
 export default function NormalDistributionPage() {
@@ -78,23 +80,71 @@ export default function NormalDistributionPage() {
                   <p className="text-sm mt-4">There is no simple closed-form solution for the integral of the normal PDF, so its CDF is typically calculated using numerical methods or found by looking up Z-scores in a standard normal table.</p>
               </CardContent>
           </Card>
-           <Card>
-              <CardHeader>
-                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                  <div>
-                      <h4 className="font-semibold">Expected Value (Mean)</h4>
-                      <FormulaBlock><BlockMath math="E[X] = \mu" /></FormulaBlock>
-                      <p className="text-sm text-muted-foreground mt-2">The mean is one of the two parameters that define the distribution.</p>
-                  </div>
-                  <div>
-                      <h4 className="font-semibold">Variance</h4>
-                      <FormulaBlock><BlockMath math="Var(X) = \sigma^2" /></FormulaBlock>
-                      <p className="text-sm text-muted-foreground mt-2">The variance is the square of the standard deviation parameter.</p>
-                  </div>
-              </CardContent>
-          </Card>
+        </PageSection>
+
+        <PageSection title="Key Derivations">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Deriving the Moments</CardTitle>
+                    <CardDescription>The mean and variance are derived by integrating over the PDF. This involves a standard substitution to simplify the integrals.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                     <div className="border-b pb-8">
+                      <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
+                       <ExampleStep stepNumber={1} title="Set up the Integral for E[X]">
+                            <p>The expected value is the integral of <InlineMath math="x \cdot f(x)"/> over its domain <InlineMath math="(-\infty, \infty)"/>.</p>
+                            <BlockMath math="E[X] = \int_{-\infty}^{\infty} x \frac{1}{\sigma\sqrt{2\pi}} e^{ -\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2 } dx" />
+                       </ExampleStep>
+                       <ExampleStep stepNumber={2} title="Apply u-Substitution">
+                           <p>Let <InlineMath math="z = (x-\mu)/\sigma"/>. Then <InlineMath math="x = \mu + z\sigma"/> and <InlineMath math="dx = \sigma dz"/>. Substitute these into the integral.</p>
+                           <BlockMath math="E[X] = \int_{-\infty}^{\infty} (\mu + z\sigma) \frac{1}{\sigma\sqrt{2\pi}} e^{-z^2/2} (\sigma dz)" />
+                           <p>The <InlineMath math="\sigma"/> terms cancel out, simplifying the expression:</p>
+                           <BlockMath math="E[X] = \int_{-\infty}^{\infty} (\mu + z\sigma) \frac{1}{\sqrt{2\pi}} e^{-z^2/2} dz" />
+                       </ExampleStep>
+                       <ExampleStep stepNumber={3} title="Split the Integral">
+                           <p>We can split the integral into two parts:</p>
+                           <BlockMath math="E[X] = \mu \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi}} e^{-z^2/2} dz + \sigma \int_{-\infty}^{\infty} z \frac{1}{\sqrt{2\pi}} e^{-z^2/2} dz" />
+                           <ul className="list-disc pl-5 mt-2 text-sm space-y-1">
+                            <li>The first integral is the total area under the standard normal PDF, which is equal to 1.</li>
+                            <li>The second integral is the integral of an odd function (<InlineMath math="z \cdot \text{pdf}(z)"/>) over a symmetric interval, which is equal to 0.</li>
+                           </ul>
+                       </ExampleStep>
+                        <ExampleStep stepNumber={4} title="Final Result">
+                           <p>Combining the results gives us the final formula for the mean.</p>
+                             <BlockMath math="E[X] = \mu \cdot 1 + \sigma \cdot 0" />
+                           <FormulaBlock>
+                                <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
+                               <BlockMath math="E[X] = \mu" />
+                           </FormulaBlock>
+                       </ExampleStep>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold text-lg">Deriving the Variance</h4>
+                        <p>We use the definition <InlineMath math="Var(X) = E[(X-\mu)^2]"/>.</p>
+                        <ExampleStep stepNumber={1} title="Set up the Integral for Variance">
+                            <BlockMath math="Var(X) = \int_{-\infty}^{\infty} (x-\mu)^2 \frac{1}{\sigma\sqrt{2\pi}} e^{ -\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2 } dx" />
+                        </ExampleStep>
+                         <ExampleStep stepNumber={2} title="Apply u-Substitution">
+                           <p>Again, let <InlineMath math="z = (x-\mu)/\sigma"/>. Then <InlineMath math="x-\mu = z\sigma"/> and <InlineMath math="dx = \sigma dz"/>.</p>
+                           <BlockMath math="Var(X) = \int_{-\infty}^{\infty} (z\sigma)^2 \frac{1}{\sigma\sqrt{2\pi}} e^{-z^2/2} (\sigma dz)" />
+                           <p>Simplify by combining terms:</p>
+                            <BlockMath math="Var(X) = \sigma^2 \int_{-\infty}^{\infty} z^2 \frac{1}{\sqrt{2\pi}} e^{-z^2/2} dz" />
+                        </ExampleStep>
+                         <ExampleStep stepNumber={3} title="Solve with Integration by Parts">
+                           <p>The integral <InlineMath math="\int z \cdot (z e^{-z^2/2}) dz"/> can be solved using integration by parts, where <InlineMath math="u=z"/> and <InlineMath math="dv = z e^{-z^2/2} dz"/>. It can be shown that this integral equals 1.</p>
+                            <BlockMath math="\int_{-\infty}^{\infty} z^2 \frac{1}{\sqrt{2\pi}} e^{-z^2/2} dz = 1" />
+                        </ExampleStep>
+                         <ExampleStep stepNumber={4} title="Final Result">
+                           <p>Substituting this result back gives us the variance.</p>
+                            <BlockMath math="Var(X) = \sigma^2 \cdot 1" />
+                           <FormulaBlock>
+                               <CardTitle className="text-lg mb-2">Final Variance Formula</CardTitle>
+                               <BlockMath math="Var(X) = \sigma^2" />
+                           </FormulaBlock>
+                       </ExampleStep>
+                    </div>
+                </CardContent>
+            </Card>
         </PageSection>
         
         <PageSection title="Applications">
