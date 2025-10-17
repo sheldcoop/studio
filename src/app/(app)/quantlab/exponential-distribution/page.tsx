@@ -101,7 +101,6 @@ export default function ExponentialDistributionPage() {
             <p>Credit analysts can use the Exponential distribution to model the time until a bond or loan defaults. If historical data suggests a portfolio of similar bonds has an annual default rate of λ=0.03 (3% per year), an analyst can use the CDF to calculate the probability of a default occurring within the next 5 years as <InlineMath math="P(X \le 5) = 1 - e^{-0.03 \times 5} \approx 13.9\%" />.</p>
           </KeyConceptAlert>
         </PageSection>
-
       </div>
     </>
   );
