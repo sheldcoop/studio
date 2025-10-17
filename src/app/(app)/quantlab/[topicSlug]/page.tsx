@@ -3,25 +3,25 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { allTopics } from '@/lib/data';
 import { TopicPageClient } from '@/components/app/topic-page-client';
-import NormalDistributionComponent from '@/app/(app)/quantlab/normal-distribution/page';
-import BinomialDistributionComponent from '@/app/(app)/quantlab/binomial-distribution/page';
-import PoissonDistributionComponent from '@/app/(app)/quantlab/poisson-distribution/page';
-import BernoulliDistributionComponent from '@/app/(app)/quantlab/bernoulli-distribution/page';
-import TDistributionComponent from '@/app/(app)/quantlab/students-t-distribution/page';
-import ChiSquaredDistributionComponent from '@/app/(app)/quantlab/chi-squared-distribution/page';
-import FDistributionComponent from '@/app/(app)/quantlab/f-distribution/page';
-import ExponentialDistributionComponent from '@/app/(app)/quantlab/exponential-distribution/page';
-import GeometricDistributionComponent from '@/app/(app)/quantlab/geometric-distribution/page';
-import HypergeometricDistributionComponent from '@/app/(app)/quantlab/hypergeometric-distribution/page';
-import NegativeBinomialDistributionComponent from '@/app/(app)/quantlab/negative-binomial-distribution/page';
-import DiscreteUniformDistributionComponent from '@/app/(app)/quantlab/discrete-uniform-distribution/page';
-import MultinomialDistributionComponent from '@/app/(app)/quantlab/multinomial-distribution/page';
-import GammaDistributionComponent from '@/app/(app)/quantlab/gamma-distribution/page';
-import BetaDistributionComponent from '@/app/(app)/quantlab/beta-distribution/page';
-import CauchyDistributionComponent from '@/app/(app)/quantlab/cauchy-distribution/page';
-import LaplaceDistributionComponent from '@/app/(app)/quantlab/laplace-distribution/page';
-import WeibullDistributionComponent from '@/app/(app)/quantlab/weibull-distribution/page';
-import LogisticDistributionComponent from '@/app/(app)/quantlab/logistic-distribution/page';
+import { NormalDashboard } from '@/components/quantlab/dashboards/NormalDashboard';
+import { BinomialDashboard } from '@/components/quantlab/dashboards/BinomialDashboard';
+import { PoissonDashboard } from '@/components/quantlab/dashboards/PoissonDashboard';
+import { BernoulliDashboard } from '@/components/quantlab/dashboards/BernoulliDashboard';
+import { TDistributionDashboard } from '@/components/quantlab/dashboards/TDistributionDashboard';
+import { ChiSquaredDashboard } from '@/components/quantlab/dashboards/ChiSquaredDashboard';
+import { FDistributionDashboard } from '@/components/quantlab/dashboards/FDistributionDashboard';
+import { ExponentialDashboard } from '@/components/quantlab/dashboards/ExponentialDashboard';
+import { GeometricDashboard } from '@/components/quantlab/dashboards/GeometricDashboard';
+import { HypergeometricDashboard } from '@/components/quantlab/dashboards/HypergeometricDashboard';
+import { NegativeBinomialDashboard } from '@/components/quantlab/dashboards/NegativeBinomialDashboard';
+import { DiscreteUniformDashboard } from '@/components/quantlab/dashboards/DiscreteUniformDashboard';
+import { MultinomialDashboard } from '@/components/quantlab/dashboards/MultinomialDashboard';
+import { GammaDashboard } from '@/components/quantlab/dashboards/GammaDashboard';
+import { BetaDashboard } from '@/components/quantlab/dashboards/BetaDashboard';
+import { CauchyDashboard } from '@/components/quantlab/dashboards/CauchyDashboard';
+import { LaplaceDashboard } from '@/components/quantlab/dashboards/LaplaceDashboard';
+import { WeibullDashboard } from '@/components/quantlab/dashboards/WeibullDashboard';
+import { LogisticDashboard } from '@/components/quantlab/dashboards/LogisticDashboard';
 import ZTestPage from '@/app/(app)/quantlab/z-test/component';
 import TTestPage from '@/app/(app)/quantlab/t-test/component';
 import AnovaPage from '@/app/(app)/quantlab/anova/component';
@@ -50,25 +50,25 @@ import ZTableComponent from '@/app/(app)/quantlab/z-table/component';
 import BayesTheoremComponent from '@/app/(app)/quantlab/bayes-theorem/component';
 
 const componentMap: { [key: string]: React.ComponentType } = {
-  'normal-distribution': NormalDistributionComponent,
-  'binomial-distribution': BinomialDistributionComponent,
-  'poisson-distribution': PoissonDistributionComponent,
-  'bernoulli-distribution': BernoulliDistributionComponent,
-  'students-t-distribution': TDistributionComponent,
-  'chi-squared-distribution': ChiSquaredDistributionComponent,
-  'f-distribution': FDistributionComponent,
-  'exponential-distribution': ExponentialDistributionComponent,
-  'geometric-distribution': GeometricDistributionComponent,
-  'hypergeometric-distribution': HypergeometricDistributionComponent,
-  'negative-binomial-distribution': NegativeBinomialDistributionComponent,
-  'discrete-uniform-distribution': DiscreteUniformDistributionComponent,
-  'multinomial-distribution': MultinomialDistributionComponent,
-  'gamma-distribution': GammaDistributionComponent,
-  'beta-distribution': BetaDistributionComponent,
-  'cauchy-distribution': CauchyDistributionComponent,
-  'laplace-distribution': LaplaceDistributionComponent,
-  'weibull-distribution': WeibullDistributionComponent,
-  'logistic-distribution': LogisticDistributionComponent,
+  'normal-distribution': NormalDashboard,
+  'binomial-distribution': BinomialDashboard,
+  'poisson-distribution': PoissonDashboard,
+  'bernoulli-distribution': BernoulliDashboard,
+  'students-t-distribution': TDistributionDashboard,
+  'chi-squared-distribution': ChiSquaredDashboard,
+  'f-distribution': FDistributionDashboard,
+  'exponential-distribution': ExponentialDashboard,
+  'geometric-distribution': GeometricDashboard,
+  'hypergeometric-distribution': HypergeometricDashboard,
+  'negative-binomial-distribution': NegativeBinomialDashboard,
+  'discrete-uniform-distribution': DiscreteUniformDashboard,
+  'multinomial-distribution': MultinomialDashboard,
+  'gamma-distribution': GammaDashboard,
+  'beta-distribution': BetaDashboard,
+  'cauchy-distribution': CauchyDashboard,
+  'laplace-distribution': LaplaceDashboard,
+  'weibull-distribution': WeibullDashboard,
+  'logistic-distribution': LogisticDashboard,
   'z-test': ZTestPage,
   't-test': TTestPage,
   'anova': AnovaPage,
