@@ -5,11 +5,16 @@ import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { DistributionChart } from '@/components/quantlab/DistributionChart';
-import { InlineMath } from 'react-katex';
-import 'katex/dist/katex.min.css';
 import { geometricProbability } from '@/lib/math';
 
-export function GeometricDashboard() {
+interface DashboardProps {
+    isSubcomponent?: boolean;
+    highlightValue?: string | number | null;
+    onBarHover?: (value: string | number | null) => void;
+    showCdf?: boolean;
+}
+
+export function GeometricDashboard({ isSubcomponent, highlightValue, onBarHover, showCdf }: DashboardProps) {
     const [probability, setProbability] = useState(0.25);
 
     const { chartData, mean, variance } = useMemo(() => {
@@ -28,12 +33,14 @@ export function GeometricDashboard() {
 
   return (
     <div className="space-y-4">
-        <div className="mx-auto max-w-sm">
-            <div className="space-y-3">
-                <Label htmlFor="prob-slider">Probability of Success (p): {probability.toFixed(2)}</Label>
-                <Slider id="prob-slider" min={0.01} max={0.99} step={0.01} value={[probability]} onValueChange={(val) => setProbability(val[0])} />
+        {!isSubcomponent && (
+            <div className="mx-auto max-w-sm">
+                <div className="space-y-3">
+                    <Label htmlFor="prob-slider">Probability of Success (p): {probability.toFixed(2)}</Label>
+                    <Slider id="prob-slider" min={0.01} max={0.99} step={0.01} value={[probability]} onValueChange={(val) => setProbability(val[0])} />
+                </div>
             </div>
-        </div>
+        )}
         <DistributionChart
             chartData={chartData}
             chartType="bar"
@@ -41,6 +48,9 @@ export function GeometricDashboard() {
             yAxisDataKey="probability"
             mean={mean}
             variance={variance}
+            highlightValue={highlightValue}
+            onBarHover={onBarHover}
+            showCdf={showCdf}
         />
     </div>
   );

@@ -1,23 +1,19 @@
 
 'use client';
 
+import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { DiscreteUniformDashboard } from '@/components/quantlab/dashboards/DiscreteUniformDashboard';
 import { PageSection } from '@/components/app/page-section';
-import { FormulaBlock } from '@/components/app/formula-block';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
+import { InteractiveFormula } from '@/components/app/interactive-formula';
 
-// --- Main Page Component ---
 export default function DiscreteUniformDistributionPage() {
+  const [highlightValue, setHighlightValue] = useState<string | number | null>(null);
+
   return (
     <>
       <PageHeader
@@ -29,7 +25,7 @@ export default function DiscreteUniformDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Fair Die Roll" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
               The Discrete Uniform distribution describes a situation where there are a finite number of outcomes, and each outcome is equally likely to occur.
@@ -43,29 +39,27 @@ export default function DiscreteUniformDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">Interactive Uniform Distribution</CardTitle>
-            <CardDescription>Adjust the number of possible outcomes (<InlineMath math="n" />) to see how the probability changes.</CardDescription>
+            <CardDescription>Adjust the number of possible outcomes (<InlineMath math="n"/>) to see how the probability changes.</CardDescription>
           </CardHeader>
           <CardContent>
-            <DiscreteUniformDashboard />
+            <DiscreteUniformDashboard highlightValue={highlightValue} onBarHover={setHighlightValue} />
           </CardContent>
         </Card>
 
         <PageSection title="Core Concepts">
-            <Card>
-              <CardHeader>
-                  <CardTitle className="font-headline">Probability Mass Function (PMF)</CardTitle>
-                  <CardDescription>The PMF gives the probability of observing *exactly* one specific outcome, `k`.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                  <FormulaBlock>
-                    <BlockMath math="P(X=k) = \frac{1}{n}" />
-                  </FormulaBlock>
-                   <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                      <li><InlineMath math="k" /> is one of the possible outcomes.</li>
-                      <li><InlineMath math="n" /> is the total number of possible outcomes.</li>
-                  </ul>
-              </CardContent>
-          </Card>
+            <InteractiveFormula
+              title="Probability Mass Function (PMF)"
+              description="The PMF gives the probability of observing exactly one specific outcome, `k`."
+              formula="P(X=k) = \frac{1}{n}"
+              explanation={
+                <p>Since there are <InlineMath math="n"/> possible outcomes and each is equally likely, the probability of any single outcome <InlineMath math="k"/> occurring is simply <InlineMath math="1/n"/>. For a 6-sided die, this is 1/6 for each face. For a 20-sided die, it's 1/20.</p>
+              }
+            >
+              {(highlight, onHover) => (
+                <DiscreteUniformDashboard isSubcomponent={true} highlightValue={highlight} onBarHover={onHover} />
+              )}
+            </InteractiveFormula>
+            
             <Card>
                 <CardHeader>
                     <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
@@ -73,12 +67,13 @@ export default function DiscreteUniformDistributionPage() {
                 <CardContent className="space-y-4">
                     <div>
                         <h4 className="font-semibold">Expected Value (Mean)</h4>
-                        <FormulaBlock><BlockMath math="E[X] = \frac{n+1}{2}" /></FormulaBlock>
-                        <p className="text-sm text-muted-foreground mt-2">For a fair die with `n=6`, the expected value is (6+1)/2 = 3.5. This is the balancing point of the distribution.</p>
+                        <BlockMath math="E[X] = \frac{n+1}{2}" />
+                        <p className="text-sm text-muted-foreground mt-2">For a fair die with outcomes 1 to `n`, the expected value is the average of the first and last outcome. For a 6-sided die, this is (1+6)/2 = 3.5. This is the balancing point of the distribution.</p>
                     </div>
                     <div>
                         <h4 className="font-semibold">Variance</h4>
-                        <FormulaBlock><BlockMath math="Var(X) = \frac{n^2 - 1}{12}" /></FormulaBlock>
+                        <BlockMath math="Var(X) = \frac{n^2 - 1}{12}" />
+                        <p className="text-sm text-muted-foreground mt-2">The variance measures the spread of the outcomes.</p>
                     </div>
                 </CardContent>
             </Card>

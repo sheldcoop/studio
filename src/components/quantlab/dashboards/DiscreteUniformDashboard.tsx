@@ -5,10 +5,15 @@ import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { DistributionChart } from '@/components/quantlab/DistributionChart';
-import { InlineMath } from 'react-katex';
-import 'katex/dist/katex.min.css';
 
-export function DiscreteUniformDashboard() {
+interface DashboardProps {
+    isSubcomponent?: boolean;
+    highlightValue?: string | number | null;
+    onBarHover?: (value: string | number | null) => void;
+    showCdf?: boolean;
+}
+
+export function DiscreteUniformDashboard({ isSubcomponent, highlightValue, onBarHover, showCdf }: DashboardProps) {
     const [outcomes, setOutcomes] = useState(6); // n
 
     const { chartData, mean, variance } = useMemo(() => {
@@ -28,12 +33,14 @@ export function DiscreteUniformDashboard() {
 
     return (
         <div className="space-y-4">
-            <div className="mx-auto max-w-sm">
-                <div className="space-y-3">
-                    <Label htmlFor="outcomes-slider">Number of Outcomes (n): {outcomes}</Label>
-                    <Slider id="outcomes-slider" min={2} max={20} step={1} value={[outcomes]} onValueChange={(val) => setOutcomes(val[0])} />
+            {!isSubcomponent && (
+                <div className="mx-auto max-w-sm">
+                    <div className="space-y-3">
+                        <Label htmlFor="outcomes-slider">Number of Outcomes (n): {outcomes}</Label>
+                        <Slider id="outcomes-slider" min={2} max={20} step={1} value={[outcomes]} onValueChange={(val) => setOutcomes(val[0])} />
+                    </div>
                 </div>
-            </div>
+            )}
             <DistributionChart
                 chartData={chartData}
                 chartType="bar"
@@ -41,6 +48,9 @@ export function DiscreteUniformDashboard() {
                 yAxisDataKey="probability"
                 mean={mean}
                 variance={variance}
+                highlightValue={highlightValue}
+                onBarHover={onBarHover}
+                showCdf={showCdf}
             />
         </div>
     );

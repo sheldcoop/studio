@@ -1,22 +1,15 @@
 
 'use client';
 
+import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { MultinomialDashboard } from '@/components/quantlab/dashboards/MultinomialDashboard';
 import { PageSection } from '@/components/app/page-section';
-import { FormulaBlock } from '@/components/app/formula-block';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
 
-// --- Main Page Component ---
 export default function MultinomialDistributionPage() {
   return (
     <>
@@ -43,7 +36,7 @@ export default function MultinomialDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">Interactive Multinomial Calculator</CardTitle>
-            <CardDescription>Specify the parameters to calculate the probability of a specific result.</CardDescription>
+            <CardDescription>Specify the parameters to calculate the probability of a specific result. Since the full distribution is multi-dimensional, we calculate the probability for a specific outcome vector.</CardDescription>
           </CardHeader>
           <CardContent>
             <MultinomialDashboard />
@@ -57,12 +50,10 @@ export default function MultinomialDistributionPage() {
                   <CardDescription>The PMF gives the probability of observing *exactly* a specific set of counts for each of the `c` possible outcomes.</CardDescription>
               </CardHeader>
               <CardContent>
-                  <FormulaBlock>
-                    <BlockMath math="P(X_1=x_1, ..., X_c=x_c) = \frac{n!}{x_1! \cdots x_c!} p_1^{x_1} \cdots p_c^{x_c}" />
-                  </FormulaBlock>
+                  <BlockMath math="P(X_1=x_1, ..., X_c=x_c) = \frac{n!}{x_1! \cdots x_c!} p_1^{x_1} \cdots p_c^{x_c}" />
                   <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                      <li>The first term is the **multinomial coefficient**, which counts the number of ways to arrange the outcomes.</li>
-                      <li>The second part is the product of the probabilities of achieving the desired count for each outcome.</li>
+                      <li>The first term is the **multinomial coefficient**, which counts the number of ways to arrange the outcomes. It's a generalization of the binomial coefficient.</li>
+                      <li>The second part is the product of the probabilities of achieving the desired count for each outcome category, similar to the Binomial PMF but extended for multiple categories.</li>
                   </ul>
               </CardContent>
           </Card>
@@ -71,16 +62,16 @@ export default function MultinomialDistributionPage() {
                   <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                  <p>For a multinomial distribution, we look at the mean and variance for the count of a *single* outcome <InlineMath math="X_i" />.</p>
+                  <p>For a multinomial distribution, we look at the mean and variance for the count of a *single* outcome <InlineMath math="X_i"/>.</p>
                   <div>
                       <h4 className="font-semibold">Expected Value (Mean)</h4>
-                      <FormulaBlock><BlockMath math="E[X_i] = n p_i" /></FormulaBlock>
+                      <BlockMath math="E[X_i] = n p_i"/>
                       <p className="text-sm text-muted-foreground mt-2">This is intuitive: if you have 100 trials (`n=100`) and outcome `i` has a 30% chance (`p_i=0.3`), you expect to see it `100 * 0.3 = 30` times.</p>
                   </div>
                   <div>
                       <h4 className="font-semibold">Variance</h4>
-                      <FormulaBlock><BlockMath math="Var(X_i) = n p_i (1-p_i)" /></FormulaBlock>
-                      <p className="text-sm text-muted-foreground mt-2">Notice that the variance for a single outcome's count is the same as if it were a Binomial distribution.</p>
+                      <BlockMath math="Var(X_i) = n p_i (1-p_i)"/>
+                      <p className="text-sm text-muted-foreground mt-2">Notice that the variance for a single outcome's count is the same as if it were a Binomial distribution (treating that outcome as "success" and all others as "failure").</p>
                   </div>
               </CardContent>
           </Card>

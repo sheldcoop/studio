@@ -1,23 +1,19 @@
 
 'use client';
 
+import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { HypergeometricDashboard } from '@/components/quantlab/dashboards/HypergeometricDashboard';
 import { PageSection } from '@/components/app/page-section';
-import { FormulaBlock } from '@/components/app/formula-block';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
+import { InteractiveFormula } from '@/components/app/interactive-formula';
 
-// --- Main Page Component ---
 export default function HypergeometricDistributionPage() {
+  const [highlightValue, setHighlightValue] = useState<string | number | null>(null);
+  
   return (
     <>
       <PageHeader
@@ -46,26 +42,27 @@ export default function HypergeometricDistributionPage() {
             <CardDescription>Adjust the parameters of the population and sample to see how the probabilities change.</CardDescription>
           </CardHeader>
           <CardContent>
-            <HypergeometricDashboard />
+            <HypergeometricDashboard highlightValue={highlightValue} onBarHover={setHighlightValue} />
           </CardContent>
         </Card>
         
         <PageSection title="Core Concepts">
-          <Card>
-              <CardHeader>
-                  <CardTitle className="font-headline">Probability Mass Function (PMF)</CardTitle>
-                  <CardDescription>The PMF gives the probability of getting *exactly* `k` successes in a sample of size `n`.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                  <FormulaBlock>
-                    <BlockMath math="P(X=k) = \frac{\binom{K}{k} \binom{N-K}{n-k}}{\binom{N}{n}}" />
-                  </FormulaBlock>
-                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                      <li>The numerator is the number of ways to choose `k` success items from the `K` available AND `n-k` failure items from the `N-K` available.</li>
-                      <li>The denominator is the total number of ways to choose any `n` items from the population of `N`.</li>
-                  </ul>
-              </CardContent>
-          </Card>
+          <InteractiveFormula
+            title="Probability Mass Function (PMF)"
+            description="The PMF gives the probability of getting exactly `k` successes in a sample of size `n`."
+            formula="P(X=k) = \frac{\binom{K}{k} \binom{N-K}{n-k}}{\binom{N}{n}}"
+            explanation={
+              <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                  <li>The numerator calculates the number of ways to achieve the desired outcome: it's the number of ways to choose `k` success items from the `K` available successes (<InlineMath math="\binom{K}{k}"/>), multiplied by the number of ways to choose the remaining `n-k` failure items from the total `N-K` failures (<InlineMath math="\binom{N-K}{n-k}"/>).</li>
+                  <li>The denominator is the total number of possible outcomes: the number of ways to choose any `n` items from the total population of `N` (<InlineMath math="\binom{N}{n}"/>).</li>
+              </ul>
+            }
+          >
+            {(highlight, onHover) => (
+              <HypergeometricDashboard isSubcomponent={true} highlightValue={highlight} onBarHover={onHover} />
+            )}
+          </InteractiveFormula>
+
           <Card>
               <CardHeader>
                   <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
@@ -73,13 +70,13 @@ export default function HypergeometricDistributionPage() {
               <CardContent className="space-y-4">
                   <div>
                       <h4 className="font-semibold">Expected Value (Mean)</h4>
-                      <FormulaBlock><BlockMath math="E[X] = n \cdot \frac{K}{N}" /></FormulaBlock>
-                      <p className="text-sm text-muted-foreground mt-2">The mean is the sample size `n` times the initial proportion of successes in the population `K/N`.</p>
+                      <BlockMath math="E[X] = n \cdot \frac{K}{N}" />
+                      <p className="text-sm text-muted-foreground mt-2">The mean is intuitive: it's the sample size `n` multiplied by the initial proportion of successes in the population, `K/N`.</p>
                   </div>
                   <div>
                       <h4 className="font-semibold">Variance</h4>
-                      <FormulaBlock><BlockMath math="Var(X) = n \frac{K}{N} (1 - \frac{K}{N}) \frac{N-n}{N-1}" /></FormulaBlock>
-                      <p className="text-sm text-muted-foreground mt-2">The variance is similar to the Binomial variance, but includes a "finite population correction factor" <InlineMath math="\frac{N-n}{N-1}" /> to account for the lack of replacement.</p>
+                      <BlockMath math="Var(X) = n \frac{K}{N} (1 - \frac{K}{N}) \frac{N-n}{N-1}" />
+                      <p className="text-sm text-muted-foreground mt-2">The variance is similar to the Binomial variance, but includes a "finite population correction factor" <InlineMath math="\frac{N-n}{N-1}"/> to account for the fact that each draw is not independent and reduces the remaining population.</p>
                   </div>
               </CardContent>
           </Card>

@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -13,11 +14,12 @@ import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { PoissonDashboard } from '@/components/quantlab/dashboards/PoissonDashboard';
 import { PageSection } from '@/components/app/page-section';
-import { FormulaBlock } from '@/components/app/formula-block';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
+import { InteractiveFormula } from '@/components/app/interactive-formula';
 
-// --- Main Page Component ---
 export default function PoissonDistributionPage() {
+  const [highlightValue, setHighlightValue] = useState<string | number | null>(null);
+
   return (
     <>
       <PageHeader
@@ -46,60 +48,60 @@ export default function PoissonDistributionPage() {
             <CardDescription>Adjust the rate parameter (λ) to see how the shape of the distribution changes. Notice how for large λ, the distribution starts to look like a normal distribution.</CardDescription>
           </CardHeader>
           <CardContent>
-            <PoissonDashboard />
+            <PoissonDashboard highlightValue={highlightValue} onBarHover={setHighlightValue} />
           </CardContent>
         </Card>
 
         <PageSection title="Core Concepts">
-          <Card>
-              <CardHeader>
-                  <CardTitle className="font-headline">Probability Mass Function (PMF)</CardTitle>
-                  <CardDescription>The PMF answers: "What is the probability of observing *exactly* `k` events in an interval?"</CardDescription>
-              </CardHeader>
-              <CardContent>
-                  <FormulaBlock>
-                    <BlockMath math="P(X=k) = \frac{\lambda^k e^{-\lambda}}{k!}" />
-                  </FormulaBlock>
-                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                      <li><InlineMath math="k" /> is the number of occurrences of an event (0, 1, 2, ...).</li>
-                      <li><InlineMath math="\lambda" /> (lambda) is the average number of events per interval.</li>
-                      <li><InlineMath math="e" /> is Euler's number (approximately 2.71828).</li>
-                  </ul>
-                  <p className="text-sm text-muted-foreground mt-2">The interactive chart above visualizes this PMF for different values of `k`.</p>
-              </CardContent>
-          </Card>
-          <Card>
-              <CardHeader>
-                  <CardTitle className="font-headline">Cumulative Distribution Function (CDF)</CardTitle>
-                  <CardDescription>The CDF answers: "What is the probability of observing `k` events *or fewer*?"</CardDescription>
-              </CardHeader>
-              <CardContent>
-                  <FormulaBlock>
-                    <BlockMath math="F(k) = P(X \le k) = \sum_{i=0}^{k} \frac{\lambda^i e^{-\lambda}}{i!}" />
-                  </FormulaBlock>
-                  <p className="text-sm text-muted-foreground mt-4">The CDF accumulates the probabilities from the PMF. For example, <InlineMath math="P(X \le 2) = P(X=0) + P(X=1) + P(X=2)" />.</p>
-              </CardContent>
-          </Card>
+          <InteractiveFormula
+            title="Probability Mass Function (PMF)"
+            description="The PMF answers: 'What is the probability of observing exactly k events in an interval?'"
+            formula="P(X=k) = \frac{\lambda^k e^{-\lambda}}{k!}"
+            explanation={
+              <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
+                  <li><InlineMath math="k"/> is the number of occurrences of an event (0, 1, 2, ...).</li>
+                  <li><InlineMath math="\lambda"/> (lambda) is the average number of events per interval.</li>
+                  <li><InlineMath math="e"/> is Euler's number (approximately 2.71828).</li>
+                  <li>The <InlineMath math="k!"/> (k factorial) term is crucial because it accounts for the fact that the events can happen in any order within the interval.</li>
+              </ul>
+            }
+          >
+            {(highlight, onHover) => (
+              <PoissonDashboard isSubcomponent={true} highlightValue={highlight} onBarHover={onHover} />
+            )}
+          </InteractiveFormula>
+          
+          <InteractiveFormula
+            title="Cumulative Distribution Function (CDF)"
+            description="The CDF answers: 'What is the probability of observing k events or fewer?'"
+            formula="F(k) = P(X \le k) = \sum_{i=0}^{k} \frac{\lambda^i e^{-\lambda}}{i!}"
+            explanation={
+               <p className="text-sm mt-4">The CDF accumulates the probabilities from the PMF. For example, the probability of observing 2 or fewer events, <InlineMath math="P(X \le 2)"/>, is the sum of the probabilities of observing 0, 1, and 2 events: <InlineMath math="P(X=0) + P(X=1) + P(X=2)"/>.</p>
+            }
+          >
+            {(highlight, onHover) => (
+              <PoissonDashboard isSubcomponent={true} showCdf={true} highlightValue={highlight} onBarHover={onHover} />
+            )}
+          </InteractiveFormula>
+
           <Card>
               <CardHeader>
                   <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
               </CardHeader>
               <CardContent>
                   <p>A unique and simple property of the Poisson distribution is that its mean and variance are equal.</p>
-                  <FormulaBlock>
-                    <BlockMath math="E[X] = Var(X) = \lambda" />
-                  </FormulaBlock>
-                  <p className="text-sm text-muted-foreground mt-2">This means if you expect an average of 5 defaults per month (<InlineMath math="\lambda=5" />), the variance of that number is also 5.</p>
+                  <BlockMath math="E[X] = Var(X) = \lambda" />
+                  <p className="text-sm text-muted-foreground mt-2">This means if you expect an average of 5 defaults per month (<InlineMath math="\lambda=5"/>), the variance of that number is also 5. This relationship is a key identifier of Poisson processes in real-world data.</p>
               </CardContent>
           </Card>
         </PageSection>
 
         <PageSection title="Applications">
             <KeyConceptAlert title="Quantitative Finance: Operational Risk" icon="brain">
-              <p>Banks use the Poisson distribution to model operational risk, such as the number of fraudulent transactions or system failures per week. If a bank's system typically has <InlineMath math="\lambda=2" /> failures per week, and one week they experience 8 failures, they can use the PMF to calculate how unlikely that event was. This triggers an investigation to see if something has fundamentally changed in their system's stability.</p>
+              <p>Banks use the Poisson distribution to model operational risk, such as the number of fraudulent transactions or system failures per week. If a bank's system typically has <InlineMath math="\lambda=2"/> failures per week, and one week they experience 8 failures, they can use the PMF to calculate how unlikely that event was. This triggers an investigation to see if something has fundamentally changed in their system's stability.</p>
             </KeyConceptAlert>
              <KeyConceptAlert title="Machine Learning: Feature Engineering" icon="brain">
-              <p>In analyzing customer behavior data (e.g., website visits), the number of times a user performs a certain action in a day (like 'add to cart') might follow a Poisson distribution. Understanding this can help in feature engineering. Instead of just using the raw count, a data scientist might create a feature like "Is this user's activity a rare event?" by calculating the Poisson probability <InlineMath math="P(X \ge k)" />.</p>
+              <p>In analyzing customer behavior data (e.g., website visits), the number of times a user performs a certain action in a day (like 'add to cart') might follow a Poisson distribution. Understanding this can help in feature engineering. Instead of just using the raw count, a data scientist might create a feature like "Is this user's activity a rare event?" by calculating the Poisson probability <InlineMath math="P(X \ge k)"/>.</p>
             </KeyConceptAlert>
         </PageSection>
       </div>
