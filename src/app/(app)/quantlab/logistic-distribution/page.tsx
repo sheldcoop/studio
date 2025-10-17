@@ -87,14 +87,24 @@ export default function LogisticDistributionPage() {
                 <CardHeader>
                     <CardTitle className="font-headline">Deriving the Mean & Variance</CardTitle>
                     <CardDescription>
-                        The derivations for the moments of the Logistic distribution are more involved and typically rely on the properties of its moment-generating function (MGF). We'll outline the key results here.
+                        The derivations for the moments of the Logistic distribution are most clearly shown using the moment-generating function (MGF).
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-8">
                     <div className="border-b pb-8">
                       <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
-                      <p className="text-sm text-muted-foreground mb-4">For a standard logistic distribution where <InlineMath math="\mu=0"/> and <InlineMath math="s=1"/>, the PDF is symmetric around 0. The expected value is the integral of <InlineMath math="x \cdot f(x)"/>, and for any symmetric PDF around 0, this integral is 0. For a general logistic distribution, the location parameter <InlineMath math="\mu"/> simply shifts the entire distribution without changing its shape, thus shifting the mean directly.</p>
-                      <FormulaBlock>
+                       <ExampleStep stepNumber={1} title="The Moment-Generating Function (MGF)">
+                            <p>For a standard logistic distribution (<InlineMath math="\mu=0, s=1"/>), the MGF is known to be:</p>
+                            <BlockMath math="M_X(t) = E[e^{tX}] = \pi t \csc(\pi t) = \frac{\pi t}{\sin(\pi t)}" />
+                            <p className="text-sm text-muted-foreground mt-2">The mean is the first derivative of the MGF, evaluated at t=0.</p>
+                       </ExampleStep>
+                       <ExampleStep stepNumber={2} title="Calculate the First Derivative">
+                            <p>We need to find <InlineMath math="M_X'(0)"/>. Using L'Hôpital's rule is easiest. The derivative of the MGF is complex, but its limit as <InlineMath math="t \to 0"/> is 0.</p>
+                             <BlockMath math="E[X] = M_X'(0) = 0" />
+                             <p className="mt-2">For a general logistic distribution <InlineMath math="Y = \mu + sX"/>, the mean is:</p>
+                             <BlockMath math="E[Y] = E[\mu + sX] = \mu + sE[X] = \mu + s(0) = \mu" />
+                       </ExampleStep>
+                       <FormulaBlock>
                             <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
                             <BlockMath math="E[X] = \mu" />
                        </FormulaBlock>
@@ -102,8 +112,20 @@ export default function LogisticDistributionPage() {
 
                     <div>
                       <h4 className="font-semibold text-lg">Deriving the Variance</h4>
-                      <p className="text-sm text-muted-foreground mb-4">The variance is derived from the second moment of the distribution, which is found using the moment-generating function. The MGF of a standard logistic distribution is <InlineMath math="M(t) = \pi t \csc(\pi t)"/>. Taking the second derivative of the MGF and evaluating at <InlineMath math="t=0"/> gives <InlineMath math="E[X^2] = \pi^2/3"/>. Since the mean is 0, the variance is also <InlineMath math="\pi^2/3"/>. For the general case with scale parameter <InlineMath math="s"/>, the variance is scaled by <InlineMath math="s^2"/>.</p>
-                      <FormulaBlock>
+                      <p className="text-sm text-muted-foreground mb-4">We use <InlineMath math="Var(X) = E[X^2] - (E[X])^2" />. We need the second moment, <InlineMath math="E[X^2]" />.</p>
+                      <ExampleStep stepNumber={1} title="Calculate the Second Derivative of the MGF">
+                            <p>The second moment <InlineMath math="E[X^2]"/> for the standard distribution is the second derivative of the MGF, evaluated at t=0.</p>
+                            <BlockMath math="E[X^2] = M_X''(0)" />
+                            <p>This is a more complex derivative, which can be shown to evaluate to:</p>
+                             <BlockMath math="M_X''(0) = \frac{\pi^2}{3}" />
+                             <p className="mt-2">So, for the standard distribution, <InlineMath math="Var(X) = E[X^2] - (E[X])^2 = \frac{\pi^2}{3} - 0^2 = \frac{\pi^2}{3}"/>.</p>
+                       </ExampleStep>
+                        <ExampleStep stepNumber={2} title="Scale for the General Distribution">
+                            <p>For the general distribution <InlineMath math="Y = \mu + sX"/>, the variance is:</p>
+                            <BlockMath math="Var(Y) = Var(\mu + sX) = Var(sX) = s^2 Var(X)" />
+                            <BlockMath math="= s^2 \frac{\pi^2}{3}" />
+                       </ExampleStep>
+                       <FormulaBlock>
                             <CardTitle className="text-lg mb-2">Final Variance Formula</CardTitle>
                             <BlockMath math="Var(X) = \frac{s^2 \pi^2}{3}" />
                        </FormulaBlock>
