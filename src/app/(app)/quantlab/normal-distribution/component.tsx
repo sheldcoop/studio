@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -13,22 +12,22 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import { standardNormalPdf } from '@/lib/math';
 import 'katex/dist/katex.min.css';
 
-// --- Math & Simulation Logic ---
 const normalPdf = (x: number, mean: number, stdDev: number): number => {
     if (stdDev <= 0) return 0;
     return (1 / (stdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mean) / stdDev, 2));
 };
 
-// --- Chart Component ---
-const NormalDistributionChart = ({ mean, stdDev }: { mean: number; stdDev: number }) => {
-  const chartData = useMemo(() => {
+// --- Main Page Component ---
+export default function NormalDistributionComponent() {
+  const [mean, setMean] = useState(0); // μ
+  const [stdDev, setStdDev] = useState(1); // σ
+
+  const { chartData, variance } = useMemo(() => {
     const data = [];
     const points = 400;
     const range = stdDev * 8;
@@ -42,44 +41,8 @@ const NormalDistributionChart = ({ mean, stdDev }: { mean: number; stdDev: numbe
         density: normalPdf(x, mean, stdDev),
       });
     }
-    return data;
+    return { chartData: data, variance: stdDev * stdDev };
   }, [mean, stdDev]);
-
-  return (
-    <div>
-      <ChartContainer config={{}} className="h-[300px] w-full">
-        <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="value" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(val) => val.toFixed(1)} name="Value" />
-          <YAxis name="Density" domain={[0, 'dataMax']} />
-          <Tooltip
-            content={<ChartTooltipContent
-              labelFormatter={(label) => `Value: ${Number(label).toFixed(2)}`}
-              formatter={(value) => [Number(value).toFixed(4), 'Density']}
-            />}
-          />
-          <defs>
-            <linearGradient id="fillNormal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
-            </linearGradient>
-          </defs>
-          <Area type="monotone" dataKey="density" stroke="hsl(var(--chart-1))" fill="url(#fillNormal)" strokeWidth={2} dot={false} />
-        </AreaChart>
-      </ChartContainer>
-    </div>
-  );
-};
-
-const DynamicNormalDistributionChart = dynamic(() => Promise.resolve(NormalDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
-});
-
-// --- Main Page Component ---
-export default function NormalDistributionComponent() {
-  const [mean, setMean] = useState(0); // μ
-  const [stdDev, setStdDev] = useState(1); // σ
 
   return (
     <>
@@ -135,7 +98,14 @@ export default function NormalDistributionComponent() {
                 <Slider id="stddev-slider" min={0.1} max={5} step={0.1} value={[stdDev]} onValueChange={(val) => setStdDev(val[0])} />
               </div>
             </div>
-            <DynamicNormalDistributionChart mean={mean} stdDev={stdDev} />
+            <DistributionChart
+                chartData={chartData}
+                chartType="area"
+                xAxisDataKey="value"
+                yAxisDataKey="density"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

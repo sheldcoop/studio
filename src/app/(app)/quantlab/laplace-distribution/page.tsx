@@ -1,3 +1,4 @@
+
 import LaplaceDistributionComponent from './component';
 
 export default function LaplaceDistributionPage() {

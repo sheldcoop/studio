@@ -1,3 +1,4 @@
+
 import MultinomialDistributionComponent from './component';
 
 export default function MultinomialDistributionPage() {

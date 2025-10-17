@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -12,23 +12,17 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import { weibullPdf, lanczosGamma } from '@/lib/math';
 
-// --- Math & Simulation Logic ---
-const weibullPdf = (x: number, k: number, lambda: number): number => {
-    if (x < 0 || k <= 0 || lambda <= 0) {
-        return 0;
-    }
-    return (k / lambda) * Math.pow(x / lambda, k - 1) * Math.exp(-Math.pow(x / lambda, k));
-};
+// --- Main Page Component ---
+export default function WeibullDistributionComponent() {
+  const [shape, setShape] = useState(2); // k
+  const [scale, setScale] = useState(1); // lambda
 
-// --- Chart Component ---
-const WeibullDistributionChart = ({ shape, scale }: { shape: number; scale: number }) => {
-  const chartData = useMemo(() => {
+  const { chartData, mean, variance } = useMemo(() => {
     const data = [];
     const points = 200;
     // A reasonable upper bound for the chart x-axis
@@ -42,45 +36,12 @@ const WeibullDistributionChart = ({ shape, scale }: { shape: number; scale: numb
         }
         data.push({ value: x, density });
     }
+    
+    const calculatedMean = scale * lanczosGamma(1 + 1 / shape);
+    const calculatedVariance = (scale**2) * (lanczosGamma(1 + 2 / shape) - (lanczosGamma(1 + 1 / shape))**2);
 
-    return { chartData: data };
+    return { chartData: data, mean: calculatedMean, variance: calculatedVariance };
   }, [shape, scale]);
-
-  return (
-    <div>
-      <ChartContainer config={{}} className="h-[300px] w-full">
-        <AreaChart data={chartData.chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="value" type="number" domain={[0, 'dataMax']} tickFormatter={(val) => val.toFixed(1)} name="Value (x)" />
-          <YAxis name="Density" domain={[0, 'dataMax']} />
-          <Tooltip
-            content={<ChartTooltipContent
-              labelFormatter={(label) => `Value: ${Number(label).toFixed(2)}`}
-              formatter={(value) => [Number(value).toFixed(4), 'Density']}
-            />}
-          />
-          <defs>
-            <linearGradient id="fillWeibull" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
-            </linearGradient>
-          </defs>
-          <Area type="monotone" dataKey="density" stroke="hsl(var(--chart-1))" fill="url(#fillWeibull)" strokeWidth={2} dot={false} />
-        </AreaChart>
-      </ChartContainer>
-    </div>
-  );
-};
-
-const DynamicWeibullDistributionChart = dynamic(() => Promise.resolve(WeibullDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
-});
-
-// --- Main Page Component ---
-export default function WeibullDistributionComponent() {
-  const [shape, setShape] = useState(2); // k
-  const [scale, setScale] = useState(1); // lambda
 
   return (
     <>
@@ -137,7 +98,14 @@ export default function WeibullDistributionComponent() {
                 <Slider id="scale-slider" min={0.5} max={5} step={0.1} value={[scale]} onValueChange={(val) => setScale(val[0])} />
               </div>
             </div>
-            <DynamicWeibullDistributionChart shape={shape} scale={scale} />
+            <DistributionChart
+              chartData={chartData}
+              chartType="area"
+              xAxisDataKey="value"
+              yAxisDataKey="density"
+              mean={mean}
+              variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

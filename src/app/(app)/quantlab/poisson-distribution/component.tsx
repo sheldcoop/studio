@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -13,77 +12,39 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import { generatePoissonData } from '@/lib/math';
 
-// --- Math & Simulation Logic ---
-const factorial = (n: number): number => {
-    let result = 1;
-    for (let i = 2; i <= n; i++) {
-        result *= i;
-    }
-    return result;
-};
-
+// This is an approximation as we are not using the real PMF for the chart
 const poissonProbability = (lambda: number, k: number): number => {
     return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
 };
 
-// --- Chart Component ---
-const PoissonDistributionChart = ({ lambda }: { lambda: number }) => {
-  const chartData = useMemo(() => {
-    const data = [];
-    // Calculate up to a reasonable limit, e.g., lambda + 4 * sqrt(lambda) or at least 20
-    const limit = Math.ceil(Math.max(20, lambda + 4 * Math.sqrt(lambda)));
-    for (let k = 0; k <= limit; k++) {
-      data.push({
-        events: k.toString(),
-        probability: poissonProbability(lambda, k),
-      });
-    }
-    return data;
-  }, [lambda]);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="events" name="Number of Events" />
-                <YAxis name="Probability" domain={[0, 'dataMax']} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        labelFormatter={(label) => `Events: ${label}`}
-                        formatter={(value, name) => [Number(value).toFixed(4), 'Probability']}
-                    />}
-                />
-                <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-        </ChartContainer>
-         <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-4">
-            <div>
-                Mean (μ = λ): <span className="font-semibold text-foreground block">{lambda.toFixed(2)}</span>
-            </div>
-            <div>
-                Variance (σ² = λ): <span className="font-semibold text-foreground block">{lambda.toFixed(2)}</span>
-            </div>
-        </div>
-    </div>
-  );
+const factorial = (n: number): number => {
+    if (n < 0) return 0;
+    let result = 1;
+    for (let i = 2; i <= n; i++) result *= i;
+    return result;
 };
-
-const DynamicPoissonDistributionChart = dynamic(() => Promise.resolve(PoissonDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[340px] w-full" />,
-});
 
 
 // --- Main Page Component ---
 export default function PoissonDistributionComponent() {
     const [lambda, setLambda] = useState(5);
+
+    const { chartData, mean, variance } = useMemo(() => {
+        const data = [];
+        const limit = Math.ceil(Math.max(20, lambda + 4 * Math.sqrt(lambda)));
+        for (let k = 0; k <= limit; k++) {
+          data.push({
+            events: k.toString(),
+            probability: poissonProbability(lambda, k),
+          });
+        }
+        return { chartData: data, mean: lambda, variance: lambda };
+    }, [lambda]);
 
   return (
     <>
@@ -136,7 +97,14 @@ export default function PoissonDistributionComponent() {
                     <Slider id="lambda-slider" min={0.1} max={20} step={0.1} value={[lambda]} onValueChange={(val) => setLambda(val[0])} />
                 </div>
             </div>
-            <DynamicPoissonDistributionChart lambda={lambda} />
+            <DistributionChart
+                chartData={chartData}
+                chartType="bar"
+                xAxisDataKey="events"
+                yAxisDataKey="probability"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

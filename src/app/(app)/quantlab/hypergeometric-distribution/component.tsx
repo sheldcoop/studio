@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -12,83 +12,30 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-// --- Math & Simulation Logic ---
-const combinations = (n: number, k: number): number => {
-    if (k < 0 || k > n) return 0;
-    if (k === 0 || k === n) return 1;
-    if (k > n / 2) k = n - k;
-    let res = 1;
-    for (let i = 1; i <= k; i++) {
-        res = res * (n - i + 1) / i;
-    }
-    return res;
-};
-
-const hypergeometricProbability = (N: number, K: number, n: number, k: number): number => {
-    const num = combinations(K, k) * combinations(N - K, n - k);
-    const den = combinations(N, n);
-    return den > 0 ? num / den : 0;
-};
-
-// --- Chart Component ---
-const HypergeometricDistributionChart = ({ N, K, n }: { N: number; K: number; n: number }) => {
-  const chartData = useMemo(() => {
-    const data = [];
-    const min_k = Math.max(0, n - (N - K));
-    const max_k = Math.min(n, K);
-    for (let k = min_k; k <= max_k; k++) {
-      data.push({
-        successes: k.toString(),
-        probability: hypergeometricProbability(N, K, n, k),
-      });
-    }
-    return data;
-  }, [N, K, n]);
-
-  const mean = n * (K / N);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="successes" name="Number of Successes in Sample (k)" />
-                <YAxis name="Probability" domain={[0, 'dataMax']} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        labelFormatter={(label) => `Successes: ${label}`}
-                        formatter={(value) => [Number(value).toFixed(4), 'Probability']}
-                    />}
-                />
-                <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-        </ChartContainer>
-         <div className="grid grid-cols-1 text-center text-xs text-muted-foreground mt-4">
-            <div>
-                Mean (<InlineMath math="\mu = n \cdot (K/N)" />): <span className="font-semibold text-foreground block">{mean.toFixed(2)}</span>
-            </div>
-        </div>
-    </div>
-  );
-};
-
-const DynamicHypergeometricDistributionChart = dynamic(() => Promise.resolve(HypergeometricDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[340px] w-full" />,
-});
-
+import { hypergeometricProbability } from '@/lib/math';
 
 // --- Main Page Component ---
 export default function HypergeometricDistributionComponent() {
     const [N, setN] = useState(52); // Population size
     const [K, setK] = useState(13);   // Number of successes in population
     const [n, setn] = useState(5);   // Sample size
+
+    const { chartData, mean } = useMemo(() => {
+        const data = [];
+        const min_k = Math.max(0, n - (N - K));
+        const max_k = Math.min(n, K);
+        for (let k = min_k; k <= max_k; k++) {
+            data.push({
+                successes: k.toString(),
+                probability: hypergeometricProbability(N, K, n, k),
+            });
+        }
+        const calculatedMean = n * (K / N);
+        return { chartData: data, mean: calculatedMean };
+    }, [N, K, n]);
 
   return (
     <>
@@ -150,7 +97,13 @@ export default function HypergeometricDistributionComponent() {
                     <Slider id="n-slider" min={1} max={N} step={1} value={[n]} onValueChange={(val) => setn(val[0])} />
                 </div>
             </div>
-            <DynamicHypergeometricDistributionChart N={N} K={K} n={n} />
+            <DistributionChart
+                chartData={chartData}
+                chartType="bar"
+                xAxisDataKey="successes"
+                yAxisDataKey="probability"
+                mean={mean}
+            />
           </CardContent>
         </Card>
       </div>

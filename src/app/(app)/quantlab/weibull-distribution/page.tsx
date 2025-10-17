@@ -1,3 +1,4 @@
+
 import WeibullDistributionComponent from './component';
 
 export default function WeibullDistributionPage() {

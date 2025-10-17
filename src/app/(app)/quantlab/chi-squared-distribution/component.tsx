@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -12,102 +12,34 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-// --- Math & Simulation Logic ---
-// Lanczos approximation for the gamma function, required for the PDF
-function lanczosGamma(z: number): number {
-    const p = [
-        676.5203681218851, -1259.1392167224028, 771.32342877765313,
-        -176.61502916214059, 12.507343278686905, -0.13857109526572012,
-        9.9843695780195716e-6, 1.5056327351493116e-7
-    ];
-    if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * lanczosGamma(1 - z));
-    z -= 1;
-    let x = 0.99999999999980993;
-    for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
-    const t = z + p.length - 0.5;
-    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
-}
-
-const chiSquaredPdf = (x: number, k: number): number => {
-    if (x < 0 || k <= 0) return 0;
-    const term1 = Math.pow(x, k / 2 - 1) * Math.exp(-x / 2);
-    const term2 = Math.pow(2, k / 2) * lanczosGamma(k / 2);
-    if (term2 === 0) return Infinity;
-    return term1 / term2;
-};
-
-// --- Chart Component ---
-const ChiSquaredDistributionChart = ({ df }: { df: number }) => {
-  const { chartData, mean, variance } = useMemo(() => {
-    const data = [];
-    const points = 200;
-    // The range depends on the degrees of freedom
-    const rangeEnd = Math.max(10, df + 4 * Math.sqrt(2 * df));
-
-    for (let i = 1; i <= points; i++) {
-        const x = (i / points) * rangeEnd;
-        let density = chiSquaredPdf(x, df);
-        if (!isFinite(density) || density > 5) {
-            density = 5; // Cap for visualization
-        }
-        data.push({ value: x, density });
-    }
-    
-    const calculatedMean = df;
-    const calculatedVariance = 2 * df;
-
-    return { chartData: data, mean: calculatedMean, variance: calculatedVariance };
-  }, [df]);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="value" type="number" domain={[0, 'dataMax']} tickFormatter={(val) => val.toFixed(1)} name="Value" />
-                <YAxis name="Density" domain={[0, 'dataMax']} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        labelFormatter={(label) => `Value: ${Number(label).toFixed(2)}`}
-                        formatter={(value) => [Number(value).toFixed(4), 'Density']}
-                    />}
-                />
-                 <defs>
-                    <linearGradient id="fillChi" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
-                    </linearGradient>
-                </defs>
-                <Area type="monotone" dataKey="density" stroke="hsl(var(--chart-1))" fill="url(#fillChi)" strokeWidth={2} dot={false} />
-            </AreaChart>
-        </ChartContainer>
-         <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-4">
-            <div>
-                Mean (k): <span className="font-semibold text-foreground block">{mean.toFixed(2)}</span>
-            </div>
-            <div>
-                Variance (2k): <span className="font-semibold text-foreground block">{variance.toFixed(2)}</span>
-            </div>
-        </div>
-    </div>
-  );
-};
-
-const DynamicChiSquaredDistributionChart = dynamic(() => Promise.resolve(ChiSquaredDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[340px] w-full" />,
-});
-
+import { chiSquaredPdf } from '@/lib/math';
 
 // --- Main Page Component ---
 export default function ChiSquaredDistributionComponent() {
     const [df, setDf] = useState(5); // Degrees of Freedom
+
+    const { chartData, mean, variance } = useMemo(() => {
+        const data = [];
+        const points = 200;
+        const rangeEnd = Math.max(10, df + 4 * Math.sqrt(2 * df));
+
+        for (let i = 1; i <= points; i++) {
+            const x = (i / points) * rangeEnd;
+            let density = chiSquaredPdf(x, df);
+            if (!isFinite(density) || density > 5) {
+                density = 5;
+            }
+            data.push({ value: x, density });
+        }
+        
+        const calculatedMean = df;
+        const calculatedVariance = 2 * df;
+
+        return { chartData: data, mean: calculatedMean, variance: calculatedVariance };
+    }, [df]);
 
   return (
     <>
@@ -141,7 +73,7 @@ export default function ChiSquaredDistributionComponent() {
                   <BlockMath math="f(x; k) = \frac{1}{2^{k/2}\Gamma(k/2)} x^{k/2-1} e^{-x/2}" />
                 </div>
                  <ul className="list-disc pl-6 space-y-2 text-sm mt-4">
-                    <li><InlineMath math="x" /> is the variable (must be ≥ 0).</li>
+                    <li><InlineMath math="x \ge 0" /> is the variable.</li>
                     <li><InlineMath math="k" /> represents the degrees of freedom.</li>
                     <li><InlineMath math="\Gamma(k/2)" /> is the Gamma function.</li>
                 </ul>
@@ -160,7 +92,14 @@ export default function ChiSquaredDistributionComponent() {
                     <Slider id="df-slider" min={1} max={30} step={1} value={[df]} onValueChange={(val) => setDf(val[0])} />
                 </div>
             </div>
-            <DynamicChiSquaredDistributionChart df={df} />
+            <DistributionChart
+                chartData={chartData}
+                chartType="area"
+                xAxisDataKey="value"
+                yAxisDataKey="density"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

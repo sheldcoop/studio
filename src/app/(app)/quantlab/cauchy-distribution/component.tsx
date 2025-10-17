@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -12,82 +12,33 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-// --- Math & Simulation Logic ---
-const cauchyPdf = (x: number, x0: number, gamma: number): number => {
-    if (gamma <= 0) return 0;
-    return 1 / (Math.PI * gamma * (1 + Math.pow((x - x0) / gamma, 2)));
-};
-
-// --- Chart Component ---
-const CauchyDistributionChart = ({ location, scale }: { location: number; scale: number }) => {
-  const chartData = useMemo(() => {
-    const data = [];
-    const points = 400;
-    const range = Math.max(20, scale * 15);
-    const start = location - range / 2;
-    const end = location + range / 2;
-    const step = (end - start) / points;
-
-    for (let i = 0; i <= points; i++) {
-        const x = start + i * step;
-        data.push({
-            value: x,
-            density: cauchyPdf(x, location, scale),
-        });
-    }
-    return data;
-  }, [location, scale]);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="value" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(val) => val.toFixed(1)} name="Value" />
-                <YAxis name="Density" domain={[0, 'dataMax']} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        labelFormatter={(label) => `Value: ${Number(label).toFixed(2)}`}
-                        formatter={(value) => [Number(value).toFixed(4), 'Density']}
-                    />}
-                />
-                 <defs>
-                    <linearGradient id="fillCauchy" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
-                    </linearGradient>
-                </defs>
-                <Area type="monotone" dataKey="density" stroke="hsl(var(--chart-1))" fill="url(#fillCauchy)" strokeWidth={2} dot={false} />
-            </AreaChart>
-        </ChartContainer>
-         <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-4">
-            <div>
-                Median / Mode: <span className="font-semibold text-foreground block">{location.toFixed(2)}</span>
-            </div>
-            <div>
-                Mean / Variance: <span className="font-semibold text-destructive block">Undefined</span>
-            </div>
-        </div>
-    </div>
-  );
-};
-
-const DynamicCauchyDistributionChart = dynamic(() => Promise.resolve(CauchyDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[340px] w-full" />,
-});
-
+import { cauchyPdf } from '@/lib/math';
 
 // --- Main Page Component ---
 export default function CauchyDistributionComponent() {
     const [location, setLocation] = useState(0); // x0
     const [scale, setScale] = useState(1);   // gamma
+
+    const { chartData, mean, variance } = useMemo(() => {
+        const data = [];
+        const points = 400;
+        const range = Math.max(20, scale * 15);
+        const start = location - range / 2;
+        const end = location + range / 2;
+        const step = (end - start) / points;
+
+        for (let i = 0; i <= points; i++) {
+            const x = start + i * step;
+            data.push({
+                value: x,
+                density: cauchyPdf(x, location, scale),
+            });
+        }
+        return { chartData: data, mean: location, variance: Infinity };
+    }, [location, scale]);
 
   return (
     <>
@@ -143,7 +94,14 @@ export default function CauchyDistributionComponent() {
                     <Slider id="scale-slider" min={0.1} max={5} step={0.1} value={[scale]} onValueChange={(val) => setScale(val[0])} />
                 </div>
             </div>
-            <DynamicCauchyDistributionChart location={location} scale={scale} />
+            <DistributionChart 
+                chartData={chartData}
+                chartType="area"
+                xAxisDataKey="value"
+                yAxisDataKey="density"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

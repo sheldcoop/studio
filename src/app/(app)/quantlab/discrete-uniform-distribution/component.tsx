@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -13,55 +12,28 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-// --- Chart Component ---
-const DiscreteUniformDistributionChart = ({ n }: { n: number }) => {
-  const chartData = useMemo(() => {
-    const data = [];
-    const probability = 1 / n;
-    for (let k = 1; k <= n; k++) {
-      data.push({
-        outcome: k.toString(),
-        probability: probability,
-      });
-    }
-    return data;
-  }, [n]);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="outcome" name="Outcome (k)" />
-                <YAxis name="Probability" domain={[0, 1]} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        labelFormatter={(label) => `Outcome: ${label}`}
-                        formatter={(value) => [Number(value).toFixed(4), 'Probability']}
-                    />}
-                />
-                <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-        </ChartContainer>
-    </div>
-  );
-};
-
-const DynamicDiscreteUniformDistributionChart = dynamic(() => Promise.resolve(DiscreteUniformDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
-});
-
 
 // --- Main Page Component ---
 export default function DiscreteUniformDistributionComponent() {
     const [outcomes, setOutcomes] = useState(6); // n
+
+    const { chartData, mean, variance } = useMemo(() => {
+        const data = [];
+        const probability = 1 / outcomes;
+        for (let k = 1; k <= outcomes; k++) {
+            data.push({
+                outcome: k.toString(),
+                probability: probability,
+            });
+        }
+        const calculatedMean = (outcomes + 1) / 2;
+        const calculatedVariance = (outcomes*outcomes - 1) / 12;
+
+        return { chartData: data, mean: calculatedMean, variance: calculatedVariance };
+    }, [outcomes]);
 
   return (
     <>
@@ -113,7 +85,14 @@ export default function DiscreteUniformDistributionComponent() {
                     <Slider id="outcomes-slider" min={2} max={20} step={1} value={[outcomes]} onValueChange={(val) => setOutcomes(val[0])} />
                 </div>
             </div>
-            <DynamicDiscreteUniformDistributionChart n={outcomes} />
+            <DistributionChart
+                chartData={chartData}
+                chartType="bar"
+                xAxisDataKey="outcome"
+                yAxisDataKey="probability"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

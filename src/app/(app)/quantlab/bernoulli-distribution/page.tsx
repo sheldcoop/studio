@@ -18,13 +18,7 @@ import 'katex/dist/katex.min.css';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { DistributionChart } from '@/components/quantlab/DistributionChart';
-
-// --- Math & Simulation Logic ---
-const bernoulliProbability = (p: number, k: number): number => {
-    if (k === 1) return p;
-    if (k === 0) return 1 - p;
-    return 0;
-};
+import { bernoulliProbability } from '@/lib/math';
 
 // --- Main Page Component ---
 export default function BernoulliDistributionPage() {

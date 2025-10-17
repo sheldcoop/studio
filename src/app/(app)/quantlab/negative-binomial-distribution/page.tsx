@@ -1,3 +1,4 @@
+
 import NegativeBinomialDistributionComponent from './component';
 
 export default function NegativeBinomialDistributionPage() {

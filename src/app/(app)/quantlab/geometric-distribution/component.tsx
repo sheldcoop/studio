@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -12,72 +12,28 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-// --- Math & Simulation Logic ---
-const geometricProbability = (p: number, k: number): number => {
-    if (k < 1) return 0;
-    return Math.pow(1 - p, k - 1) * p;
-};
-
-// --- Chart Component ---
-const GeometricDistributionChart = ({ p }: { p: number }) => {
-  const chartData = useMemo(() => {
-    const data = [];
-    const limit = Math.ceil(Math.max(15, 3 / p)); // Calculate a reasonable limit for the x-axis
-    for (let k = 1; k <= limit; k++) {
-      data.push({
-        trials: k.toString(),
-        probability: geometricProbability(p, k),
-      });
-    }
-    return data;
-  }, [p]);
-
-  const mean = 1 / p;
-  const variance = (1 - p) / (p * p);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="trials" name="Number of Trials (k)" />
-                <YAxis name="Probability" domain={[0, 'dataMax']} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        labelFormatter={(label) => `Trials: ${label}`}
-                        formatter={(value) => [Number(value).toFixed(4), 'Probability']}
-                    />}
-                />
-                <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-        </ChartContainer>
-         <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-4">
-            <div>
-                Mean (<InlineMath math="\mu = 1/p" />): <span className="font-semibold text-foreground block">{mean.toFixed(2)}</span>
-            </div>
-            <div>
-                Variance (<InlineMath math="\sigma^2 = (1-p)/p^2" />): <span className="font-semibold text-foreground block">{variance.toFixed(2)}</span>
-            </div>
-        </div>
-    </div>
-  );
-};
-
-const DynamicGeometricDistributionChart = dynamic(() => Promise.resolve(GeometricDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[340px] w-full" />,
-});
-
+import { geometricProbability } from '@/lib/math';
 
 // --- Main Page Component ---
 export default function GeometricDistributionComponent() {
     const [probability, setProbability] = useState(0.25);
+
+    const { chartData, mean, variance } = useMemo(() => {
+        const data = [];
+        const limit = Math.ceil(Math.max(15, 3 / probability));
+        for (let k = 1; k <= limit; k++) {
+            data.push({
+                trials: k.toString(),
+                probability: geometricProbability(probability, k),
+            });
+        }
+        const calculatedMean = 1 / probability;
+        const calculatedVariance = (1 - probability) / (probability * probability);
+        return { chartData: data, mean: calculatedMean, variance: calculatedVariance };
+    }, [probability]);
 
   return (
     <>
@@ -129,7 +85,14 @@ export default function GeometricDistributionComponent() {
                     <Slider id="prob-slider" min={0.01} max={0.99} step={0.01} value={[probability]} onValueChange={(val) => setProbability(val[0])} />
                 </div>
             </div>
-            <DynamicGeometricDistributionChart p={probability} />
+            <DistributionChart
+                chartData={chartData}
+                chartType="bar"
+                xAxisDataKey="trials"
+                yAxisDataKey="probability"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

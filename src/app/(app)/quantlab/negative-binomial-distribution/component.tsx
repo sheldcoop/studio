@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -12,76 +12,30 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-// --- Math & Simulation Logic ---
-const combinations = (n: number, k: number): number => {
-    if (k < 0 || k > n) return 0;
-    if (k === 0 || k === n) return 1;
-    if (k > n / 2) k = n - k;
-    let res = 1;
-    for (let i = 1; i <= k; i++) {
-        res = res * (n - i + 1) / i;
-    }
-    return res;
-};
-
-const negativeBinomialProbability = (r: number, p: number, k: number): number => {
-    if (k < r) return 0;
-    return combinations(k - 1, r - 1) * Math.pow(p, r) * Math.pow(1 - p, k - r);
-};
-
-// --- Chart Component ---
-const NegativeBinomialDistributionChart = ({ r, p }: { r: number; p: number }) => {
-  const chartData = useMemo(() => {
-    const data = [];
-    // Calculate a reasonable upper limit for k
-    const mean = r / p;
-    const variance = r * (1-p) / (p*p);
-    const limit = Math.ceil(mean + 3 * Math.sqrt(variance));
-    for (let k = r; k <= limit; k++) {
-      data.push({
-        trials: k.toString(),
-        probability: negativeBinomialProbability(r, p, k),
-      });
-    }
-    return data;
-  }, [r, p]);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="trials" name="Number of Trials (k)" />
-                <YAxis name="Probability" domain={[0, 'dataMax']} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        labelFormatter={(label) => `Trials: ${label}`}
-                        formatter={(value) => [Number(value).toFixed(4), 'Probability']}
-                    />}
-                />
-                <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-        </ChartContainer>
-    </div>
-  );
-};
-
-const DynamicNegativeBinomialDistributionChart = dynamic(() => Promise.resolve(NegativeBinomialDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[300px] w-full" />,
-});
-
+import { negativeBinomialProbability } from '@/lib/math';
 
 // --- Main Page Component ---
 export default function NegativeBinomialDistributionComponent() {
     const [successes, setSuccesses] = useState(5); // r
     const [probability, setProbability] = useState(0.5); // p
+
+    const { chartData, mean, variance } = useMemo(() => {
+        const data = [];
+        const meanCalc = successes / probability;
+        const varianceCalc = successes * (1 - probability) / (probability * probability);
+        const limit = Math.ceil(Math.max(20, meanCalc + 3 * Math.sqrt(varianceCalc)));
+
+        for (let k = successes; k <= limit; k++) {
+            data.push({
+                trials: k.toString(),
+                probability: negativeBinomialProbability(successes, probability, k),
+            });
+        }
+        return { chartData: data, mean: meanCalc, variance: varianceCalc };
+    }, [successes, probability]);
 
   return (
     <>
@@ -138,7 +92,14 @@ export default function NegativeBinomialDistributionComponent() {
                     <Slider id="prob-slider" min={0.01} max={0.99} step={0.01} value={[probability]} onValueChange={(val) => setProbability(val[0])} />
                 </div>
             </div>
-            <DynamicNegativeBinomialDistributionChart r={successes} p={probability} />
+            <DistributionChart
+                chartData={chartData}
+                chartType="bar"
+                xAxisDataKey="trials"
+                yAxisDataKey="probability"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

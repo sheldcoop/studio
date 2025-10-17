@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { PageHeader } from '@/components/app/page-header';
 import {
   Card,
@@ -12,90 +12,29 @@ import {
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-
-
-// --- Math & Simulation Logic ---
-const combinations = (n: number, k: number): number => {
-    if (k < 0 || k > n) {
-        return 0;
-    }
-    if (k === 0 || k === n) {
-        return 1;
-    }
-    if (k > n / 2) {
-        k = n - k;
-    }
-    let res = 1;
-    for (let i = 1; i <= k; i++) {
-        res = res * (n - i + 1) / i;
-    }
-    return res;
-};
-
-const binomialProbability = (n: number, k: number, p: number): number => {
-    return combinations(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
-};
-
-
-// --- Chart Component ---
-const BinomialDistributionChart = ({ n, p }: { n: number; p: number }) => {
-  const chartData = useMemo(() => {
-    const data = [];
-    for (let k = 0; k <= n; k++) {
-      data.push({
-        successes: k.toString(),
-        probability: binomialProbability(n, k, p),
-      });
-    }
-    return data;
-  }, [n, p]);
-
-  const mean = n * p;
-  const variance = n * p * (1 - p);
-
-  return (
-    <div>
-        <ChartContainer config={{}} className="h-[300px] w-full">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="successes" name="Number of Successes (k)" />
-                <YAxis name="Probability" domain={[0, 'dataMax']} />
-                <Tooltip
-                    content={<ChartTooltipContent
-                        labelFormatter={(label) => `Successes: ${label}`}
-                        formatter={(value) => [Number(value).toFixed(4), 'Probability']}
-                    />}
-                />
-                <Bar dataKey="probability" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-        </ChartContainer>
-         <div className="grid grid-cols-2 text-center text-xs text-muted-foreground mt-4">
-            <div>
-                Mean (μ = np): <span className="font-semibold text-foreground block">{mean.toFixed(2)}</span>
-            </div>
-            <div>
-                Variance (σ² = np(1-p)): <span className="font-semibold text-foreground block">{variance.toFixed(2)}</span>
-            </div>
-        </div>
-    </div>
-  );
-};
-
-const DynamicBinomialDistributionChart = dynamic(() => Promise.resolve(BinomialDistributionChart), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[340px] w-full" />,
-});
-
+import { binomialProbability } from '@/lib/math';
 
 // --- Main Page Component ---
 export default function BinomialDistributionComponent() {
     const [trials, setTrials] = useState(20);
     const [probability, setProbability] = useState(0.5);
+
+    const { chartData, mean, variance } = useMemo(() => {
+        const data = [];
+        for (let k = 0; k <= trials; k++) {
+            data.push({
+                successes: k.toString(),
+                probability: binomialProbability(trials, k, probability),
+            });
+        }
+        const calculatedMean = trials * probability;
+        const calculatedVariance = trials * probability * (1 - probability);
+
+        return { chartData: data, mean: calculatedMean, variance: calculatedVariance };
+    }, [trials, probability]);
 
   return (
     <>
@@ -153,7 +92,14 @@ export default function BinomialDistributionComponent() {
                     <Slider id="prob-slider" min={0.01} max={0.99} step={0.01} value={[probability]} onValueChange={(val) => setProbability(val[0])} />
                 </div>
             </div>
-            <DynamicBinomialDistributionChart n={trials} p={probability} />
+            <DistributionChart 
+                chartData={chartData}
+                chartType="bar"
+                xAxisDataKey="successes"
+                yAxisDataKey="probability"
+                mean={mean}
+                variance={variance}
+            />
           </CardContent>
         </Card>
       </div>

@@ -235,6 +235,170 @@ export const getKurtosis = (data: number[]): number => {
     return numerator / denominator;
 }
 
+// --- Probability Density/Mass Functions ---
+
+export const bernoulliProbability = (p: number, k: number): number => {
+    if (k === 1) return p;
+    if (k === 0) return 1 - p;
+    return 0;
+};
+
+export const combinations = (n: number, k: number): number => {
+    if (k < 0 || k > n) {
+        return 0;
+    }
+    if (k === 0 || k === n) {
+        return 1;
+    }
+    if (k > n / 2) {
+        k = n - k;
+    }
+    let res = 1;
+    for (let i = 1; i <= k; i++) {
+        res = res * (n - i + 1) / i;
+    }
+    return res;
+};
+
+export const binomialProbability = (n: number, k: number, p: number): number => {
+    return combinations(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+};
+
+export function lanczosGamma(z: number): number {
+    const p = [
+        676.5203681218851, -1259.1392167224028, 771.32342877765313,
+        -176.61502916214059, 12.507343278686905, -0.13857109526572012,
+        9.9843695780195716e-6, 1.5056327351493116e-7
+    ];
+    if (z < 0.5) {
+        return Math.PI / (Math.sin(Math.PI * z) * lanczosGamma(1 - z));
+    }
+    z -= 1;
+    let x = 0.99999999999980993;
+    for (let i = 0; i < p.length; i++) {
+        x += p[i] / (z + i + 1);
+    }
+    const t = z + p.length - 0.5;
+    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+}
+
+export const betaFunction = (alpha: number, beta: number): number => {
+    return (lanczosGamma(alpha) * lanczosGamma(beta)) / lanczosGamma(alpha + beta);
+};
+
+export const betaPdf = (x: number, alpha: number, beta: number): number => {
+    if (x < 0 || x > 1 || alpha <= 0 || beta <= 0) {
+        return 0;
+    }
+    if ((alpha < 1 && x === 0) || (beta < 1 && x === 1)) {
+        return Infinity;
+    }
+    const B = betaFunction(alpha, beta);
+    if (B === 0) return Infinity;
+    return (Math.pow(x, alpha - 1) * Math.pow(1 - x, beta - 1)) / B;
+};
+
+export const cauchyPdf = (x: number, x0: number, gamma: number): number => {
+    if (gamma <= 0) return 0;
+    return 1 / (Math.PI * gamma * (1 + Math.pow((x - x0) / gamma, 2)));
+};
+
+export const chiSquaredPdf = (x: number, k: number): number => {
+    if (x < 0 || k <= 0) return 0;
+    const term1 = Math.pow(x, k / 2 - 1) * Math.exp(-x / 2);
+    const term2 = Math.pow(2, k / 2) * lanczosGamma(k / 2);
+    if (term2 === 0) return Infinity;
+    return term1 / term2;
+};
+
+export const exponentialPdf = (x: number, lambda: number): number => {
+    if (x < 0 || lambda <= 0) return 0;
+    return lambda * Math.exp(-lambda * x);
+};
+
+export const fDistributionPdf = (x: number, d1: number, d2: number): number => {
+    if (x <= 0 || d1 <= 0 || d2 <= 0) {
+        return 0;
+    }
+    const term1 = Math.sqrt(Math.pow(d1 * x, d1) * Math.pow(d2, d2) / Math.pow(d1 * x + d2, d1 + d2));
+    const term2 = x * betaFunction(d1 / 2, d2 / 2);
+    if (term2 === 0) return Infinity;
+    return term1 / term2;
+};
+
+export const gammaPdf = (x: number, alpha: number, beta: number): number => {
+    if (x < 0 || alpha <= 0 || beta <= 0) {
+        return 0;
+    }
+    const term1 = (Math.pow(beta, alpha) / lanczosGamma(alpha));
+    const term2 = Math.pow(x, alpha - 1);
+    const term3 = Math.exp(-beta * x);
+    return term1 * term2 * term3;
+};
+
+export const geometricProbability = (p: number, k: number): number => {
+    if (k < 1) return 0;
+    return Math.pow(1 - p, k - 1) * p;
+};
+
+export const hypergeometricProbability = (N: number, K: number, n: number, k: number): number => {
+    const num = combinations(K, k) * combinations(N - K, n - k);
+    const den = combinations(N, n);
+    return den > 0 ? num / den : 0;
+};
+
+export const laplacePdf = (x: number, mu: number, b: number): number => {
+    if (b <= 0) return 0;
+    return (1 / (2 * b)) * Math.exp(-Math.abs(x - mu) / b);
+};
+
+export const logisticPdf = (x: number, mu: number, s: number): number => {
+    if (s <= 0) return 0;
+    const z = (x - mu) / s;
+    const expZ = Math.exp(-z);
+    return expZ / (s * Math.pow(1 + expZ, 2));
+};
+
+export const factorial = (n: number): number => {
+    if (n < 0) return 0;
+    let result = 1;
+    for (let i = 2; i <= n; i++) result *= i;
+    return result;
+};
+
+export const multinomialProbability = (n: number, x: number[], p: number[]): number => {
+    if (x.reduce((a, b) => a + b, 0) !== n || Math.abs(p.reduce((a, b) => a + b, 0) - 1) > 1e-9) {
+        return 0;
+    }
+    let combinations = factorial(n);
+    let prob_product = 1;
+    for (let i = 0; i < x.length; i++) {
+        combinations /= factorial(x[i]);
+        prob_product *= Math.pow(p[i], x[i]);
+    }
+    return combinations * prob_product;
+};
+
+export const negativeBinomialProbability = (r: number, p: number, k: number): number => {
+    if (k < r) return 0;
+    return combinations(k - 1, r - 1) * Math.pow(p, r) * Math.pow(1 - p, k - r);
+};
+
+export const tDistributionPdf = (t: number, df: number): number => {
+    if (df <= 0) return 0;
+    const term1 = lanczosGamma((df + 1) / 2);
+    const term2 = Math.sqrt(df * Math.PI) * lanczosGamma(df / 2);
+    const term3 = Math.pow(1 + (t * t) / df, -(df + 1) / 2);
+    return (term1 / term2) * term3;
+};
+
+export const weibullPdf = (x: number, k: number, lambda: number): number => {
+    if (x < 0 || k <= 0 || lambda <= 0) {
+        return 0;
+    }
+    return (k / lambda) * Math.pow(x / lambda, k - 1) * Math.exp(-Math.pow(x / lambda, k));
+};
+
 /**
  * Calculates the standard normal cumulative distribution function (CDF).
  * @param x The value to calculate the CDF for.
