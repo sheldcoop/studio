@@ -29,7 +29,7 @@ export default function ExponentialDistributionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline">The "Time Between Events" Distribution</CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4 text-base leading-relaxed text-foreground/90">
             <p>
                 The Exponential distribution is a continuous probability distribution that models the time between events in a Poisson point process, i.e., a process in which events occur continuously and independently at a constant average rate.
