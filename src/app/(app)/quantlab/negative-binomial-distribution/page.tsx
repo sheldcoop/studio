@@ -10,6 +10,8 @@ import { NegativeBinomialDashboard } from '@/components/quantlab/dashboards/Nega
 import { PageSection } from '@/components/app/page-section';
 import { KeyConceptAlert } from '@/components/app/key-concept-alert';
 import { InteractiveFormula } from '@/components/app/interactive-formula';
+import { ExampleStep } from '@/components/app/example-step';
+import { FormulaBlock } from '@/components/app/formula-block';
 
 export default function NegativeBinomialDistributionPage() {
   const [highlightValue, setHighlightValue] = useState<string | number | null>(null);
@@ -66,23 +68,54 @@ export default function NegativeBinomialDistributionPage() {
                 <NegativeBinomialDashboard isSubcomponent={true} highlightValue={highlight} onBarHover={onHover} />
             )}
           </InteractiveFormula>
-          
-          <Card>
-              <CardHeader>
-                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                  <div>
-                      <h4 className="font-semibold">Expected Value (Mean)</h4>
-                      <BlockMath math="E[X] = \frac{r}{p}" />
-                      <p className="text-sm text-muted-foreground mt-2">If you need `r=10` winning trades and your win probability is `p=0.4`, you'd expect to make `10 / 0.4 = 25` total trades to achieve your goal.</p>
-                  </div>
-                  <div>
-                      <h4 className="font-semibold">Variance</h4>
-                      <BlockMath math="Var(X) = \frac{r(1-p)}{p^2}" />
-                  </div>
-              </CardContent>
-          </Card>
+        </PageSection>
+
+        <PageSection title="Key Derivations">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Deriving the Mean and Variance</CardTitle>
+                    <CardDescription>The moments are most intuitively derived by viewing the Negative Binomial as a sum of Geometric random variables.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                     <div className="border-b pb-8">
+                      <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
+                       <ExampleStep stepNumber={1} title="Decompose into Geometric Variables">
+                            <p>Let <InlineMath math="X"/> be the total number of trials to get <InlineMath math="r"/> successes. We can think of <InlineMath math="X"/> as the sum of <InlineMath math="r"/> independent random variables, where each <InlineMath math="Y_i"/> is the number of trials to get the next success after the previous one.</p>
+                            <BlockMath math="X = Y_1 + Y_2 + \dots + Y_r"/>
+                            <p>Each <InlineMath math="Y_i"/> follows a Geometric distribution with probability <InlineMath math="p"/>. We know from the Geometric distribution page that <InlineMath math="E[Y_i] = 1/p"/>.</p>
+                       </ExampleStep>
+                       <ExampleStep stepNumber={2} title="Use Linearity of Expectation">
+                           <p>The expectation of a sum is the sum of the expectations.</p>
+                           <BlockMath math="E[X] = E[Y_1 + Y_2 + \dots + Y_r] = E[Y_1] + E[Y_2] + \dots + E[Y_r]"/>
+                       </ExampleStep>
+                        <ExampleStep stepNumber={3} title="Sum the Geometric Means">
+                           <p>Since each <InlineMath math="Y_i"/> has the same mean, we are just adding <InlineMath math="1/p"/> to itself <InlineMath math="r"/> times.</p>
+                           <BlockMath math="E[X] = \sum_{i=1}^{r} \frac{1}{p} = r \cdot \frac{1}{p}"/>
+                           <FormulaBlock>
+                                <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
+                               <BlockMath math="E[X] = \frac{r}{p}" />
+                           </FormulaBlock>
+                       </ExampleStep>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-lg">Deriving the Variance</h4>
+                       <p className="text-sm text-muted-foreground mb-4">We use the same decomposition as above. The variance of a sum of *independent* random variables is the sum of their variances.</p>
+                       <ExampleStep stepNumber={1} title="Sum the Variances of Geometric Variables">
+                          <p>The variance of a Geometric distribution is <InlineMath math="Var(Y_i) = (1-p)/p^2"/>.</p>
+                          <BlockMath math="Var(X) = Var(Y_1 + \dots + Y_r) = Var(Y_1) + \dots + Var(Y_r)"/>
+                       </ExampleStep>
+                        <ExampleStep stepNumber={2} title="Final Result">
+                           <p>We are adding the same variance to itself <InlineMath math="r"/> times.</p>
+                           <BlockMath math="Var(X) = \sum_{i=1}^{r} \frac{1-p}{p^2} = r \cdot \frac{1-p}{p^2}"/>
+                           <FormulaBlock>
+                                <CardTitle className="text-lg mb-2">Final Variance Formula</CardTitle>
+                               <BlockMath math="Var(X) = \frac{r(1-p)}{p^2}" />
+                           </FormulaBlock>
+                       </ExampleStep>
+                    </div>
+                </CardContent>
+            </Card>
         </PageSection>
 
         <PageSection title="Applications">
