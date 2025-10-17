@@ -14,6 +14,7 @@ import 'katex/dist/katex.min.css';
 import { ChiSquaredDashboard } from '@/components/quantlab/dashboards/ChiSquaredDashboard';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { PageSection } from '@/components/app/page-section';
+import { ExampleStep } from '@/components/app/example-step';
 
 // --- Main Page Component ---
 export default function ChiSquaredDistributionPage() {
@@ -49,7 +50,7 @@ export default function ChiSquaredDistributionPage() {
           </CardContent>
         </Card>
 
-        <PageSection title="Core Concepts">
+        <PageSection title="Core Concepts & Derivations">
           <Card>
               <CardHeader>
                   <CardTitle className="font-headline">Probability Density Function (PDF)</CardTitle>
@@ -68,19 +69,49 @@ export default function ChiSquaredDistributionPage() {
           </Card>
            <Card>
               <CardHeader>
-                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
+                  <CardTitle className="font-headline">Key Derivations</CardTitle>
+                  <CardDescription>The moments of the Chi-Squared distribution are most easily derived by recognizing it as a special case of the Gamma distribution.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                  <div>
-                      <h4 className="font-semibold">Expected Value (Mean)</h4>
-                      <FormulaBlock><BlockMath math="E[X] = k" /></FormulaBlock>
-                      <p className="text-sm text-muted-foreground mt-2">The mean is simply equal to the degrees of freedom.</p>
-                  </div>
-                  <div>
-                      <h4 className="font-semibold">Variance</h4>
-                      <FormulaBlock><BlockMath math="Var(X) = 2k" /></FormulaBlock>
-                       <p className="text-sm text-muted-foreground mt-2">The variance is twice the degrees of freedom.</p>
-                  </div>
+                <p>
+                    A Chi-Squared distribution with <InlineMath math="k" /> degrees of freedom, <InlineMath math="\chi^2(k)" />, is equivalent to a Gamma distribution with shape parameter <InlineMath math="\alpha = k/2" /> and rate parameter <InlineMath math="\beta = 1/2" />.
+                </p>
+                <p>
+                    We know that for a Gamma distribution <InlineMath math="\text{Gamma}(\alpha, \beta)" />, the moments are:
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-sm">
+                    <li><InlineMath math="E[X] = \frac{\alpha}{\beta}" /></li>
+                    <li><InlineMath math="Var(X) = \frac{\alpha}{\beta^2}" /></li>
+                </ul>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold text-lg">Deriving the Expected Value (Mean)</h4>
+                   <ExampleStep stepNumber={1} title="Substitute Gamma Parameters">
+                      <p>Substitute <InlineMath math="\alpha = k/2" /> and <InlineMath math="\beta = 1/2" /> into the mean formula for the Gamma distribution.</p>
+                      <BlockMath math="E[X] = \frac{k/2}{1/2}" />
+                   </ExampleStep>
+                   <ExampleStep stepNumber={2} title="Simplify">
+                      <p>The 1/2 terms cancel out, leaving us with a remarkably simple result.</p>
+                      <FormulaBlock>
+                          <CardTitle className="text-lg mb-2">Final Mean Formula</CardTitle>
+                          <BlockMath math="E[X] = k" />
+                      </FormulaBlock>
+                   </ExampleStep>
+                </div>
+                 <div className="border-t pt-4">
+                  <h4 className="font-semibold text-lg">Deriving the Variance</h4>
+                   <ExampleStep stepNumber={1} title="Substitute Gamma Parameters">
+                      <p>Substitute <InlineMath math="\alpha = k/2" /> and <InlineMath math="\beta = 1/2" /> into the variance formula for the Gamma distribution.</p>
+                      <BlockMath math="Var(X) = \frac{k/2}{(1/2)^2} = \frac{k/2}{1/4}" />
+                   </ExampleStep>
+                   <ExampleStep stepNumber={2} title="Simplify">
+                       <p>Multiplying by the reciprocal of 1/4 gives the final result.</p>
+                      <FormulaBlock>
+                           <CardTitle className="text-lg mb-2">Final Variance Formula</CardTitle>
+                          <BlockMath math="Var(X) = 2k" />
+                      </FormulaBlock>
+                   </ExampleStep>
+                </div>
               </CardContent>
           </Card>
         </PageSection>
