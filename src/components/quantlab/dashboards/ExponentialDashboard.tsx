@@ -7,7 +7,14 @@ import { Label } from '@/components/ui/label';
 import { DistributionChart } from '@/components/quantlab/DistributionChart';
 import { exponentialPdf } from '@/lib/math';
 
-export function ExponentialDashboard() {
+interface DashboardProps {
+    isSubcomponent?: boolean;
+    highlightValue?: string | number | null;
+    onBarHover?: (value: string | number | null) => void;
+    showCdf?: boolean;
+}
+
+export function ExponentialDashboard({ isSubcomponent, highlightValue, onBarHover, showCdf }: DashboardProps) {
     const [lambda, setLambda] = useState(1.5); // Rate parameter
 
     const { chartData, mean, variance } = useMemo(() => {
@@ -18,7 +25,7 @@ export function ExponentialDashboard() {
         for (let i = 0; i <= points; i++) {
             const x = (i / points) * rangeEnd;
             data.push({
-                value: x,
+                value: x.toFixed(2),
                 density: exponentialPdf(x, lambda),
             });
         }
@@ -31,12 +38,14 @@ export function ExponentialDashboard() {
 
     return (
         <div className="space-y-4">
-            <div className="mx-auto max-w-md">
-                <div className="space-y-3">
-                    <Label htmlFor="lambda-slider">Rate (λ): {lambda.toFixed(2)}</Label>
-                    <Slider id="lambda-slider" min={0.1} max={5} step={0.1} value={[lambda]} onValueChange={(val) => setLambda(val[0])} />
+            {!isSubcomponent && (
+                <div className="mx-auto max-w-md">
+                    <div className="space-y-3">
+                        <Label htmlFor="lambda-slider">Rate (λ): {lambda.toFixed(2)}</Label>
+                        <Slider id="lambda-slider" min={0.1} max={5} step={0.1} value={[lambda]} onValueChange={(val) => setLambda(val[0])} />
+                    </div>
                 </div>
-            </div>
+            )}
             <DistributionChart
                 chartData={chartData}
                 chartType="area"
@@ -44,6 +53,9 @@ export function ExponentialDashboard() {
                 yAxisDataKey="density"
                 mean={mean}
                 variance={variance}
+                highlightValue={highlightValue}
+                onBarHover={onBarHover}
+                showCdf={showCdf}
             />
         </div>
     );
