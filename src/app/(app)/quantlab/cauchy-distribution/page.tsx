@@ -14,6 +14,7 @@ import 'katex/dist/katex.min.css';
 import { CauchyDashboard } from '@/components/quantlab/dashboards/CauchyDashboard';
 import { FormulaBlock } from '@/components/app/formula-block';
 import { PageSection } from '@/components/app/page-section';
+import { ExampleStep } from '@/components/app/example-step';
 
 // --- Main Page Component ---
 export default function CauchyDistributionPage() {
@@ -67,13 +68,47 @@ export default function CauchyDistributionPage() {
           </Card>
            <Card>
               <CardHeader>
-                  <CardTitle className="font-headline">Expected Value & Variance</CardTitle>
+                  <CardTitle className="font-headline">Cumulative Distribution Function (CDF)</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 text-center text-lg font-semibold text-destructive">
-                <p>UNDEFINED</p>
-                <p className="text-sm font-normal text-muted-foreground">The integrals for both the mean and the variance do not converge. This is the most famous and counter-intuitive property of the Cauchy distribution. It implies that the Law of Large Numbers does not apply; the sample mean does not stabilize around a single value as the sample size increases.</p>
+              <CardContent>
+                   <FormulaBlock>
+                    <BlockMath math="F(x; x_0, \gamma) = \frac{1}{\pi} \arctan\left(\frac{x - x_0}{\gamma}\right) + \frac{1}{2}" />
+                   </FormulaBlock>
               </CardContent>
           </Card>
+        </PageSection>
+
+        <PageSection title="Key Derivations: The Undefined Moments">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Why is the Expected Value (Mean) Undefined?</CardTitle>
+                    <CardDescription>
+                        The mean is undefined because the integral required to calculate it does not converge to a finite value. This is a result of the "fat tails" not decaying quickly enough.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <ExampleStep stepNumber={1} title="Set up the Integral for Expected Value">
+                        <p>For a standard Cauchy distribution (<InlineMath math="x_0=0, \gamma=1" />), the expected value is given by the integral:</p>
+                        <BlockMath math="E[X] = \int_{-\infty}^{\infty} x \cdot f(x) dx = \int_{-\infty}^{\infty} \frac{x}{\pi(1+x^2)} dx" />
+                    </ExampleStep>
+                    <ExampleStep stepNumber={2} title="Evaluate the Integral">
+                        <p>We can split this integral. The antiderivative of <InlineMath math="\frac{x}{1+x^2}" /> is <InlineMath math="\frac{1}{2}\ln(1+x^2)" />.</p>
+                        <BlockMath math="E[X] = \frac{1}{\pi} \left[ \frac{1}{2} \ln(1+x^2) \right]_{-\infty}^{\infty}" />
+                        <p>When we evaluate this at the limits:</p>
+                        <BlockMath math="\lim_{a \to \infty} \frac{1}{2\pi} (\ln(1+a^2) - \ln(1+(-a)^2)) = \lim_{a \to \infty} \frac{1}{2\pi} (\ln(1+a^2) - \ln(1+a^2))" />
+                        <p>This results in the indeterminate form <InlineMath math="\infty - \infty" />. Because the integral does not converge to a single finite value, the expected value is formally <strong>undefined</strong>.</p>
+                    </ExampleStep>
+                </CardContent>
+            </Card>
+
+             <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Why is the Variance Undefined?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                     <p>Since the mean is undefined, the variance, which is defined as <InlineMath math="E[(X - E[X])^2]" />, must also be undefined.</p>
+                </CardContent>
+            </Card>
         </PageSection>
 
       </div>
